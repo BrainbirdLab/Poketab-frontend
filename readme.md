@@ -5,7 +5,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/BrainbirdLab/Poketab-frontend?style=flat-square)
 [![DeepScan grade](https://deepscan.io/api/teams/20528/projects/27059/branches/864831/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=27059&bid=864831)
 
-![Website](https://img.shields.io/website?down_color=Red&down_message=Offline&style=flat-square&up_color=green&up_message=Online&url=https%3A%2F%2Fchat.brainbird.org/)
+![Website](https://img.shields.io/website?down_color=Red&down_message=Offline&style=flat-square&up_color=green&up_message=Online&url=https%3A%2F%2Fchat.brainbird.org)
 
 Poketab Messenger is a temporary chat application that allows users to create and join group chats with up to 10 people. The app utilizes a unique key system to ensure privacy and security, as users can only join a chat by using a key generated and sent by the server.
 
