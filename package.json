@@ -1,7 +1,7 @@
 {
 	"schema": "https://schemastore.org/package",
 	"name": "poketab-frontend",
-	"version": "0.1.5.aplha",
+	"version": "0.1.5",
 	"private": true,
 	"engines": {
 		"pnpm": ">=8"
