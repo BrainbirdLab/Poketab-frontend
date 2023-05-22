@@ -10,6 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         theme = 'Ocean';
     }
 
+    //injects the theme in html
     return await resolve(event, {
         transformPageChunk: ({html}) => {
             return html.replace('<%_theme_%>', theme);
