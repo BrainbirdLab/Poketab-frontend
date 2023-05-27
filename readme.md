@@ -26,7 +26,7 @@ Poketab Messenger is a temporary chat application that allows users to create an
 
 **Note:** Poketab Messenger is a Progressive Web App (PWA) and does not require any heavy installation. It can be accessed on any device and browser that supports web standards.
 
-
+Poketab Messenger is perfect for anyone looking for a secure and temporary chat option. Give it a try today!
 
 ## Contribute
 
@@ -37,7 +37,6 @@ To contribute to this project, follow these steps:
 3. Make changes and commit them using `git commit -m "Add some feature"`
 4. Push changes to your fork using `git push origin my-feature-branch`
 5. Create a pull request
-
 
 ## Credits
 Lead Developer [Fuad Hasan](https://github.com/itsfuad).
