@@ -1,33 +1,43 @@
-import { writable, type Writable } from 'svelte/store';
+import { writable, type Writable } from "svelte/store";
 
-export interface UserInfo{
-    name: string;
-    id: string;
-    avatar: string;
-}
+export const showUserInputForm = writable(false);
+export const formNotification = writable('');
 
-interface ChatRoom{
-  key: string;
-  maxUser: number;
-  admin: string;
-  userList: Map<string, UserInfo>;
-}
 
-export const selfInfoStore: Writable<UserInfo> = writable({
-    name: '',
-    id: '',
-    avatar: '',
-});
-export const chatRoomStore: Writable<ChatRoom> = writable({
-    key: '',
-    maxUser: 0,
-    admin: '',
-    userList: new Map(),
-});
+export const reconnectButtonEnabled = writable(false);
+export const formActionButtonDisabled = writable(true);
+
+export const clientOnline = writable(false);
+
+//array of strings
 export const usedUsernames: Writable<string[]> = writable([]);
 export const usedAvatars: Writable<string[]> = writable([]);
-export const isConnected: Writable<boolean> = writable(false);
 
-export const showUserInputForm: Writable<boolean> = writable(false);
 
-export const showSidePanel: Writable<boolean> = writable(false);
+export type User = {
+    id: string,
+    name: string,
+    avatar: string,
+}
+
+type chatRoomStoreType = {
+    Key: string,
+    userList: Map<string, User>,
+    maxUsers: number,
+};
+
+export const selfInfoStore: Writable<User> = writable({
+    id: '',
+    name: '',
+    avatar: '',
+});
+
+export const chatRoomStore: Writable<chatRoomStoreType> = writable({
+    Key: '',
+    userList: new Map(),
+    maxUsers: 0,
+});
+
+export const authSocketConnected = writable(false);
+
+export const isConnected = writable(false);

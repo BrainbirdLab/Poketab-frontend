@@ -2,22 +2,20 @@
     import MessageInput from "./components/messageInput.svelte";
     import NavBar from "./components/navBar.svelte";
     import TextMessage from "./components/messages/message.svelte";
-    import { messageDatabase } from "./components/messages";
-    import {chatRoomStore} from "$lib/store";
+    import { messageDatabase } from "./components/messages/messages";
     import { showPopupMessage } from "$lib/utils/utils";
     import SidePanel from "./components/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
     import QuickSettings from "./components/quickSettings.svelte";
     import { onDestroy, onMount } from "svelte";
     import TypingIndicator from "./components/typingIndicator.svelte";
+    import { chatSocket } from "./chatSocket";
+    import {chatRoomStore} from "$lib/store";
 
-    onMount(() => {
-        //chatSocket.connect();
-        console.log('Chatbox mounted');
-    });
+    import { activeModalsStack, showAttachmentPickerPanel, showQuickSettingPanel, showSidePanel, showStickersPanel, showThemesPanel } from "./components/modalManager";
 
     onDestroy(()=>{
-        //chatSocket.disconnect();
+        chatSocket.disconnect();
     });
 
     async function invite(){
@@ -29,16 +27,52 @@
             await navigator.share({
                 title: 'Poketab Messenger',
                 text: 'Join chat!',
-                url: `${location.origin}/chat/${$chatRoomStore.key}`,
+                url: `${location.origin}/join/${$chatRoomStore.Key}`,
             });
             showPopupMessage('Shared!');
         } catch (err) {
             showPopupMessage(`${err}`);
         }
     }
+
+    //make a system where you can push and pop modals from the stack
+//when a modal or panel is opened, push it to the stack
+//when a new modal or panel is opened, push it to the stack
+//when a modal or panel is closed, pop it from the stack
+//when esc is pressed, pop the top modal or panel from the stack
+
+document.addEventListener('keydown', (e) => {
+    console.log(e.key);
+    if (e.key === 'Escape'){
+        if (activeModalsStack.length > 0){
+            activeModalsStack[activeModalsStack.length - 1].set(false);
+        }
+    }
+
+    if (e.key === 'o' && e.altKey){
+        showSidePanel.update(value => !value);
+    }
+
+    if (e.key === 's' && e.altKey){
+        showQuickSettingPanel.update(value => !value);
+    }
+
+    if (e.key === 't' && e.altKey){
+        showThemesPanel.update(value => !value);
+    }
+
+    if (e.key === 'i' && e.altKey){
+        showStickersPanel.update(value => !value);
+    }
+
+    if (e.key === 'a' && e.altKey){
+        showAttachmentPickerPanel.update(value => !value);
+    }
+});
 </script>
 
 <SidePanel/>
+<QuickSettings/>
 
 <div class="chatBox">
     <NavBar />

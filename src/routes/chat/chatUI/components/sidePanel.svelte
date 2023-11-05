@@ -1,15 +1,15 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
-    import {chatRoomStore, isConnected, selfInfoStore, showSidePanel, showUserInputForm} from "$lib/store";
-    import { showPopupMessage } from "$lib/utils/utils";
 
-    import {chatSocket} from "./chatSocket";
+    import {chatRoomStore, isConnected, selfInfoStore} from "$lib/store";
+    import {clearModals, showQuickSettingPanel, showSidePanel} from "./modalManager";
+    import { showPopupMessage } from "$lib/utils/utils";
 
     let copyKeyIcon = 'fa-regular fa-clone';
     let copyTimeout: NodeJS.Timeout | null = null;
 
     function copyKey(){
-        navigator.clipboard.writeText($chatRoomStore.key).then(() => {
+        navigator.clipboard.writeText($chatRoomStore.Key).then(() => {
             console.log('Copied');
             showPopupMessage('Copied to clipboard!');
             copyKeyIcon = 'fa-solid fa-check';
@@ -25,8 +25,8 @@
     }
 
     function leaveChat(){
-        console.log('Leaving chat');
-        showSidePanel.set(false);
+        console.log('Leaving chat...');
+        clearModals();
         isConnected.set(false);
     }
 
@@ -36,7 +36,7 @@
 <div id="sidebarWrapper" transition:fly={{x:-30, duration: 100}}>
     <div id="sidebar">
         <div class="topbar">
-            <button id="keyname" class="btn play-sound" on:click={copyKey}><i class="{copyKeyIcon}"></i> {$chatRoomStore.key}</button>
+            <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i> {$chatRoomStore.Key}</button>
         </div>
         <ul id="userlist">
             {#each [...$chatRoomStore.userList] as [id, User]}
@@ -50,7 +50,7 @@
             {/each}
         </ul>
         <div class="footer_options">
-            <button><i class="fa-solid fa-gear settings hoverBtn button-animate small btn play-sound" title="Quick Settings [Alt+s]"></i></button>
+            <button on:click={()=> {showQuickSettingPanel.set(true)}}><i class="fa-solid fa-gear settings hoverBtn button-animate small btn play-sound" title="Quick Settings [Alt+s]"></i></button>
             <button on:click={leaveChat} id="logoutButton" class="button hover button-animate small btn play-sound"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Leave</span></button>
         </div>
     </div>
@@ -87,7 +87,7 @@
             filter: drop-shadow(0 4px 5px black);
 
             #keyname {
-                padding-bottom: 20px;
+                border-radius: 10px;
                 font-weight: 300;
             }
 

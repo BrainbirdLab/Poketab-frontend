@@ -3,16 +3,6 @@
 
     export let text = "";
 
-    document.addEventListener('keypress', (e) => {
-        if (e.key === 'f'){
-            text = "Fuad is typing";
-        } else if (e.key === 'm'){
-            text = "Maliha is typing";
-        } else {
-            text = "";
-        }
-    });
-
 </script>
 
 <div class="indicatorWrapper">

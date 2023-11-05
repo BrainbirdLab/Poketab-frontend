@@ -21,7 +21,7 @@ html{
 }
 
 :root{
-    --red: indianred;
+    --red: #e8534f;
     --primary-dark: #111d2a;
     --foreground-dark: #e1eeff;
     --secondary-dark: hsl(187, 100%, 37%);
@@ -98,6 +98,10 @@ button {
 
 .hover:hover{
     filter: brightness(0.90);
+}
+
+.selectable:hover{
+    background: rgba(255, 255, 255, 0.0392156863) !important;
 }
 
 .hoverBtn {

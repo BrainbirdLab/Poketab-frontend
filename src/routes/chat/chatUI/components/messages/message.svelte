@@ -1,6 +1,6 @@
 <script lang="ts">
     import "./message.css";
-    import type { TextMessageObj } from ".";
+    import type { TextMessageObj } from "./messages";
     import { chatRoomStore, selfInfoStore } from "$lib/store";
 
     export let message: TextMessageObj;

@@ -1,4 +1,15 @@
-<div class="quickSettingsPanelWrapper">
+<script>
+    import { fly } from "svelte/transition";
+    import { showQuickSettingPanel } from "./modalManager";
+
+</script>
+
+{#if $showQuickSettingPanel}
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="quickSettingsPanelWrapper" transition:fly={{y:30, duration: 100}}
+    on:click={() => {showQuickSettingPanel.set(false)}}
+>
     <div class="utils">
         <div class="title">
             Settings <i class="fa-solid fa-gear"></i> <span class="moreInfo">[Alt+s]</span>
@@ -74,6 +85,7 @@
         </div>
     </div>
 </div>
+{/if}
 
 <style lang="scss">
     .quickSettingsPanelWrapper {

@@ -1,15 +1,19 @@
-import { Socket, io } from 'socket.io-client';
-import { get } from 'svelte/store';
-import { chatRoomStore, selfInfoStore, isConnected, showUserInputForm, type UserInfo } from '$lib/store';
+import { get } from "svelte/store";
+import { io, Socket } from "socket.io-client";
+
+import { chatRoomStore, isConnected, selfInfoStore, showUserInputForm } from "$lib/store";
+
 
 export let chatSocket: Socket;
 
 isConnected.subscribe(value => {
     if (value) {
-        //showUserInputForm.set(false);
+        showUserInputForm.set(false);
+        console.log(get(chatRoomStore).Key);
+        console.log(get(selfInfoStore).id);
         chatSocket = io(':7777/chat', {
             auth: {
-                key: get(chatRoomStore).key,
+                key: get(chatRoomStore).Key,
                 uid: get(selfInfoStore).id, 
             }
         });
@@ -31,8 +35,17 @@ isConnected.subscribe(value => {
         });
     } else {
         if (chatSocket){
+            chatRoomStore.set({
+                Key: '',
+                userList: new Map(),
+                maxUsers: 0,
+            });
+            selfInfoStore.set({
+                id: '',
+                name: '',
+                avatar: '',
+            });
             chatSocket.disconnect();
         }
     }
 });
-

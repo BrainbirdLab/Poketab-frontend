@@ -1,10 +1,10 @@
 <script lang="ts">
     import { avList } from "$lib/utils/validation";
-    import { selfInfoStore, usedUsernames, usedAvatars, chatRoomStore, showUserInputForm, isConnected } from "$lib/store";
     import { fly } from "svelte/transition";
     import { onDestroy } from "svelte";
     
-    import {authSocket} from "./authSocket";
+    import {authSocket, reConnectAuthSocket} from "./authSocket";
+    import {formActionButtonDisabled, reconnectButtonEnabled, usedUsernames, usedAvatars, showUserInputForm, chatRoomStore, isConnected, selfInfoStore, authSocketConnected} from "$lib/store";
 
     let selectedUsername = '';
     let selectedAvatar = '';
@@ -16,20 +16,13 @@
 
     let errAnimation = '';
 
-    let initText = $chatRoomStore.key ? 'Join' : 'Create';
+    let initText = $chatRoomStore.Key ? 'Join' : 'Create';
 
-    let initChatActionDisabled = false;
-
-    if (!authSocket.connected){
-        console.log('Connecting auth socket');
-        authSocket.connect();
-    }
 
     onDestroy(() => {
         usernameErr = '';
         avatarErr = '';
         maxUserErr = '';
-        authSocket.disconnect();
     });
 
     function requestForChat(evt: Event){
@@ -76,7 +69,7 @@
             return;
         }
 
-        if (!$chatRoomStore.key && selectedMaxUser < 2 || selectedMaxUser > 10){
+        if (!$chatRoomStore.Key && selectedMaxUser < 2 || selectedMaxUser > 10){
             maxUserErr = 'Max users must be between 2 and 10';
             errAnimation = 'shake';
             setTimeout(() => {
@@ -103,71 +96,67 @@
             return;
         }
 
-        selfInfoStore.update(store => {
-           store.name = selectedUsername;
-           store.avatar = selectedAvatar;
-           return store;
-        });
-
-        chatRoomStore.update(store => {
-            store.maxUser = selectedMaxUser;
-            return store;
-        });
-
         console.log('Connecting to chat...');
 
-        initChatActionDisabled = true;
+        //initChatActionDisabled = true;
+        formActionButtonDisabled.set(true);
         initText = 'Please wait ';
 
-        if (!$chatRoomStore.key){
+        if (!$chatRoomStore.Key){
             console.log('Create new key');
-            //console.log(`Username: ${get(selfInfoStore).name}, Avatar: ${get(selfInfoStore).avatar}, Max user: ${get(chatRoomStore).maxUser}`);
-            authSocket.emit('createChat', $selfInfoStore.name, $selfInfoStore.avatar, $chatRoomStore.maxUser, (res: {success: boolean, message: string, key: string, userId: string, maxUser: number}) => {
+            //console.log(`Username: ${get(selfInfoStore).name}, Avatar: ${get(selfInfoStore).avatar}, Max user: ${get(chatRoomStore).maxUsers}`);
+            authSocket.emit('createChat', selectedUsername, selectedAvatar, selectedMaxUser, (res: {success: boolean, message: string, key: string, userId: string, maxUsers: number}) => {
                 if (!res.success){
                     console.log('Error: ' + res.message);
                     return;
                 }
-                //chatRoom.key = res.key;
-                chatRoomStore.update(room => {
-                    room.key = res.key;
-                    room.maxUser = res.maxUser;
-                    return room;
-                });
-                //selfInfo.id = res.userId;
-                selfInfoStore.update(info => {
-                    info.id = res.userId;
-                    return info;
-                });
 
                 selectedUsername = '';
                 selectedAvatar = '';
                 selectedMaxUser = 2;
 
+                chatRoomStore.update(room => {
+                    room.Key = res.key;
+                    room.maxUsers = res.maxUsers;
+                    return room;
+                });
+
+                selfInfoStore.update(info => {
+                    info.id = res.userId;
+                    info.name = selectedUsername;
+                    info.avatar = selectedAvatar;
+                    return info;
+                });
+
                 isConnected.set(true);
             });
         } else{
-        console.log('Joining key: ' + $chatRoomStore.key);
-        authSocket.emit('joinChat', $chatRoomStore.key, $selfInfoStore.name, $selfInfoStore.avatar, (res: {success: boolean, message: string, userId: string, maxUser: number}) => {
-            if (!res.success){
-                console.log('Error: ' + res.message);
-                return;
-            }
-            selfInfoStore.update(info => {
-                info.id = res.userId;
-                return info;
-            });
-            //chatRoom.key = key;
-            chatRoomStore.update(room => {
-                room.maxUser = res.maxUser;
-                return room;
-            });
+            console.log('Joining key: ' + $chatRoomStore.Key);
+            authSocket.connect();
+            authSocket.emit('joinChat', $chatRoomStore.Key, selectedUsername, selectedAvatar, (res: {success: boolean, message: string, userId: string, maxUsers: number}) => {
+                if (!res.success){
+                    console.log('Error: ' + res.message);
+                    return;
+                }
 
-            selectedUsername = '';
-            selectedAvatar = '';
-            selectedMaxUser = 2;
+                selectedUsername = '';
+                selectedAvatar = '';
+                selectedMaxUser = 2;
 
-            isConnected.set(true);
-        });
+                chatRoomStore.update(room => {
+                    room.maxUsers = res.maxUsers;
+                    return room;
+                });
+
+                selfInfoStore.update(info => {
+                    info.id = res.userId;
+                    info.name = selectedUsername;
+                    info.avatar = selectedAvatar;
+                    return info;
+                });
+
+                isConnected.set(true);
+            });
         }
     }
 
@@ -194,7 +183,7 @@
             <div class="avatars">
                 {#each avList as avatar}
                 <div class="avatar">
-                    {#if $chatRoomStore.key && $usedAvatars.includes(avatar)}
+                    {#if $chatRoomStore.Key && $usedAvatars.includes(avatar)}
                     <label class="avatarLabel btn btn-animate inuse" for="">
                         <img src="/images/avatars/{avatar}(custom).webp" alt="{avatar}">
                     </label>
@@ -210,23 +199,28 @@
         </div>
     </div>
 
-    {#if !$chatRoomStore.key}
+    {#if !$chatRoomStore.Key}
     <div class="formField range">
-        <label for="maxUser">Create chat for ({selectedMaxUser}) users</label>
+        <label for="maxUsers">Create chat for ({selectedMaxUser}) users</label>
         {#if maxUserErr}
         <div class="err {errAnimation}">{maxUserErr} <i class="fa-solid fa-triangle-exclamation"></i></div>
         {/if}
-        <input type="range" bind:value={selectedMaxUser} name="maxUser" id="maxUser" min="2" max="10">
+        <input type="range" bind:value={selectedMaxUser} name="maxUsers" id="maxUsers" min="2" max="10">
     </div>
     {/if}
 
     <div class="formField">
-        <button class="button-animate hover btn play-sound" disabled={initChatActionDisabled} on:click={requestForChat}>
+
+        {#if $reconnectButtonEnabled}
+        <button class="button-animate hover btn play-sound recon" on:click={reConnectAuthSocket}>Reconnect</button>
+        {:else}
+        <button class="button-animate hover btn play-sound" disabled={$formActionButtonDisabled || !$authSocketConnected} on:click={requestForChat}>
             {initText} 
-            {#if initChatActionDisabled}
+            {#if $formActionButtonDisabled && initText.includes('Please wait')}
                 <i class="fa-solid fa-spin fa-circle-notch"></i>
             {/if}
         </button>
+        {/if}
     </div>
 
     <div class="redirect">
@@ -239,6 +233,10 @@
 </div>
 
 <style lang="scss">
+
+    .recon{
+        background: var(--red);
+    }
 
     .avatarsContainer{
         width: 100%;
@@ -329,5 +327,10 @@
             color: #bababa;
             font-size: 0.7rem;
         }
+    }
+
+    .inputForm{
+        //drop shadow
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
     }
 </style>

@@ -1,25 +1,12 @@
 <script lang="ts">
-    import { selfInfoStore, chatRoomStore, isConnected, showUserInputForm } from "$lib/store";
-    import type { UserInfo } from "$lib/store";
     import { get } from "svelte/store";
-    import { MessageObj, messageDatabase } from "./messages";
-    import { TextMessageObj } from "./messages";
+    import { MessageObj, messageDatabase } from "./messages/messages";
+    import { TextMessageObj } from "./messages/messages";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
+    import { chatSocket } from "./../chatSocket";
 
-    import { chatSocket } from "./chatSocket";
-
-    chatSocket.on('updateUserList', (userList: UserInfo[]) => {
-        console.log('User list updated');
-        console.log(userList);
-        chatRoomStore.update(room => {
-            room.userList = new Map();
-            userList.forEach(user => {
-            room.userList.set(user.id, user);
-            });
-            return room;
-        });
-    });
+    import {chatRoomStore, selfInfoStore} from "$lib/store";
 
     chatSocket.on('newMessage', (message: MessageObj, messageId: string) => {
         //console.log('New message');
@@ -32,7 +19,7 @@
             classList += ' noreply end';
             }
 
-            if (get(chatRoomStore).maxUser == 2 && !message.replyTo) {
+            if (get(chatRoomStore).maxUsers == 2 && !message.replyTo) {
             classList += ' notitle';
             }
 
@@ -66,7 +53,7 @@
         if (!message.replyTo){
             message.classList += ' noreply';
         }
-        if ($chatRoomStore.maxUser == 2 && !message.replyTo){
+        if ($chatRoomStore.maxUsers == 2 && !message.replyTo){
             message.classList += ' notitle';
         }
 

@@ -1,8 +1,10 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { usedUsernames, usedAvatars, showUserInputForm, chatRoomStore } from "$lib/store";
 
-    import {authSocket} from "./authSocket";
+    import {authSocket, reConnectAuthSocket} from "./authSocket";
+    import {reconnectButtonEnabled, authSocketConnected} from "$lib/store";
+
+    import {formActionButtonDisabled, chatRoomStore, showUserInputForm, usedAvatars, usedUsernames} from "$lib/store";
 
     let key = '';
 
@@ -13,18 +15,6 @@
     let LabelIcon = 'fa-solid fa-key';
 
     let joinActionText = 'Join Chat';
-
-    let joinActionDisabled = false;
-
-    if (!authSocket.connected){
-        console.log('Connecting auth socket');
-        authSocket.connect();
-    } else {
-        errLog = '';
-        errIcon = '';
-    }
-
-
 
     type fetchResponse = {
         success: boolean,
@@ -63,26 +53,17 @@
         }
 
         joinActionText = 'Checking...';
-        joinActionDisabled = true;
+        formActionButtonDisabled.set(true);
 
         errIcon = '';
 
         console.log('Fetching key data');
 
-        if (!authSocket.connected){
-            console.log('Socket not connected');
-            errLog = 'Reconnecting...';
-            errIcon = 'fa-solid fa-circle-notch fa-spin';
-            authSocket.connect();
-        } else {
-            errLog = '';
-            errIcon = '';
-        }
-
         authSocket.emit('fetchKeyData', key, (res: fetchResponse) => {
 
             joinActionText = 'Join Chat';
-            joinActionDisabled = false;
+            //joinActionDisabled = false;
+            formActionButtonDisabled.set(false);
 
             if (!res.success){
                 console.log(res.message);
@@ -95,15 +76,17 @@
                 return;
             }
 
+            console.log('Key data fetched');
+
             usedUsernames.set(res.usernames);
             usedAvatars.set(res.avatars);
-
-            chatRoomStore.update((val) => {
-                val.key = key;
-                return val;
+            chatRoomStore.update(room => {
+                room.Key = key;
+                return room;
             });
 
             showUserInputForm.set(true);
+            formActionButtonDisabled.set(false);
             
         }).on('error', (err: string) => {
             console.log(err);
@@ -134,12 +117,17 @@
     </div>
     <div class="formFieldContainer">
         <div class="formField">
-            <button class="button-animate hover btn play-sound" disabled={joinActionDisabled} on:click={checkKey}>
+            {#if $reconnectButtonEnabled}
+            <button class="button-animate hover btn play-sound recon" on:click={reConnectAuthSocket}>Reconnect</button>
+            {:else}
+            <button class="button-animate hover btn play-sound" disabled={$formActionButtonDisabled || !$authSocketConnected} on:click={checkKey}>
                 {joinActionText}
-                {#if joinActionDisabled}
+                {#if $formActionButtonDisabled && joinActionText == 'Checking...'}
                     <i class="fa-solid fa-circle-notch fa-spin"></i>
                 {/if}
             </button>
+            {/if}
+
         </div>
         <div class="formField create">
             <button class="button-animate hover btn play-sound" on:click={createChat}>Create chat</button>
@@ -148,6 +136,11 @@
 </div>
 
 <style lang="scss">
+
+    .recon{
+        background: var(--red);
+    }
+
      .formFieldContainer{
         display: flex;
         flex-direction: row;
@@ -169,5 +162,10 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
+    }
+
+    .inputForm{
+        //drop shadow
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
     }
 </style>
