@@ -1,9 +1,8 @@
 
 <script lang="ts">
-    import { onMount } from "svelte";
     import {fly} from "svelte/transition";
-    import {formActionButtonDisabled, formNotification, reconnectButtonEnabled} from "$lib/store";
-    import { authSocket } from "./authSocket";
+    import {formActionButtonDisabled, formNotification} from "$lib/store";
+    import { socket } from "./socket";
 
     let connected = '';
 
@@ -14,9 +13,9 @@
             connected = '';
         } else if (value.includes('online')){
             connected = 'online';
-            
-            if (authSocket.disconnected){
-                authSocket.connect();
+            if (socket.disconnected){
+                console.log('Connecting to server...');
+                socket.connect();
                 setTimeout(() => {
                     if ($formNotification.toLocaleLowerCase().includes('connected')){
                         return;
@@ -29,10 +28,9 @@
                 }, 1000);
                 formActionButtonDisabled.set(false);
             }
-
-        }
-
-        if (value == 'Connected to server') {
+        } else if (value.includes('Could not connect')){
+            connected = '';
+        } else if (value == 'Connected to server') {
             //make the background green
             connected = 'connected';
         }

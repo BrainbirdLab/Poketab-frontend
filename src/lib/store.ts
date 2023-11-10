@@ -1,43 +1,59 @@
-import { writable, type Writable } from "svelte/store";
+import { writable, get, type Writable } from "svelte/store";
 
-export const showUserInputForm = writable(false);
+export const showUserInputForm = writable(true);
 export const formNotification = writable('');
+export const splashMessage = writable('');
 
 
 export const reconnectButtonEnabled = writable(false);
 export const formActionButtonDisabled = writable(true);
 
-export const clientOnline = writable(false);
-
-//array of strings
-export const usedUsernames: Writable<string[]> = writable([]);
-export const usedAvatars: Writable<string[]> = writable([]);
+//export const clientOnline = writable(false);
 
 
 export type User = {
-    id: string,
+    uid: string,
     name: string,
     avatar: string,
 }
 
 type chatRoomStoreType = {
     Key: string,
-    userList: Map<string, User>,
+    userList: {[key: string]: User},
     maxUsers: number,
 };
 
 export const selfInfoStore: Writable<User> = writable({
-    id: '',
+    uid: '',
     name: '',
     avatar: '',
 });
 
 export const chatRoomStore: Writable<chatRoomStoreType> = writable({
     Key: '',
-    userList: new Map(),
+    userList: {},
     maxUsers: 0,
 });
 
-export const authSocketConnected = writable(false);
+export const socketConnected = writable(false);
 
-export const isConnected = writable(false);
+export const joinedChat = writable(false);
+
+export const currentPage = writable('form');
+
+
+export function isTaken(type: 'name' | 'avatar', query: string){
+    let i = 0;
+    const obj = get(chatRoomStore).userList;
+    for (const key in obj) {
+        //console.log(i++);
+        if (obj.hasOwnProperty(key)) {
+            const element = obj[key];
+            //console.log(key, element);
+            if (element[type] == query) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

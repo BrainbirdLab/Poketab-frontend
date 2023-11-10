@@ -15,15 +15,15 @@
             <i class="fa-solid fa-reply"></i>
         </div>
         <div class="sent"><i class="fa-regular fa-paper-plane"></i></div>
-        {#if message.sender != $selfInfoStore.id}
-        <div class="avatar"><img src="/images/avatars/{($chatRoomStore.userList.get(message.sender)?.avatar)}(custom).webp" width="30px" height="30px" alt="avatar"></div>
+        {#if message.sender != $selfInfoStore.uid}
+        <div class="avatar"><img src="/images/avatars/{($chatRoomStore.userList[message.sender]?.avatar)}(custom).webp" width="30px" height="30px" alt="avatar"></div>
         {/if}
         <div class="messageBody">
             <div class="messageTitle">
-                {#if message.sender == $selfInfoStore.id}
+                {#if message.sender == $selfInfoStore.uid}
                     You
                 {:else}
-                {$chatRoomStore.userList.get(message.sender)?.name}
+                    {$chatRoomStore.userList[message.sender]?.name}
                 {/if}
             </div>
             <div class="messageReply" data-repid="" data-deleted=""></div>

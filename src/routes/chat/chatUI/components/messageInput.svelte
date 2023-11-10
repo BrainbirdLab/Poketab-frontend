@@ -4,12 +4,13 @@
     import { TextMessageObj } from "./messages/messages";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
-    import { chatSocket } from "./../chatSocket";
+    import { socket } from "../../../socket";
 
     import {chatRoomStore, selfInfoStore} from "$lib/store";
+    import { showAttachmentPickerPanel, showStickersPanel } from "./modalManager";
 
-    chatSocket.on('newMessage', (message: MessageObj, messageId: string) => {
-        //console.log('New message');
+    socket.on('newMessage', (message: MessageObj, messageId: string) => {
+        console.log('New message');
         //console.log(message);
         messageDatabase.update(messages => {
 
@@ -60,7 +61,7 @@
         //if the previous message is self message, remove 'end' class from previous message and add 'end' class to current message
         if (get(messageDatabase).size > 0){
             let lastMessage = [...get(messageDatabase).values()].pop();
-            if (lastMessage && lastMessage.sender === get(selfInfoStore).id){
+            if (lastMessage && lastMessage.sender === get(selfInfoStore).uid){
                 console.log('last message is self message');
                 lastMessage.classList = lastMessage.classList.replace('end', '');
             } else {
@@ -72,7 +73,7 @@
     }
 
     function sendMessage(message: MessageObj, tempId: string){
-        chatSocket.emit('newMessage', message, (messageId: string) => {
+        socket.emit('newMessage', message, (messageId: string) => {
             console.log('Message sent');
             messageDatabase.update(msg => {
                 message.classList += ' delevered';
@@ -88,7 +89,7 @@
         const tempId = crypto.randomUUID();
         let message = new TextMessageObj();
         message.message = newMessage;
-        message.sender = $selfInfoStore.id;
+        message.sender = $selfInfoStore.uid;
 
         makeClasslist(message);
 
@@ -112,15 +113,15 @@
     <!--typing indicator-->
 
     <div class="chatInput">
-        <div class="button-animate small btn play-sound inputBtn hoverBtn" id="stickerBtn" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></div>
+        <button on:click={() => {showStickersPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
         <!-- Text input -->
-        <div class="attachments button-animate small btn play-sound inputBtn hoverBtn" id="attachment" title="Send attactments [Alt+a]"><i class="fa-solid fa-paperclip"></i></div>
+        <button on:click={() => {showAttachmentPickerPanel.set(true)}} class="attachments button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" id="attachment" title="Send attactments [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <div class="inputField">
             <div id="textbox" contenteditable="true" class="select" data-placeholder="Message..." tabindex="-1" enterkeyhint="send" style="height: 41px;" bind:innerText={newMessage}></div>
             <Recorder/>
         </div>
         <!-- Send Button-->
-        <button id="send" on:click={insertMessage} class="inputBtn button-animate btn small hoverBtn" title="Enter" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
+        <button id="send" class:quickEmoji={false} on:click={insertMessage} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
     </div>
 </div>
 
@@ -153,7 +154,7 @@
             margin-right: 3px;
         }
 
-        :global(.quickEmoji), .sendIcon{
+        .quickEmoji, .sendIcon{
             animation: pop 300ms ease-in-out forwards;
         }
 

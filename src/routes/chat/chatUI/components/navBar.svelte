@@ -7,9 +7,9 @@
 </script>
 
 <div class="navbar" transition:fly={{y: -50}}>
-    <div id="currentlyActive"><i class="fa-solid fa-user"></i> Active: {$chatRoomStore.userList.size}/{$chatRoomStore.maxUsers}</div>
+    <div id="currentlyActive"><i class="fa-solid fa-user"></i> Active: {Object.keys($chatRoomStore.userList).length}/{$chatRoomStore.maxUsers}</div>
     <div class="optionPanel">                
-        <button id="more" class="button-animate btn hoverBtn play-sound" title="Active users and Settings [Alt+o]" on:click={()=>{console.log('Showing side panel'); showSidePanel.set(true)}}>
+        <button id="more" class="button-animate btn hover roundedBtn play-sound hoverShadow" title="Active users and Settings [Alt+o]" on:click={()=>{console.log('Showing side panel'); showSidePanel.set(true)}}>
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
     </div>

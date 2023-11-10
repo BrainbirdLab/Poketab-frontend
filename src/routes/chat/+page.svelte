@@ -1,16 +1,21 @@
 <script lang="ts">
-    import { isConnected } from "$lib/store";
+    import { currentPage, joinedChat } from "$lib/store";
     import ChatPage from "./chatUI/chatPage.svelte";
     import Form from "../form.svelte";
     import { formNotification, formActionButtonDisabled } from "$lib/store";
     import { onMount } from "svelte";
-    import { authSocket } from "../authSocket";
+    import { socket } from "../socket";
+    import SplashScreen from "../splashScreen.svelte";
+    import { splashMessage } from "$lib/store";
+
+    splashMessage.set('Connecting to server...');
 
     onMount(()=>{
         //on offline
         window.addEventListener('offline', () => {
             console.log('Offline');
-            authSocket.disconnect();
+
+            socket.disconnect();
             formNotification.set('You are offline');
             //connected = '';
             //reconnectButtonEnabled.set(true);
@@ -20,21 +25,20 @@
         //on online
         window.addEventListener('online', () => {
             console.log('Online');
+
             formNotification.set('Back to online');
-            /*
-            connected = 'online';
-            setTimeout(() => {
-                formNotification.set('Connecting to server...');
-            }, 1000);
-            */
         });
     });
 
 </script>
 
-{#if !$isConnected}
-    <!-- Show form -->
-    <Form />
+{#if $splashMessage && $currentPage == 'chat'}
+<SplashScreen message={$splashMessage}/>
+{/if}
+
+{#if $currentPage == 'chat' && $joinedChat}
+<ChatPage />
 {:else}
-    <ChatPage />
+<!-- Show form -->
+<Form />
 {/if}

@@ -1,93 +1,268 @@
-<script>
+<script lang="ts">
     import { fly } from "svelte/transition";
-    import { showQuickSettingPanel } from "./modalManager";
+    import { showQuickSettingsPanel, showThemesPanel } from "./modalManager";
+
+    let buttonSoundEnabled: boolean;
+    let messageSoundEnabled: boolean;
+    let quickEmojiEnabled: boolean;
+    let sendMethod: SEND_METHOD;
+
+    enum SEND_METHOD {
+        ENTER = "Enter",
+        CTRL_ENTER = "Ctrl+Enter",
+    }
+
+    type Settings = {
+        buttonSoundEnabled: boolean;
+        messageSoundEnabled: boolean;
+        quickEmojiEnabled: boolean;
+        sendMethod: SEND_METHOD;
+    };
+
+    const defaultSettings = {
+        buttonSoundEnabled: true,
+        messageSoundEnabled: true,
+        quickEmojiEnabled: true,
+        sendMethod: SEND_METHOD.ENTER,
+    };
+
+    showQuickSettingsPanel.subscribe((value) => {
+        if (value) {
+            loadSettings();
+        }
+    });
+
+    function loadSettings() {
+        //console.log("Loading settings");
+        const settingsStr = localStorage.getItem("settings") || "{}";
+        try {
+            const parsedSettings: Partial<Settings> = JSON.parse(settingsStr);
+            //console.log(parsedSettings);
+            
+            if (typeof parsedSettings.buttonSoundEnabled != "boolean" || typeof parsedSettings.messageSoundEnabled != "boolean" || typeof parsedSettings.quickEmojiEnabled != "boolean" || typeof parsedSettings.sendMethod != "string") {
+                throw new Error("Invalid settings");
+            } else {
+                if (parsedSettings.sendMethod != SEND_METHOD.ENTER && parsedSettings.sendMethod != SEND_METHOD.CTRL_ENTER) {
+                    throw new Error("Invalid settings");
+                } else {
+                    buttonSoundEnabled = parsedSettings.buttonSoundEnabled;
+                    messageSoundEnabled = parsedSettings.messageSoundEnabled;
+                    quickEmojiEnabled = parsedSettings.quickEmojiEnabled;
+                    sendMethod = parsedSettings.sendMethod;
+
+                    //console.log("Settings loaded");
+                    //console.log({buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, sendMethod});
+                }
+            }
+
+        } catch (error) {
+            console.error("Error parsing settings:", error);
+            // Store the default settings
+            localStorage.setItem("settings", JSON.stringify(defaultSettings));
+
+            // Update the settings
+            buttonSoundEnabled = false;
+            messageSoundEnabled = false;
+            quickEmojiEnabled = false;
+            sendMethod = SEND_METHOD.ENTER;
+        }
+    }
+
+    function setToLocalStorage(updatedSettings: Partial<Settings>) {
+        console.log("Settings updated");
+
+        const currentSettingsStr = localStorage.getItem("settings") || "{}";
+        const currentSettings: Settings = JSON.parse(currentSettingsStr);
+
+        const newSettings: Settings = {
+            ...currentSettings,
+            ...updatedSettings,
+        };
+
+        localStorage.setItem("settings", JSON.stringify(newSettings));
+    }
+
+    function handleClick(node: HTMLElement) {
+        const click = (e: Event) => {
+            const target = e.target as HTMLElement;
+            if (target === node) {
+                showQuickSettingsPanel.set(false);
+            } else if (target.classList) {
+                console.log({
+                    buttonSoundEnabled,
+                    messageSoundEnabled,
+                    quickEmojiEnabled,
+                    sendMethod,
+                });
+                if (target.id == "buttonSound") {
+                    setToLocalStorage({
+                        buttonSoundEnabled: !buttonSoundEnabled,
+                    });
+                } else if (target.id == "messageSound") {
+                    setToLocalStorage({
+                        messageSoundEnabled: !messageSoundEnabled,
+                    });
+                } else if (target.id == "quickEmoji") {
+                    setToLocalStorage({
+                        quickEmojiEnabled: !quickEmojiEnabled,
+                    });
+                } else if (target.id == "ctrl+enter") {
+                    setToLocalStorage({ sendMethod: SEND_METHOD.CTRL_ENTER });
+                } else if (target.id == "enter") {
+                    setToLocalStorage({ sendMethod: SEND_METHOD.ENTER });
+                } else if (target.id == "chooseQuickEmojiButton") {
+                    showQuickSettingsPanel.set(false);
+                    showThemesPanel.set(true);
+                }
+            }
+        };
+
+        
+        node.addEventListener("click", click);
+        
+        return {
+            destroy() {
+                node.removeEventListener("click", click);
+            },
+        };
+    }
 
 </script>
 
-{#if $showQuickSettingPanel}
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="quickSettingsPanelWrapper" transition:fly={{y:30, duration: 100}}
-    on:click={() => {showQuickSettingPanel.set(false)}}
->
-    <div class="utils">
-        <div class="title">
-            Settings <i class="fa-solid fa-gear"></i> <span class="moreInfo">[Alt+s]</span>
-        </div>
-        <div class="subsettingsContainer">
-            <div class="subsettings">
-                <div class="subtitle">Sounds <i class="fa-solid fa-volume-high"></i></div>
-                <!-- Enable/disable button sounds -->
-                <div class="field-checkers btn play-sound">
-                    <input type="checkbox" id="buttonSound">
-                    <label for="buttonSound">
-                        <div class="textContainer">
-                            Click Sound
-                        </div>
-                        <span class="toggleButton"></span>
-                    </label>
-                </div>
-                <!-- Enable/disable message sounds -->
-                <div class="field-checkers btn play-sound">
-                    <input type="checkbox" id="messageSound">
-                    <label for="messageSound">
-                        <div class="textContainer">
-                            Message sound
-                        </div>
-                        <span class="toggleButton"></span>
-                    </label>
-                </div>
+{#if $showQuickSettingsPanel}
+    <div
+        class="quickSettingsPanelWrapper"
+        transition:fly={{ y: 30, duration: 100 }}
+        use:handleClick
+    >
+        <div class="utils">
+            <div class="title">
+                Settings <i class="fa-solid fa-gear" />
+                <span class="moreInfo">[Alt+s]</span>
             </div>
-    
-            <div class="subsettings">
-                <div class="subtitle">Keyboard <i class="fa-regular fa-keyboard"></i></div>
-                <div class="field-checkers keyboardMode btn play-sound">
-                    <input type="radio" name="sendMethod" id="Ctrl+Enter" value="Ctrl+Enter">
-                    <label for="ctrl">
-                        <div class="textContainer">
-                            Use Ctrl+Enter to send
-                            <div class="moreInfo">Enter to add newlines</div>
-                        </div>
-                        <span class="toggleButton"></span>
-                    </label>
+            <div class="subsettingsContainer">
+                <div class="subsettings">
+                    <div class="subtitle">
+                        Sounds <i class="fa-solid fa-volume-high" />
+                    </div>
+                    <!-- Enable/disable button sounds -->
+                    <div class="field-checkers btn play-sound hoverShadow">
+                        <input
+                            type="checkbox"
+                            id="buttonSound"
+                            bind:checked={buttonSoundEnabled}
+                        />
+                        <label for="buttonSound">
+                            <div class="textContainer">Click Sound</div>
+                            <span class="toggleButton" />
+                        </label>
+                    </div>
+                    <!-- Enable/disable message sounds -->
+                    <div class="field-checkers btn play-sound hoverShadow">
+                        <input
+                            type="checkbox"
+                            id="messageSound"
+                            bind:checked={messageSoundEnabled}
+                        />
+                        <label for="messageSound">
+                            <div class="textContainer">Message sound</div>
+                            <span class="toggleButton" />
+                        </label>
+                    </div>
                 </div>
-    
-                <div class="field-checkers keyboardMode btn play-sound">
-                    <input type="radio" name="sendMethod" id="Enter" value="Enter">
-                    <label for="nonctrl">
-                        <div class="textContainer">
-                            Use Enter to send
-                            <div class="moreInfo">Shift+Enter to add newlines</div>
-                        </div>
-                        <span class="toggleButton"></span>
-                    </label>
-                </div>
-            </div>
 
-            <!--Quick emoji-->
-            <div class="subsettings">
-                <div class="subtitle">Quick emoji <i class="fa-regular fa-smile"></i></div>
-                <div class="field-checkers btn play-sound">
-                    <input type="checkbox" id="quickEmoji">
-                    <label for="quickEmoji">
-                        <div class="textContainer">
-                            Enable quick emoji
-                        </div>
-                        <span class="toggleButton"></span>
-                    </label>
-                </div>
-                <div class="field-checkers btn play-sound">
-                    <button class="hyper" id="chooseQuickEmojiButton">Change Emoji <span class="quickEmojiIcon">😅</span></button>
-                </div>
-            </div>
+                <div class="subsettings">
+                    <div class="subtitle">
+                        Keyboard <i class="fa-regular fa-keyboard" />
+                    </div>
+                    <div
+                        class="field-checkers keyboardMode btn play-sound hoverShadow"
+                    >
+                        <input
+                            bind:group={sendMethod}
+                            type="radio"
+                            name="sendMethod"
+                            id="ctrl+enter"
+                            value="Ctrl+Enter"
+                        />
+                        <label for="ctrl+enter">
+                            <div class="textContainer">
+                                Use Ctrl+Enter to send
+                                <div class="moreInfo">
+                                    Enter to add newlines
+                                </div>
+                            </div>
+                            <span class="toggleButton" />
+                        </label>
+                    </div>
 
-            <div id="themeButton" class="button btn play-sound" title="Select themes [Alt+t]"><i class="fa-solid fa-palette"></i><span>Theme</span><i class="fa-solid fa-brush"></i></div>
+                    <div
+                        class="field-checkers keyboardMode btn play-sound hoverShadow"
+                    >
+                        <input
+                            bind:group={sendMethod}
+                            type="radio"
+                            name="sendMethod"
+                            id="enter"
+                            value="Enter"
+                        />
+                        <label for="enter">
+                            <div class="textContainer">
+                                Use Enter to send
+                                <div class="moreInfo">
+                                    Shift+Enter to add newlines
+                                </div>
+                            </div>
+                            <span class="toggleButton" />
+                        </label>
+                    </div>
+                </div>
+
+                <!--Quick emoji-->
+                <div class="subsettings">
+                    <div class="subtitle">
+                        Quick emoji <i class="fa-regular fa-smile" />
+                    </div>
+                    <div class="field-checkers btn play-sound hoverShadow">
+                        <input
+                            bind:checked={quickEmojiEnabled}
+                            type="checkbox"
+                            id="quickEmoji"
+                        />
+                        <label for="quickEmoji">
+                            <div class="textContainer">Enable quick emoji</div>
+                            <span class="toggleButton" />
+                        </label>
+                    </div>
+                    <div class="field-checkers btn play-sound hoverShadow">
+                        <button class="hyper" id="chooseQuickEmojiButton"
+                            >Change Emoji <span class="quickEmojiIcon">😅</span
+                            ></button
+                        >
+                    </div>
+                </div>
+
+                <button
+                    id="themeButton"
+                    on:click={() => {
+                        showThemesPanel.set(true);
+                    }}
+                    class="button btn play-sound hover"
+                    title="Select themes [Alt+t]"
+                    ><i class="fa-solid fa-palette" /><span>Theme</span><i
+                        class="fa-solid fa-brush"
+                    /></button
+                >
+            </div>
         </div>
     </div>
-</div>
 {/if}
 
 <style lang="scss">
+    input {
+        display: none;
+    }
+
     .quickSettingsPanelWrapper {
         position: fixed;
         height: 100%;
@@ -119,10 +294,6 @@
             padding: 5px 10px;
             width: 100%;
             border-radius: 10px;
-            
-            &:hover {
-                background: rgba(255, 255, 255, 0.0392156863);
-            }
 
             input {
                 cursor: pointer;
@@ -237,7 +408,6 @@
                     color: var(--secondary-dark);
                     padding-bottom: 5px;
                 }
-
             }
         }
     }

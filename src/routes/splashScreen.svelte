@@ -1,0 +1,26 @@
+<script>
+    export let message = '';
+</script>
+
+<div class="container">
+    <div class="text">{message}</div>
+    <i class="fa-solid fa-circle-notch fa-spin"></i>
+</div>
+
+<style lang="scss">
+    .container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        color: var(--secondary-dark);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--primary-dark);
+        z-index: 1000;
+    }
+</style>

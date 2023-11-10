@@ -1,62 +1,64 @@
+import type { User } from '$lib/store.js';
 import { io } from 'socket.io-client';
 
-type RES = {
-  success: boolean, 
-  message: string, 
-  statusCode: number, 
-  icon: string, 
-  usernames: string[], 
-  avatars: string[],
-  key?: string,
-};
+type fetchResponse = {
+  success: boolean,
+  message: string,
+  statusCode: number,
+  icon: string,
+  users: {[key: string]: User},
+  maxUsers: number,
+  key: string,
+}
 
 export async function load({ params }) {
 
   const { key } = params;
 
-  console.log(`Searching for key ${key}`);
+  const socket = io('ws://localhost:3000');
 
-  const authSocket = io('http://localhost:7777/auth');
-
-  authSocket.on('connect', () => {
-    console.log('%cConnected to auth server for SSR', 'color: blue');
+  socket.on('connect', () => {
+    console.log('%cConnected to server for SSR', 'color: blue');
   });
 
-  authSocket.on('disconnect', () => {
-    console.log('%cDisconnected from auth server', 'color: red');
+  socket.on('disconnect', () => {
+    console.log('%cDisconnected from server for SSR', 'color: red');
   });
 
   // Create a Promise to wait for the authSocket.emit callback
-  const fetchDataPromise = new Promise<RES>((resolve) => {
+  const fetchDataPromise = new Promise<fetchResponse>((resolve) => {
 
     console.log('Connecting to server...');
 
-    authSocket.connect();
+    socket.connect();
 
-    authSocket.on('connect_error', (err) => {
-      console.log('%cConnection error - Dynamic rout', 'color: red');
+    socket.on('connect_error', (err) => {
+      console.log('%cConnection error - Dynamic route', 'color: red');
       resolve({
         success: false,
-        key: '',
-        message: 'Server error',
+        message: 'Could not connect to server',
         statusCode: 500,
         icon: 'error',
-        usernames: [],
-        avatars: [],
+        users: {},
+        maxUsers: 0,
+        key: '',
       });
+      socket.disconnect();
     });
-
-    authSocket.emit('fetchKeyData', key, (res: RES) => {
+    
+    socket.emit('fetchKeyData', key, (res: fetchResponse) => {
       console.log('Key data fetched');
       resolve({...res, key});
     });
   });
-
+  
+  console.log(`Searching for key ${key}`);
   // Wait for the fetchDataPromise to resolve
   const res = await fetchDataPromise;
 
+  console.log(res);
   // Disconnect from the authSocket
-  authSocket.disconnect();
+  socket.disconnect();
 
   return {
     props: {

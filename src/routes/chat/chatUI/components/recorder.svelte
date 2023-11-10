@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    let recorderActive = '';
+    let recorderActive = false;
     let recordingState = false;
     let playState = false;
 
@@ -16,7 +16,8 @@
 
     let audioChunks: Blob[] = [];
 
-    let audio: HTMLAudioElement;
+    let audio: HTMLAudioElement = new Audio();
+    let audioUrl = '';
 
     let audioDuration = 0;
     let elapsedTime = 0;
@@ -95,7 +96,7 @@
                     console.log('Recording stopped');
 
                     const audioBlob = new Blob(audioChunks, {type: 'audio/mp3'});
-                    const audioUrl = URL.createObjectURL(audioBlob);
+                    audioUrl = URL.createObjectURL(audioBlob);
                     audio.src = audioUrl;
                 });
 
@@ -130,7 +131,7 @@
         // if the recorder is not active, it will be activated
         if (!recorderActive){
             console.log('Activating recorder');
-            recorderActive = 'active';
+            recorderActive = true;
             startRecording();
         } else {
             if (playState){
@@ -151,13 +152,22 @@
         if (recordingState){
             stopRecording();
         }
+
+        //if audio
+        if (audio){
+            audio.pause();
+            audio.currentTime = 0;
+            audio.src = '';
+            URL.revokeObjectURL(audioUrl);
+        }
+
         time = '00:00';
         elapsedTime = 0;
         audioDuration = 0;
         if (timer){
             clearInterval(timer);
         }
-        recorderActive = '';
+        recorderActive = false;
         micIcon = 'fa-microphone';
         playState = false;
     }
@@ -165,8 +175,8 @@
 </script>
 
 <!-- Microphone -->
-<div class="voiceRecorder {recorderActive}" id="recorderOverlay" data-recordingstate="{recordingState}">
-    <button class="recordBtn btn button-animate small btn hoverBtn" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
+<div class="voiceRecorder" class:active={recorderActive} id="recorderOverlay" data-recordingstate="{recordingState}">
+    <button class="recordBtn btn button-animate small btn roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
         <i class="fa-solid {micIcon}" id="micIcon"></i>
     </button>
     <div class="recording">
@@ -175,7 +185,7 @@
         {/if}
         <span id="recordingTime" class="recordingTime">{time}</span>
     </div>
-    <button class="cancelBtn btn button-animate btn small play-sound hoverBtn" id="cancelVoiceRecordButton" on:click={closeRecorder}>
+    <button class="cancelBtn btn button-animate btn small play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" on:click={closeRecorder}>
         <i class="fa-solid fa-xmark"></i>
     </button>
     <div id="audiovisualizer"></div>
@@ -201,7 +211,7 @@
         opacity: 1;
         visibility: visible;
         pointer-events: all;
-        &:global(.active) {
+        &.active {
             width: 100%;
             background: var(--primary-dark);
             #audiovisualizer {

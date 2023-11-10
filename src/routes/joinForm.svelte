@@ -1,52 +1,102 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
 
-    import {authSocket, reConnectAuthSocket} from "./authSocket";
-    import {reconnectButtonEnabled, authSocketConnected} from "$lib/store";
+    import {socket, reConnectSocket} from "./socket";
+    import {reconnectButtonEnabled, socketConnected, type User} from "$lib/store";
 
-    import {formActionButtonDisabled, chatRoomStore, showUserInputForm, usedAvatars, usedUsernames} from "$lib/store";
+    import {formActionButtonDisabled, chatRoomStore, showUserInputForm} from "$lib/store";
 
     let key = '';
 
-    let errLog = '';
+    function testKey(k: string){
+        return /^[a-zA-Z0-9]{2}-[a-zA-Z0-9]{3}-[a-zA-Z0-9]{2}$/.test(k);
+    }
+
+    function validateKey(e: KeyboardEvent) {
+        e.preventDefault();
+        if (e.key == 'Enter') {
+            checkKey();
+        } else if (testKey(e.key) && key.length < 9) {
+            // Only allow letters and numbers
+            if (key.length == 2 || key.length == 6) {
+                key += '-';
+            }
+            key += e.key;
+        } else if (e.key == 'Backspace') {
+            if (key.length > 0) {
+                // Remove '-' if the previous character is '-'
+                if (key.at(-2) == '-') {
+                    key = key.slice(0, -2);
+                } else {
+                    key = key.slice(0, -1);
+                }
+            }
+        }
+    }
+
+    function parseKey(e: ClipboardEvent){
+        console.log('Parsing key');
+        e.preventDefault();
+        //convert abcedfg to ab-cde-fg
+        let value = e.clipboardData?.getData('text/plain');
+        if (!value) return;
+
+        if (value.length == 7){
+            value = value.slice(0, 2) + '-' + value.slice(2, 5) + '-' + value.slice(5, 7);
+        }
+        if (testKey(value)){
+            key = value;
+            checkKey();
+        }
+    }
+
+    export let errLog = '';
+    export let errIcon = '';
     let errAnimation = '';
-    let errIcon = '';
     let LabelText = 'Enter key';
     let LabelIcon = 'fa-solid fa-key';
+
+    $: {
+        if (errLog){
+            errAnimation = 'shake';
+            console.log('Shaking');
+            setTimeout(() => {
+                errAnimation = '';
+            }, 100);
+        }else{
+            errAnimation = '';
+        }
+    }
 
     let joinActionText = 'Join Chat';
 
     type fetchResponse = {
         success: boolean,
         message: string,
-        usernames: string[],
-        avatars: string[],
+        statusCode: number,
         icon: string,
+        users: {[key: string]: User},
+        maxUsers: number,
     }
 
     function checkKey(){
         console.log('Checking key');
+
+        errLog = '';
+
         if (!key){
             console.log('Key is empty');
             errLog = 'Key is required';
             errIcon = 'fa-solid fa-triangle-exclamation';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
             return;
         }else{
             errLog = '';
         }
 
-        if (!/^[a-zA-Z0-9]{2}-[a-zA-Z0-9]{3}-[a-zA-Z0-9]{2}$/.test(key)){
+        if (!testKey(key)){
             console.log('Invalid key', key);
             errLog = 'Invalid key';
             errIcon = 'fa-solid fa-triangle-exclamation';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
             return;
         }else{
             errLog = '';
@@ -59,7 +109,7 @@
 
         console.log('Fetching key data');
 
-        authSocket.emit('fetchKeyData', key, (res: fetchResponse) => {
+        socket.emit('fetchKeyData', key, (res: fetchResponse) => {
 
             joinActionText = 'Join Chat';
             //joinActionDisabled = false;
@@ -69,19 +119,15 @@
                 console.log(res.message);
                 errLog = res.message;
                 errIcon = res.icon;
-                errAnimation = 'shake';
-                setTimeout(() => {
-                    errAnimation = '';
-                }, 100);
                 return;
             }
 
             console.log('Key data fetched');
 
-            usedUsernames.set(res.usernames);
-            usedAvatars.set(res.avatars);
             chatRoomStore.update(room => {
                 room.Key = key;
+                room.userList = res.users;
+                room.maxUsers = res.maxUsers;
                 return room;
             });
 
@@ -92,10 +138,6 @@
             console.log(err);
             errLog = err;
             errIcon = 'fa-solid fa-circle-exclamation';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
         });
     }
 
@@ -105,6 +147,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Poketab - Join</title>
+</svelte:head>
+
 <div class="inputForm" in:fly={{x: 30}}>
     <div class="formtitle">
         <div class="text">Join chat</div>
@@ -113,14 +159,14 @@
     <div class="formField">
         <label for="key">{LabelText} <i class="{LabelIcon}"></i></label>
         <div class="err {errAnimation}">{errLog} <i class="{errIcon}"></i></div>
-        <input id="key" type="text" bind:value={key} name="key" placeholder="xx-xxx-xx">
+        <input on:paste={parseKey} on:keydown={validateKey} id="key" type="text" bind:value={key} name="key" placeholder="xx-xxx-xx">
     </div>
     <div class="formFieldContainer">
         <div class="formField">
             {#if $reconnectButtonEnabled}
-            <button class="button-animate hover btn play-sound recon" on:click={reConnectAuthSocket}>Reconnect</button>
+            <button class="button-animate hover btn play-sound recon" on:click={reConnectSocket}>Reconnect</button>
             {:else}
-            <button class="button-animate hover btn play-sound" disabled={$formActionButtonDisabled || !$authSocketConnected} on:click={checkKey}>
+            <button class="button-animate hover btn play-sound" disabled={$formActionButtonDisabled || !$socketConnected} on:click={checkKey}>
                 {joinActionText}
                 {#if $formActionButtonDisabled && joinActionText == 'Checking...'}
                     <i class="fa-solid fa-circle-notch fa-spin"></i>

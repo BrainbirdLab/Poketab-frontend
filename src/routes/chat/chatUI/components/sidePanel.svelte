@@ -1,12 +1,27 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
 
-    import {chatRoomStore, isConnected, selfInfoStore} from "$lib/store";
-    import {clearModals, showQuickSettingPanel, showSidePanel} from "./modalManager";
+    import {chatRoomStore, currentPage, joinedChat, selfInfoStore, splashMessage} from "$lib/store";
+    import {clearModals, showQuickSettingsPanel, showSidePanel} from "./modalManager";
     import { showPopupMessage } from "$lib/utils/utils";
+    import type { User } from "$lib/store";
+    import { socket } from "../../../socket";
+    import { messageDatabase } from "./messages/messages";
 
     let copyKeyIcon = 'fa-regular fa-clone';
     let copyTimeout: NodeJS.Timeout | null = null;
+
+
+    socket.on('updateUserList', (users: {[key: string]: User}) => {
+        console.log('Updating user list');
+        console.log(users);
+        chatRoomStore.update((chatRoom) => {
+            chatRoom.userList = users
+            console.log(chatRoom.userList);
+            console.log(typeof chatRoom.userList);
+            return chatRoom;
+        });
+    });
 
     function copyKey(){
         navigator.clipboard.writeText($chatRoomStore.Key).then(() => {
@@ -26,37 +41,80 @@
 
     function leaveChat(){
         console.log('Leaving chat...');
+        splashMessage.set('Leaving Chat');
         clearModals();
-        isConnected.set(false);
+        socket.emit('leaveChat', () => {
+            console.log('Left chat');
+            chatRoomStore.set({
+                Key: '',
+                userList: {},
+                maxUsers: 2,
+            });
+            selfInfoStore.set({
+                uid: '',
+                name: '',
+                avatar: '',
+            });
+            messageDatabase.update(messages => {
+                messages.clear();
+                return messages;
+            });
+            joinedChat.set(false);
+            currentPage.set('form');
+            splashMessage.set('');
+        });
+    }
+
+    function closeSideBar(node: HTMLElement){
+
+        const method = (e: Event) => {
+            if (e.target === node) {
+                showSidePanel.set(false);
+            }
+        }
+
+        node.addEventListener('click', method);
+
+        return {
+            destroy(){
+                node.removeEventListener('click', method);
+            }
+        }
     }
 
 </script>
 
 {#if $showSidePanel}
-<div id="sidebarWrapper" transition:fly={{x:-30, duration: 100}}>
+<div id="sidebarWrapper" transition:fly={{x:-30, duration: 100}} use:closeSideBar>
     <div id="sidebar">
         <div class="topbar">
             <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i> {$chatRoomStore.Key}</button>
         </div>
         <ul id="userlist">
-            {#each [...$chatRoomStore.userList] as [id, User]}
-                <li class="user">
-                    <div class="avt">
-                        <img src="/images/avatars/{User.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
-                        <i class="fa-solid fa-circle activeStatus"></i>
-                    </div>
-                    <span>{User.name} {#if id == $selfInfoStore.id} (You) {/if} </span>
-                </li>
+            <li class="user">
+                <div class="avt">
+                    <img src="/images/avatars/{$selfInfoStore.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
+                    <i class="fa-solid fa-circle activeStatus"></i>
+                </div>
+                <span>{$selfInfoStore.name} (You)</span>
+            </li>
+            {#each Object.entries($chatRoomStore.userList) as [id, User]}
+                {#if User.uid != $selfInfoStore.uid}
+                    <li class="user">
+                        <div class="avt">
+                            <img src="/images/avatars/{User.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
+                            <i class="fa-solid fa-circle activeStatus"></i>
+                        </div>
+                        <span>{User.name}</span>
+                    </li>
+                {/if}
             {/each}
         </ul>
         <div class="footer_options">
-            <button on:click={()=> {showQuickSettingPanel.set(true)}}><i class="fa-solid fa-gear settings hoverBtn button-animate small btn play-sound" title="Quick Settings [Alt+s]"></i></button>
+            <button on:click={()=> {showQuickSettingsPanel.set(true)}}><i class="fa-solid fa-gear settings hover button-animate small btn play-sound hoverShadow" title="Quick Settings [Alt+s]"></i></button>
             <button on:click={leaveChat} id="logoutButton" class="button hover button-animate small btn play-sound"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Leave</span></button>
         </div>
     </div>
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="close_area" id="closeSideBar" on:click={()=>{showSidePanel.set(false)}}></div>
 </div>
 {/if}
 
@@ -165,18 +223,40 @@
         }
     }
 
-    #sidebarWrapper #sidebar, #sidebarWrapper #closeSideBar {
+    #sidebarWrapper #sidebar{
         position: relative;
     }
 
-    #sidebarWrapper .close_area {
-        width: 25%;
-    }
+    @media screen and (orientation: landscape) {
+    //width 2x height
+    @media screen and (min-device-aspect-ratio: 1.5 / 1) {
 
-    @media screen and (orientation: landscape) and (min-device-aspect-ratio: 1.5 / 1){
-        #sidebarWrapper .close_area {
-            width: 75%;
+        #sidebarWrapper {
+            #sidebar {
+                width: 25%;
+            }
         }
     }
+
+    //width 1.5x height
+    @media screen and (min-device-aspect-ratio: 1.2 / 1) and (max-device-aspect-ratio: 1.5 / 1) {
+
+        #sidebarWrapper {
+            #sidebar {
+                width: 35%;
+            }
+        }
+    }
+
+    //same
+    @media screen and (min-device-aspect-ratio: 1 / 1) and (max-device-aspect-ratio: 1.2 / 1) {
+
+        #sidebarWrapper {
+            #sidebar {
+                width: 50%;
+            }
+        }
+    }
+}
 
 </style>

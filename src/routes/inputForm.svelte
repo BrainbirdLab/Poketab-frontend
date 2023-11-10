@@ -1,26 +1,42 @@
 <script lang="ts">
     import { avList } from "$lib/utils/validation";
-    import { fly } from "svelte/transition";
-    import { onDestroy } from "svelte";
+    import { fly, fade, slide, scale } from "svelte/transition";
+    import { onDestroy, onMount } from "svelte";
     
-    import {authSocket, reConnectAuthSocket} from "./authSocket";
-    import {formActionButtonDisabled, reconnectButtonEnabled, usedUsernames, usedAvatars, showUserInputForm, chatRoomStore, isConnected, selfInfoStore, authSocketConnected} from "$lib/store";
+    import {socket, reConnectSocket} from "./socket";
+    import {formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, selfInfoStore, socketConnected, joinedChat, isTaken, currentPage, formNotification} from "$lib/store";
 
-    let selectedUsername = '';
+    let selectedname = '';
     let selectedAvatar = '';
     let selectedMaxUser = 2;
     
-    let usernameErr = '';
+    let nameErr = '';
     let avatarErr = '';
     let maxUserErr = '';
 
     let errAnimation = '';
 
-    let initText = $chatRoomStore.Key ? 'Join' : 'Create';
+    $: {
+        if (nameErr || avatarErr || maxUserErr){
+            errAnimation = 'shake';
+            setTimeout(() => {
+                errAnimation = '';
+            }, 100);
+        } else {
+            errAnimation = '';
+        }
+    }
 
+    let actionButtonText = $chatRoomStore.Key ? 'Join' : 'Create';
+
+    let mounted = false;
+
+    onMount(() => {
+        mounted = true;
+    });
 
     onDestroy(() => {
-        usernameErr = '';
+        nameErr = '';
         avatarErr = '';
         maxUserErr = '';
     });
@@ -31,117 +47,97 @@
 
         console.log('Requesting for chat');
 
-        usernameErr = '';
+        nameErr = '';
         avatarErr = '';
         maxUserErr = '';
 
-        if (!selectedUsername){
-            usernameErr = 'Please enter a username';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
+        if (!selectedname){
+            nameErr = 'Please enter a name';
             return;
         }
 
-        if (selectedUsername.length < 3 || selectedUsername.length > 15){
-            usernameErr = 'Username must be between 3 and 15 characters';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
+        if (selectedname.length < 3 || selectedname.length > 15){
+            nameErr = 'name must be between 3 and 15 characters';
             return;
-        } else if (!/^[a-zA-Z0-9_]+$/.test(selectedUsername)){
-            usernameErr = 'Invalid characters in username';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
+        } else if (!/^[a-zA-Z0-9_]+$/.test(selectedname)){
+            nameErr = 'Invalid characters in name';
             return;
         }
 
         if (!selectedAvatar){
             avatarErr = 'Please select an avatar';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
             return;
         }
 
         if (!$chatRoomStore.Key && selectedMaxUser < 2 || selectedMaxUser > 10){
             maxUserErr = 'Max users must be between 2 and 10';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
             return;
         }
 
-        if ($usedUsernames?.includes(selectedUsername)){
-            usernameErr = 'Username is already in use';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
+        if (isTaken('name', selectedname)){
+            nameErr = 'Name is already in use';
             return;
         }
 
-        if ($usedAvatars?.includes(selectedAvatar)){
+        if (isTaken('avatar' ,selectedAvatar)){
             avatarErr = 'Avatar is already in use';
-            errAnimation = 'shake';
-            setTimeout(() => {
-                errAnimation = '';
-            }, 100);
             return;
         }
+
+        console.log('%cValidation Passed', 'color: green')
 
         console.log('Connecting to chat...');
 
         //initChatActionDisabled = true;
         formActionButtonDisabled.set(true);
-        initText = 'Please wait ';
+        actionButtonText = 'Please wait ';
 
         if (!$chatRoomStore.Key){
             console.log('Create new key');
-            //console.log(`Username: ${get(selfInfoStore).name}, Avatar: ${get(selfInfoStore).avatar}, Max user: ${get(chatRoomStore).maxUsers}`);
-            authSocket.emit('createChat', selectedUsername, selectedAvatar, selectedMaxUser, (res: {success: boolean, message: string, key: string, userId: string, maxUsers: number}) => {
+            //console.log(`name: ${get(selfInfoStore).name}, Avatar: ${get(selfInfoStore).avatar}, Max user: ${get(chatRoomStore).maxUsers}`);
+            socket.emit('createChat', selectedname, selectedAvatar, selectedMaxUser, (res: {success: boolean, message: string, key: string, userId: string}) => {
                 if (!res.success){
                     console.log('Error: ' + res.message);
+                    formNotification.set('Error: ' + res.message);
+                    formActionButtonDisabled.set(false);
+                    showUserInputForm.set(false);
                     return;
                 }
-
-                selectedUsername = '';
-                selectedAvatar = '';
-                selectedMaxUser = 2;
 
                 chatRoomStore.update(room => {
                     room.Key = res.key;
-                    room.maxUsers = res.maxUsers;
+                    room.maxUsers = selectedMaxUser;
                     return room;
                 });
 
                 selfInfoStore.update(info => {
-                    info.id = res.userId;
-                    info.name = selectedUsername;
+                    info.uid = res.userId;
+                    info.name = selectedname;
                     info.avatar = selectedAvatar;
                     return info;
                 });
 
-                isConnected.set(true);
+                console.log('Created key: ' + $chatRoomStore.Key);
+                
+                //chatSocketConnected.set(true);
+                joinedChat.set(true);
+                currentPage.set('chat');
+                selectedname = '';
+                selectedAvatar = '';
+                selectedMaxUser = 2;
+                formActionButtonDisabled.set(false);
             });
         } else{
             console.log('Joining key: ' + $chatRoomStore.Key);
-            authSocket.connect();
-            authSocket.emit('joinChat', $chatRoomStore.Key, selectedUsername, selectedAvatar, (res: {success: boolean, message: string, userId: string, maxUsers: number}) => {
+            socket.connect();
+            socket.emit('joinChat', $chatRoomStore.Key, selectedname, selectedAvatar, (res: {success: boolean, message: string, userId: string, maxUsers: number}) => {
                 if (!res.success){
                     console.log('Error: ' + res.message);
+                    formNotification.set('Error: ' + res.message);
+                    formActionButtonDisabled.set(false);
+                    showUserInputForm.set(false);
                     return;
                 }
-
-                selectedUsername = '';
-                selectedAvatar = '';
-                selectedMaxUser = 2;
 
                 chatRoomStore.update(room => {
                     room.maxUsers = res.maxUsers;
@@ -149,13 +145,21 @@
                 });
 
                 selfInfoStore.update(info => {
-                    info.id = res.userId;
-                    info.name = selectedUsername;
+                    info.uid = res.userId;
+                    info.name = selectedname;
                     info.avatar = selectedAvatar;
                     return info;
                 });
 
-                isConnected.set(true);
+                console.log('Joined key: ' + $chatRoomStore.Key);
+
+                //chatSocketConnected.set(true);
+                joinedChat.set(true);
+                currentPage.set('chat');
+                selectedname = '';
+                selectedAvatar = '';
+                selectedMaxUser = 2;
+                formActionButtonDisabled.set(false);
             });
         }
     }
@@ -166,13 +170,18 @@
 
 </script>
 
+<svelte:head>
+    <title>Poketab - {actionButtonText}</title>
+</svelte:head>
+
+{#if mounted}
 <div class="inputForm" in:fly={{y: 30}}>
     <div class="formField">
-        <label for="username">Choose your name <i class="fa-solid fa-signature"></i></label>
-        {#if usernameErr}            
-        <div class="err {errAnimation}">{usernameErr} <i class="fa-solid fa-triangle-exclamation"></i></div>
+        <label for="name">Choose your name <i class="fa-solid fa-signature"></i></label>
+        {#if nameErr}            
+        <div class="err {errAnimation}">{nameErr} <i class="fa-solid fa-triangle-exclamation"></i></div>
         {/if}
-        <input type="text" bind:value={selectedUsername} name="username" class="hover" id="username" placeholder="Username">
+        <input type="text" bind:value={selectedname} name="name" class="hover" id="name" placeholder="Name">
     </div>
     <div class="formField">
         <label for="avatar">Pick an avatar <i class="fa-solid fa-user-astronaut"></i></label>
@@ -181,19 +190,21 @@
         {/if}
         <div id="avatar" class="avatarsContainer">
             <div class="avatars">
-                {#each avList as avatar}
-                <div class="avatar">
-                    {#if $chatRoomStore.Key && $usedAvatars.includes(avatar)}
-                    <label class="avatarLabel btn btn-animate inuse" for="">
-                        <img src="/images/avatars/{avatar}(custom).webp" alt="{avatar}">
-                    </label>
+                {#each avList as avatar, i}
+                {#if $chatRoomStore.Key && isTaken('avatar', avatar)}
+                    <div class="avatar inuse" in:fly|global={{x: 10, delay: i*30}}>
+                        <label class="avatarLabel btn btn-animate" for="">
+                            <img src="/images/avatars/{avatar}(custom).webp" alt="{avatar}">
+                        </label>
+                    </div>
                     {:else}
-                    <input type="radio" class="avatarInput" bind:group={selectedAvatar} name="avatar" value="{avatar}" id="{avatar}">
-                    <label class="avatarLabel btn btn-animate" for="{avatar}">
-                        <img src="/images/avatars/{avatar}(custom).webp" alt="{avatar}">
-                    </label>
+                    <div class="avatar" in:scale|global={{delay: i*30}}>
+                        <input type="radio" class="avatarInput" bind:group={selectedAvatar} name="avatar" value="{avatar}" id="{avatar}">
+                        <label class="avatarLabel btn btn-animate" for="{avatar}">
+                            <img src="/images/avatars/{avatar}(custom).webp" alt="{avatar}">
+                        </label>
+                    </div>
                     {/if}
-                </div>
                 {/each}
             </div>
         </div>
@@ -212,11 +223,11 @@
     <div class="formField">
 
         {#if $reconnectButtonEnabled}
-        <button class="button-animate hover btn play-sound recon" on:click={reConnectAuthSocket}>Reconnect</button>
+        <button class="button-animate hover btn play-sound recon" on:click={reConnectSocket}>Reconnect</button>
         {:else}
-        <button class="button-animate hover btn play-sound" disabled={$formActionButtonDisabled || !$authSocketConnected} on:click={requestForChat}>
-            {initText} 
-            {#if $formActionButtonDisabled && initText.includes('Please wait')}
+        <button class="button-animate hover btn play-sound" disabled={$formActionButtonDisabled || !$socketConnected} on:click={requestForChat}>
+            {actionButtonText} 
+            {#if $formActionButtonDisabled && actionButtonText.includes('Please wait')}
                 <i class="fa-solid fa-spin fa-circle-notch"></i>
             {/if}
         </button>
@@ -231,6 +242,7 @@
     </div>
 
 </div>
+{/if}
 
 <style lang="scss">
 
@@ -272,13 +284,16 @@
                         pointer-events: none;
                     }
 
-                    &.inuse{
+                }
+                
+                &.inuse{
+                    filter: brightness(0);
+                    .avatarLabel{
                         cursor: not-allowed;
-                        filter: brightness(0);
                     }
                 }
 
-                &:hover{
+                &:not(.inuse):hover{
                     .avatarLabel{
                         filter: saturate(100%);
                     }

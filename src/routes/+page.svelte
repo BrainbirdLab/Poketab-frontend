@@ -1,4 +1,246 @@
-<h1>Poketab Messenger</h1>
-The coolest realtime chat app ever.
+<script lang="ts">
+    import { fade, fly, slide } from "svelte/transition";
+    import ReactiveLogo from "./reactiveLogo.svelte";
+    import { onMount } from "svelte";
 
-<a href="/chat">Start Chatting</a>
+    export let data;
+    const version = data.props.version;
+
+    let mounted = false;
+
+    onMount(() => {
+        mounted = true;
+    });
+
+    const featureItemsData = [
+        {
+            iconClass: "fas fa-user-friends",
+            title: "Group chat.",
+            description:
+                "Poketab Messenger allows you to chat with up to 10 people at once. No one can interrupt your conversations. So, you can chat with your friends and colleagues without any distractions. Just keep the conversation going.",
+        },
+        {
+            iconClass: "fas fa-lock",
+            title: "Encrypted message.",
+            description:
+                "We understand the importance of privacy, which is why we do not store any of your messages or files on our servers. Our app simply relays the information, ensuring that your conversations remain private and secure.",
+        },
+        {
+            iconClass: "fas fa-mobile-alt",
+            title: "Works on all devices.",
+            description:
+                "Poketab Messenger is a Progressive Web App (PWA), which means it works on all devices, including mobile. You can use it on your desktop, laptop, tablet, or mobile phone. No need to install any app, just use it on any device. It's that simple.",
+        },
+        {
+            iconClass: "fas fa-bolt",
+            title: "Fast and lightweight.",
+            description:
+                "This is not native app that can steal your information. It's fully web-based and it fetches its content from the server only when you need it.",
+        },
+        {
+            iconClass: "fa-solid fa-share-nodes",
+            title: "Easy file sharing.",
+            description:
+                "With Poketab Messenger, you can easily share files, images, and even record audio messages to bring your conversations to life.",
+        },
+        {
+            iconClass: "fas fa-comment",
+            title: "Chat replies and reactions.",
+            description:
+                "Poketab Messenger allows you to reply to any message in a chat. You can also react to any message with a variety of fun and expressive stickers and reactions.",
+        },
+    ];
+</script>
+
+<svelte:head>
+    <title>Poketab - Get Started</title>
+</svelte:head>
+
+{#if mounted}
+<div class="maincontainer">
+    <ReactiveLogo />
+    <h1 class="title" transition:fly={{x: 20}}>
+        Poketab Messenger <span class="version">v.{version}</span>
+    </h1>
+    <div class="slogan" transition:fly={{x:-10, delay: 300}}>A Secure and User-Friendly Chatting WebApp</div>
+
+    <div class="more" transition:fly={{x: 10, delay: 350}}>
+        Poketab Messenger is a chat app that offers a temporary and secure way
+        to connect with friends and family. It requires no login or account
+        creation and has a range of features, including rich text typing, code
+        highlighting, location sharing, file transfers, and personalized themes
+        and stickers. The app is serverless, ensuring that no data is stored on
+        its servers. Simply start a chat and share the link with friends for a
+        hassle-free communication experience with guaranteed privacy and
+        security.
+    </div>
+
+    <div class="links">
+        <a id="login" class="button-animate btn play-sound" href="/chat"
+            transition:fly={{y: 10, delay: 600}}
+            >Start Chat
+        </a>
+        <a
+            id="github"
+            class="button-animate btn play-sound"
+            href="https://github.com/itsfuad/poketab-messenger"
+            transition:fly={{y: 10, delay: 700}}
+            >View Source
+        </a>
+    </div>
+
+    <div class="titleText">What does it offer?</div>
+    <div class="feature" in:fade|global={{delay: 1000}}>
+        {#each featureItemsData as feature}
+            <div class="feature-item" >
+                <i class={feature.iconClass} />
+                <div class="feature-item-title">
+                    {feature.title}
+                </div>
+                <div class="detail">
+                    {feature.description}
+                </div>
+            </div>
+        {/each}
+    </div>
+
+    <div class="footer">
+        <a href="mailto:support@poketab.live">support@poketab.live</a>
+    </div>
+</div>
+{/if}
+
+<style lang="scss">
+    .version {
+        font-size: 0.7rem;
+        color: var(--secondary-dark, #419eff);
+    }
+    .maincontainer {
+        color: white;
+        padding: 10% 20px 0px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: justify;
+        gap: 20px;
+        height: 100%;
+        overflow: scroll;
+    }
+    .more {
+        color: #ffffff95;
+        width: clamp(300px, 60vw, 1000px);
+    }
+    a {
+        text-decoration: none;
+        padding: 10px;
+        border-radius: 10px;
+        transition: 300ms;
+    }
+    a:hover {
+        cursor: pointer;
+        transform: translateY(-3px);
+        box-shadow: 0 3px 5px black;
+    }
+    #login {
+        background: var(--secondary-dark, #4598ff);
+        color: white;
+    }
+    #github {
+        background: black;
+        color: white;
+    }
+    .title {
+        color: #ffd400;
+        text-align: center;
+    }
+    .links {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+    }
+    .titleText {
+        font-size: 1.6rem;
+        padding-top: 85px;
+        text-align: center;
+    }
+
+    .feature {
+        font-size: 0.8rem;
+        display: flex;
+        flex-direction: row;
+        max-width: 100%;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+    }
+
+    .feature-item {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        align-items: flex-start;
+        justify-content: center;
+        background: #22283b;
+        backdrop-filter: blur(2px);
+        padding: 35px;
+        border-radius: 10px;
+        position: relative;
+        max-width: 400px;
+        transition: 200ms ease-in-out;
+        cursor: pointer;
+    }
+
+    .feature-item i {
+        font-size: 4rem;
+    }
+
+    .feature-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-item-title {
+        font-size: 1.3rem;
+        text-align: center;
+    }
+
+    .fa-user-friends {
+        color: #ffc978;
+    }
+
+    .fa-lock {
+        color: indianred;
+    }
+
+    .fa-mobile-alt {
+        color: #999999;
+    }
+
+    .fa-bolt {
+        color: #ffd400;
+    }
+
+    .fa-share-nodes {
+        color: #419eff;
+    }
+
+    .fa-comment {
+        color: #33ff8e;
+    }
+
+    .detail {
+        color: #cfcfcf9a;
+    }
+    .footer {
+        font-size: 0.7rem;
+        padding: 40px 10px 10px 10px;
+    }
+    a {
+        color: white;
+        cursor: pointer;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+</style>

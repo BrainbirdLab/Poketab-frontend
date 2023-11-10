@@ -1,52 +1,55 @@
 <script lang="ts">
-    import UserInfoForm from "./userInfoForm.svelte";
+    import InputForm from "./inputForm.svelte";
     import JoinForm from "./joinForm.svelte";
     import {reconnectButtonEnabled, formNotification, showUserInputForm} from "$lib/store";
     import Notification from "./notification.svelte";
-    import { onDestroy, onMount } from "svelte";
-    import { authSocket } from "./authSocket";
+    import { onMount } from "svelte";
+    import { socket } from "./socket";
+    import { fly, scale } from "svelte/transition";
 
+    let mounted = false;
+    
     reconnectButtonEnabled.set(false);
-
     onMount(() => {
-        console.log('Connecting socket - form.svelte');
         formNotification.set('');
-        authSocket.connect();
-    });
-
-    onDestroy(() => {
-        console.log('Disconnecting socket - form.svelte');
-        formNotification.set('');
-        if (authSocket.connected){
-            authSocket.disconnect();
+        mounted = true;
+        if (socket.disconnected){
+            console.log('Connecting to server...');
+            socket.connect();
         }
     });
+    
+
+    export let errLog = '';
+    export let errIcon = '';
 
 </script>
 
 <Notification />
 
-<div class="titleBar">
+{#if mounted}
+<div class="titleBar" transition:fly={{y:-20}}>
+    <img src="/images/pikachu-mini.png" alt="Logo" transition:scale>
     <div class="text">
-        <img src="/images/pikachu-mini.png" alt="Logo">
         <div class="headingText">Poketab Messenger</div>
+        <div class="subHeadingText" transition:fly={{x: -10, delay: 300}}>The cutest realtime chat app ever.</div>
     </div>
-    <div class="subHeadingText">The coolest realtime chat app ever.</div>
 </div>
+{/if}
 
 {#if $showUserInputForm}
-    <UserInfoForm />
+    <InputForm />
 {:else}
-    <JoinForm />
+    <JoinForm errIcon={errIcon} errLog={errLog}/>
 {/if}
 
 <style lang="scss">
     .titleBar{
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: center;
         align-items: center;
-
+        gap: 10px;
         position: fixed;
         top: 20px;
         left: 0;
@@ -59,10 +62,9 @@
 
         .text{
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 10px;
             .headingText{
                 font-size: 1.5rem;
                 font-weight: bold;

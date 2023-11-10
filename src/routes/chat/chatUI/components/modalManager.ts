@@ -21,14 +21,14 @@ showSidePanel.subscribe(value => {
     }
 });
 
-export const showQuickSettingPanel = writable(false); //Has shortcut key 's'
-showQuickSettingPanel.subscribe(value => {
+export const showQuickSettingsPanel = writable(false); //Has shortcut key 's'
+showQuickSettingsPanel.subscribe(value => {
     if (value){
         showSidePanel.set(false);
-        activeModalsStack.push(showQuickSettingPanel);
+        activeModalsStack.push(showQuickSettingsPanel);
     } else {
         //remove it from the stack array
-        activeModalsStack = activeModalsStack.filter(modal => modal !== showQuickSettingPanel);
+        activeModalsStack = activeModalsStack.filter(modal => modal !== showQuickSettingsPanel);
     }
 });
 

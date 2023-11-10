@@ -17,7 +17,7 @@ html {
 }
 
 :root {
-  --red: indianred;
+  --red: #e8534f;
   --primary-dark: #111d2a;
   --foreground-dark: #e1eeff;
   --secondary-dark: hsl(187, 100%, 37%);
@@ -70,6 +70,7 @@ button {
   border: none;
   outline: none;
   cursor: pointer;
+  color: inherit;
 }
 
 .button {
@@ -90,11 +91,15 @@ button {
   transform: scale(0.95);
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 .hover:hover {
   filter: brightness(0.9);
 }
 
-.hoverBtn {
+.roundedBtn {
   width: 35px;
   height: 35px;
   aspect-ratio: 1;
@@ -105,7 +110,8 @@ button {
   border-radius: 25px;
   cursor: pointer;
 }
-.hoverBtn:hover {
+
+.hoverShadow:hover {
   background: rgba(255, 255, 255, 0.0392156863) !important;
 }
 
