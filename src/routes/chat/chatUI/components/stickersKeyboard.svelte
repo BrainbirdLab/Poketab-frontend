@@ -57,6 +57,13 @@
                 if (groupName){
                     selectedSticker.set(groupName);
                 }
+                return;
+            }
+
+            if (target.closest('.stickerBoard')){
+                const group = $selectedSticker;
+                const serial = target.dataset.serial;
+                console.log('Hmm.. Choosing sticker: ', group, serial);
             }
         }
 
@@ -71,11 +78,9 @@
         node.onscrollend = () => {
             const head = stickerHeader.querySelector('.selected');
             
-            console.log('Scroll ended. Set headers  to: ', head);
+            //console.log('Scroll ended. Set headers  to: ', head);
             if (head){
                 head.scrollIntoView();
-            }else{
-                console.log('No head found');
             }
         }
 
@@ -85,7 +90,7 @@
                     const groupName = entry.target.id;
                     if (groupName){
                         selectedSticker.set(groupName);
-                        console.log('Group changed to : ', groupName);
+                        //console.log('Group changed to : ', groupName);
                     }
                 }
             });
@@ -127,7 +132,7 @@
             {#each Stickers as sticker}
                 <div class="stickerBoard {sticker.name}" id="{sticker.name}">
                     {#each Array.from({ length: parseInt(sticker.count) }) as _, i}
-                        <img  src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
+                        <img data-serial={i} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
                     {/each}
                 </div>
             {/each}
@@ -199,6 +204,8 @@
                     img{
                         width: 35px;
                         height: 35px;
+                        min-width: 35px;
+                        min-height: 35px;
                         padding: 5px;
                         object-fit: contain;
                         border-radius: 10px;
