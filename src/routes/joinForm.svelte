@@ -2,7 +2,7 @@
     import { fly } from "svelte/transition";
 
     import {socket, reConnectSocket} from "./socket";
-    import {reconnectButtonEnabled, socketConnected, type User} from "$lib/store";
+    import {formNotification, reconnectButtonEnabled, socketConnected, type User} from "$lib/store";
 
     import {formActionButtonDisabled, chatRoomStore, showUserInputForm} from "$lib/store";
 
@@ -13,10 +13,12 @@
     }
 
     function validateKey(e: KeyboardEvent) {
-        e.preventDefault();
+        if (!e.ctrlKey && e.key != 'v'){
+            e.preventDefault();
+        }
         if (e.key == 'Enter') {
             checkKey();
-        } else if (testKey(e.key) && key.length < 9) {
+        } else if (/^[a-zA-Z0-9]$/.test(e.key) && key.length < 9) {
             // Only allow letters and numbers
             if (key.length == 2 || key.length == 6) {
                 key += '-';
@@ -35,7 +37,7 @@
     }
 
     function parseKey(e: ClipboardEvent){
-        console.log('Parsing key');
+        //console.log('Parsing key');
         e.preventDefault();
         //convert abcedfg to ab-cde-fg
         let value = e.clipboardData?.getData('text/plain');
@@ -59,7 +61,7 @@
     $: {
         if (errLog){
             errAnimation = 'shake';
-            console.log('Shaking');
+            //console.log('Shaking');
             setTimeout(() => {
                 errAnimation = '';
             }, 100);
@@ -117,6 +119,12 @@
 
             if (!res.success){
                 console.log(res.message);
+
+                if (res.statusCode >= 500){
+                    formNotification.set('Error: ' + res.message);
+                    return;
+                }
+
                 errLog = res.message;
                 errIcon = res.icon;
                 return;

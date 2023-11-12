@@ -50,7 +50,6 @@
             //if user has scrolled more than 200px from the bottom, don't scroll to bottom
             if (messageScrolledPx < 200){                
                 messages.scrollTop = messages.scrollHeight;
-                console.log('scrolling to bottom');
             }
 
         }
@@ -87,7 +86,6 @@
 
     const scrollHandler = (e: Event) => {
         messageScrolledPx = messages.scrollHeight - messages.scrollTop - messages.clientHeight;
-        console.log(messageScrolledPx);
     }
 
     onMount(()=> {
@@ -96,13 +94,13 @@
         //when a new modal or panel is opened, push it to the stack
         //when a modal or panel is closed, pop it from the stack
         //when esc is pressed, pop the top modal or panel from the stack
-        document.addEventListener('keydown', keyBindingHandler);
-        messages.addEventListener('scroll', scrollHandler);
+        document.onkeydown = keyBindingHandler;
+        messages.onscroll = scrollHandler;
     });
 
     onDestroy(()=> {
-        document.removeEventListener('keydown', keyBindingHandler);
-        messages.removeEventListener('scroll', scrollHandler);
+        document.onkeydown = null;
+        messages.onscroll = null;
     });
 </script>
 

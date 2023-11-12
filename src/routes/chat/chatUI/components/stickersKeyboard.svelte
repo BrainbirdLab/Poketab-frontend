@@ -1,6 +1,8 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
+    import { fly, scale, slide } from "svelte/transition";
     import { showStickersPanel } from "./modalManager";
+    import { onDestroy, onMount } from "svelte";
+    import {writable} from "svelte/store";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -24,70 +26,108 @@
         { name: "soul", count: "25", icon: "14" },
     ];
 
-    let selectedSticker: string = "";
+    const selectedSticker = writable<string>(
+        localStorage.getItem("selectedSticker") || "catteftel"
+    );
 
-    function stickerIsValid(msg: string) {
-        //example: amongus/animated/5
-        if (!msg.includes("/")) {
-            return false;
-        } else if (msg.split("/").length != 3) {
-            return false;
-        }
-        const stickerGroup = msg.split("/")[0];
-        const stickerNumber = parseInt(msg.split("/")[2]);
-        const sticker = Stickers.find(
-            (sticker) => sticker.name == stickerGroup
-        );
-        if (
-            !sticker ||
-            stickerNumber > parseInt(sticker.count) ||
-            stickerNumber < 1
-        ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+    let stickerHeader: HTMLElement;
 
-    function stickersClickHandler(node: HTMLElement) {
+    function stickersHandler(node: HTMLElement){
 
-        const clickHandler = (e: Event) => {
-            if (e.target == node){
-                showStickersPanel.set(false);
-            }
+        selectedSticker.subscribe(value => {
+            document.getElementById(value)?.scrollIntoView({
+                block: "center",
+                inline: "center",
+            });
+            localStorage.setItem("selectedSticker", value);
+        });
+
+        node.onclick = (e: Event) => {
 
             const target = e.target as HTMLElement;
 
-            console.log(target);
-        }
+            if (target == node){
+                showStickersPanel.set(false);
+                return;
+            }
 
-        node.addEventListener('click', clickHandler);
+            if (target.closest('.stickerHeader')){
+                //console.log('Hmm.. Choosing sticker group');
+                const groupName = target.dataset.group;
+                if (groupName){
+                    selectedSticker.set(groupName);
+                }
+            }
+        }
 
         return {
             destroy(){
-                node.removeEventListener('click', clickHandler);
+                node.onclick = null;
             }
         }
     }
+
+    function stickersBodyHandler(node: HTMLElement){
+        node.onscrollend = () => {
+            const head = stickerHeader.querySelector('.selected');
+            
+            console.log('Scroll ended. Set headers  to: ', head);
+            if (head){
+                head.scrollIntoView();
+            }else{
+                console.log('No head found');
+            }
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting){
+                    const groupName = entry.target.id;
+                    if (groupName){
+                        selectedSticker.set(groupName);
+                        console.log('Group changed to : ', groupName);
+                    }
+                }
+            });
+        }, {
+            root: node,
+            threshold: 0.5
+        });
+
+        node.onscroll = () => {
+            const stickerBoards = node.querySelectorAll('.stickerBoard');
+            stickerBoards.forEach(board => {
+                observer.observe(board);
+            });
+        }
+
+        return {
+            destroy(){
+                node.onscrollend = null;
+                node.onscroll = null;
+            }
+        }
+    }
+
 </script>
 
 {#if $showStickersPanel}
-<div class="stickerKeyboardContainer" transition:fly={{y: 20, duration: 100}} use:stickersClickHandler>
+<div class="stickerKeyboardContainer" transition:fly={{y: 20, duration: 100}} use:stickersHandler>
     <div class="stickerKeyboard">
         <div class="headers">
             <div class="prev navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></div>
-            <div class="stickersHeader">
+            <div class="stickerHeader" id="stickerHeader" bind:this={stickerHeader}>
                 {#each Stickers as sticker}
-                    <img class="hoverShadow" class:selected={selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
+                    <img class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
                 {/each}
             </div>
             <div class="next navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></div>
         </div>
-        <div class="stickersBody">
+        <div class="stickersBody" id="stickersBody" use:stickersBodyHandler>
             {#each Stickers as sticker}
-                <div class="stickerBoard {sticker.name}">
+                <div class="stickerBoard {sticker.name}" id="{sticker.name}">
                     {#each Array.from({ length: parseInt(sticker.count) }) as _, i}
-                        <img src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
+                        <img  src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
                     {/each}
                 </div>
             {/each}
@@ -119,7 +159,6 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
-            scroll-behavior: smooth;
             transition: 150ms ease-in-out;
 
             .headers{
@@ -130,7 +169,7 @@
                 justify-content: center;
                 background: #244263;
                 border-radius: 10px;
-                scroll-behavior: smooth;
+                gap: 5px;
 
                 .navBtn{
                     width: 20px;
@@ -144,18 +183,18 @@
                     cursor: pointer;
                     padding: 20px;
                     i{
+                        pointer-events: none;
                         color: var(--secondary-dark) !important;
                     }
                 }
 
-                .stickersHeader{
+                .stickerHeader{
                     width: 100%;
                     height: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: flex-start;
                     overflow-x: scroll;
-                    scroll-behavior: smooth;
                     gap: 5px;
                     img{
                         width: 35px;
@@ -165,6 +204,13 @@
                         border-radius: 10px;
                         cursor: pointer;
                         background: none;
+
+                        &.selected{
+                            background: var(--secondary-dark) !important;
+                            &:hover{
+                                filter: brightness(0.90) !important;
+                            }
+                        }
                     }
                 }
             }

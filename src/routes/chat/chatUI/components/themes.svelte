@@ -26,11 +26,11 @@
             showThemesPanel.set(false);
         }
 
-        node.addEventListener('click', method);
+        node.onclick = method;
 
         return {
             destroy(){
-                node.removeEventListener('click', method);
+                node.onclick = null;
             }
         }
     }
@@ -167,7 +167,7 @@ async function loadTheme() {
 <div id="themePicker" class="themePicker active" use:hideThemes>
     <ul class="themeList" transition:fly={{y: 30, duration: 100}}>
         {#each Object.keys(themeAccent) as themename, i}
-        <li in:fly|global={{x: 20, delay: i*30}} class="theme hoverShadow clickable playable" id="{themename}" data-duration="{i}">
+        <li transition:fly|global={{y: 20, delay: i*20}} class="theme hoverShadow clickable playable" id="{themename}" data-duration="{i}">
             <img class="themeIcon" class:selected={selectedTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{toSentenceCase(themename)}</span>
         </li>
         {/each}

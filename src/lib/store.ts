@@ -4,6 +4,8 @@ export const showUserInputForm = writable(true);
 export const formNotification = writable('');
 export const splashMessage = writable('');
 
+export const userTypingString = writable('');
+
 
 export const reconnectButtonEnabled = writable(false);
 export const formActionButtonDisabled = writable(true);

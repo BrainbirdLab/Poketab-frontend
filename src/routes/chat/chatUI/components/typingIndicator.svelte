@@ -1,14 +1,13 @@
 <script>
+    import { userTypingString } from "$lib/store";
     import { fly } from "svelte/transition";
-
-    export let text = "";
 
 </script>
 
 <div class="indicatorWrapper">
-    {#if text}
+    {#if $userTypingString}
     <div id="typingIndicator" transition:fly={{y: 5, duration: 100}}>
-        <div class="text">{text}</div>
+        <div class="text">{$userTypingString}</div>
         <div class="bubble">
             <div class="dot bouncing" />
             <div class="dot bouncing" />

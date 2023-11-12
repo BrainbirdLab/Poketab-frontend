@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
+    import { fly, scale } from "svelte/transition";
     import { showQuickSettingsPanel, showThemesPanel } from "./modalManager";
 
     let buttonSoundEnabled: boolean;
@@ -69,7 +69,6 @@
     }
 
     function setToLocalStorage(updatedSettings: Partial<Settings>) {
-        console.log("Settings updated");
 
         const currentSettingsStr = localStorage.getItem("settings") || "{}";
         const currentSettings: Settings = JSON.parse(currentSettingsStr);
@@ -87,13 +86,7 @@
             const target = e.target as HTMLElement;
             if (target === node) {
                 showQuickSettingsPanel.set(false);
-            } else if (target.classList) {
-                console.log({
-                    buttonSoundEnabled,
-                    messageSoundEnabled,
-                    quickEmojiEnabled,
-                    sendMethod,
-                });
+            } else if (target.id) {
                 if (target.id == "buttonSound") {
                     setToLocalStorage({
                         buttonSoundEnabled: !buttonSoundEnabled,
@@ -111,18 +104,17 @@
                 } else if (target.id == "enter") {
                     setToLocalStorage({ sendMethod: SEND_METHOD.ENTER });
                 } else if (target.id == "chooseQuickEmojiButton") {
-                    showQuickSettingsPanel.set(false);
-                    showThemesPanel.set(true);
+                    //!TODO: Add quick emoji picker
                 }
             }
         };
 
         
-        node.addEventListener("click", click);
+        node.onclick = click;
         
         return {
             destroy() {
-                node.removeEventListener("click", click);
+                node.onclick = null;
             },
         };
     }
@@ -136,17 +128,17 @@
         use:handleClick
     >
         <div class="utils">
-            <div class="title">
+            <div class="title" transition:fly|global={{y: 20, delay: 0}}>
                 Settings <i class="fa-solid fa-gear" />
                 <span class="moreInfo">[Alt+s]</span>
             </div>
             <div class="subsettingsContainer">
                 <div class="subsettings">
-                    <div class="subtitle">
+                    <div class="subtitle"  transition:fly|global={{y: 20, delay: 10}}>
                         Sounds <i class="fa-solid fa-volume-high" />
                     </div>
                     <!-- Enable/disable button sounds -->
-                    <div class="field-checkers btn play-sound hoverShadow">
+                    <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 20}}>
                         <input
                             type="checkbox"
                             id="buttonSound"
@@ -158,7 +150,7 @@
                         </label>
                     </div>
                     <!-- Enable/disable message sounds -->
-                    <div class="field-checkers btn play-sound hoverShadow">
+                    <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 30}}>
                         <input
                             type="checkbox"
                             id="messageSound"
@@ -172,12 +164,13 @@
                 </div>
 
                 <div class="subsettings">
-                    <div class="subtitle">
+                    <div class="subtitle"  transition:fly|global={{y: 20, delay: 40}}>
                         Keyboard <i class="fa-regular fa-keyboard" />
                     </div>
                     <div
                         class="field-checkers keyboardMode btn play-sound hoverShadow"
-                    >
+                        transition:fly|global={{y: 20, delay: 50}}
+                        >
                         <input
                             bind:group={sendMethod}
                             type="radio"
@@ -198,6 +191,7 @@
 
                     <div
                         class="field-checkers keyboardMode btn play-sound hoverShadow"
+                        transition:fly|global={{y: 20, delay: 60}}
                     >
                         <input
                             bind:group={sendMethod}
@@ -220,10 +214,10 @@
 
                 <!--Quick emoji-->
                 <div class="subsettings">
-                    <div class="subtitle">
+                    <div class="subtitle"  transition:fly|global={{y: 20, delay: 70}}>
                         Quick emoji <i class="fa-regular fa-smile" />
                     </div>
-                    <div class="field-checkers btn play-sound hoverShadow">
+                    <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 80}}>
                         <input
                             bind:checked={quickEmojiEnabled}
                             type="checkbox"
@@ -234,7 +228,7 @@
                             <span class="toggleButton" />
                         </label>
                     </div>
-                    <div class="field-checkers btn play-sound hoverShadow">
+                    <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 90}}>
                         <button class="hyper" id="chooseQuickEmojiButton"
                             >Change Emoji <span class="quickEmojiIcon">😅</span
                             ></button
@@ -242,7 +236,7 @@
                     </div>
                 </div>
 
-                <button
+                <button  transition:fly|global={{x: -10, delay: 100}}
                     id="themeButton"
                     on:click={() => {
                         showThemesPanel.set(true);
@@ -251,8 +245,8 @@
                     title="Select themes [Alt+t]"
                     ><i class="fa-solid fa-palette" /><span>Theme</span><i
                         class="fa-solid fa-brush"
-                    /></button
-                >
+                    />
+                </button>
             </div>
         </div>
     </div>

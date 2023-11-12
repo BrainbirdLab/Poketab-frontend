@@ -4,7 +4,7 @@
     import { onDestroy, onMount } from "svelte";
     
     import {socket, reConnectSocket} from "./socket";
-    import {formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, selfInfoStore, socketConnected, joinedChat, isTaken, currentPage, formNotification} from "$lib/store";
+    import {formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, selfInfoStore, socketConnected, joinedChat, isTaken, currentPage, formNotification, splashMessage} from "$lib/store";
 
     let selectedname = '';
     let selectedAvatar = '';
@@ -100,7 +100,7 @@
                     console.log('Error: ' + res.message);
                     formNotification.set('Error: ' + res.message);
                     formActionButtonDisabled.set(false);
-                    showUserInputForm.set(false);
+                    //showUserInputForm.set(false);
                     return;
                 }
 
@@ -122,6 +122,7 @@
                 //chatSocketConnected.set(true);
                 joinedChat.set(true);
                 currentPage.set('chat');
+                splashMessage.set('');
                 selectedname = '';
                 selectedAvatar = '';
                 selectedMaxUser = 2;
@@ -156,6 +157,7 @@
                 //chatSocketConnected.set(true);
                 joinedChat.set(true);
                 currentPage.set('chat');
+                splashMessage.set('');
                 selectedname = '';
                 selectedAvatar = '';
                 selectedMaxUser = 2;

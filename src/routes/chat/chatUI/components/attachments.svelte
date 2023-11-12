@@ -7,17 +7,13 @@
             if (e.target == node) {
                 showAttachmentPickerPanel.set(false);
             }
-
-            const target = e.target as HTMLElement;
-
-            console.log(target);
         };
 
-        node.addEventListener("click", clickHandler);
+        node.onclick = clickHandler;
 
         return {
             destroy() {
-                node.removeEventListener("click", clickHandler);
+                node.onclick = null;
             },
         };
     }

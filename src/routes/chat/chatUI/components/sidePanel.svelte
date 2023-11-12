@@ -13,19 +13,14 @@
 
 
     socket.on('updateUserList', (users: {[key: string]: User}) => {
-        console.log('Updating user list');
-        console.log(users);
         chatRoomStore.update((chatRoom) => {
             chatRoom.userList = users
-            console.log(chatRoom.userList);
-            console.log(typeof chatRoom.userList);
             return chatRoom;
         });
     });
 
     function copyKey(){
         navigator.clipboard.writeText($chatRoomStore.Key).then(() => {
-            console.log('Copied');
             showPopupMessage('Copied to clipboard!');
             copyKeyIcon = 'fa-solid fa-check';
             if (copyTimeout) clearTimeout(copyTimeout);
@@ -73,14 +68,16 @@
             }
         }
 
-        node.addEventListener('click', method);
+        node.onclick = method;
 
         return {
             destroy(){
-                node.removeEventListener('click', method);
+                node.onclick = null;
             }
         }
     }
+
+    $: KEY = $chatRoomStore.Key;
 
 </script>
 
@@ -88,7 +85,7 @@
 <div id="sidebarWrapper" transition:fly={{x:-30, duration: 100}} use:closeSideBar>
     <div id="sidebar">
         <div class="topbar">
-            <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i> {$chatRoomStore.Key}</button>
+            <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i> {KEY}</button>
         </div>
         <ul id="userlist">
             <li class="user">
