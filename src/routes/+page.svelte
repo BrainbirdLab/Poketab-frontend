@@ -89,7 +89,7 @@
         </a>
     </div>
 
-    <div class="titleText">What does it offer?</div>
+    <div class="titleText" in:fly={{x: 10, delay: 800}}>What does it offer?</div>
     <div class="feature" in:fade|global={{delay: 1000}}>
         {#each featureItemsData as feature}
             <div class="feature-item" >

@@ -1,10 +1,12 @@
-import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, splashMessage, joinedChat } from "$lib/store";
+import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, splashMessage } from "$lib/store";
 import { get, writable } from "svelte/store";
 import {io} from "socket.io-client";
 
-export const socket = io('ws://localhost:3000');
 
-console.log('Socket.ts running');
+//get server value from .env file
+const server = import.meta.env.VITE_SOCKET_SERVER_URL;
+
+export const socket = io(server);
 
 export function reConnectSocket(){
     console.log('%cReconnecting server', 'color: lime');

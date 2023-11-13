@@ -11,11 +11,13 @@ type fetchResponse = {
   key: string,
 }
 
+const server = import.meta.env.VITE_SOCKET_SERVER_URL;
+
 export async function load({ params }) {
 
   const { key } = params;
 
-  const socket = io('ws://localhost:3000');
+  const socket = io(server);
 
   socket.on('connect', () => {
     console.log('%cConnected to server for SSR', 'color: blue');

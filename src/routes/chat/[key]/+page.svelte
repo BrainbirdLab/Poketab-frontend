@@ -1,7 +1,6 @@
 
 <script lang="ts">
     import ErrorPage from './../../errorPage.svelte';
-    import UserInfoForm from '../../inputForm.svelte';
     import { chatRoomStore} from '$lib/store';
     import { socket } from '../../socket';
     import Form from '../../form.svelte';
