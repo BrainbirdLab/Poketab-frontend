@@ -1,7 +1,7 @@
 import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, splashMessage } from "$lib/store";
 import { get, writable } from "svelte/store";
 import {io} from "socket.io-client";
-
+import { chatRoomStore, type User } from "$lib/store";
 
 //get server value from .env file
 const server = import.meta.env.VITE_SOCKET_SERVER_URL;
@@ -15,6 +15,14 @@ export function reConnectSocket(){
     reconnectButtonEnabled.set(false);
     socket.connect();
 }
+
+socket.on('updateUserListWR', (users: {[key: string]: User}) => {
+    console.log('Updating user list - WR');
+    chatRoomStore.update((chatRoom) => {
+        chatRoom.userList = users
+        return chatRoom;
+    });
+});
 
 socket.on('connect', () => {
     console.log('%cConnected to server', 'color: blue');

@@ -34,7 +34,7 @@
 
     function stickersHandler(node: HTMLElement){
 
-        selectedSticker.subscribe(value => {
+        const unsub = selectedSticker.subscribe(value => {
             document.getElementById(value)?.scrollIntoView({
                 block: "center",
                 inline: "center",
@@ -70,6 +70,7 @@
         return {
             destroy(){
                 node.onclick = null;
+                unsub();
             }
         }
     }

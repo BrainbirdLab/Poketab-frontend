@@ -3,10 +3,15 @@
     import {fly} from "svelte/transition";
     import {formActionButtonDisabled, formNotification} from "$lib/store";
     import { socket } from "./socket";
+    import { onDestroy } from "svelte";
 
     let connected = '';
 
-    formNotification.subscribe(value => {
+    onDestroy(() => {
+        unsub();
+    });
+
+    const unsub = formNotification.subscribe(value => {
 
         if (value.includes('offline')){
             //make the background red

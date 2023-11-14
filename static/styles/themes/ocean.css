@@ -1,0 +1,12 @@
+
+
+:root{
+    --secondary-dark: hsl(187, 100%, 37%);
+    --focus-dark: #19283880;
+    --option-color: #213142;
+    --msg-get: hsl(187, 40%, 57%);
+    --msg-get-reply: hsl(187, 85%, 20%);
+    --msg-send: hsl(187, 100%, 37%);
+    --msg-send-reply: hsl(187, 40%, 32%);
+    --pattern: url('/images/backgrounds/ocean_w.webp');
+}

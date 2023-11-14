@@ -26,12 +26,6 @@
         sendMethod: SEND_METHOD.ENTER,
     };
 
-    showQuickSettingsPanel.subscribe((value) => {
-        if (value) {
-            loadSettings();
-        }
-    });
-
     function loadSettings() {
         //console.log("Loading settings");
         const settingsStr = localStorage.getItem("settings") || "{}";
@@ -60,11 +54,11 @@
             // Store the default settings
             localStorage.setItem("settings", JSON.stringify(defaultSettings));
 
-            // Update the settings
-            buttonSoundEnabled = false;
-            messageSoundEnabled = false;
-            quickEmojiEnabled = false;
-            sendMethod = SEND_METHOD.ENTER;
+            // Update the settings to the default settings
+            buttonSoundEnabled = defaultSettings.buttonSoundEnabled;
+            messageSoundEnabled = defaultSettings.messageSoundEnabled;
+            quickEmojiEnabled = defaultSettings.quickEmojiEnabled;
+            sendMethod = defaultSettings.sendMethod;
         }
     }
 
@@ -82,6 +76,13 @@
     }
 
     function handleClick(node: HTMLElement) {
+
+        const unsub = showQuickSettingsPanel.subscribe((value) => {
+            if (value) {
+                loadSettings();
+            }
+        });
+
         const click = (e: Event) => {
             const target = e.target as HTMLElement;
             if (target === node) {
@@ -115,6 +116,7 @@
         return {
             destroy() {
                 node.onclick = null;
+                unsub();
             },
         };
     }

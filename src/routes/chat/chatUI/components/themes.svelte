@@ -1,8 +1,11 @@
 <script lang="ts">
-    import { themeAccent } from "$lib/themes";
+
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showThemesPanel } from "./modalManager";
+    import { showPopupMessage } from "$lib/utils/utils";
+    import { themesMap } from "$lib/themes";
+    import { currentTheme } from "$lib/store";
 
 	let selectedTheme = localStorage.getItem('theme') || 'ocean';
 
@@ -14,13 +17,27 @@
                 return;
             }
 
-            const elem = e.target as HTMLElement;
-
             if (e.target !== node) {
                 const targetElement = e.target as HTMLElement;
-                console.log(`Theme ${toSentenceCase(targetElement.id)} applied`);
 				selectedTheme = targetElement.id;
 				localStorage.setItem('theme', selectedTheme);
+                console.log(`Theme ${toSentenceCase(targetElement.id)} applied`);
+				showPopupMessage(`${toSentenceCase(targetElement.id)} theme applied`);
+				//make a request to the server to update the cookie
+				const themeRequest = new XMLHttpRequest();
+				themeRequest.open('PUT', '/theme');
+				themeRequest.setRequestHeader('Content-Type', 'application/json');
+				themeRequest.send(JSON.stringify({ theme: selectedTheme }));
+				//after response from server
+				themeRequest.onreadystatechange = () => {
+					if (themeRequest.readyState == 4 && themeRequest.status == 200) {
+						console.log('Theme updated');
+					} else{
+						console.log('Theme update failed');
+					}
+				};
+				//edit css variables
+				currentTheme.set(selectedTheme);
 			}
 
             showThemesPanel.set(false);
@@ -166,7 +183,7 @@ async function loadTheme() {
 {#if $showThemesPanel}
 <div id="themePicker" class="themePicker active" use:hideThemes>
     <ul class="themeList" transition:fly={{y: 30, duration: 100}}>
-        {#each Object.keys(themeAccent) as themename, i}
+        {#each Object.keys(themesMap) as themename, i}
         <li transition:fly|global={{y: 20, delay: i*20}} class="theme hoverShadow clickable playable" id="{themename}" data-duration="{i}">
             <img class="themeIcon" class:selected={selectedTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{toSentenceCase(themename)}</span>
         </li>
@@ -215,6 +232,8 @@ async function loadTheme() {
 
             .themeIcon {
                 width: 50px;
+				min-width: 50px;
+				aspect-ratio: 1;
                 border-radius: 50%;
             }
             .themeIcon.selected{

@@ -44,7 +44,7 @@
     //auto scroll to bottom when new message is added
     let messages: HTMLElement;
     
-    messageDatabase.subscribe(() => {
+    const unsubMessage = messageDatabase.subscribe(() => {
         if ($messageDatabase.size > 0){
 
             //if user has scrolled more than 200px from the bottom, don't scroll to bottom
@@ -101,6 +101,7 @@
     onDestroy(()=> {
         document.onkeydown = null;
         messages.onscroll = null;
+        unsubMessage();
     });
 </script>
 

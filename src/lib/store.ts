@@ -6,6 +6,8 @@ export const splashMessage = writable('');
 
 export const userTypingString = writable('');
 
+export const currentTheme = writable('');
+
 
 export const reconnectButtonEnabled = writable(false);
 export const formActionButtonDisabled = writable(true);
