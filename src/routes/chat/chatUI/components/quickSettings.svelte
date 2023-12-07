@@ -1,66 +1,10 @@
 <script lang="ts">
     import { fly, scale } from "svelte/transition";
     import { showQuickSettingsPanel, showThemesPanel } from "./modalManager";
+    import { currentTheme, type Settings, loadSettings, buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod} from "$lib/store";
+    import { themesMap } from "$lib/themes";
 
-    let buttonSoundEnabled: boolean;
-    let messageSoundEnabled: boolean;
-    let quickEmojiEnabled: boolean;
-    let sendMethod: SEND_METHOD;
-
-    enum SEND_METHOD {
-        ENTER = "Enter",
-        CTRL_ENTER = "Ctrl+Enter",
-    }
-
-    type Settings = {
-        buttonSoundEnabled: boolean;
-        messageSoundEnabled: boolean;
-        quickEmojiEnabled: boolean;
-        sendMethod: SEND_METHOD;
-    };
-
-    const defaultSettings = {
-        buttonSoundEnabled: true,
-        messageSoundEnabled: true,
-        quickEmojiEnabled: true,
-        sendMethod: SEND_METHOD.ENTER,
-    };
-
-    function loadSettings() {
-        //console.log("Loading settings");
-        const settingsStr = localStorage.getItem("settings") || "{}";
-        try {
-            const parsedSettings: Partial<Settings> = JSON.parse(settingsStr);
-            //console.log(parsedSettings);
-            
-            if (typeof parsedSettings.buttonSoundEnabled != "boolean" || typeof parsedSettings.messageSoundEnabled != "boolean" || typeof parsedSettings.quickEmojiEnabled != "boolean" || typeof parsedSettings.sendMethod != "string") {
-                throw new Error("Invalid settings");
-            } else {
-                if (parsedSettings.sendMethod != SEND_METHOD.ENTER && parsedSettings.sendMethod != SEND_METHOD.CTRL_ENTER) {
-                    throw new Error("Invalid settings");
-                } else {
-                    buttonSoundEnabled = parsedSettings.buttonSoundEnabled;
-                    messageSoundEnabled = parsedSettings.messageSoundEnabled;
-                    quickEmojiEnabled = parsedSettings.quickEmojiEnabled;
-                    sendMethod = parsedSettings.sendMethod;
-
-                    //console.log("Settings loaded");
-                    //console.log({buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, sendMethod});
-                }
-            }
-
-        } catch (error) {
-            console.error("Error parsing settings:", error);
-            // Store the default settings
-            localStorage.setItem("settings", JSON.stringify(defaultSettings));
-
-            // Update the settings to the default settings
-            buttonSoundEnabled = defaultSettings.buttonSoundEnabled;
-            messageSoundEnabled = defaultSettings.messageSoundEnabled;
-            quickEmojiEnabled = defaultSettings.quickEmojiEnabled;
-            sendMethod = defaultSettings.sendMethod;
-        }
-    }
+    loadSettings();
 
     function setToLocalStorage(updatedSettings: Partial<Settings>) {
 
@@ -90,15 +34,15 @@
             } else if (target.id) {
                 if (target.id == "buttonSound") {
                     setToLocalStorage({
-                        buttonSoundEnabled: !buttonSoundEnabled,
+                        buttonSoundEnabled: !$buttonSoundEnabled,
                     });
                 } else if (target.id == "messageSound") {
                     setToLocalStorage({
-                        messageSoundEnabled: !messageSoundEnabled,
+                        messageSoundEnabled: !$messageSoundEnabled,
                     });
                 } else if (target.id == "quickEmoji") {
                     setToLocalStorage({
-                        quickEmojiEnabled: !quickEmojiEnabled,
+                        quickEmojiEnabled: !$quickEmojiEnabled,
                     });
                 } else if (target.id == "ctrl+enter") {
                     setToLocalStorage({ sendMethod: SEND_METHOD.CTRL_ENTER });
@@ -144,7 +88,7 @@
                         <input
                             type="checkbox"
                             id="buttonSound"
-                            bind:checked={buttonSoundEnabled}
+                            bind:checked={$buttonSoundEnabled}
                         />
                         <label for="buttonSound">
                             <div class="textContainer">Click Sound</div>
@@ -156,7 +100,7 @@
                         <input
                             type="checkbox"
                             id="messageSound"
-                            bind:checked={messageSoundEnabled}
+                            bind:checked={$messageSoundEnabled}
                         />
                         <label for="messageSound">
                             <div class="textContainer">Message sound</div>
@@ -174,7 +118,7 @@
                         transition:fly|global={{y: 20, delay: 50}}
                         >
                         <input
-                            bind:group={sendMethod}
+                            bind:group={$sendMethod}
                             type="radio"
                             name="sendMethod"
                             id="ctrl+enter"
@@ -196,7 +140,7 @@
                         transition:fly|global={{y: 20, delay: 60}}
                     >
                         <input
-                            bind:group={sendMethod}
+                            bind:group={$sendMethod}
                             type="radio"
                             name="sendMethod"
                             id="enter"
@@ -221,7 +165,7 @@
                     </div>
                     <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 80}}>
                         <input
-                            bind:checked={quickEmojiEnabled}
+                            bind:checked={$quickEmojiEnabled}
                             type="checkbox"
                             id="quickEmoji"
                         />
@@ -232,7 +176,7 @@
                     </div>
                     <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 90}}>
                         <button class="hyper" id="chooseQuickEmojiButton"
-                            >Change Emoji <span class="quickEmojiIcon">😅</span
+                            >Change Emoji <span class="quickEmojiIcon">{themesMap[$currentTheme]['emoji']}</span
                             ></button
                         >
                     </div>

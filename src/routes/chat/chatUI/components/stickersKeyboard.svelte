@@ -3,6 +3,9 @@
     import { showStickersPanel } from "./modalManager";
     import { onDestroy, onMount } from "svelte";
     import {writable} from "svelte/store";
+    import { selfInfoStore } from "$lib/store";
+    import { socket } from "../../../socket";
+    import { StickerMessageObj, makeClasslist, sendMessage, messageDatabase } from "./messages/messages";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -64,6 +67,66 @@
                 const group = $selectedSticker;
                 const serial = target.dataset.serial;
                 console.log('Hmm.. Choosing sticker: ', group, serial);
+
+                const src = `/stickers/${group}/animated/${serial}.webp`;
+
+                /**
+                    const message: MessageObj = new MessageObj();
+
+                    if (type === 'emoji'){
+                        newMessage = $quickEmojiEnabled ? themesMap[$currentTheme]['emoji'] : '';
+                        message.type = 'emoji';
+                        message.kind = 'text';
+                    } else {
+                        message.type = 'text';
+                        message.kind = 'text';
+                    }
+
+                    if (newMessage.trim() === ''){
+                        return;
+                    }
+
+                    const tempId = crypto.randomUUID();
+                    message.message = newMessage.trim();
+                    message.sender = $selfInfoStore.uid;
+
+                    makeClasslist(message);
+
+                    //console.log(message);
+
+                    messageDatabase.update(msg => {
+                        msg.set(tempId, message);
+                        return msg;
+                    });
+
+                    newMessage = '';
+
+                    sendMessage(message, tempId);
+                */
+
+
+                const messageObj = new StickerMessageObj();
+                messageObj.message = src;
+                messageObj.groupName = group;
+                messageObj.number = Number(serial);
+                messageObj.sender = $selfInfoStore.uid;
+                messageObj.type = 'sticker';
+                messageObj.kind = 'sticker';
+                
+                const tempId = crypto.randomUUID();
+
+                messageObj.classList = makeClasslist(messageObj);
+                
+                messageDatabase.update(msg => {
+                    msg.set(tempId, messageObj);
+                    return msg;
+                });
+
+                sendMessage(messageObj, tempId);
+
+                showStickersPanel.set(false);
+
+                console.log('Sticker sent: ', messageObj);
             }
         }
 
@@ -118,7 +181,7 @@
 </script>
 
 {#if $showStickersPanel}
-<div class="stickerKeyboardContainer" transition:fly={{y: 20, duration: 100}} use:stickersHandler>
+<div class="stickerKeyboardContainer" transition:fly|global={{y: 20, duration: 100}} use:stickersHandler>
     <div class="stickerKeyboard">
         <div class="headers">
             <div class="prev navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></div>
@@ -133,7 +196,7 @@
             {#each Stickers as sticker}
                 <div class="stickerBoard {sticker.name}" id="{sticker.name}">
                     {#each Array.from({ length: parseInt(sticker.count) }) as _, i}
-                        <img data-serial={i} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
+                        <img data-serial={i+1} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
                     {/each}
                 </div>
             {/each}

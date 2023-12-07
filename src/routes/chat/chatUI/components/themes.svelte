@@ -5,9 +5,27 @@
     import { showThemesPanel } from "./modalManager";
     import { showPopupMessage } from "$lib/utils/utils";
     import { themesMap } from "$lib/themes";
-    import { currentTheme } from "$lib/store";
+    import { currentTheme, quickEmoji } from "$lib/store";
 
-	let selectedTheme = localStorage.getItem('theme') || 'ocean';
+	let loadedTheme = localStorage.getItem('theme') || 'ocean';
+	
+	if (!(loadedTheme in themesMap)){
+		loadedTheme = 'ocean';
+	}
+	
+	let loadedEmoji = localStorage.getItem('quickEmoji');
+
+	if (loadedEmoji != themesMap[loadedTheme].emoji){
+		loadedEmoji = themesMap[loadedTheme].emoji;
+	}
+	
+	quickEmoji.set(loadedEmoji);
+
+	const unsubQuickEmoji = quickEmoji.subscribe((val) => {
+		localStorage.setItem('quickEmoji', val);
+	});
+
+	currentTheme.set(loadedTheme);
 
     function hideThemes(node: HTMLElement){
 
@@ -19,15 +37,15 @@
 
             if (e.target !== node) {
                 const targetElement = e.target as HTMLElement;
-				selectedTheme = targetElement.id;
-				localStorage.setItem('theme', selectedTheme);
+				currentTheme.set(targetElement.id);
+				localStorage.setItem('theme', $currentTheme);
                 console.log(`Theme ${toSentenceCase(targetElement.id)} applied`);
 				showPopupMessage(`${toSentenceCase(targetElement.id)} theme applied`);
 				//make a request to the server to update the cookie
 				const themeRequest = new XMLHttpRequest();
 				themeRequest.open('PUT', '/theme');
 				themeRequest.setRequestHeader('Content-Type', 'application/json');
-				themeRequest.send(JSON.stringify({ theme: selectedTheme }));
+				themeRequest.send(JSON.stringify({ theme: $currentTheme }));
 				//after response from server
 				themeRequest.onreadystatechange = () => {
 					if (themeRequest.readyState == 4 && themeRequest.status == 200) {
@@ -37,7 +55,7 @@
 					}
 				};
 				//edit css variables
-				currentTheme.set(selectedTheme);
+				currentTheme.set($currentTheme);
 			}
 
             showThemesPanel.set(false);
@@ -48,6 +66,7 @@
         return {
             destroy(){
                 node.onclick = null;
+				unsubQuickEmoji();
             }
         }
     }
@@ -185,7 +204,7 @@ async function loadTheme() {
     <ul class="themeList" transition:fly={{y: 30, duration: 100}}>
         {#each Object.keys(themesMap) as themename, i}
         <li transition:fly|global={{y: 20, delay: i*20}} class="theme hoverShadow clickable playable" id="{themename}" data-duration="{i}">
-            <img class="themeIcon" class:selected={selectedTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{toSentenceCase(themename)}</span>
+            <img class="themeIcon" class:selected={$currentTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{toSentenceCase(themename)}</span>
         </li>
         {/each}
     </ul>
@@ -237,7 +256,7 @@ async function loadTheme() {
                 border-radius: 50%;
             }
             .themeIcon.selected{
-                outline: 2px solid var(--secondary-dark);
+                border: 3px solid var(--secondary-dark);
             }
         }
     }

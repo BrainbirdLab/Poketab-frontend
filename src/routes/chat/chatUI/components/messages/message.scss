@@ -1,3 +1,11 @@
+.messages{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+}
+
+
 .message{
     display: flex;
     flex-direction: row-reverse;
@@ -31,7 +39,6 @@
     }
 
     .sent{
-        display: none;
         i{
             font-size: 0.5rem !important;
             padding: 0;
@@ -43,11 +50,12 @@
         width: 30px;
         border-radius: 50%;
         background: #dadada00;
-        visibility: hidden;
         display: flex;
+        visibility: hidden;
         align-items: center;
         justify-content: center;
     }
+
     .messageBody{
         position: relative;
         background: #00000000;
@@ -57,7 +65,6 @@
         overflow-wrap: anywhere;
         .messageTitle{
             color: var(--secondary-dark);
-            transform: translateY(20px);
             padding: 3px;
             display: flex;
             flex-direction: row;
@@ -74,7 +81,6 @@
             overflow: hidden;
             display: inline-block;
             text-overflow: ellipsis;
-            transform: translateY(20px);
             cursor: pointer;
             z-index: 0;
             padding: 8px 8px 25px 8px;
@@ -128,6 +134,44 @@
     }
 }
 
+.start .avatar{
+    visibility: hidden;
+}
+
+.message.emoji{
+    .messageMain{
+        .msg{
+            background: none !important;
+            border-radius: 18px;
+            padding: 0 !important;
+            .data{
+                padding: 0 !important;
+                font-size: 2rem !important;
+                width: min-content;
+            }
+        }
+    }
+}
+
+//if previous message has react
+
+.message:has(.reactsContainer){
+    .messageMain{
+        .msg{
+            border-bottom-right-radius: 18px !important;
+            border-bottom-left-radius: 18px !important;
+        }
+    }
+}
+
+.message:has(.reactsContainer) + .message{
+    .msg{
+        //background: red;
+        border-top-left-radius: 18px !important;
+        border-top-right-radius: 18px !important;
+    }
+}
+
 
 //! Classlist based modifications
 .message.start{
@@ -137,9 +181,10 @@
             border-top-left-radius: 18px;
         }
     }
-    .messageTitle{
-        display: flex;
-    }
+}
+
+.message.newGroup{
+    padding-top: 20px;
 }
 
 .message.end{
@@ -153,26 +198,10 @@
     }
 }
 
-.message.noreply{
-    .messageReply{
-        display: none !important;
-    }
-    .messageTitle{
-        transform: none !important;
-    }
-}
-
-.message:not(.noreply) .messageTitle::before {
+.message.reply .messageTitle::before {
     content: '\f3e5';
     font-family: 'FontAwesome';
     font-size: 1rem;
-}
-
-.message.notitle{
-    padding-top: 0;
-    .messageTitle{
-        display: none!important;
-    }
 }
 
 .message.self{
@@ -182,17 +211,9 @@
     .sent{
         display: block;
     }
-    &.delevered{
-        .sent{
-            display: none;
-        }
-    }
     .messageTime{
         justify-content: flex-end;
         padding: 0 15px 0 0;
-    }
-    .avatar{
-        display: none;
     }
     .replyIcon{
         right: 0;
@@ -213,13 +234,13 @@
         }
         .messageMain{
             flex-direction: row-reverse;
-            .text{
+            .msg.text{
                 background: var(--msg-send);
             }
-            .audioMessage{
+            .msg.audio{
                 background: var(--msg-send);
             }
-            .file{
+            .msg.file{
                 background: var(--msg-send)
             }
             & > *{
@@ -249,6 +270,70 @@
         }
     }
 }
+/*
+.seenByMultiple{
+    margin-bottom: 12px;
+    .seenBy{
+        bottom: -14px;
+    }
+
+    .msg{
+        border-bottom-left-radius: 18px !important;
+        border-bottom-right-radius: 18px !important;
+    }
+}
+
+.self.seenByMultiple + .self .msg {
+    border-top-left-radius: 18px !important;
+    border-top-right-radius: 18px !important;
+}
+*/
+
+.message.self:has(.seenBy > img:nth-child(2)){
+
+    margin-bottom: 12px;
+
+    .msg{
+        border-bottom-left-radius: 18px !important;
+        border-bottom-right-radius: 18px !important;
+    }
+
+    .seenBy{
+        bottom: -14px;
+    }
+}
+
+.message.self:has(.seenBy > img:nth-child(2)) + .message.self .msg {
+    border-top-left-radius: 18px !important;
+    border-top-right-radius: 18px !important;
+}
+
+
+
+.seenBy{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    position: absolute;
+    max-width: 70px;
+    right: 2px;
+    z-index: 10;
+    img{
+        height: 12px;
+        width: 12px;
+        margin: 1px;
+    }
+}
+
+.msg-item.serverMessage{
+    .seenBy{
+        right: 10px;
+        flex-wrap: nowrap;
+        max-width: unset;
+    }
+}
 
 
 //!Main Message Element
@@ -269,6 +354,9 @@
         transition: 100ms ease-in-out;
         border-top-right-radius: 18px;
         border-bottom-right-radius: 18px;
+        & *{
+            pointer-events: none;
+        }
         .data{
             border-radius: inherit;
         }
@@ -300,4 +388,8 @@
             }
         }
     }
+}
+
+.messageReply + .messageMain{
+    margin-top: -20px;
 }

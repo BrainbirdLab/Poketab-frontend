@@ -83,6 +83,17 @@ showFilePreviewPanel.subscribe(value => {
 });
 
 
+export const showMessageOptions = writable(false);
+showMessageOptions.subscribe(value => {
+    if (value){
+        activeModalsStack.push(showMessageOptions);
+    } else {
+        //remove it from the stack array
+        activeModalsStack = activeModalsStack.filter(modal => modal !== showMessageOptions);
+    }
+});
+
+
 //clear all modals from stack and set all modals to false
 export function clearModals(){
     activeModalsStack.forEach(modal => {

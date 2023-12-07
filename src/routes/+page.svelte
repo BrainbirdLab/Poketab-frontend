@@ -99,8 +99,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="preload" href="/fonts/comic-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-    <link rel="stylesheet" href="/styles/themes/{$currentTheme}.css">
-    <link rel="stylesheet" href="/libs/fontawesome/css/all.min.css" crossorigin="anonymous">
     
 </svelte:head>
 
@@ -153,12 +151,40 @@
     </div>
 
     <div class="footer">
+        {#if data.systemOk}
+            <span class="status" data-up><i class="fa-solid fa-circle"></i> All systems OK</span>
+        {:else}
+            <span class="status" data-down><i class="fa-solid fa-circle"></i> Some systems are down</span>
+        {/if}
         <a href="mailto:support@poketab.live">support@poketab.live</a>
     </div>
 </div>
 {/if}
 
 <style lang="scss">
+
+    .status{
+        font-size: 0.8rem;
+        padding: 5px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+
+        i{
+            font-size: 0.7rem;
+        }
+
+        &[data-up]{
+            color: rgb(51, 241, 255);
+        }
+
+        &[data-down]{
+            color: #ff3d3d;
+        }
+    }
+
     .version {
         font-size: 0.7rem;
         color: var(--secondary-dark, #419eff);
@@ -230,7 +256,7 @@
         gap: 30px;
         align-items: flex-start;
         justify-content: center;
-        background: #22283b;
+        background: #22283bba;
         backdrop-filter: blur(2px);
         padding: 35px;
         border-radius: 10px;
@@ -283,6 +309,10 @@
     .footer {
         font-size: 0.7rem;
         padding: 40px 10px 10px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
     a {
         color: white;

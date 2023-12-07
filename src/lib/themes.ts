@@ -1,14 +1,14 @@
 type themes = {
-    [key: string]: string;
+    [key: string]: {[key: string]: string}
 };
 
 
 //theme colors and backgrounds
 export const themesMap: themes = {
-    'blue': '🥶',
-    'ocean': '🐳',
-    'cyberpunk': '👾',
-    'geometry': '🔥',
-    'blackboard': '👽',
-    'forest': '🍃',
+    'blue': {'emoji': '🥶'},
+    'ocean': {'emoji': '🐳'},
+    'cyberpunk': {'emoji': '👾'},
+    'geometry': {'emoji': '🔥'},
+    'blackboard': {'emoji': '👽'},
+    'forest': {'emoji': '🍃'},
 };

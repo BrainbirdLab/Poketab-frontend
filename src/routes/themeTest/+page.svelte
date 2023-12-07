@@ -1,11 +1,8 @@
 
 
 <script lang="ts">
-    import { themesMap } from '$lib/themes.js';
-
-
-  export let data;
-
+    import { themesMap } from '$lib/themes';
+    export let data;
 </script>
 
 <svelte:head>

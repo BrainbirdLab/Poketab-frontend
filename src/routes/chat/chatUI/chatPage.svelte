@@ -1,28 +1,27 @@
 <script lang="ts">
+        import "./components/messages/message.scss";
     import MessageInput from "./components/messageInput.svelte";
     import NavBar from "./components/navBar.svelte";
     import TextMessage from "./components/messages/message.svelte";
-    import { messageDatabase } from "./components/messages/messages";
+    import { MessageObj, ServerMessageObj, StickerMessageObj, messageDatabase, targetMessage, lastSeenMessage } from "./components/messages/messages";
     import { showPopupMessage } from "$lib/utils/utils";
     import SidePanel from "./components/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
     import QuickSettings from "./components/quickSettings.svelte";
     import TypingIndicator from "./components/typingIndicator.svelte";
-    import {chatRoomStore} from "$lib/store";
-
-    import { activeModalsStack, showAttachmentPickerPanel, showQuickSettingsPanel, showSidePanel, showStickersPanel, showThemesPanel } from "./components/modalManager";
+    import { chatRoomStore, selfInfoStore } from "$lib/store";
+    import { activeModalsStack, showAttachmentPickerPanel, showMessageOptions, showQuickSettingsPanel, showSidePanel, showStickersPanel, showThemesPanel } from "./components/modalManager";
     import ConnectivityState from "./components/connectivityState.svelte";
     import Themes from "./components/themes.svelte";
-    import { onDestroy, onMount } from "svelte";
+    import { afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
     import StickersKeyboard from "./components/stickersKeyboard.svelte";
     import Attachments from "./components/attachments.svelte";
+    import MessageOptions from "./components/messageOptions.svelte";
+    import StickerMessage from "./components/messages/stickerMessage.svelte";
+    import ServerMessage from "./components/messages/serverMessage.svelte";
+    import { socket } from "../../socket";
 
     let isOffline = false;
-
-    //how much up scrolled the messages
-    let messageScrolledPx: number = 0;
-
-
 
     async function invite(){
         try {
@@ -41,19 +40,22 @@
         }
     }
 
-    //auto scroll to bottom when new message is added
+
+    let autoScroll = true;
+
     let messages: HTMLElement;
-    
-    const unsubMessage = messageDatabase.subscribe(() => {
-        if ($messageDatabase.size > 0){
 
-            //if user has scrolled more than 200px from the bottom, don't scroll to bottom
-            if (messageScrolledPx < 200){                
-                messages.scrollTop = messages.scrollHeight;
-            }
+    beforeUpdate(() => {
+        autoScroll = messages && (messages.offsetHeight + messages.scrollTop) > (messages.scrollHeight - 200);
+    });
 
+    afterUpdate(() => {
+        if (autoScroll) {
+            messages.scrollTop = messages.scrollHeight;
         }
     });
+
+
 
     const keyBindingHandler = (e: KeyboardEvent) => {
         //console.log(e.key);
@@ -84,10 +86,6 @@
         }
     }
 
-    const scrollHandler = (e: Event) => {
-        messageScrolledPx = messages.scrollHeight - messages.scrollTop - messages.clientHeight;
-    }
-
     onMount(()=> {
         //make a system where you can push and pop modals from the stack
         //when a modal or panel is opened, push it to the stack
@@ -95,14 +93,43 @@
         //when a modal or panel is closed, pop it from the stack
         //when esc is pressed, pop the top modal or panel from the stack
         document.onkeydown = keyBindingHandler;
-        messages.onscroll = scrollHandler;
+
+        window.addEventListener('focus', () => {
+            /*
+            if (lastNotification != undefined) {
+                lastNotification.close();
+            }
+            */
+           if (!$lastSeenMessage){
+                console.log('No last seen message');
+                return;
+           }
+            console.log(`Seen last message ${($messageDatabase.get($lastSeenMessage) as MessageObj).message} by ${$selfInfoStore.name}`);
+            socket.emit('seen', $selfInfoStore.uid, $lastSeenMessage );
+        });
     });
 
     onDestroy(()=> {
         document.onkeydown = null;
-        messages.onscroll = null;
-        unsubMessage();
     });
+
+    function handleRighClick(e: MouseEvent){
+        e.preventDefault();
+        const target: HTMLElement = e.target as HTMLElement;
+        console.log(target);
+        if (target.classList.contains('msg')){
+            const id = target.closest('.message')?.id;
+            if (id){
+                console.log(id);
+                targetMessage.set(id);
+                showMessageOptions.set(true);
+            }
+        }
+    }
+
+    
+
+
 </script>
 
 <svelte:head>
@@ -115,11 +142,12 @@
 <StickersKeyboard/>
 <Attachments/>
 <ConnectivityState bind:offline={isOffline}/>
+<MessageOptions/>
 
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
         <NavBar />
-        <ul class="messages" id="messages" bind:this={messages}>
+        <ul class="messages" on:contextmenu={handleRighClick} id="messages" bind:this={messages}>
     
             <div class="welcome_wrapper" in:fly={{x: -50}} out:fade={{duration: 100}}>
                 <li class="welcomeText">
@@ -129,8 +157,14 @@
                 </li>
             </div>
             {#each [...$messageDatabase] as [id, message]}
-                {#if message.type == 'text'}
-                    <TextMessage message={message} id={id}/>
+                {#if message instanceof MessageObj}
+                    {#if message.type === 'text' || message.type === 'emoji'}
+                        <TextMessage message={message} id={id}/>
+                    {:else if message.type === 'sticker'}
+                        <StickerMessage message={Object.setPrototypeOf(message, StickerMessageObj.prototype)} id={id}/>
+                    {/if}
+                {:else if message instanceof ServerMessageObj}
+                    <ServerMessage message={message} id={id}/>
                 {/if}
             {/each}
         </ul>
@@ -150,12 +184,6 @@
         width: 100%;
         position: relative;
         overflow: hidden;
-        background: var(--primary-dark);
-        background: rgba(0, 0, 0, 0.6117647059) var(--pattern);
-        background-blend-mode: soft-light;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
     }
 
     .chatBox{

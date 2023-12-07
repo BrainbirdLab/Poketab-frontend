@@ -1,14 +1,12 @@
 <script lang="ts">
-    import type { MessageObj } from "./messages";
+    import type { StickerMessageObj } from "./messages";
     import { chatRoomStore, selfInfoStore } from "$lib/store";
     import Reacts from "./messageComponents/reacts.svelte";
     import MessageTop from "./messageComponents/messageTop.svelte";
     import SeenBy from "./messageComponents/seenBy.svelte";
 
-    export let message: MessageObj;
+    export let message: StickerMessageObj
     export let id: string;
-
-    console.log(message.seenBy);
 
 </script>
 
@@ -27,7 +25,7 @@
         <div class="messageBody">
             <MessageTop message={message} />
             <div class="messageMain">
-                <div class="msg {message.type}"><span class="{message.type}">{message.message}</span></div>
+                <div class="msg {message.type}"><img src="{message.message}" alt="{message.message}" data-sticker="{message.groupName}" class="{message.type}"/></div>
                 <div class="messageTime">Just Now</div>
             </div>
             <Reacts reactedBy={message.reactedBy} />
@@ -38,11 +36,9 @@
 <style lang="scss">
 
     .msg{
-        .text{
-            padding: 8px;
-        }
-        .emoji{
-            font-size: 2rem;
+        .sticker{
+            height: 100%;
+            width: 100%;
         }
     }
 

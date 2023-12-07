@@ -1,102 +1,121 @@
 <script lang="ts">
-    import { get } from "svelte/store";
-    import { MessageObj, messageDatabase } from "./messages/messages";
-    import { TextMessageObj } from "./messages/messages";
+    import { MessageObj, messageDatabase, makeClasslist, sendMessage, ServerMessageObj, isEmoji, emojiParser, filterMessage, lastSeenMessage } from "./messages/messages";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "../../../socket";
 
-    import {chatRoomStore, selfInfoStore, userTypingString} from "$lib/store";
+    import {SEND_METHOD, chatRoomStore, currentTheme, quickEmojiEnabled, selfInfoStore, sendMethod, userTypingString} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "./modalManager";
+    import { themesMap } from "$lib/themes";
 
     socket.on('newMessage', (message: MessageObj, messageId: string) => {
-        //console.log('New message');
-        //console.log(message);
+
+        console.log(message);
+
+        message = Object.assign(new MessageObj(), message);
+
+        message.message = filterMessage(message.message);
+
+        lastSeenMessage.set(messageId);
+
         messageDatabase.update(messages => {
-
-            let classList = '';
-
-            if (!message.replyTo) {
-            classList += ' noreply end';
-            }
-
-            if (get(chatRoomStore).maxUsers == 2 && !message.replyTo) {
-            classList += ' notitle';
-            }
-
-            //if the previous message is self message, remove 'end' class from previous message and add 'end' class to current message
-            if (messages.size > 0) {
-            let lastMessage = [...messages.values()].pop();
-            //console.log('Last message ', lastMessage);
-            if (lastMessage && lastMessage.sender === message.sender) {
-                //console.log('Last message is from same user');
-                lastMessage.classList = lastMessage.classList.replace('end', '');
-            } else {
-                //console.log('Last message is from different user');
-                classList += ' start';
-            }
-            } else {
-            classList += ' start';
-            }
-
-            message.classList = classList;
+            message.classList = makeClasslist(message);
+            message.sent = true;
 
             messages.set(messageId, message);
+           
+            return messages;
+        });
+    });
+
+    socket.on('server_message', (msg: {text: string, id: string}, type: string) => {
+
+        console.log(msg);
+            
+        messageDatabase.update(messages => {
+
+            const message: ServerMessageObj = new ServerMessageObj();
+            message.text = msg.text;
+            message.type = type;
+
+            messages.set(msg.id, message);
+
+            return messages;
+        });
+    });
+
+    socket.on('react', (messageId: string, uid: string, react: string) => {
+        messageDatabase.update(messages => {
+            const message = messages.get(messageId) as MessageObj;
+            if (message && message instanceof MessageObj) {
+                //if same react is clicked again, remove it
+                if (message.reactedBy[uid] == react) {
+                    //message.reactedBy.delete(uid);
+                    delete message.reactedBy[uid];
+                } else {
+                    //message.reactedBy.set(uid, react);
+                    message.reactedBy[uid] = react;
+                }
+            }
+            return messages;
+        });
+    });
+
+
+    socket.on('seen', (uid: string, messageId: string) => {
+
+        if (!uid || !messageId) {
+            console.log('invalid seen');
+            return;
+        }
+
+        messageDatabase.update(messages => {
+            
+            const message = messages.get(messageId) as MessageObj;
+
+            console.log($chatRoomStore.userList, uid, messageId, $chatRoomStore.userList[uid]);
+            
+            console.log(`seen by ${$chatRoomStore.userList[uid].name} on ${message.message}`);
+            if (message && message instanceof MessageObj) {
+                message.seenBy[uid] = true;
+            }
+
             return messages;
         });
     });
     
     let newMessage = '';
 
-    function makeClasslist(message: MessageObj){
-        message.classList = 'self end';
+    function insertMessage(quickEmoji = false){
 
-        if (!message.replyTo){
-            message.classList += ' noreply';
-        }
-        if ($chatRoomStore.maxUsers == 2 && !message.replyTo){
-            message.classList += ' notitle';
-        }
+        const message: MessageObj = new MessageObj();
 
-        //if the previous message is self message, remove 'end' class from previous message and add 'end' class to current message
-        if (get(messageDatabase).size > 0){
-            let lastMessage = [...get(messageDatabase).values()].pop();
-            if (lastMessage && lastMessage.sender === get(selfInfoStore).uid){
-                //console.log('last message is self message');
-                lastMessage.classList = lastMessage.classList.replace('end', '');
-            } else {
-                message.classList += ' start';
-            }
+        newMessage = filterMessage(emojiParser(newMessage));
+
+        if (quickEmoji){
+            console.log('quick emoji');
+            newMessage = $quickEmojiEnabled ? themesMap[$currentTheme]['emoji'] : '';
+            message.type = 'emoji';
+            message.kind = 'text';
+        } else if (isEmoji(newMessage)) {
+            message.type = 'emoji';
+            message.kind = 'text';
         } else {
-            message.classList += ' start';
+            message.type = 'text';
+            message.kind = 'text';
         }
-    }
 
-    function sendMessage(message: MessageObj, tempId: string){
-        socket.emit('newMessage', message, (messageId: string) => {
-            //console.log('Message sent');
-            messageDatabase.update(msg => {
-                message.classList += ' delevered';
-                msg.delete(tempId);
-                msg.set(messageId, message);
-                return msg;
-            });
-        });
-    }
-
-    function insertMessage(){
-
-        if (!newMessage.trim()){
+        if (newMessage.trim() === ''){
             return;
         }
 
-        //console.log('message inserted');
         const tempId = crypto.randomUUID();
-        let message = new TextMessageObj();
         message.message = newMessage.trim();
         message.sender = $selfInfoStore.uid;
 
-        makeClasslist(message);
+        message.classList = makeClasslist(message);
+
+        //console.log(message);
 
         messageDatabase.update(msg => {
             msg.set(tempId, message);
@@ -118,67 +137,50 @@
         return !/[^\s]/.test(text);
     }
 
-    function handleInput(node: HTMLElement) {
-        const keydownHandler = (e: KeyboardEvent) => {
-            const target = e.target as HTMLElement;
+    let isTypingTimeout: NodeJS.Timeout;
 
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                insertMessage();
-                node.style.height = 'min-content';
-            }
-            if (isWhitespace(target.innerText)) {
-                target.innerText = '';
-            }
+    const inputHandler = (e: Event) => {
+
+        const target = e.target as HTMLDivElement;
+
+        if (isWhitespace(target.innerText)) {
+            target.innerText = '';
+        }
+
+        const clone = target.cloneNode(true) as HTMLDivElement;
+        clone.style.height = 'min-content';
+        clone.style.position = 'absolute';
+        clone.style.top = '-9999px';
+        document.body.appendChild(clone);
+        // Set the new height based on the content
+        target.style.height = `${clone.scrollHeight}px`;
+        document.body.removeChild(clone);
+        
+        userTypingString.set('You are typing');
+        
+        if (isTypingTimeout) {
+            clearTimeout(isTypingTimeout)
         };
 
-        const keyupHandler = (e: KeyboardEvent) => {
-            const target = node as HTMLDivElement;
-            //console.log(target.innerText, target.innerText.length);
-            newMessage = target.innerText;
-            if (e.key === 'Backspace') {
-                if (isWhitespace(target.innerText)) {
-                    target.innerText = '';
-                }
-            }
-        };
+        isTypingTimeout = setTimeout(() => {
+            userTypingString.set('');
+        }, 1000);
+    };
 
-        let isTypingTimeout: NodeJS.Timeout | null = null;
+    function keyDownHandler(e: KeyboardEvent){
 
-        const inputHandler = (e: Event) => {
-            const clone = node.cloneNode(true) as HTMLDivElement;
-            clone.style.height = 'min-content';
-            clone.style.position = 'absolute';
-            clone.style.top = '-9999px';
-            document.body.appendChild(clone);
-            // Set the new height based on the content
-            node.style.height = `${clone.scrollHeight}px`;
-            document.body.removeChild(clone);
+        const target = e.target as HTMLDivElement;
 
-            userTypingString.set('You are typing');
-
-            if (isTypingTimeout) {
-                clearTimeout(isTypingTimeout)
-            };
-
-            isTypingTimeout = setTimeout(() => {
-                userTypingString.set('');
-            }, 1000);
-        };
-
-        node.onkeydown = keydownHandler;
-        node.onkeyup = keyupHandler;
-        node.oninput = inputHandler;
-
-        return {
-            destroy() {
-                node.onkeydown = null;
-                node.onkeyup = null;
-                node.oninput = null;
-            },
-        };
+        if ($sendMethod == SEND_METHOD.ENTER && e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            insertMessage();
+            target.style.height = 'min-content';
+        } else if ($sendMethod == SEND_METHOD.CTRL_ENTER && e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            insertMessage();
+            target.style.height = 'min-content';
+        }
     }
-
 
 </script>
     
@@ -193,13 +195,17 @@
         <!-- Text input -->
         <div class="inputField">
             <div class="textbox-wrapper">
-              <div id="textbox" use:handleInput contenteditable="true" class="select" data-placeholder="Message..." tabindex="-1" enterkeyhint="send" bind:innerText={newMessage}></div>
+              <div id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
             </div>
             <Recorder />
         </div>          
         <!-- Send Button-->
-        <button id="send" class:quickEmoji={false} on:click={insertMessage} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
-    </div>
+        {#if $quickEmojiEnabled && newMessage.trim().length <= 0}
+        <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send">{themesMap[$currentTheme]['emoji']}</button>
+        {:else}
+        <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
+        {/if}
+        </div>
 </div>
 
 <style lang="scss">
@@ -232,6 +238,10 @@
 
         .quickEmoji, .sendIcon{
             animation: pop 300ms ease-in-out forwards;
+        }
+
+        .quickEmoji{
+            font-size: 1.8rem;
         }
 
         .inputBtn {
