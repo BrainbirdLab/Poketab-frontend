@@ -80,6 +80,7 @@ export type User = {
     uid: string,
     name: string,
     avatar: string,
+    lastSeenMessage: string,
 }
 
 type chatRoomStoreType = {
@@ -92,6 +93,7 @@ export const selfInfoStore: Writable<User> = writable({
     uid: '',
     name: '',
     avatar: '',
+    lastSeenMessage: '',
 });
 
 export const chatRoomStore: Writable<chatRoomStoreType> = writable({

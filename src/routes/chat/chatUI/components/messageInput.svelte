@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { MessageObj, messageDatabase, makeClasslist, sendMessage, ServerMessageObj, isEmoji, emojiParser, filterMessage, lastSeenMessage } from "./messages/messages";
+    import { MessageObj, messageDatabase, ServerMessageObj, lastSeenMessage } from "$lib/messages";
+    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterMessage } from "./messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "../../../socket";
@@ -68,6 +69,11 @@
             console.log('invalid seen');
             return;
         }
+
+        chatRoomStore.update(chatRoom => {
+            chatRoom.userList[uid].lastSeenMessage = messageId;
+            return chatRoom;
+        });
 
         messageDatabase.update(messages => {
             

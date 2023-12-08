@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { StickerMessageObj } from "./messages";
+    import type { StickerMessageObj } from "$lib/messages";
     import { chatRoomStore, selfInfoStore } from "$lib/store";
     import Reacts from "./messageComponents/reacts.svelte";
     import MessageTop from "./messageComponents/messageTop.svelte";
@@ -11,7 +11,7 @@
 </script>
 
 <li class="message msg-item {message.classList}" id="{id}"> <!-- noreply notitle delevered start end self react -->
-    <SeenBy seenBy={message.seenBy} />
+    <SeenBy seenBy={message.seenBy} messageId={id} />
     <div class="messageContainer">
         <div class="replyIcon">
             <i class="fa-solid fa-reply"></i>

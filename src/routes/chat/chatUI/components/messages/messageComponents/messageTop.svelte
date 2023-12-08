@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { MessageObj, messageDatabase } from "../messages";
+    import { MessageObj, messageDatabase } from "$lib/messages";
     import { chatRoomStore, selfInfoStore } from "$lib/store";
 
     export let message: MessageObj;

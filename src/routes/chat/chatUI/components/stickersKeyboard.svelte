@@ -5,7 +5,8 @@
     import {writable} from "svelte/store";
     import { selfInfoStore } from "$lib/store";
     import { socket } from "../../../socket";
-    import { StickerMessageObj, makeClasslist, sendMessage, messageDatabase } from "./messages/messages";
+    import { StickerMessageObj, messageDatabase } from "$lib/messages";
+    import { makeClasslist, sendMessage } from "./messages/messageUtils";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },

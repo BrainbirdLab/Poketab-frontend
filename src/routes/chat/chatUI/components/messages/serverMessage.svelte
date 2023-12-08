@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ServerMessageObj } from "./messages";
+    import type { ServerMessageObj } from "$lib/messages";
     export let message: ServerMessageObj;
     export let id: string;
 </script>

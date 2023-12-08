@@ -3,7 +3,7 @@
     import { fly, slide } from "svelte/transition";
     import {showMessageOptions} from "./modalManager";
     import { socket } from "../../../socket";
-    import { MessageObj, messageDatabase, targetMessage } from "./messages/messages";
+    import { MessageObj, messageDatabase, targetMessage } from "$lib/messages";
     import { selfInfoStore } from "$lib/store";
 
     const reactArray = {

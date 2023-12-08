@@ -6,7 +6,7 @@
     import { showPopupMessage } from "$lib/utils/utils";
     import type { User } from "$lib/store";
     import { socket } from "../../../socket";
-    import { messageDatabase } from "./messages/messages";
+    import { messageDatabase } from "$lib/messages";
 
     let copyKeyIcon = 'fa-regular fa-clone';
     let copyTimeout: NodeJS.Timeout | null = null;

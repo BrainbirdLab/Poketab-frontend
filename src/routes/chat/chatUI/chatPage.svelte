@@ -3,7 +3,7 @@
     import MessageInput from "./components/messageInput.svelte";
     import NavBar from "./components/navBar.svelte";
     import TextMessage from "./components/messages/message.svelte";
-    import { MessageObj, ServerMessageObj, StickerMessageObj, messageDatabase, targetMessage, lastSeenMessage } from "./components/messages/messages";
+    import { MessageObj, ServerMessageObj, StickerMessageObj, messageDatabase, targetMessage, lastSeenMessage } from "$lib/messages";
     import { showPopupMessage } from "$lib/utils/utils";
     import SidePanel from "./components/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
