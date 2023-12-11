@@ -1,16 +1,32 @@
 <script lang="ts">
-        import "./components/messages/message.scss";
+    import "./components/messages/message.scss";
     import MessageInput from "./components/messageInput.svelte";
     import NavBar from "./components/navBar.svelte";
     import TextMessage from "./components/messages/message.svelte";
-    import { MessageObj, ServerMessageObj, StickerMessageObj, messageDatabase, targetMessage, lastSeenMessage } from "$lib/messages";
+    import {
+        MessageObj,
+        ServerMessageObj,
+        StickerMessageObj,
+        messageDatabase,
+        eventTriggerMessageId,
+        lastMessageId,
+    } from "$lib/messages";
     import { showPopupMessage } from "$lib/utils/utils";
     import SidePanel from "./components/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
     import QuickSettings from "./components/quickSettings.svelte";
     import TypingIndicator from "./components/typingIndicator.svelte";
-    import { chatRoomStore, selfInfoStore } from "$lib/store";
-    import { activeModalsStack, showAttachmentPickerPanel, showMessageOptions, showQuickSettingsPanel, showSidePanel, showStickersPanel, showThemesPanel } from "./components/modalManager";
+    import { chatRoomStore, selfInfoStore, userTypingString } from "$lib/store";
+    import {
+        activeModalsStack,
+        selectedSticker,
+        showAttachmentPickerPanel,
+        showMessageOptions,
+        showQuickSettingsPanel,
+        showSidePanel,
+        showStickersPanel,
+        showThemesPanel,
+    } from "./components/modalManager";
     import ConnectivityState from "./components/connectivityState.svelte";
     import Themes from "./components/themes.svelte";
     import { afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
@@ -20,33 +36,39 @@
     import StickerMessage from "./components/messages/stickerMessage.svelte";
     import ServerMessage from "./components/messages/serverMessage.svelte";
     import { socket } from "../../socket";
+    import { spring } from "svelte/motion";
+    import MessageReplyToast from "./components/messageReplyToast.svelte";
+    import ScrollDownPopup from "./components/scrollDownPopup.svelte";
+    import { filterMessage, makeClasslist, showReplyToast } from "./components/messages/messageUtils";
 
     let isOffline = false;
 
-    async function invite(){
+    async function invite() {
         try {
             if (!navigator.share) {
-                showPopupMessage('Sharing in not supported by this browser');
+                showPopupMessage("Sharing in not supported by this browser");
                 return;
             }
             await navigator.share({
-                title: 'Poketab Messenger',
-                text: 'Join chat!',
+                title: "Poketab Messenger",
+                text: "Join chat!",
                 url: `${location.origin}/join/${$chatRoomStore.Key}`,
             });
-            showPopupMessage('Shared!');
+            showPopupMessage("Shared!");
         } catch (err) {
             showPopupMessage(`${err}`);
         }
     }
-
 
     let autoScroll = true;
 
     let messages: HTMLElement;
 
     beforeUpdate(() => {
-        autoScroll = messages && (messages.offsetHeight + messages.scrollTop) > (messages.scrollHeight - 200);
+        autoScroll =
+            messages &&
+            messages.offsetHeight + messages.scrollTop >
+                messages.scrollHeight - 200;
     });
 
     afterUpdate(() => {
@@ -55,38 +77,184 @@
         }
     });
 
-
-
     const keyBindingHandler = (e: KeyboardEvent) => {
         //console.log(e.key);
-        if (e.key === 'Escape'){
-            if (activeModalsStack.length > 0){
+        if (e.key === "Escape") {
+            if (activeModalsStack.length > 0) {
                 activeModalsStack[activeModalsStack.length - 1].set(false);
             }
         }
 
-        if (e.key === 'o' && e.altKey){
-            showSidePanel.update(value => !value);
+        if (e.key === "o" && e.altKey) {
+            showSidePanel.update((value) => !value);
         }
 
-        if (e.key === 's' && e.altKey){
-            showQuickSettingsPanel.update(value => !value);
+        if (e.key === "s" && e.altKey) {
+            showQuickSettingsPanel.update((value) => !value);
         }
 
-        if (e.key === 't' && e.altKey){
-            showThemesPanel.update(value => !value);
+        if (e.key === "t" && e.altKey) {
+            showThemesPanel.update((value) => !value);
         }
 
-        if (e.key === 'i' && e.altKey){
-            showStickersPanel.update(value => !value);
+        if (e.key === "i" && e.altKey) {
+            showStickersPanel.update((value) => !value);
         }
 
-        if (e.key === 'a' && e.altKey){
-            showAttachmentPickerPanel.update(value => !value);
+        if (e.key === "a" && e.altKey) {
+            showAttachmentPickerPanel.update((value) => !value);
         }
-    }
+    };
 
-    onMount(()=> {
+    const userTypingSet = new Set<string>();
+
+    let notice: MessageObj | null = null;
+
+    socket.on("newMessage", (message: MessageObj, messageId: string) => {
+        //console.log(message);
+
+        message = Object.assign(new MessageObj(), message);
+
+        message.message = filterMessage(message.message);
+
+        
+        messageDatabase.update((messages) => {
+            message.classList = makeClasslist(message);
+            message.sent = true;
+            
+            messages.set(messageId, message);
+            
+            return messages;
+        });
+
+        lastMessageId.set(messageId);
+        notice = message;
+    });
+
+    socket.on("server_message", (msg: { text: string; id: string }, type: string) => {
+            //console.log(msg);
+
+            messageDatabase.update((messages) => {
+                const message: ServerMessageObj = new ServerMessageObj();
+                message.text = msg.text;
+                message.type = type;
+
+                messages.set(msg.id, message);
+
+                return messages;
+            });
+        },
+    );
+
+    socket.on("react", (messageId: string, uid: string, react: string) => {
+        messageDatabase.update((messages) => {
+            const message = messages.get(messageId) as MessageObj;
+            if (message && message instanceof MessageObj) {
+                //if same react is clicked again, remove it
+                if (message.reactedBy[uid] == react) {
+                    //message.reactedBy.delete(uid);
+                    delete message.reactedBy[uid];
+                } else {
+                    //message.reactedBy.set(uid, react);
+                    message.reactedBy[uid] = react;
+                }
+            }
+            return messages;
+        });
+    });
+
+    socket.on("seen", (uid: string, messageId: string) => {
+        if (!uid || !messageId || !$chatRoomStore || !$chatRoomStore.userList[uid]) {
+            //console.log("invalid seen");
+            return;
+        }
+
+        chatRoomStore.update((chatRoom) => {
+            chatRoom.userList[uid].lastSeenMessage = messageId;
+            return chatRoom;
+        });
+
+        messageDatabase.update((messages) => {
+            const message = messages.get(messageId) as MessageObj;
+
+            if (message && message instanceof MessageObj) {
+                message.seenBy[uid] = true;
+            }
+
+            return messages;
+        });
+    });
+
+    socket.on("typing", (uid: string, event: "start" | "end") => {
+        if (event == "start") {
+            userTypingSet.add(uid);
+        } else {
+            userTypingSet.delete(uid);
+        }
+
+        if (userTypingSet.size > 0) {
+            // 1 person typing: 'Alex is typing'
+            // 2 people typing: 'Alex and max is typing'
+            // 3 people typing: 'Alex, max and 1 other is typing'
+            // 4 people typing: 'Alex, max and length-2 others are typing'
+            const userIdArray = Array.from(userTypingSet);
+
+            switch (userTypingSet.size) {
+                case 1:
+                    userTypingString.set(
+                        `${
+                            $chatRoomStore.userList[
+                                userIdArray.at(-1) as string
+                            ]?.name
+                        } is typing`,
+                    );
+                    break;
+                case 2:
+                    userTypingString.set(
+                        `${
+                            $chatRoomStore.userList[
+                                userIdArray.at(-1) as string
+                            ]?.name
+                        } and ${
+                            $chatRoomStore.userList[
+                                userIdArray.at(-2) as string
+                            ]?.name
+                        } are typing`,
+                    );
+                    break;
+                case 3:
+                    userTypingString.set(
+                        `${
+                            $chatRoomStore.userList[
+                                userIdArray.at(-1) as string
+                            ]?.name
+                        }, ${
+                            $chatRoomStore.userList[
+                                userIdArray.at(-2) as string
+                            ]?.name
+                        } and 1 other are typing`,
+                    );
+                    break;
+                default:
+                    userTypingString.set(
+                        `${
+                            $chatRoomStore.userList[
+                                userIdArray.at(-1) as string
+                            ]?.name
+                        }, ${
+                            $chatRoomStore.userList[
+                                userIdArray.at(-2) as string
+                            ]?.name
+                        } and ${userTypingSet.size - 2} others are typing`,
+                    );
+                    break;
+            }
+        } else {
+            userTypingString.set("");
+        }
+    });
+
+    onMount(() => {
         //make a system where you can push and pop modals from the stack
         //when a modal or panel is opened, push it to the stack
         //when a new modal or panel is opened, push it to the stack
@@ -94,88 +262,299 @@
         //when esc is pressed, pop the top modal or panel from the stack
         document.onkeydown = keyBindingHandler;
 
-        window.addEventListener('focus', () => {
-            /*
-            if (lastNotification != undefined) {
-                lastNotification.close();
-            }
-            */
-           if (!$lastSeenMessage){
-                console.log('No last seen message');
+        window.onfocus = () => {
+            if (!$lastMessageId) {
+                //console.log('No last seen message');
                 return;
-           }
-            console.log(`Seen last message ${($messageDatabase.get($lastSeenMessage) as MessageObj).message} by ${$selfInfoStore.name}`);
-            socket.emit('seen', $selfInfoStore.uid, $lastSeenMessage );
-        });
+            }
+
+            //console.log(`Seen last message ${($messageDatabase.get($lastSeenMessage) as MessageObj).message} by ${$selfInfoStore.name}`);
+            socket.emit("seen", $selfInfoStore.uid, $lastMessageId);
+        };
     });
 
-    onDestroy(()=> {
+    onDestroy(() => {
         document.onkeydown = null;
+        window.onfocus = null;
+        messages.onscroll = null;
     });
 
-    function handleRighClick(e: MouseEvent){
+    function handleRighClick(e: MouseEvent) {
         e.preventDefault();
         const target: HTMLElement = e.target as HTMLElement;
-        console.log(target);
-        if (target.classList.contains('msg')){
-            const id = target.closest('.message')?.id;
-            if (id){
-                console.log(id);
-                targetMessage.set(id);
+        if (target.classList.contains("msg")) {
+            const id = target.closest(".message")?.id;
+            if (id) {
+                eventTriggerMessageId.set(id);
                 showMessageOptions.set(true);
             }
         }
     }
 
-    
+    function handleMessages(node: HTMLElement) {
+        messages = node as HTMLElement;
 
+        //on horizontal scroll on a single message, move the message to swipe reply
+        let xStart = 0;
+        let yStart = 0;
+        let xDiff = 0;
+        let yDiff = 0;
+        let horizontalSwipe = false;
+        let touchEnded = true;
+        let swipeStarted = false;
+        let replyTrigger = false;
 
+        messages.onclick = (evt) => {
+            const target = evt.target as HTMLElement;
+
+            const message = target.closest(".message") as HTMLElement;
+
+            if (target.classList.contains("msg")) {
+                if (message && $messageDatabase.has(message.id)) {
+                    const messageObj = $messageDatabase.get(
+                        message.id,
+                    ) as MessageObj;
+                    if (messageObj.kind === "sticker") {
+                        const stickerGroup = (messageObj as StickerMessageObj)
+                            .groupName;
+                        selectedSticker.set(stickerGroup);
+                        showStickersPanel.set(true);
+                    }
+                }
+            } else if (target.classList.contains("messageReply")) {
+                const messageObj = $messageDatabase.get(
+                    message.id,
+                ) as MessageObj;
+                const replyId = messageObj.replyTo;
+                //scroll to the replied message
+                if (replyId) {
+                    const replyMessage = document.getElementById(replyId);
+                    if (replyMessage) {
+                        replyMessage.classList.add("highlight");
+                        replyMessage.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                        });
+                        //remove highlight after 2 seconds
+                        setTimeout(() => {
+                            replyMessage.classList.remove("highlight");
+                        }, 1000);
+                    }
+                }
+            }
+
+            //if clicked on a sticker
+        };
+
+        // Listen for a swipe on left
+        messages.ontouchstart = (evt) => {
+            const target = evt.target as HTMLElement;
+            if (target.closest(".message")) {
+                xStart = evt.touches[0].clientX / 3;
+                yStart = evt.touches[0].clientY / 3;
+            }
+        };
+
+        messages.ontouchmove = (evt) => {
+            try {
+                const target = evt.target as HTMLElement;
+                const message = target.closest(".message") as HTMLElement;
+
+                if (target.closest(".msg") && $messageDatabase.has(message.id)) {
+                    //console.log(xDiff);
+
+                    xDiff = xStart - evt.touches[0].clientX / 3;
+                    yDiff = yStart - evt.touches[0].clientY / 3;
+
+                    //which direction is swipe was made first time
+                    if (horizontalSwipe == false) {
+                        if (Math.abs(xDiff) > Math.abs(yDiff) && touchEnded) {
+                            horizontalSwipe = true;
+                        } else {
+                            horizontalSwipe = false;
+                        }
+                    }
+
+                    touchEnded = false;
+
+                    //if horizontal
+                    if (horizontalSwipe) {
+                        //console.log('horizontal');
+                        const replyIcon = message.querySelector(".replyIcon") as HTMLElement;
+
+                        const { classList, sent } = $messageDatabase.get(message.id) as MessageObj;
+
+                        swipeStarted = true;
+                        replyIcon.dataset.swipeStart = "true";
+                        
+                        //if msg is self
+                        if (classList.includes("self") && sent) {
+                            if (xDiff >= 50) {
+                                replyTrigger = true;
+                                replyIcon.dataset.replyTrigger = "true";
+                                replyIcon.style.transform = `translateX(${xDiff}px)`;
+                            } else {
+                                replyTrigger = false;
+                                replyIcon.dataset.replyTrigger = "false";
+                            }
+                            xDiff = xDiff < 0 ? 0 : xDiff;
+                            message.style.transform = `translateX(${-xDiff}px)`;
+                        } else {
+                            if (xDiff <= -50) {
+                                replyTrigger = true;
+                                replyIcon.dataset.replyTrigger = "true";
+                                replyIcon.style.transform = `translateX(${xDiff}px)`;
+                            } else {
+                                replyTrigger = false;
+                                replyIcon.dataset.replyTrigger = "false";
+                            }
+                            xDiff = xDiff > 0 ? 0 : xDiff;
+                            message.style.transform = `translateX(${-xDiff}px)`;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+        let unsub: () => void;
+
+        messages.ontouchend = (evt) => {
+            try {
+                if (!swipeStarted) return;
+
+                const target = evt.target as HTMLElement;
+                const message = target.closest(".message") as HTMLElement;
+
+                if (target.closest(".msg") && $messageDatabase.has(message.id)) {
+                    touchEnded = true;
+
+                    const { classList, sent } = $messageDatabase.get(
+                        message.id,
+                    ) as MessageObj;
+
+                    swipeStarted = false;
+
+                    horizontalSwipe = false;
+
+                    const replyIcon = message.querySelector(".replyIcon",) as HTMLElement;
+
+                    if (classList.includes("self") && sent) {
+                        replyIcon.style.transform = "translateX(50px)";
+                    } else {
+                        replyIcon.style.transform = "translateX(-50px)";
+                    }
+                        
+                    replyIcon.dataset.swipeStart = "false";
+                    
+                    //use spring animation to translate back to 0
+                    const x = spring(xDiff, { stiffness: 0.5, damping: 0.5 });
+                    unsub = x.subscribe((value) => {
+                        message.style.transform = `translateX(${value}px)`;
+                    });
+                    x.set(0);
+                    
+                    if (replyTrigger) {
+
+                        eventTriggerMessageId.set(message.id);
+
+                        showReplyToast.set(true);
+
+                        replyTrigger = false;
+                        replyIcon.dataset.replyTrigger = "false";
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+        return {
+            destroy() {
+                messages.ontouchstart = null;
+                messages.ontouchmove = null;
+                messages.ontouchend = null;
+                if (unsub) unsub();
+            },
+        };
+    }
 </script>
 
 <svelte:head>
     <title>Poketab - Chat</title>
 </svelte:head>
 
-<SidePanel/>
-<QuickSettings/>
-<Themes/>
-<StickersKeyboard/>
-<Attachments/>
-<ConnectivityState bind:offline={isOffline}/>
-<MessageOptions/>
+<SidePanel />
+<QuickSettings />
+<Themes />
+<StickersKeyboard />
+<Attachments />
+<ConnectivityState bind:offline={isOffline} />
+<MessageOptions />
 
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
         <NavBar />
-        <ul class="messages" on:contextmenu={handleRighClick} id="messages" bind:this={messages}>
-    
-            <div class="welcome_wrapper" in:fly={{x: -50}} out:fade={{duration: 100}}>
+        <ul
+            class="messages"
+            use:handleMessages
+            on:contextmenu={handleRighClick}
+            id="messages"
+            bind:this={messages}
+        >
+            <div
+                class="welcome_wrapper"
+                in:fly={{ x: -50 }}
+                out:fade={{ duration: 100 }}
+            >
                 <li class="welcomeText">
-                    <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker">
+                    <img
+                        src="/images/greetings/{Math.floor(
+                            Math.random() * (9 - 1 + 1),
+                        ) + 1}.webp"
+                        alt="Welcome Sticker"
+                        height="160px"
+                        width="160px"
+                        id="welcomeSticker"
+                    />
                     <div>Share this chat link to others to join</div>
-                    <button id="invite" class="clickable hover play-sound button" title="Click to share" on:click={invite}>Share <i class="fa-solid fa-share-nodes"></i></button>
+                    <button
+                        id="invite"
+                        class="clickable hover play-sound button"
+                        title="Click to share"
+                        on:click={invite}
+                        >Share <i class="fa-solid fa-share-nodes"></i></button
+                    >
                 </li>
             </div>
             {#each [...$messageDatabase] as [id, message]}
                 {#if message instanceof MessageObj}
-                    {#if message.type === 'text' || message.type === 'emoji'}
-                        <TextMessage message={message} id={id}/>
-                    {:else if message.type === 'sticker'}
-                        <StickerMessage message={Object.setPrototypeOf(message, StickerMessageObj.prototype)} id={id}/>
+                    {#if message.type === "text" || message.type === "emoji"}
+                        <TextMessage {message} {id} />
+                    {:else if message.type === "sticker"}
+                        <StickerMessage
+                            message={Object.setPrototypeOf(
+                                message,
+                                StickerMessageObj.prototype,
+                            )}
+                            {id}
+                        />
                     {/if}
                 {:else if message instanceof ServerMessageObj}
-                    <ServerMessage message={message} id={id}/>
+                    <ServerMessage {message} {id} />
                 {/if}
             {/each}
         </ul>
+        <ScrollDownPopup messageContainer={messages} bind:notice={notice}/>
         <TypingIndicator />
+        <MessageReplyToast />
         <MessageInput />
     </div>
 </div>
 
 <style lang="scss">
-
-    .container{
+    .container {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -186,7 +565,7 @@
         overflow: hidden;
     }
 
-    .chatBox{
+    .chatBox {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -205,7 +584,7 @@
         background-position: center;
         background-repeat: no-repeat;
 
-        #messages{
+        #messages {
             position: relative;
             display: flex;
             flex-direction: column;
@@ -254,7 +633,7 @@
         pointer-events: none;
     }
 
-    @media screen and (orientation: landscape) and (min-device-aspect-ratio: 1.5 / 1){
+    @media screen and (orientation: landscape) and (min-device-aspect-ratio: 1.5 / 1) {
         .chatBox {
             width: 50%;
             min-width: 450px;

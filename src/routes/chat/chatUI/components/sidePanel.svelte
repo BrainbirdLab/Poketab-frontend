@@ -49,6 +49,7 @@
                 uid: '',
                 name: '',
                 avatar: '',
+                lastSeenMessage: '',
             });
             messageDatabase.update(messages => {
                 messages.clear();

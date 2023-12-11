@@ -1,94 +1,14 @@
 <script lang="ts">
-    import { MessageObj, messageDatabase, ServerMessageObj, lastSeenMessage } from "$lib/messages";
-    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterMessage } from "./messages/messageUtils";
+    import { MessageObj, messageDatabase, replyTargetId, eventTriggerMessageId } from "$lib/messages";
+    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterMessage, showReplyToast } from "./messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "../../../socket";
 
-    import {SEND_METHOD, chatRoomStore, currentTheme, quickEmojiEnabled, selfInfoStore, sendMethod, userTypingString} from "$lib/store";
+    import {SEND_METHOD, chatRoomStore, currentTheme, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "./modalManager";
     import { themesMap } from "$lib/themes";
-
-    socket.on('newMessage', (message: MessageObj, messageId: string) => {
-
-        console.log(message);
-
-        message = Object.assign(new MessageObj(), message);
-
-        message.message = filterMessage(message.message);
-
-        lastSeenMessage.set(messageId);
-
-        messageDatabase.update(messages => {
-            message.classList = makeClasslist(message);
-            message.sent = true;
-
-            messages.set(messageId, message);
-           
-            return messages;
-        });
-    });
-
-    socket.on('server_message', (msg: {text: string, id: string}, type: string) => {
-
-        console.log(msg);
-            
-        messageDatabase.update(messages => {
-
-            const message: ServerMessageObj = new ServerMessageObj();
-            message.text = msg.text;
-            message.type = type;
-
-            messages.set(msg.id, message);
-
-            return messages;
-        });
-    });
-
-    socket.on('react', (messageId: string, uid: string, react: string) => {
-        messageDatabase.update(messages => {
-            const message = messages.get(messageId) as MessageObj;
-            if (message && message instanceof MessageObj) {
-                //if same react is clicked again, remove it
-                if (message.reactedBy[uid] == react) {
-                    //message.reactedBy.delete(uid);
-                    delete message.reactedBy[uid];
-                } else {
-                    //message.reactedBy.set(uid, react);
-                    message.reactedBy[uid] = react;
-                }
-            }
-            return messages;
-        });
-    });
-
-
-    socket.on('seen', (uid: string, messageId: string) => {
-
-        if (!uid || !messageId) {
-            console.log('invalid seen');
-            return;
-        }
-
-        chatRoomStore.update(chatRoom => {
-            chatRoom.userList[uid].lastSeenMessage = messageId;
-            return chatRoom;
-        });
-
-        messageDatabase.update(messages => {
-            
-            const message = messages.get(messageId) as MessageObj;
-
-            console.log($chatRoomStore.userList, uid, messageId, $chatRoomStore.userList[uid]);
-            
-            console.log(`seen by ${$chatRoomStore.userList[uid].name} on ${message.message}`);
-            if (message && message instanceof MessageObj) {
-                message.seenBy[uid] = true;
-            }
-
-            return messages;
-        });
-    });
+    import { onDestroy } from "svelte";
     
     let newMessage = '';
 
@@ -116,13 +36,22 @@
         }
 
         const tempId = crypto.randomUUID();
+        message.id = tempId;
         message.message = newMessage.trim();
         message.sender = $selfInfoStore.uid;
 
-        message.classList = makeClasslist(message);
-
+        
         //console.log(message);
-
+        if ($replyTargetId){
+            console.log('replying to', $replyTargetId);
+            message.replyTo = $replyTargetId;
+            eventTriggerMessageId.set('');
+            replyTargetId.set('');
+            showReplyToast.set(false);
+        }
+        
+        message.classList = makeClasslist(message);
+        
         messageDatabase.update(msg => {
             msg.set(tempId, message);
             return msg;
@@ -131,6 +60,8 @@
         newMessage = '';
 
         sendMessage(message, tempId);
+
+        endTypingStatus();
 
         setTimeout(() => {
             document.getElementById('textbox')?.focus();
@@ -144,6 +75,22 @@
     }
 
     let isTypingTimeout: NodeJS.Timeout;
+
+    function sendTypingStatus(){
+        socket.emit('typing', $selfInfoStore.uid, 'start');
+
+        if (isTypingTimeout) {
+            clearTimeout(isTypingTimeout)
+        };
+
+        isTypingTimeout = setTimeout(() => {
+            endTypingStatus();
+        }, 10000);
+    }
+
+    function endTypingStatus(){
+        socket.emit('typing', $selfInfoStore.uid, 'end');
+    }
 
     const inputHandler = (e: Event) => {
 
@@ -162,15 +109,8 @@
         target.style.height = `${clone.scrollHeight}px`;
         document.body.removeChild(clone);
         
-        userTypingString.set('You are typing');
-        
-        if (isTypingTimeout) {
-            clearTimeout(isTypingTimeout)
-        };
-
-        isTypingTimeout = setTimeout(() => {
-            userTypingString.set('');
-        }, 1000);
+        //userTypingString.set('You are typing');
+        sendTypingStatus();
     };
 
     function keyDownHandler(e: KeyboardEvent){
@@ -188,6 +128,18 @@
         }
     }
 
+    let inputbox: HTMLDivElement;
+
+    const unsub = showReplyToast.subscribe(val => {
+        if (val) {
+            inputbox.focus();
+        }
+    });
+
+    onDestroy(() => {
+        unsub();
+    });
+
 </script>
     
 <div class="footer" transition:fly={{y: 30}}>
@@ -201,7 +153,7 @@
         <!-- Text input -->
         <div class="inputField">
             <div class="textbox-wrapper">
-              <div id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
+              <div bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
             </div>
             <Recorder />
         </div>          

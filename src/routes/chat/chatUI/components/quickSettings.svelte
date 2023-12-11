@@ -1,10 +1,61 @@
 <script lang="ts">
     import { fly, scale } from "svelte/transition";
     import { showQuickSettingsPanel, showThemesPanel } from "./modalManager";
-    import { currentTheme, type Settings, loadSettings, buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod} from "$lib/store";
+    import { currentTheme, buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod} from "$lib/store";
     import { themesMap } from "$lib/themes";
 
-    loadSettings();
+    type Settings = {
+        buttonSoundEnabled: boolean;
+        messageSoundEnabled: boolean;
+        quickEmojiEnabled: boolean;
+        sendMethod: SEND_METHOD;
+    };
+
+    const defaultSettings = {
+        buttonSoundEnabled: true,
+        messageSoundEnabled: true,
+        quickEmojiEnabled: true,
+        sendMethod: SEND_METHOD.ENTER,
+    };
+
+    function setDefaultChatSettings(){
+        sendMethod.set(defaultSettings.sendMethod);
+        buttonSoundEnabled.set(defaultSettings.buttonSoundEnabled);
+        messageSoundEnabled.set(defaultSettings.messageSoundEnabled);
+        quickEmojiEnabled.set(defaultSettings.quickEmojiEnabled);
+    }
+
+    function loadChatSettings() {
+        //console.log("Loading settings");
+        const settingsStr = localStorage.getItem("settings") || "{}";
+        try {
+            const parsedSettings: Partial<Settings> = JSON.parse(settingsStr);
+            //console.log(parsedSettings);
+            
+            if (typeof parsedSettings.buttonSoundEnabled != "boolean" || typeof parsedSettings.messageSoundEnabled != "boolean" || typeof parsedSettings.quickEmojiEnabled != "boolean" || typeof parsedSettings.sendMethod != "string") {
+                throw new Error("Invalid settings");
+            } else {
+                if (parsedSettings.sendMethod != SEND_METHOD.ENTER && parsedSettings.sendMethod != SEND_METHOD.CTRL_ENTER) {
+                    throw new Error("Invalid settings");
+                } else {
+                    buttonSoundEnabled.set(parsedSettings.buttonSoundEnabled);
+                    messageSoundEnabled.set(parsedSettings.messageSoundEnabled);
+                    quickEmojiEnabled.set(parsedSettings.quickEmojiEnabled);
+                    sendMethod.set(parsedSettings.sendMethod);
+                }
+            }
+
+        } catch (error) {
+            console.log("Error parsing settings:", error);
+            // Store the default settings
+            localStorage.setItem("settings", JSON.stringify(defaultSettings));
+            console.log("Default settings stored");
+            // Update the settings to the default settings
+            setDefaultChatSettings();
+        }
+    }
+
+    loadChatSettings();
 
     function setToLocalStorage(updatedSettings: Partial<Settings>) {
 
@@ -23,7 +74,7 @@
 
         const unsub = showQuickSettingsPanel.subscribe((value) => {
             if (value) {
-                loadSettings();
+                loadChatSettings();
             }
         });
 

@@ -1,12 +1,9 @@
 <script lang="ts">
-    import { fly, scale, slide } from "svelte/transition";
-    import { showStickersPanel } from "./modalManager";
-    import { onDestroy, onMount } from "svelte";
-    import {writable} from "svelte/store";
+    import { fly } from "svelte/transition";
+    import { showStickersPanel, selectedSticker } from "./modalManager";
     import { selfInfoStore } from "$lib/store";
-    import { socket } from "../../../socket";
-    import { StickerMessageObj, messageDatabase } from "$lib/messages";
-    import { makeClasslist, sendMessage } from "./messages/messageUtils";
+    import { StickerMessageObj, eventTriggerMessageId, messageDatabase, replyTargetId } from "$lib/messages";
+    import { makeClasslist, sendMessage, showReplyToast } from "./messages/messageUtils";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -30,13 +27,14 @@
         { name: "soul", count: "25", icon: "14" },
     ];
 
-    const selectedSticker = writable<string>(
-        localStorage.getItem("selectedSticker") || "catteftel"
-    );
 
     let stickerHeader: HTMLElement;
 
     function stickersHandler(node: HTMLElement){
+
+        if (!$selectedSticker){
+            selectedSticker.set(Stickers[0].name);
+        }
 
         const unsub = selectedSticker.subscribe(value => {
             document.getElementById(value)?.scrollIntoView({
@@ -71,40 +69,6 @@
 
                 const src = `/stickers/${group}/animated/${serial}.webp`;
 
-                /**
-                    const message: MessageObj = new MessageObj();
-
-                    if (type === 'emoji'){
-                        newMessage = $quickEmojiEnabled ? themesMap[$currentTheme]['emoji'] : '';
-                        message.type = 'emoji';
-                        message.kind = 'text';
-                    } else {
-                        message.type = 'text';
-                        message.kind = 'text';
-                    }
-
-                    if (newMessage.trim() === ''){
-                        return;
-                    }
-
-                    const tempId = crypto.randomUUID();
-                    message.message = newMessage.trim();
-                    message.sender = $selfInfoStore.uid;
-
-                    makeClasslist(message);
-
-                    //console.log(message);
-
-                    messageDatabase.update(msg => {
-                        msg.set(tempId, message);
-                        return msg;
-                    });
-
-                    newMessage = '';
-
-                    sendMessage(message, tempId);
-                */
-
 
                 const messageObj = new StickerMessageObj();
                 messageObj.message = src;
@@ -113,8 +77,20 @@
                 messageObj.sender = $selfInfoStore.uid;
                 messageObj.type = 'sticker';
                 messageObj.kind = 'sticker';
+
+
                 
                 const tempId = crypto.randomUUID();
+
+
+                //console.log(message);
+                if ($replyTargetId){
+                    console.log('replying to', $replyTargetId);
+                    messageObj.replyTo = $replyTargetId;
+                    eventTriggerMessageId.set('');
+                    replyTargetId.set('');
+                    showReplyToast.set(false);
+                }
 
                 messageObj.classList = makeClasslist(messageObj);
                 

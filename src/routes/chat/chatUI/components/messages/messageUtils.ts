@@ -1,9 +1,10 @@
-import { MessageObj, messageDatabase, lastSeenMessage } from "$lib/messages";
-import { get } from "svelte/store";
+import { MessageObj, messageDatabase, lastMessageId } from "$lib/messages";
+import { get, writable } from "svelte/store";
 import { chatRoomStore, selfInfoStore } from "$lib/store";
 import { socket } from "../../../../socket";
 import { badWords } from "./censoredWords";
 
+export const showReplyToast = writable(false);
 
 export function makeClasslist(message: MessageObj){
 
@@ -20,10 +21,10 @@ export function makeClasslist(message: MessageObj){
 
     if (get(messageDatabase).size > 0){
 
-        let lastMessage = [...get(messageDatabase).values()].pop();
-
-        if (lastMessage instanceof MessageObj && lastMessage?.type != 'sticker' && lastMessage?.type != 'emoji'){
-            if (lastMessage?.sender !== message.sender){
+        let lastMessageObj = get(messageDatabase).get(get(lastMessageId));
+		
+        if (lastMessageObj instanceof MessageObj && lastMessageObj?.type != 'sticker' && lastMessageObj?.type != 'emoji'){
+            if (lastMessageObj?.sender !== message.sender){
                 message.classList += ' newGroup';
             }
             if (message.type == 'sticker'){
@@ -31,11 +32,9 @@ export function makeClasslist(message: MessageObj){
                 return message.classList;
             }
     
-            if (lastMessage.sender === message.sender && message.type != 'emoji' && !message.replyTo ){
+            if (lastMessageObj.sender === message.sender && message.type != 'emoji' && !message.replyTo){
                 //last message is from the same user
-               
-                lastMessage.classList = lastMessage.classList.replace('end', '');
-               
+                lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
             } else {
                 message.classList += ' start';
             }
@@ -58,15 +57,16 @@ export function sendMessage(message: MessageObj, tempId: string){
     socket.emit('newMessage', message, (messageId: string) => {
         messageDatabase.update(msg => {
             message.sent = true;
+			message.id = messageId;
             msg.delete(tempId);
             msg.set(messageId, message);
             return msg;
         });
 
-        lastSeenMessage.set(messageId);
+        lastMessageId.set(messageId);
 
         if (document.hasFocus()){
-            socket.emit('seen', get(selfInfoStore).uid, get(lastSeenMessage));
+            socket.emit('seen', get(selfInfoStore).uid, get(lastMessageId));
         }
     });
 }

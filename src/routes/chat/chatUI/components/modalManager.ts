@@ -52,6 +52,8 @@ showStickersPanel.subscribe(value => {
     }
 });
 
+export const selectedSticker = writable('');
+
 export const showAttachmentPickerPanel = writable(false); //Has shortcut key 'a'
 showAttachmentPickerPanel.subscribe(value => {
     if (value){

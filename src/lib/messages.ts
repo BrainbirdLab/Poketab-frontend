@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-export const lastSeenMessage = writable('');
+export const lastMessageId = writable('');
 
 export class ServerMessageObj {
     text: string;
@@ -12,6 +12,7 @@ export class ServerMessageObj {
 }
 
 export class MessageObj {
+    id: string;
     message: string;
     classList: string;
     sent: boolean;
@@ -25,6 +26,7 @@ export class MessageObj {
     timeStamp: number;
 
     constructor() {
+        this.id = '';
         this.message = '';
         this.classList = '';
         this.sent = false;
@@ -46,7 +48,7 @@ export class StickerMessageObj extends MessageObj {
     constructor() {
         super();
         this.type = 'sticker';
-        this.kind = 'file';
+        this.kind = 'sticker';
         this.src = '';
         this.groupName = '';
         this.number = 0;
@@ -82,4 +84,5 @@ export class AudioMessageObj extends FileMessageObj {
 
 export const messageDatabase = writable<Map<string, MessageObj | StickerMessageObj | FileMessageObj | AudioMessageObj | ServerMessageObj>>(new Map<string, MessageObj>());
 
-export const targetMessage = writable<string>('');
+export const eventTriggerMessageId = writable<string>('');
+export const replyTargetId = writable<string>('');
