@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { MessageObj } from "$lib/messages";
-    import Reacts from "./messageComponents/reacts.svelte";
     import MessageTop from "./messageComponents/messageTop.svelte";
     import SeenBy from "./messageComponents/seenBy.svelte";
     import MessageMeta from "./messageComponents/messageMeta.svelte";
@@ -15,26 +14,26 @@
     <div class="messageContainer" >
         <MessageMeta sender={message.sender} sent={message.sent}/>
         <div class="messageBody">
-            <MessageTop sender={message.sender} classList={message.classList} replyTo={message.replyTo}/>
+            <MessageTop sender={message.sender} classList={message.classList} replyTo=""/>
             <div class="messageMain">
-                <div class="msg" data-mtype="{message.type}">
-                    <div class="data">{message.message}</div>
+                <div class="msg" data-mtype="deleted">
+                    <div class="data">This message was deleted</div>
                 </div>
                 <div class="messageTime">Just Now</div>
             </div>
-            <Reacts reactedBy={message.reactedBy} />
         </div>
     </div>
 </li>
 
 <style lang="scss">
 
-    .msg{
-        &[data-mtype="text"]{
-            padding: 8px;
-        }
-        &[data-mtype="emoji"]{
-            font-size: 2rem;
+    .msg[data-mtype="deleted"]{
+        padding: 8px;
+        background: #ffffff30;
+        color: #ffffffa0;
+
+        &:hover{
+            cursor: not-allowed;
         }
     }
 

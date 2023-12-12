@@ -1,12 +1,41 @@
 <script lang="ts">
     import { fly, scale } from "svelte/transition";
     import { showAttachmentPickerPanel } from "./modalManager";
+    import { showPopupMessage } from "./popup";
+    import { socket } from "../../../socket";
+    import { selfInfoStore } from "$lib/store";
+
+    function transmitLocation() {
+
+        if (!navigator.geolocation){
+            showPopupMessage('Geolocation is not supported by this browser.');
+        }
+
+        console.log("Transmitting location...");
+
+        //try to get location with high accuracy and timeout of 5 seconds.
+        let timeout = setTimeout(() => {
+            showPopupMessage('Unable to get location.');
+        }, 5000);
+
+        navigator.geolocation.getCurrentPosition((position) => {
+            clearTimeout(timeout);
+            const {latitude, longitude} = position.coords;
+            console.log(`${latitude}°N, ${longitude}°E`);
+            socket.emit('location', {latitude, longitude}, $selfInfoStore.uid);
+        }, (error) => {
+            clearTimeout(timeout);
+            showPopupMessage('Unable to get location.');
+        }, {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        });
+    }
 
     function attachmentsClickHandler(node: HTMLElement) {
         const clickHandler = (e: Event) => {
-            if (e.target == node) {
-                showAttachmentPickerPanel.set(false);
-            }
+            showAttachmentPickerPanel.set(false);
         };
 
         node.onclick = clickHandler;
@@ -74,7 +103,7 @@
             class="location button-animate btn icon play-sound attachmentButton"
             id="send-location"
         >
-            <button>
+            <button on:click={transmitLocation}>
                 <i class="fa-solid fa-location-crosshairs fa-shake" />
             </button>
             <div class="text">Location</div>

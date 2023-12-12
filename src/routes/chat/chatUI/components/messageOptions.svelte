@@ -3,10 +3,10 @@
     import { fly, slide } from "svelte/transition";
     import {showMessageOptions} from "./modalManager";
     import { socket } from "../../../socket";
-    import { MessageObj, messageDatabase, eventTriggerMessageId } from "$lib/messages";
+    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId } from "$lib/messages";
     import { selfInfoStore } from "$lib/store";
     import { showReplyToast } from "./messages/messageUtils";
-    import { showPopupMessage } from "$lib/utils/utils";
+    import { showPopupMessage } from "./popup";
 
     const reactArray = {
         primary: ['💙', '😆', '😠', '😢', '😮', '🙂'],
@@ -18,6 +18,7 @@
 
     $: reactedEmoji = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy[$selfInfoStore.uid] || '';
     $: messageKind = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.kind;
+
     const messageOptions: {[key: string]: string} = {
         Reply: 'fa-solid fa-reply',
         Copy: 'fa-solid fa-clone',
@@ -45,8 +46,6 @@
     function clickHandler(node: HTMLElement){
         node.onclick = (e: MouseEvent) => {
 
-            console.log(messageKind);
-
             if (e.target == node){
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
@@ -55,37 +54,30 @@
                 if (react && reactArray.expanded.includes(react)) {
                     messageDatabase.update((messages) => {
                         const message = messages.get($eventTriggerMessageId) as MessageObj;
-                        //console.log(message);
                         if (message) {
-                            console.log(message.reactedBy);
-                            //message.reacts.set($selfInfoStore.uid, react);
-
                             //if same react is clicked again, remove it
                             if (message.reactedBy[$selfInfoStore.uid] == react) {
-                                //message.reactedBy.delete($selfInfoStore.uid);
                                 delete message.reactedBy[$selfInfoStore.uid];
                             } else {
-                                //message.reactedBy.set($selfInfoStore.uid, react);
                                 message.reactedBy[$selfInfoStore.uid] = react;
                             }
                         }
                         return messages;
                     });
 
-                    //console.log(react);
                     //send the react to the server via socket
                     socket.emit('react', $eventTriggerMessageId, $selfInfoStore.uid, react);
-                    //console.log(`React: ${react} sent to ${$targetMessage}`);
                 }
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('option')) {
                 
                 if (e.target.classList.contains('Reply')) {
-                    console.log('reply');
+                    //console.log('reply');
+                    replyTargetId.set($eventTriggerMessageId);
                     showReplyToast.set(true);
                 } else if (e.target.classList.contains('Copy')) {
-                    console.log('copy');
+                    //console.log('copy');
                     const msg = $messageDatabase.get($eventTriggerMessageId) as MessageObj;
 
                     if (!navigator.clipboard){
@@ -100,7 +92,8 @@
                 } else if (e.target.classList.contains('Download')) {
                     console.log('download');
                 } else if (e.target.classList.contains('Delete')) {
-                    console.log('delete');
+                    //console.log('delete');
+                    socket.emit('deleteMessage', $eventTriggerMessageId, $selfInfoStore.uid);
                 }
 
                 reactIsExpanded = false;

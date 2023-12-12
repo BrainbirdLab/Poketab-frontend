@@ -5,7 +5,7 @@
     import { fly } from "svelte/transition";
     import { socket } from "../../../socket";
 
-    import {SEND_METHOD, chatRoomStore, currentTheme, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
+    import {SEND_METHOD, currentTheme, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "./modalManager";
     import { themesMap } from "$lib/themes";
     import { onDestroy } from "svelte";
@@ -19,7 +19,6 @@
         newMessage = filterMessage(emojiParser(newMessage));
 
         if (quickEmoji){
-            console.log('quick emoji');
             newMessage = $quickEmojiEnabled ? themesMap[$currentTheme]['emoji'] : '';
             message.type = 'emoji';
             message.kind = 'text';
@@ -43,7 +42,6 @@
         
         //console.log(message);
         if ($replyTargetId){
-            console.log('replying to', $replyTargetId);
             message.replyTo = $replyTargetId;
             eventTriggerMessageId.set('');
             replyTargetId.set('');

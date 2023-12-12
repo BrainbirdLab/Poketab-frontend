@@ -111,7 +111,7 @@
     visibility: hidden;
 }
 
-.message.emoji{
+.message[data-mtype="emoji"]{
     .messageMain{
         .msg{
             background: none !important;
@@ -216,14 +216,10 @@
         }
         .messageMain{
             flex-direction: row-reverse;
-            .msg.text{
-                background: var(--msg-send);
-            }
-            .msg.audio{
-                background: var(--msg-send);
-            }
-            .msg.file{
-                background: var(--msg-send)
+            .msg{
+                &[data-mtype="text"], [data-mtype="file"]{
+                    background: var(--msg-send);
+                }
             }
             & > *{
                 border-radius: 18px 5px 5px 18px;
@@ -336,33 +332,12 @@
         transition: 100ms ease-in-out;
         border-top-right-radius: 18px;
         border-bottom-right-radius: 18px;
-        & *{
-            pointer-events: none;
-        }
-        .data{
-            border-radius: inherit;
-        }
-        &.text{
+        &[data-mtype="text"], [data-mtype="file"]{
             background: var(--msg-get);
-            min-width: 32px;
-            max-width: 75%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            white-space: pre-wrap;
-
-            .data.text-content{
-                padding: 8px;
-                font-size: 0.8rem;
-            }
         }
-        &.sticker{
-            width: 100px;
-            height: 100px;
-            border-radius: 18px;
-            display: block;
-            background: #ffffff17;
+
+        .data{
+            pointer-events: none;
         }
     }
 }

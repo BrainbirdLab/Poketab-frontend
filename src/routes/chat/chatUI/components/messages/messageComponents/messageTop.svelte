@@ -105,7 +105,7 @@
             &.sticker {
                 height: 100px;
                 width: 100px;
-                background: #ffffff50;
+                background: #ffffff80;
                 filter: brightness(0.5);
             }
         }

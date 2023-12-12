@@ -11,6 +11,17 @@ export class ServerMessageObj {
     }
 }
 
+export class LocationMessageObj {
+    lat: number;
+    lon: number;
+    uid: string;
+    constructor(lat: number, lon: number, uid: string) {
+        this.lat = lat;
+        this.lon = lon;
+        this.uid = uid;
+    }
+}
+
 export class MessageObj {
     id: string;
     message: string;
@@ -20,7 +31,7 @@ export class MessageObj {
     kind: string;
     sender: string;
     replyTo: string;
-    timeout: number | undefined;
+    timeout: NodeJS.Timeout | undefined;
     seenBy: { [key: string]: boolean}
     reactedBy: { [key: string]: string}
     timeStamp: number;
@@ -82,7 +93,7 @@ export class AudioMessageObj extends FileMessageObj {
 }
 
 
-export const messageDatabase = writable<Map<string, MessageObj | StickerMessageObj | FileMessageObj | AudioMessageObj | ServerMessageObj>>(new Map<string, MessageObj>());
+export const messageDatabase = writable<Map<string, MessageObj | StickerMessageObj | FileMessageObj | AudioMessageObj | ServerMessageObj | LocationMessageObj>>(new Map<string, MessageObj>());
 
 export const eventTriggerMessageId = writable<string>('');
 export const replyTargetId = writable<string>('');

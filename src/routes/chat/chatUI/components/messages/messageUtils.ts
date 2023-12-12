@@ -9,7 +9,6 @@ export const showReplyToast = writable(false);
 export function makeClasslist(message: MessageObj){
 
     message.classList = ' end';
-    message.classList += ` ${message.type}`;
 
     if (message.sender === get(selfInfoStore).uid){
         message.classList += ' self';

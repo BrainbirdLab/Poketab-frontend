@@ -10,14 +10,16 @@
 
 </script>
 
-<li class="message msg-item {message.classList}" class:delevered={message.sent} id="{id}"> <!-- noreply notitle delevered start end self react -->
+<li class="message msg-item {message.classList}" id="{id}"> <!-- noreply notitle delevered start end self react -->
     <SeenBy seenBy={message.seenBy} messageId={id} />
     <div class="messageContainer">
         <MessageMeta sender={message.sender} sent={message.sent}/>
         <div class="messageBody">
             <MessageTop sender={message.sender} classList={message.classList} replyTo={message.replyTo}/>
             <div class="messageMain">
-                <img src="{message.message}" alt="{message.message}" data-sticker="{message.groupName}" class="msg sticker"/>
+                <div class="msg" data-mtype="sticker">
+                    <img src="{message.message}" alt="{message.message}" data-sticker="{message.groupName}" class="data"/>
+                </div>
                 <div class="messageTime">Just Now</div>
             </div>
             <Reacts reactedBy={message.reactedBy} />
@@ -28,9 +30,14 @@
 <style lang="scss">
 
     .msg{
-        .sticker{
+        height: 100px;
+        width: 100px;
+        background: #ffffff20;
+
+        img{
             height: 100%;
             width: 100%;
+            display: block;
         }
     }
 

@@ -3,7 +3,7 @@
 
     import {chatRoomStore, currentPage, joinedChat, selfInfoStore, splashMessage} from "$lib/store";
     import {clearModals, showQuickSettingsPanel, showSidePanel} from "./modalManager";
-    import { showPopupMessage } from "$lib/utils/utils";
+    import { showPopupMessage } from "./popup";
     import type { User } from "$lib/store";
     import { socket } from "../../../socket";
     import { messageDatabase } from "$lib/messages";

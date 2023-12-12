@@ -1,6 +1,5 @@
 <script lang="ts">
     import { chatRoomStore, selfInfoStore } from "$lib/store";
-    import type { MessageObj } from "$lib/messages";
 
     export let sender: string;
     export let sent: boolean;

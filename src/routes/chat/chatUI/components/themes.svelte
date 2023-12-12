@@ -3,7 +3,7 @@
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showThemesPanel } from "./modalManager";
-    import { showPopupMessage } from "$lib/utils/utils";
+    import { showPopupMessage } from "./popup";
     import { themesMap } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
 

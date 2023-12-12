@@ -10,8 +10,10 @@
         messageDatabase,
         eventTriggerMessageId,
         lastMessageId,
+        replyTargetId,
+        LocationMessageObj,
     } from "$lib/messages";
-    import { showPopupMessage } from "$lib/utils/utils";
+    import { showPopupMessage } from "./components/popup";
     import SidePanel from "./components/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
     import QuickSettings from "./components/quickSettings.svelte";
@@ -40,6 +42,8 @@
     import MessageReplyToast from "./components/messageReplyToast.svelte";
     import ScrollDownPopup from "./components/scrollDownPopup.svelte";
     import { filterMessage, makeClasslist, showReplyToast } from "./components/messages/messageUtils";
+    import DeletedMessage from "./components/messages/deletedMessage.svelte";
+    import LocationMessage from "./components/messages/locationMessage.svelte";
 
     let isOffline = false;
 
@@ -71,11 +75,61 @@
                 messages.scrollHeight - 200;
     });
 
+    let timeStampInterval: NodeJS.Timeout | null = null;
+
     afterUpdate(() => {
         if (autoScroll) {
             messages.scrollTop = messages.scrollHeight;
         }
+
+        //last message
+        const lastMessage = messages.lastElementChild as HTMLElement;
+
+        if (!lastMessage.classList.contains("message")) {
+            return;
+        }
+
+        const lastMessageObj = $messageDatabase.get(lastMessage.id) as MessageObj;
+
+        if (!lastMessageObj) {
+            return;
+        }
+
+        const timeStamp = lastMessageObj.timeStamp;
+
+        if (timeStampInterval) {
+            clearInterval(timeStampInterval);
+        }
+
+        //update time stamp of the last message
+        timeStampInterval = setInterval(() => {
+            const time = lastMessage.querySelector(".messageTime") as HTMLElement;
+            if (!time) {
+                return;
+            }
+            time.textContent = getFormattedDate(timeStamp);
+        }, 10000);
     });
+
+    function getFormattedDate(time: number) {
+        const currentTime = Date.now();
+        const differenceInSeconds = Math.floor((currentTime - time) / 1000);
+
+        if (differenceInSeconds === 0) {
+            return 'Just now';
+        } else if (differenceInSeconds < 60) {
+            return `${differenceInSeconds} secs ago`;
+        } else if (differenceInSeconds < 120) {
+            return '1 min ago';
+        } else if (differenceInSeconds < 600) {
+            return `${Math.floor(differenceInSeconds / 60)} mins ago`;
+        } else {
+            return new Intl.DateTimeFormat('default', {
+                hour: 'numeric',
+                minute: 'numeric'
+            }).format(time);
+        }
+    }
 
     const keyBindingHandler = (e: KeyboardEvent) => {
         //console.log(e.key);
@@ -129,6 +183,40 @@
 
         lastMessageId.set(messageId);
         notice = message;
+    });
+
+    socket.on('deleteMessage', (messageId: string, uid: string) => {
+        console.log('Delete request received');
+        if (!$messageDatabase.has(messageId)){
+            return;
+        }
+
+        const message = $messageDatabase.get(messageId) as MessageObj;
+        if (message.sender == uid){
+            messageDatabase.update((messages) => {
+                //change the message to "This message was deleted"
+                message.message = 'This message was deleted';
+                message.kind = 'deleted';
+                message.type = 'deleted';
+                message.replyTo = '';
+                return messages;
+            });
+        }
+    });
+
+    socket.on('location', (coord: {latitude: number, longitude: number}, id: string, uid: string) => {
+        
+        if (!$chatRoomStore.userList[uid]){
+            return;
+        }
+
+        messageDatabase.update((messages) => {
+            const message = new LocationMessageObj(coord.latitude, coord.longitude, uid);
+
+            messages.set(id, message);
+
+            return messages;
+        });
     });
 
     socket.on("server_message", (msg: { text: string; id: string }, type: string) => {
@@ -282,12 +370,25 @@
     function handleRighClick(e: MouseEvent) {
         e.preventDefault();
         const target: HTMLElement = e.target as HTMLElement;
+
+        
         if (target.classList.contains("msg")) {
             const id = target.closest(".message")?.id;
-            if (id) {
-                eventTriggerMessageId.set(id);
-                showMessageOptions.set(true);
+            if (!id) {
+                return;
             }
+            if (!$messageDatabase.has(id)) {
+                return;
+            }
+
+            const messageObj = $messageDatabase.get(id) as MessageObj;
+
+            if (messageObj?.kind == 'deleted'){
+                return;
+            }
+
+            eventTriggerMessageId.set(id);
+            showMessageOptions.set(true);
         }
     }
 
@@ -309,22 +410,38 @@
 
             const message = target.closest(".message") as HTMLElement;
 
-            if (target.classList.contains("msg")) {
-                if (message && $messageDatabase.has(message.id)) {
-                    const messageObj = $messageDatabase.get(
-                        message.id,
-                    ) as MessageObj;
-                    if (messageObj.kind === "sticker") {
-                        const stickerGroup = (messageObj as StickerMessageObj)
-                            .groupName;
-                        selectedSticker.set(stickerGroup);
-                        showStickersPanel.set(true);
-                    }
+            if (!message) {
+                return;
+            }
+
+            if (!$messageDatabase.has(message.id)){
+                return;
+            }
+
+
+            const messageObj = $messageDatabase.get(message.id) as MessageObj;
+
+            //show the time
+            const time = message.querySelector(".messageTime") as HTMLElement;
+            if (time) {
+                time.classList.toggle("active");
+
+                if (messageObj.timeout) {
+                    clearTimeout(messageObj.timeout);
                 }
+
+                messageObj.timeout = setTimeout(() => {
+                    time.classList.remove("active");
+                }, 1500);
+            }
+
+
+            if (target.classList.contains("msg") && messageObj.kind == "sticker") {
+                const stickerGroup = (messageObj as StickerMessageObj).groupName;
+                selectedSticker.set(stickerGroup);
+                showStickersPanel.set(true);
             } else if (target.classList.contains("messageReply")) {
-                const messageObj = $messageDatabase.get(
-                    message.id,
-                ) as MessageObj;
+                const messageObj = $messageDatabase.get(message.id) as MessageObj;
                 const replyId = messageObj.replyTo;
                 //scroll to the replied message
                 if (replyId) {
@@ -342,8 +459,6 @@
                     }
                 }
             }
-
-            //if clicked on a sticker
         };
 
         // Listen for a swipe on left
@@ -457,7 +572,7 @@
                     
                     if (replyTrigger) {
 
-                        eventTriggerMessageId.set(message.id);
+                        replyTargetId.set(message.id);
 
                         showReplyToast.set(true);
 
@@ -475,6 +590,7 @@
                 messages.ontouchstart = null;
                 messages.ontouchmove = null;
                 messages.ontouchend = null;
+                messages.onclick = null;
                 if (unsub) unsub();
             },
         };
@@ -530,9 +646,9 @@
             </div>
             {#each [...$messageDatabase] as [id, message]}
                 {#if message instanceof MessageObj}
-                    {#if message.type === "text" || message.type === "emoji"}
-                        <TextMessage {message} {id} />
-                    {:else if message.type === "sticker"}
+                    {#if message.kind == "text"}
+                        <TextMessage message={message} id={id} />
+                    {:else if message.kind === "sticker"}
                         <StickerMessage
                             message={Object.setPrototypeOf(
                                 message,
@@ -540,9 +656,13 @@
                             )}
                             {id}
                         />
+                    {:else if message.kind == "deleted"}
+                    <DeletedMessage message={message} id={id}/>
                     {/if}
                 {:else if message instanceof ServerMessageObj}
-                    <ServerMessage {message} {id} />
+                    <ServerMessage message={message} id={id} />
+                {:else if message instanceof LocationMessageObj}
+                    <LocationMessage id={id} lat={message.lat} lon={message.lon} uid={message.uid}/>
                 {/if}
             {/each}
         </ul>

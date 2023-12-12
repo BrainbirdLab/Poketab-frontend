@@ -65,10 +65,8 @@
             if (target.closest('.stickerBoard')){
                 const group = $selectedSticker;
                 const serial = target.dataset.serial;
-                console.log('Hmm.. Choosing sticker: ', group, serial);
 
                 const src = `/stickers/${group}/animated/${serial}.webp`;
-
 
                 const messageObj = new StickerMessageObj();
                 messageObj.message = src;
@@ -78,14 +76,9 @@
                 messageObj.type = 'sticker';
                 messageObj.kind = 'sticker';
 
-
-                
                 const tempId = crypto.randomUUID();
 
-
-                //console.log(message);
                 if ($replyTargetId){
-                    console.log('replying to', $replyTargetId);
                     messageObj.replyTo = $replyTargetId;
                     eventTriggerMessageId.set('');
                     replyTargetId.set('');
@@ -102,8 +95,6 @@
                 sendMessage(messageObj, tempId);
 
                 showStickersPanel.set(false);
-
-                console.log('Sticker sent: ', messageObj);
             }
         }
 
