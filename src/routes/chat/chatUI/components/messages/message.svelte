@@ -4,6 +4,7 @@
     import MessageTop from "./messageComponents/messageTop.svelte";
     import SeenBy from "./messageComponents/seenBy.svelte";
     import MessageMeta from "./messageComponents/messageMeta.svelte";
+    import { getFormattedDate } from "./messageUtils";
 
     export let message: MessageObj;
     export let id: string;
@@ -20,7 +21,7 @@
                 <div class="msg" data-mtype="{message.type}">
                     <div class="data">{message.message}</div>
                 </div>
-                <div class="messageTime">Just Now</div>
+                <div class="messageTime">{getFormattedDate(message.timeStamp)}</div>
             </div>
             <Reacts reactedBy={message.reactedBy} />
         </div>

@@ -6,6 +6,26 @@ import { badWords } from "./censoredWords";
 
 export const showReplyToast = writable(false);
 
+export function getFormattedDate(time: number) {
+	const currentTime = Date.now();
+	const differenceInSeconds = Math.floor((currentTime - time) / 1000);
+
+	if (differenceInSeconds === 0) {
+		return 'Just now';
+	} else if (differenceInSeconds < 60) {
+		return `${differenceInSeconds} secs ago`;
+	} else if (differenceInSeconds < 120) {
+		return '1 min ago';
+	} else if (differenceInSeconds < 600) {
+		return `${Math.floor(differenceInSeconds / 60)} mins ago`;
+	} else {
+		return new Intl.DateTimeFormat('default', {
+			hour: 'numeric',
+			minute: 'numeric'
+		}).format(time);
+	}
+}
+
 export function makeClasslist(message: MessageObj){
 
     message.classList = ' end';

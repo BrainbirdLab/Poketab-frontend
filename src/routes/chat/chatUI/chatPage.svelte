@@ -41,7 +41,7 @@
     import { spring } from "svelte/motion";
     import MessageReplyToast from "./components/messageReplyToast.svelte";
     import ScrollDownPopup from "./components/scrollDownPopup.svelte";
-    import { filterMessage, makeClasslist, showReplyToast } from "./components/messages/messageUtils";
+    import { filterMessage, getFormattedDate, makeClasslist, showReplyToast } from "./components/messages/messageUtils";
     import DeletedMessage from "./components/messages/deletedMessage.svelte";
     import LocationMessage from "./components/messages/locationMessage.svelte";
 
@@ -110,26 +110,6 @@
             time.textContent = getFormattedDate(timeStamp);
         }, 10000);
     });
-
-    function getFormattedDate(time: number) {
-        const currentTime = Date.now();
-        const differenceInSeconds = Math.floor((currentTime - time) / 1000);
-
-        if (differenceInSeconds === 0) {
-            return 'Just now';
-        } else if (differenceInSeconds < 60) {
-            return `${differenceInSeconds} secs ago`;
-        } else if (differenceInSeconds < 120) {
-            return '1 min ago';
-        } else if (differenceInSeconds < 600) {
-            return `${Math.floor(differenceInSeconds / 60)} mins ago`;
-        } else {
-            return new Intl.DateTimeFormat('default', {
-                hour: 'numeric',
-                minute: 'numeric'
-            }).format(time);
-        }
-    }
 
     const keyBindingHandler = (e: KeyboardEvent) => {
         //console.log(e.key);
@@ -424,6 +404,8 @@
             //show the time
             const time = message.querySelector(".messageTime") as HTMLElement;
             if (time) {
+
+                time.textContent = getFormattedDate(messageObj.timeStamp);
                 time.classList.toggle("active");
 
                 if (messageObj.timeout) {
