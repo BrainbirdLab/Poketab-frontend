@@ -18,7 +18,7 @@
             <MessageTop sender={message.sender} classList={message.classList} replyTo={message.replyTo}/>
             <div class="messageMain">
                 <div class="msg" data-mtype="sticker">
-                    <img src="{message.message}" alt="{message.message}" data-sticker="{message.groupName}" class="data"/>
+                    <img src="{message.src}" alt="{message.src}" data-sticker="{message.groupName}" class="data"/>
                 </div>
                 <div class="messageTime">Just Now</div>
             </div>

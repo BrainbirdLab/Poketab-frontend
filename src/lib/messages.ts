@@ -24,7 +24,6 @@ export class LocationMessageObj {
 
 export class MessageObj {
     id: string;
-    message: string;
     classList: string;
     sent: boolean;
     type: string;
@@ -38,7 +37,6 @@ export class MessageObj {
 
     constructor() {
         this.id = '';
-        this.message = '';
         this.classList = '';
         this.sent = false;
         this.type = '';
@@ -49,6 +47,27 @@ export class MessageObj {
         this.timeout = undefined;
         this.seenBy = {};
         this.reactedBy = {};
+    }
+}
+
+export type linkPreviewType = {
+    title: string,
+    description: string,
+    image: string,
+    url: string,
+}
+
+export class TextMessageObj extends MessageObj {
+    
+    message: string;
+    linkPreviewData?: linkPreviewType | null;
+    
+    constructor() {
+        super();
+        this.type = 'text';
+        this.kind = 'text';
+        this.message = '';
+        this.linkPreviewData = null;
     }
 }
 
@@ -93,7 +112,7 @@ export class AudioMessageObj extends FileMessageObj {
 }
 
 
-export const messageDatabase = writable<Map<string, MessageObj | StickerMessageObj | FileMessageObj | AudioMessageObj | ServerMessageObj | LocationMessageObj>>(new Map<string, MessageObj>());
+export const messageDatabase = writable<Map<string, MessageObj | ServerMessageObj | LocationMessageObj>>(new Map());
 
 export const eventTriggerMessageId = writable<string>('');
 export const replyTargetId = writable<string>('');

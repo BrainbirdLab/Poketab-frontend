@@ -12,6 +12,7 @@
         lastMessageId,
         replyTargetId,
         LocationMessageObj,
+        TextMessageObj,
     } from "$lib/messages";
     import { showPopupMessage } from "./components/popup";
     import SidePanel from "./components/sidePanel.svelte";
@@ -147,22 +148,48 @@
     socket.on("newMessage", (message: MessageObj, messageId: string) => {
         //console.log(message);
 
-        message = Object.assign(new MessageObj(), message);
+        if(message.kind == 'text'){
+            message = Object.setPrototypeOf(message, TextMessageObj.prototype);
+        } else if (message.kind == 'sticker'){
+            message = Object.setPrototypeOf(message, StickerMessageObj.prototype);
+        } else if (message.kind == 'deleted'){
+            message = Object.setPrototypeOf(message, TextMessageObj.prototype);
+        } else if (message.kind == 'location'){
+            message = Object.setPrototypeOf(message, LocationMessageObj.prototype);
+        }
 
-        message.message = filterMessage(message.message);
+        if (message instanceof TextMessageObj){
+            message.message = filterMessage(message.message);
+        }
 
-        
         messageDatabase.update((messages) => {
             message.classList = makeClasslist(message);
             message.sent = true;
-            
             messages.set(messageId, message);
-            
             return messages;
         });
 
         lastMessageId.set(messageId);
         notice = message;
+    });
+
+    socket.on('linkPreviewData', (messageId: string, data: {title: string, description: string, image: string, url: string}) => {
+        if (!$messageDatabase.has(messageId)){
+            return;
+        }
+
+        console.log(data);
+        
+        messageDatabase.update((messages) => {
+            const message = messages.get(messageId) as MessageObj;
+            console.log(message.kind);
+            console.log(message instanceof TextMessageObj);
+            if (message && message instanceof TextMessageObj){
+                console.log('updating link preview data');
+                message.linkPreviewData = data;
+            }
+            return messages;
+        });
     });
 
     socket.on('deleteMessage', (messageId: string, uid: string) => {
@@ -171,7 +198,7 @@
             return;
         }
 
-        const message = $messageDatabase.get(messageId) as MessageObj;
+        const message = $messageDatabase.get(messageId) as TextMessageObj;
         if (message.sender == uid){
             messageDatabase.update((messages) => {
                 //change the message to "This message was deleted"
@@ -215,8 +242,10 @@
     );
 
     socket.on("react", (messageId: string, uid: string, react: string) => {
+        console.log("react received");
         messageDatabase.update((messages) => {
             const message = messages.get(messageId) as MessageObj;
+            console.log(message);
             if (message && message instanceof MessageObj) {
                 //if same react is clicked again, remove it
                 if (message.reactedBy[uid] == react) {
@@ -347,16 +376,17 @@
         messages.onscroll = null;
     });
 
-    function handleRighClick(e: MouseEvent) {
+    function handleRightClick(e: MouseEvent) {
         e.preventDefault();
         const target: HTMLElement = e.target as HTMLElement;
 
         
-        if (target.classList.contains("msg")) {
+        if (target.closest(".msg")) {
             const id = target.closest(".message")?.id;
             if (!id) {
                 return;
             }
+            
             if (!$messageDatabase.has(id)) {
                 return;
             }
@@ -398,10 +428,9 @@
                 return;
             }
 
-
             const messageObj = $messageDatabase.get(message.id) as MessageObj;
 
-            //show the time
+            //show the time on click
             const time = message.querySelector(".messageTime") as HTMLElement;
             if (time) {
 
@@ -417,12 +446,17 @@
                 }, 1500);
             }
 
-
+            //if message is a sticker, show the sticker panel of that group
             if (target.classList.contains("msg") && messageObj.kind == "sticker") {
+
                 const stickerGroup = (messageObj as StickerMessageObj).groupName;
                 selectedSticker.set(stickerGroup);
                 showStickersPanel.set(true);
-            } else if (target.classList.contains("messageReply")) {
+
+            }
+            //if message is a reply, scroll to the replied message
+            else if (target.classList.contains("messageReply")) {
+
                 const messageObj = $messageDatabase.get(message.id) as MessageObj;
                 const replyId = messageObj.replyTo;
                 //scroll to the replied message
@@ -594,52 +628,25 @@
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
         <NavBar />
-        <ul
-            class="messages"
-            use:handleMessages
-            on:contextmenu={handleRighClick}
-            id="messages"
-            bind:this={messages}
-        >
-            <div
-                class="welcome_wrapper"
-                in:fly={{ x: -50 }}
-                out:fade={{ duration: 100 }}
-            >
+        <ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={messages}>
+            <div class="welcome_wrapper" in:fly={{ x: -50 }} out:fade={{ duration: 100 }} >
                 <li class="welcomeText">
-                    <img
-                        src="/images/greetings/{Math.floor(
-                            Math.random() * (9 - 1 + 1),
-                        ) + 1}.webp"
-                        alt="Welcome Sticker"
-                        height="160px"
-                        width="160px"
-                        id="welcomeSticker"
-                    />
+                    <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
                     <div>Share this chat link to others to join</div>
-                    <button
-                        id="invite"
-                        class="clickable hover play-sound button"
-                        title="Click to share"
-                        on:click={invite}
-                        >Share <i class="fa-solid fa-share-nodes"></i></button
-                    >
+                    <button id="invite" class="clickable hover play-sound button" title="Click to share" on:click={invite}>
+                        Share
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </button>
                 </li>
             </div>
             {#each [...$messageDatabase] as [id, message]}
                 {#if message instanceof MessageObj}
-                    {#if message.kind == "text"}
+                    {#if message instanceof TextMessageObj && message.kind == "text"}
                         <TextMessage message={message} id={id} />
-                    {:else if message.kind === "sticker"}
-                        <StickerMessage
-                            message={Object.setPrototypeOf(
-                                message,
-                                StickerMessageObj.prototype,
-                            )}
-                            {id}
-                        />
-                    {:else if message.kind == "deleted"}
-                    <DeletedMessage message={message} id={id}/>
+                    {:else if message instanceof StickerMessageObj}
+                        <StickerMessage message={message} id={id}/>
+                    {:else if message instanceof TextMessageObj && message.kind == "deleted"}
+                        <DeletedMessage message={message} id={id}/>
                     {/if}
                 {:else if message instanceof ServerMessageObj}
                     <ServerMessage message={message} id={id} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { MessageObj, messageDatabase, replyTargetId, eventTriggerMessageId } from "$lib/messages";
+    import { MessageObj, messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj } from "$lib/messages";
     import { makeClasslist, sendMessage, isEmoji, emojiParser, filterMessage, showReplyToast } from "./messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
@@ -12,9 +12,18 @@
     
     let newMessage = '';
 
+    function parseLink(text: string) {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, function(url) {
+            //prevent XSS
+            const url2 = url.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return '<a href="' + url2 + '" target="_blank">' + url + "</a>";
+        });
+    }
+
     function insertMessage(quickEmoji = false){
 
-        const message: MessageObj = new MessageObj();
+        const message: TextMessageObj = new TextMessageObj();
 
         newMessage = filterMessage(emojiParser(newMessage));
 
@@ -37,7 +46,11 @@
         const tempId = crypto.randomUUID();
         message.id = tempId;
         message.message = newMessage.trim();
+        message.message = parseLink(message.message);
+
         message.sender = $selfInfoStore.uid;
+
+
 
         
         //console.log(message);

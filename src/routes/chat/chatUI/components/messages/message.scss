@@ -218,7 +218,9 @@
             flex-direction: row-reverse;
             .msg{
                 &[data-mtype="text"], [data-mtype="file"]{
-                    background: var(--msg-send);
+                    .data{
+                        background: var(--msg-send);
+                    }
                 }
             }
             & > *{
@@ -248,24 +250,6 @@
         }
     }
 }
-/*
-.seenByMultiple{
-    margin-bottom: 12px;
-    .seenBy{
-        bottom: -14px;
-    }
-
-    .msg{
-        border-bottom-left-radius: 18px !important;
-        border-bottom-right-radius: 18px !important;
-    }
-}
-
-.self.seenByMultiple + .self .msg {
-    border-top-left-radius: 18px !important;
-    border-top-right-radius: 18px !important;
-}
-*/
 
 .message.self:has(.seenBy > img:nth-child(2)){
 
@@ -332,8 +316,22 @@
         transition: 100ms ease-in-out;
         border-top-right-radius: 18px;
         border-bottom-right-radius: 18px;
+        overflow: hidden;
+        &[data-mtype="text"] .data{
+            a{
+                color: inherit;
+                &::after{
+                    content: '\f08e';
+                    font-family: 'FontAwesome';
+                    font-size: 0.8rem;
+                    padding-right: 5px;
+                }
+            }
+        }
         &[data-mtype="text"], [data-mtype="file"]{
-            background: var(--msg-get);
+            .data{
+                background: var(--msg-get);
+            }
         }
 
         .data{

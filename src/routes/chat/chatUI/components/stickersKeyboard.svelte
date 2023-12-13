@@ -69,7 +69,7 @@
                 const src = `/stickers/${group}/animated/${serial}.webp`;
 
                 const messageObj = new StickerMessageObj();
-                messageObj.message = src;
+                messageObj.src = src;
                 messageObj.groupName = group;
                 messageObj.number = Number(serial);
                 messageObj.sender = $selfInfoStore.uid;
