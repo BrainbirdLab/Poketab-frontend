@@ -6,7 +6,7 @@
 [![DeepScan grade](https://deepscan.io/api/teams/20528/projects/23967/branches/733333/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=23967&bid=733333)
 
 ![GitHub](https://img.shields.io/github/license/itsfuad/Poketab-Messenger?style=flat-square)
-![Website](https://img.shields.io/website?down_color=Red&down_message=Offline&style=flat-square&up_color=green&up_message=Online&url=https%3A%2F%2Fpoketab.live)
+![Website](https://img.shields.io/website?down_color=Red&down_message=Offline&style=flat-square&up_color=green&up_message=Online&url=https%3A%2F%2Fpoketab.vercel.app)
 
 Poketab Messenger is a temporary chat application that allows users to create and join group chats with up to 10 people. The app utilizes a unique key system to ensure privacy and security, as users can only join a chat by using a key generated and sent by the server.
 
