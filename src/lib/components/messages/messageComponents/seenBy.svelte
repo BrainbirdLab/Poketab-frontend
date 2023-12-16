@@ -1,6 +1,5 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
-    import { fly } from "svelte/transition";
     export let seenBy: {[uid: string]: boolean};
     export let messageId: string;
 </script>

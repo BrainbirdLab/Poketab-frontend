@@ -1,8 +1,8 @@
 <script lang="ts">
-    import "./components/messages/message.scss";
-    import MessageInput from "./components/messageInput.svelte";
-    import NavBar from "./components/navBar.svelte";
-    import TextMessage from "./components/messages/message.svelte";
+    import "$lib/components/messages/message.scss";
+    import MessageInput from "$lib/components/messageInput.svelte";
+    import NavBar from "$lib/components/navBar.svelte";
+    import TextMessage from "$lib/components/messages/message.svelte";
     import {
         MessageObj,
         ServerMessageObj,
@@ -14,11 +14,11 @@
         LocationMessageObj,
         TextMessageObj,
     } from "$lib/messages";
-    import { showPopupMessage } from "./components/popup";
-    import SidePanel from "./components/sidePanel.svelte";
+    import { showPopupMessage } from "$lib/components/popup";
+    import SidePanel from "$lib/components/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
-    import QuickSettings from "./components/quickSettings.svelte";
-    import TypingIndicator from "./components/typingIndicator.svelte";
+    import QuickSettings from "$lib/components/quickSettings.svelte";
+    import TypingIndicator from "$lib/components/typingIndicator.svelte";
     import { chatRoomStore, selfInfoStore, userTypingString } from "$lib/store";
     import {
         activeModalsStack,
@@ -29,22 +29,22 @@
         showSidePanel,
         showStickersPanel,
         showThemesPanel,
-    } from "./components/modalManager";
-    import ConnectivityState from "./components/connectivityState.svelte";
-    import Themes from "./components/themes.svelte";
+    } from "$lib/components/modalManager";
+    import ConnectivityState from "$lib/components/connectivityState.svelte";
+    import Themes from "$lib/components/themes.svelte";
     import { afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
-    import StickersKeyboard from "./components/stickersKeyboard.svelte";
-    import Attachments from "./components/attachments.svelte";
-    import MessageOptions from "./components/messageOptions.svelte";
-    import StickerMessage from "./components/messages/stickerMessage.svelte";
-    import ServerMessage from "./components/messages/serverMessage.svelte";
-    import { socket } from "../../socket";
+    import StickersKeyboard from "$lib/components/stickersKeyboard.svelte";
+    import Attachments from "$lib/components/attachments.svelte";
+    import MessageOptions from "$lib/components/messageOptions.svelte";
+    import StickerMessage from "$lib/components/messages/stickerMessage.svelte";
+    import ServerMessage from "$lib/components/messages/serverMessage.svelte";
+    import { socket } from "$lib/components/socket";
     import { spring } from "svelte/motion";
-    import MessageReplyToast from "./components/messageReplyToast.svelte";
-    import ScrollDownPopup from "./components/scrollDownPopup.svelte";
-    import { filterMessage, getFormattedDate, makeClasslist, showReplyToast } from "./components/messages/messageUtils";
-    import DeletedMessage from "./components/messages/deletedMessage.svelte";
-    import LocationMessage from "./components/messages/locationMessage.svelte";
+    import MessageReplyToast from "$lib/components/messageReplyToast.svelte";
+    import ScrollDownPopup from "$lib/components/scrollDownPopup.svelte";
+    import { filterMessage, getFormattedDate, makeClasslist, showReplyToast } from "$lib/components/messages/messageUtils";
+    import DeletedMessage from "$lib/components/messages/deletedMessage.svelte";
+    import LocationMessage from "$lib/components/messages/locationMessage.svelte";
 
     let isOffline = false;
 

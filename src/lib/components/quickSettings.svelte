@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fly, scale } from "svelte/transition";
+    import { fly } from "svelte/transition";
     import { showQuickSettingsPanel, showThemesPanel } from "./modalManager";
     import { currentTheme, buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod} from "$lib/store";
     import { themesMap } from "$lib/themes";

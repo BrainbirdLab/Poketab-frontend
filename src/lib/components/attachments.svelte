@@ -2,7 +2,7 @@
     import { fly, scale } from "svelte/transition";
     import { showAttachmentPickerPanel } from "./modalManager";
     import { showPopupMessage } from "./popup";
-    import { socket } from "../../../socket";
+    import { socket } from "./socket";
     import { selfInfoStore } from "$lib/store";
 
     function transmitLocation() {

@@ -1,7 +1,3 @@
-//if client scope
-//if server scope
-
-
 import { writable, type Writable } from 'svelte/store';
 
 console.log('Modal Manager Running');

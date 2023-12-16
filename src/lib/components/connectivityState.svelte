@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import {fly} from "svelte/transition";
-    import {socket} from "../../../socket";
+    import {socket} from "./socket";
 
     let title = '';
     let icon = '';

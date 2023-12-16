@@ -2,8 +2,8 @@
 <script lang="ts">
     import { fly, slide } from "svelte/transition";
     import {showMessageOptions} from "./modalManager";
-    import { socket } from "../../../socket";
-    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId } from "$lib/messages";
+    import { socket } from "./socket";
+    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messages";
     import { selfInfoStore } from "$lib/store";
     import { showReplyToast } from "./messages/messageUtils";
     import { showPopupMessage } from "./popup";
@@ -78,7 +78,7 @@
                     showReplyToast.set(true);
                 } else if (e.target.classList.contains('Copy')) {
                     //console.log('copy');
-                    const msg = $messageDatabase.get($eventTriggerMessageId) as MessageObj;
+                    const msg = $messageDatabase.get($eventTriggerMessageId) as TextMessageObj;
 
                     if (!navigator.clipboard){
                         showPopupMessage('Copy not supported');

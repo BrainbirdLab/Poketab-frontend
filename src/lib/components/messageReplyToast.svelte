@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {messageDatabase, replyTargetId, type MessageObj} from "$lib/messages";
+    import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj} from "$lib/messages";
     import {chatRoomStore, selfInfoStore} from "$lib/store";
     import { slide, fly, fade } from "svelte/transition";
     import { showReplyToast } from "./messages/messageUtils";
@@ -21,10 +21,12 @@
                 Repliying to {sender}
             </div>
             <div class="replyData" out:fade={{duration: 200}} in:fly={{x: 5, delay: 250, duration: 200}}>
-                {#if message.kind == 'text'}
-                    {message.message}
-                {:else if message.kind == 'sticker'}
-                    <img src="{message.message}" alt="Sticker">
+                {#if message instanceof TextMessageObj}
+                    {#if message.kind == 'text'}
+                        {message.message}
+                    {:else if message.kind == 'sticker'}
+                        <img src="{message.message}" alt="Sticker">
+                    {/if}
                 {/if}
             </div>
         </div>

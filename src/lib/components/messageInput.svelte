@@ -3,7 +3,7 @@
     import { makeClasslist, sendMessage, isEmoji, emojiParser, filterMessage, showReplyToast } from "./messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
-    import { socket } from "../../../socket";
+    import { socket } from "./socket";
 
     import {SEND_METHOD, currentTheme, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "./modalManager";

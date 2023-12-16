@@ -4,7 +4,7 @@
     import Form from "../form.svelte";
     import { formNotification, formActionButtonDisabled } from "$lib/store";
     import { onMount } from "svelte";
-    import { socket } from "../socket";
+    import { socket } from "../../lib/components/socket";
     import SplashScreen from "../splashScreen.svelte";
     import { splashMessage } from "$lib/store";
 
