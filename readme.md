@@ -19,7 +19,7 @@ Poketab Messenger is a temporary chat application that allows users to create an
 - All data is stored only on the device, ensuring maximum privacy and security
 
 ## Getting Started
-1. Open the browser of your choice on any device and navigate to https://poketab.live
+1. Open the browser of your choice on any device
 2. Once the site is loaded, create a new chat or join an existing one by using the provided key.
 3. Start chatting and sharing files, images, audio, and stickers with others in the chat.
 4. Use the built-in audio player and recorder to play and record audio within the app.
