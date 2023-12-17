@@ -23,7 +23,7 @@ export async function load({cookies}) {
                 systemOk: ok,
             }
         } else {
-            cookies.set('theme', 'ocean');
+            cookies.set('theme', 'ocean', {path: '/'});
             return {
                 theme: 'ocean',
                 version: version,
@@ -31,7 +31,7 @@ export async function load({cookies}) {
             }
         }
     } else {
-        cookies.set('theme', 'ocean');
+        cookies.set('theme', 'ocean', {path: '/'});
         return {
             theme: 'ocean',
             version: version,

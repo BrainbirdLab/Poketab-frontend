@@ -9,13 +9,13 @@ export async function load({cookies}) {
                 theme: theme,
             }
         } else {
-            cookies.set('theme', 'ocean');
+            cookies.set('theme', 'ocean', {path: '/'});
             return {
                 theme: 'ocean',
             }
         }
     } else {
-        cookies.set('theme', 'ocean');
+        cookies.set('theme', 'ocean', {path: '/'});
         return {
             theme: 'ocean',
         }
