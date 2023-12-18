@@ -62,7 +62,7 @@
                 return;
             }
 
-            if (target.closest('.stickerBoard')){
+            if (target.closest('.stickerItem') && target.dataset.serial && target.closest('.stickerBoard')){
                 const group = $selectedSticker;
                 const serial = target.dataset.serial;
 
@@ -164,7 +164,7 @@
             {#each Stickers as sticker}
                 <div class="stickerBoard {sticker.name}" id="{sticker.name}">
                     {#each Array.from({ length: parseInt(sticker.count) }) as _, i}
-                        <img data-serial={i+1} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
+                        <img class="stickerItem" data-serial={i+1} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
                     {/each}
                 </div>
             {/each}
