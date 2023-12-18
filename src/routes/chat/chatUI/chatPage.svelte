@@ -71,6 +71,12 @@
 
     afterUpdate(() => {
 
+        if (messages &&
+            messages.offsetHeight + messages.scrollTop >
+                messages.scrollHeight - 200) {
+            messages.scrollTop = messages.scrollHeight;
+        }
+
         //last message
         const lastMessage = messages.lastElementChild as HTMLElement;
 
@@ -180,31 +186,36 @@
         });
     });
 
-    let chatHeight = 0;
-
     socket.on('deleteMessage', (messageId: string, uid: string) => {
-        console.log('Delete request received');
-        if (!$messageDatabase.has(messageId)){
-            return;
-        }
 
-        let message = $messageDatabase.get(messageId) as TextMessageObj;
-
-        if (message.sender == uid){
-            if (!(message instanceof TextMessageObj)){
-                message = Object.setPrototypeOf(message, TextMessageObj.prototype);
+        try{
+            
+            if (!$messageDatabase.has(messageId)){
+                return;
             }
-            message.message = 'This message was deleted';
-            message.kind = 'deleted';
-            message.type = 'deleted';
-            message.replyTo = '';
-            messageDatabase.update((messages) => {
-                //change the message to "This message was deleted"
-                messages.set(messageId, message);
-                return messages;
-            });
 
-            chatHeight = messages.scrollTop;
+            let message = $messageDatabase.get(messageId) as TextMessageObj;
+
+            if (message.sender == uid){
+                if (!(message instanceof TextMessageObj)){
+                    message = Object.setPrototypeOf(message, TextMessageObj.prototype);
+                }
+                message.message = 'This message was deleted';
+                message.kind = 'deleted';
+                message.type = 'deleted';
+                message.replyTo = '';
+                messageDatabase.update((messages) => {
+                    //change the message to "This message was deleted"
+                    messages.set(messageId, message);
+                    return messages;
+                });
+
+                const navbar = document.querySelector('.navbar') as HTMLElement;
+                const footer = document.querySelector('.footer') as HTMLElement;
+                messages.style.height = `calc(100vh - ${navbar.offsetHeight + footer.offsetHeight}px)`;
+            }
+        } catch (e){
+            console.log(e);
         }
     });
 
