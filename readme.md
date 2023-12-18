@@ -43,4 +43,4 @@ To contribute to this project, follow these steps:
 ## Credits
 Lead Developer [Fuad Hasan](https://github.com/itsfuad).
 
-Email: support@poketab.live
+Email: itsfuad@engineer.com
