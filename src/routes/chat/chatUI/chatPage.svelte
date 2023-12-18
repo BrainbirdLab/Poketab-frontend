@@ -65,27 +65,11 @@
         }
     }
 
-    let autoScroll = true;
-
     let messages: HTMLElement;
-
-    beforeUpdate(() => {
-        console.log("before update");
-        autoScroll =
-            messages &&
-            messages.offsetHeight + messages.scrollTop >
-                messages.scrollHeight - 200;
-    });
 
     let timeStampInterval: NodeJS.Timeout | null = null;
 
     afterUpdate(() => {
-
-        console.log("after update");
-
-        if (autoScroll) {
-            messages.scrollTop = messages.scrollHeight;
-        }
 
         //last message
         const lastMessage = messages.lastElementChild as HTMLElement;
@@ -196,6 +180,8 @@
         });
     });
 
+    let chatHeight = 0;
+
     socket.on('deleteMessage', (messageId: string, uid: string) => {
         console.log('Delete request received');
         if (!$messageDatabase.has(messageId)){
@@ -217,6 +203,8 @@
                 messages.set(messageId, message);
                 return messages;
             });
+
+            chatHeight = messages.scrollTop;
         }
     });
 
@@ -714,7 +702,7 @@
             scrollbar-width: none;
             list-style: none;
             z-index: 1;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
             width: 100%;
 
             .welcome_wrapper {

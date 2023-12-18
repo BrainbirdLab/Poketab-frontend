@@ -1,30 +1,26 @@
 <script lang="ts">
-    import { MessageObj, messageDatabase } from "$lib/messages";
+    import { MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messages";
     import { chatRoomStore, selfInfoStore } from "$lib/store";
 
     export let replyTo: string;
     export let sender: string;
     export let classList: string;
 
-    const replyMessage = $messageDatabase.get(replyTo) as MessageObj;
+    $: replyMessage = $messageDatabase.get(replyTo) as MessageObj;
 
     function getTitle() {
         let title = "";
 
         if (replyTo && $messageDatabase.has(replyTo)) {
             if (sender == $selfInfoStore.uid) {
-                const repliedTo = $messageDatabase.get(
-                    replyTo,
-                ) as MessageObj;
+                const repliedTo = $messageDatabase.get(replyTo) as MessageObj;
                 title = `You replied to ${
                     repliedTo.sender == $selfInfoStore.uid
                         ? "yourself"
                         : $chatRoomStore.userList[repliedTo.sender]?.name
                 }`;
             } else {
-                const repliedTo = $messageDatabase.get(
-                    replyTo,
-                ) as MessageObj;
+                const repliedTo = $messageDatabase.get(replyTo) as MessageObj;
                 title = `${
                     $chatRoomStore.userList[sender]?.name
                 } replied to ${
@@ -55,10 +51,10 @@
 {/if}
 {#if replyTo}
     <div class="messageReply {replyMessage.kind}">
-        {#if replyMessage.kind == "text"}
+        {#if replyMessage instanceof TextMessageObj}
             {replyMessage.message}
-        {:else if replyMessage.kind == "sticker"}
-            <img src={replyMessage.message} class="sticker" alt="Sticker" />
+        {:else if replyMessage instanceof StickerMessageObj}
+            <img src={replyMessage.src} class="sticker" alt="Sticker" />
         {/if}
     </div>
 {/if}

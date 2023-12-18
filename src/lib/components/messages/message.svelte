@@ -53,7 +53,12 @@
     .msg{
         &[data-mtype="text"]{
             .data{
-                padding: 8px;
+                padding: 8px 10px;
+                min-width: 34px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
             }
         }
         &[data-mtype="emoji"]{
