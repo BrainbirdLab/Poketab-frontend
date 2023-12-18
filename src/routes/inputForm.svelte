@@ -93,7 +93,7 @@
         actionButtonText = 'Please wait ';
 
         if (!$chatRoomStore.Key){
-            console.log('Create new key');
+            console.log('Creating chat...');
             //console.log(`name: ${get(selfInfoStore).name}, Avatar: ${get(selfInfoStore).avatar}, Max user: ${get(chatRoomStore).maxUsers}`);
             socket.emit('createChat', selectedname, selectedAvatar, selectedMaxUser, (res: {success: boolean, message: string, key: string, userId: string}) => {
                 if (!res.success){

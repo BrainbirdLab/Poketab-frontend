@@ -70,6 +70,7 @@
     let messages: HTMLElement;
 
     beforeUpdate(() => {
+        console.log("before update");
         autoScroll =
             messages &&
             messages.offsetHeight + messages.scrollTop >
@@ -79,6 +80,9 @@
     let timeStampInterval: NodeJS.Timeout | null = null;
 
     afterUpdate(() => {
+
+        console.log("after update");
+
         if (autoScroll) {
             messages.scrollTop = messages.scrollHeight;
         }
@@ -198,14 +202,19 @@
             return;
         }
 
-        const message = $messageDatabase.get(messageId) as TextMessageObj;
+        let message = $messageDatabase.get(messageId) as TextMessageObj;
+
         if (message.sender == uid){
+            if (!(message instanceof TextMessageObj)){
+                message = Object.setPrototypeOf(message, TextMessageObj.prototype);
+            }
+            message.message = 'This message was deleted';
+            message.kind = 'deleted';
+            message.type = 'deleted';
+            message.replyTo = '';
             messageDatabase.update((messages) => {
                 //change the message to "This message was deleted"
-                message.message = 'This message was deleted';
-                message.kind = 'deleted';
-                message.type = 'deleted';
-                message.replyTo = '';
+                messages.set(messageId, message);
                 return messages;
             });
         }
