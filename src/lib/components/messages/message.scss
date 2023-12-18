@@ -324,7 +324,7 @@
                     content: '\f08e';
                     font-family: 'FontAwesome';
                     font-size: 0.8rem;
-                    padding-right: 5px;
+                    padding: 0 5px;
                 }
             }
         }
@@ -332,10 +332,6 @@
             .data{
                 background: var(--msg-get);
             }
-        }
-
-        .data{
-            pointer-events: none;
         }
     }
 }

@@ -120,6 +120,10 @@
 
 <style lang="scss">
 
+    :root{
+        --pattern: url('/images/backgrounds/pokemon_w.webp');
+    }
+
     .status{
         font-size: 0.8rem;
         padding: 5px;

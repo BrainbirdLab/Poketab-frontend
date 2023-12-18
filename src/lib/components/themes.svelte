@@ -6,17 +6,11 @@
     import { showPopupMessage } from "./popup";
     import { themesMap } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
-
-	let loadedTheme = localStorage.getItem('theme') || 'ocean';
-	
-	if (!(loadedTheme in themesMap)){
-		loadedTheme = 'ocean';
-	}
 	
 	let loadedEmoji = localStorage.getItem('quickEmoji');
 
-	if (loadedEmoji != themesMap[loadedTheme].emoji){
-		loadedEmoji = themesMap[loadedTheme].emoji;
+	if (loadedEmoji != themesMap[$currentTheme].emoji){
+		loadedEmoji = themesMap[$currentTheme].emoji;
 	}
 	
 	quickEmoji.set(loadedEmoji);
@@ -24,8 +18,6 @@
 	const unsubQuickEmoji = quickEmoji.subscribe((val) => {
 		localStorage.setItem('quickEmoji', val);
 	});
-
-	currentTheme.set(loadedTheme);
 
     function hideThemes(node: HTMLElement){
 
@@ -38,7 +30,6 @@
             if (e.target !== node) {
                 const targetElement = e.target as HTMLElement;
 				currentTheme.set(targetElement.id);
-				localStorage.setItem('theme', $currentTheme);
                 console.log(`Theme ${toSentenceCase(targetElement.id)} applied`);
 				showPopupMessage(`${toSentenceCase(targetElement.id)} theme applied`);
 				//make a request to the server to update the cookie
@@ -71,133 +62,6 @@
         }
     }
 </script>
-
-<!--
-
-    this function generates the theme picker in normal html and js. So make a svelte component that does the same thing
-/**
- * Loads theme
- */
-async function loadTheme() {
-	//append the theme to the DOM
-	const themePicker = document.createElement('div');
-	themePicker.id = 'themePicker';
-	themePicker.className = 'themePicker';
-
-	const themeListFragment = fragmentBuilder({
-		tag: 'ul',
-		attr: {
-			class: 'themeList'
-		},
-		childs: themeArray.map((theme) => {
-			return {
-				tag: 'li',
-				attr: {
-					class: 'theme clickable playable',
-					id: theme
-				},
-				childs: [
-					{
-						tag: 'img',
-						attr: {
-							class: 'themeIcon',
-							src: `/images/backgrounds/${theme}_icon.webp`,
-							alt: 'Theme Thumbnail'
-						}
-					},
-					{
-						tag: 'span',
-						text: theme.charAt(0).toUpperCase() + theme.slice(1)
-					}
-				]
-			};
-		})
-	});
-
-	themePicker.appendChild(themeListFragment);
-
-	document.body.appendChild(themePicker);
-
-	//remove the theme optons from the screen when clicked outside
-	themePicker.addEventListener('click', () => {
-		hideThemes();
-	});
-
-	THEME = localStorage.getItem('theme');
-	if (THEME == null || themeArray.includes(THEME) == false) {
-		THEME = 'ocean';
-		localStorage.setItem('theme', THEME);
-	}
-	document.documentElement.style.setProperty('--pattern', `url('../images/backgrounds/${THEME}_w.webp')`);
-	document.documentElement.style.setProperty('--secondary-dark', themeAccent[THEME].secondary);
-	document.documentElement.style.setProperty('--msg-get', themeAccent[THEME].msg_get);
-	document.documentElement.style.setProperty('--msg-get-reply', themeAccent[THEME].msg_get_reply);
-	document.documentElement.style.setProperty('--msg-send', themeAccent[THEME].msg_send);
-	document.documentElement.style.setProperty('--msg-send-reply', themeAccent[THEME].msg_send_reply);
-	document.querySelector('meta[name="theme-color"]').setAttribute('content', themeAccent[THEME].secondary);
-
-	//make a request to the server to update the cookie
-	const themeRequest = new XMLHttpRequest();
-	themeRequest.open('PUT', '/theme');
-	themeRequest.setRequestHeader('Content-Type', 'application/json');
-	themeRequest.send(JSON.stringify({ theme: THEME }));
-
-	document.querySelectorAll('.theme').forEach(theme => {
-		theme.addEventListener('click', (evt) => {
-			THEME = evt.target.closest('li').id;
-			localStorage.setItem('theme', THEME);
-			showPopupMessage('Theme applied');
-			//make a request to the server to update the cookie
-			const themeRequest = new XMLHttpRequest();
-			themeRequest.open('PUT', '/theme');
-			themeRequest.setRequestHeader('Content-Type', 'application/json');
-			themeRequest.send(JSON.stringify({ theme: THEME }));
-			if (quickReactsEnabled == 'true') {
-				quickReactEmoji = themeAccent[THEME].quickEmoji;
-				localStorage.setItem('quickEmoji', quickReactEmoji);
-				sendButton.dataset.role = 'quickEmoji';
-			}
-			chooseQuickEmojiButton.querySelector('.quickEmojiIcon').textContent = quickReactEmoji;
-			//edit css variables
-			document.documentElement.style.setProperty('--pattern', `url('../images/backgrounds/${THEME}_w.webp')`);
-			document.documentElement.style.setProperty('--secondary-dark', themeAccent[THEME].secondary);
-			document.documentElement.style.setProperty('--msg-get', themeAccent[THEME].msg_get);
-			document.documentElement.style.setProperty('--msg-get-reply', themeAccent[THEME].msg_get_reply);
-			document.documentElement.style.setProperty('--msg-send', themeAccent[THEME].msg_send);
-			document.documentElement.style.setProperty('--msg-send-reply', themeAccent[THEME].msg_send_reply);
-			//Todo
-			document.querySelector('meta[name="theme-color"]').setAttribute('content', themeAccent[THEME].secondary);
-			hideOptions();
-		});
-	});
-
-	const quickEmojiFromLocalStorage = localStorage.getItem('quickEmoji');
-	//console.log(quickEmojiFromLocalStorage, themeAccent[THEME]);
-	if (quickEmojiFromLocalStorage) {
-		//console.log(`Found in local storage: ${quickEmojiFromLocalStorage}`);
-		if (reactArray.expanded.includes(quickEmojiFromLocalStorage)) {
-			quickReactEmoji = quickEmojiFromLocalStorage;
-			//console.log(`Quick Emoji in expanded emojis: ${quickReactEmoji}`);
-		} else {
-			quickReactEmoji = themeAccent[THEME].quickEmoji;
-			//console.log(`Setting from theme: ${quickReactEmoji}`);
-		}
-	} else {
-		quickReactEmoji = themeAccent[THEME].quickEmoji;
-		//console.log(`Not found in local storage: ${quickEmojiFromLocalStorage}`);
-	}
-
-	localStorage.setItem('quickEmoji', quickReactEmoji);
-	//console.log(`Quick Emoji: ${quickReactEmoji}`);
-
-	if (quickReactsEnabled == 'true') {
-		sendButton.innerHTML = `<span class="quickEmoji">${quickReactEmoji}</span>`;
-	} else {
-		sendButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
-	}
-}
-
--->
 
 {#if $showThemesPanel}
 <div id="themePicker" class="themePicker active" use:hideThemes>
