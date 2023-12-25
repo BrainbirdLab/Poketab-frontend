@@ -10,6 +10,8 @@
 
 Poketab Messenger is a temporary chat application that allows users to create and join group chats with up to 10 people. The app utilizes a unique key system to ensure privacy and security, as users can only join a chat by using a key generated and sent by the server.
 
+![Cover Image](./cover.png)
+
 ## Key Features
 - Create and join group chats with up to 10 people
 - Share images, files, audio, and stickers with others in the chat
