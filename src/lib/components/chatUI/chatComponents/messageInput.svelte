@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { MessageObj, messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj } from "$lib/messages";
-    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterMessage, showReplyToast } from "./messages/messageUtils";
+    import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj } from "$lib/messages";
+    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterMessage, showReplyToast } from "$lib/components/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
-    import { socket } from "./socket";
+    import { socket } from "$lib/components/socket";
 
     import {SEND_METHOD, currentTheme, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
-    import { showAttachmentPickerPanel, showStickersPanel } from "./modalManager";
-    import { themesMap } from "$lib/themes";
+    import { showAttachmentPickerPanel, showStickersPanel } from "../../modalManager";
+    import { themes } from "$lib/themes";
     import { onDestroy } from "svelte";
     
     let newMessage = '';
@@ -28,7 +28,7 @@
         newMessage = filterMessage(emojiParser(newMessage));
 
         if (quickEmoji){
-            newMessage = $quickEmojiEnabled ? themesMap[$currentTheme]['emoji'] : '';
+            newMessage = $quickEmojiEnabled ? themes[$currentTheme].quickEmoji : '';
             message.type = 'emoji';
             message.kind = 'text';
         } else if (isEmoji(newMessage)) {
@@ -170,7 +170,7 @@
         </div>          
         <!-- Send Button-->
         {#if $quickEmojiEnabled && newMessage.trim().length <= 0}
-        <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send">{themesMap[$currentTheme]['emoji']}</button>
+        <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send">{themes[$currentTheme].quickEmoji}</button>
         {:else}
         <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
         {/if}

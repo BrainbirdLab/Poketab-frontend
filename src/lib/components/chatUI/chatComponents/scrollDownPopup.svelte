@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { MessageObj } from "$lib/messages";
+    import { TextMessageObj, type MessageObj, StickerMessageObj } from "$lib/messages";
     import { chatRoomStore } from "$lib/store";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
@@ -47,10 +47,10 @@
     {#if notice && scrolledOffset > 200}
     <div class="content">
         <img src="/images/avatars/{$chatRoomStore.userList[notice.sender].avatar}(custom).webp" alt="avatar">
-        {#if notice.kind == 'text'}
-        {notice.message}
-        {:else if notice.kind == 'sticker'}
-        Sticker
+        {#if notice instanceof TextMessageObj}
+            {notice.message}
+        {:else if notice instanceof StickerMessageObj}
+            Sticker
         {/if}
     </div>
     {:else}

@@ -1,8 +1,8 @@
 <script lang="ts">
     import { fly, scale } from "svelte/transition";
-    import { showAttachmentPickerPanel } from "./modalManager";
-    import { showPopupMessage } from "./popup";
-    import { socket } from "./socket";
+    import { showAttachmentPickerPanel } from "$lib/components/modalManager";
+    import { showPopupMessage } from "$lib/components/popup";
+    import { socket } from "$lib/components/socket";
     import { selfInfoStore } from "$lib/store";
 
     function transmitLocation() {

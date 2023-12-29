@@ -2,7 +2,7 @@
     import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj} from "$lib/messages";
     import {chatRoomStore, selfInfoStore} from "$lib/store";
     import { slide, fly, fade } from "svelte/transition";
-    import { showReplyToast } from "./messages/messageUtils";
+    import { showReplyToast } from "$lib/components/messages/messageUtils";
 
     $: message = $messageDatabase.get($replyTargetId) as MessageObj || null;
     $: sender = message ? (message?.sender == $selfInfoStore.uid ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'unknown';

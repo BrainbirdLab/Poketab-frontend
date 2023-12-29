@@ -46,6 +46,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <link rel="preload" href="/fonts/comic-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
-<svelte:body on:contextmenu|preventDefault />
+<svelte:body on:contextmenu|preventDefault/>
 
 <slot />

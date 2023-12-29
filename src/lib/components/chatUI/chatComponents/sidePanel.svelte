@@ -1,11 +1,10 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
 
-    import {chatRoomStore, currentPage, joinedChat, selfInfoStore, splashMessage} from "$lib/store";
-    import {clearModals, showQuickSettingsPanel, showSidePanel} from "./modalManager";
-    import { showPopupMessage } from "./popup";
-    import type { User } from "$lib/store";
-    import { socket } from "./socket";
+    import {chatRoomStore, currentPage, joinedChat, selfInfoStore, splashMessage, type User} from "$lib/store";
+    import {clearModals, showQuickSettingsPanel, showSidePanel} from "$lib/components/modalManager";
+    import { showPopupMessage } from "$lib/components/popup";
+    import { socket } from "$lib/components/socket";
     import { messageDatabase } from "$lib/messages";
 
     let copyKeyIcon = 'fa-regular fa-clone';

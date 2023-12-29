@@ -5,8 +5,7 @@ export const formNotification = writable('');
 export const splashMessage = writable('');
 
 export const userTypingString = writable('');
-
-export const currentTheme = writable('');
+export const currentTheme = writable('ocean');
 
 export enum SEND_METHOD {
     ENTER = "Enter",

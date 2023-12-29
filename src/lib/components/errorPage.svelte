@@ -32,6 +32,7 @@
 </a>
 
 <style>
+
     .text {
         display: flex;
         flex-direction: column;

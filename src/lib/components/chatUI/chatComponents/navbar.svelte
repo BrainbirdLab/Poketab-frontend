@@ -1,7 +1,7 @@
 <script lang="ts">
 
     import { chatRoomStore } from "$lib/store";
-    import { showSidePanel } from "./modalManager";
+    import { showSidePanel } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
 
 </script>

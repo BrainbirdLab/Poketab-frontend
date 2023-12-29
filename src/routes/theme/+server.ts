@@ -10,5 +10,5 @@ export async function PUT({request}){
 }
 
 export function GET(){
-    return new Response('👾', { status: 200 });
+    return new Response('What\'s up? You unlocked a hidded route!👾', { status: 200 });
 }

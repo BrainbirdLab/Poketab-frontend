@@ -2,15 +2,15 @@
 
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
-    import { showThemesPanel } from "./modalManager";
-    import { showPopupMessage } from "./popup";
-    import { themesMap } from "$lib/themes";
+    import { showThemesPanel } from "$lib/components/modalManager";
+    import { showPopupMessage } from "$lib/components/popup";
+    import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
 	
 	let loadedEmoji = localStorage.getItem('quickEmoji');
 
-	if (loadedEmoji != themesMap[$currentTheme].emoji){
-		loadedEmoji = themesMap[$currentTheme].emoji;
+	if (loadedEmoji != themes[$currentTheme].quickEmoji){
+		loadedEmoji = themes[$currentTheme].quickEmoji;
 	}
 	
 	quickEmoji.set(loadedEmoji);
@@ -66,7 +66,7 @@
 {#if $showThemesPanel}
 <div id="themePicker" class="themePicker active" use:hideThemes>
     <ul class="themeList" transition:fly={{y: 30, duration: 100}}>
-        {#each Object.keys(themesMap) as themename, i}
+        {#each Object.keys(themes) as themename, i}
         <li transition:fly|global={{y: 20, delay: i*20}} class="theme hoverShadow clickable playable" id="{themename}" data-duration="{i}">
             <img class="themeIcon" class:selected={$currentTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{toSentenceCase(themename)}</span>
         </li>

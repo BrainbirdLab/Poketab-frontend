@@ -1,9 +1,9 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { showStickersPanel, selectedSticker } from "./modalManager";
+    import { showStickersPanel, selectedSticker } from "$lib/components/modalManager";
     import { selfInfoStore } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, messageDatabase, replyTargetId } from "$lib/messages";
-    import { makeClasslist, sendMessage, showReplyToast } from "./messages/messageUtils";
+    import { makeClasslist, sendMessage, showReplyToast } from "$lib/components/messages/messageUtils";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },

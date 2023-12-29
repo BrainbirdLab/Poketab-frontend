@@ -1,7 +1,6 @@
 <script lang="ts">
     import "$lib/components/messages/message.scss";
-    import MessageInput from "$lib/components/messageInput.svelte";
-    import NavBar from "$lib/components/navBar.svelte";
+    import MessageInput from "./chatComponents/messageInput.svelte";
     import TextMessage from "$lib/components/messages/message.svelte";
     import {
         MessageObj,
@@ -15,10 +14,10 @@
         TextMessageObj,
     } from "$lib/messages";
     import { showPopupMessage } from "$lib/components/popup";
-    import SidePanel from "$lib/components/sidePanel.svelte";
+    import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
-    import QuickSettings from "$lib/components/quickSettings.svelte";
-    import TypingIndicator from "$lib/components/typingIndicator.svelte";
+    import QuickSettings from "./chatComponents/quickSettings.svelte";
+    import TypingIndicator from "$lib/components/chatUI/chatComponents/typingIndicator.svelte";
     import { chatRoomStore, selfInfoStore, userTypingString } from "$lib/store";
     import {
         activeModalsStack,
@@ -30,21 +29,22 @@
         showStickersPanel,
         showThemesPanel,
     } from "$lib/components/modalManager";
-    import ConnectivityState from "$lib/components/connectivityState.svelte";
-    import Themes from "$lib/components/themes.svelte";
-    import { afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
-    import StickersKeyboard from "$lib/components/stickersKeyboard.svelte";
-    import Attachments from "$lib/components/attachments.svelte";
-    import MessageOptions from "$lib/components/messageOptions.svelte";
+    import ConnectivityState from "./chatComponents/connectivityState.svelte";
+    import Themes from "./chatComponents/themes.svelte";
+    import { afterUpdate, onDestroy, onMount } from "svelte";
+    import StickersKeyboard from "./chatComponents/stickersKeyboard.svelte";
+    import Attachments from "./chatComponents/attachments.svelte";
+    import MessageOptions from "./chatComponents/messageOptions.svelte";
     import StickerMessage from "$lib/components/messages/stickerMessage.svelte";
     import ServerMessage from "$lib/components/messages/serverMessage.svelte";
     import { socket } from "$lib/components/socket";
     import { spring } from "svelte/motion";
-    import MessageReplyToast from "$lib/components/messageReplyToast.svelte";
-    import ScrollDownPopup from "$lib/components/scrollDownPopup.svelte";
+    import MessageReplyToast from "./chatComponents/messageReplyToast.svelte";
+    import ScrollDownPopup from "./chatComponents/scrollDownPopup.svelte";
     import { filterMessage, getFormattedDate, makeClasslist, showReplyToast } from "$lib/components/messages/messageUtils";
     import DeletedMessage from "$lib/components/messages/deletedMessage.svelte";
     import LocationMessage from "$lib/components/messages/locationMessage.svelte";
+    import NavBar from "./chatComponents/navbar.svelte";
 
     let isOffline = false;
 

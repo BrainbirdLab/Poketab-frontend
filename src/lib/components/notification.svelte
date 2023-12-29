@@ -2,7 +2,7 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
     import {formActionButtonDisabled, formNotification} from "$lib/store";
-    import { socket } from "../lib/components/socket";
+    import { socket } from "$lib/components/socket";
     import { onDestroy } from "svelte";
 
     let connected = '';

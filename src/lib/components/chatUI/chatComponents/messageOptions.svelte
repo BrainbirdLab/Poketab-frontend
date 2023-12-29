@@ -1,12 +1,12 @@
 
 <script lang="ts">
     import { fly, slide } from "svelte/transition";
-    import {showMessageOptions} from "./modalManager";
-    import { socket } from "./socket";
+    import {showMessageOptions} from "../../modalManager";
+    import { socket } from "$lib/components/socket";
     import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messages";
     import { selfInfoStore } from "$lib/store";
-    import { showReplyToast } from "./messages/messageUtils";
-    import { showPopupMessage } from "./popup";
+    import { showReplyToast } from "$lib/components/messages/messageUtils";
+    import { showPopupMessage } from "$lib/components/popup";
 
     const reactArray = {
         primary: ['💙', '😆', '😠', '😢', '😮', '🙂'],

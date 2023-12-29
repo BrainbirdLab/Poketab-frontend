@@ -1,10 +1,10 @@
 <script lang="ts">
     import { avList } from "$lib/utils/validation";
-    import { fly, fade, slide, scale } from "svelte/transition";
+    import { fly, scale } from "svelte/transition";
     import { onDestroy, onMount } from "svelte";
     
-    import {socket, reConnectSocket} from "../lib/components/socket";
-    import {type User, formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, selfInfoStore, socketConnected, joinedChat, isTaken, currentPage, formNotification, splashMessage} from "$lib/store";
+    import {socket, reConnectSocket} from "$lib/components/socket";
+    import { formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, selfInfoStore, socketConnected, joinedChat, isTaken, currentPage, formNotification, splashMessage} from "$lib/store";
 
     let selectedname = '';
     let selectedAvatar = '';

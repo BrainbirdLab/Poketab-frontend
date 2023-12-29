@@ -1,17 +1,23 @@
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
-    import ReactiveLogo from "./reactiveLogo.svelte";
+    import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
     import { onMount } from "svelte";
     import { currentTheme } from "$lib/store";
 
     export let data;
+    currentTheme.set(data.themename);
     const version = data.version;
-
-    currentTheme.set(data.theme);
 
     let mounted = false;
 
     onMount(() => {
+        //insert theme variables
+        document.documentElement.style.setProperty("--secondary-dark", data.theme.secondary);
+        document.documentElement.style.setProperty("--msg-get", data.theme.msg_get);
+        document.documentElement.style.setProperty("--msg-get-reply", data.theme.msg_get_reply);
+        document.documentElement.style.setProperty("--msg-send", data.theme.msg_send);
+        document.documentElement.style.setProperty("--msg-send-reply", data.theme.msg_send_reply);
+        document.documentElement.style.setProperty('--pattern', `url('../images/backgrounds/${data.themename}_w.webp')`);
         mounted = true;
     });
 
@@ -108,43 +114,12 @@
     </div>
 
     <div class="footer">
-        {#if data.systemOk}
-            <span class="status" data-up><i class="fa-solid fa-circle"></i> All systems OK</span>
-        {:else}
-            <span class="status" data-down><i class="fa-solid fa-circle"></i> Some systems are down</span>
-        {/if}
         <a href="mailto:support@poketab.live">support@poketab.live</a>
     </div>
 </div>
 {/if}
 
 <style lang="scss">
-
-    :root{
-        --pattern: url('/images/backgrounds/pokemon_w.webp');
-    }
-
-    .status{
-        font-size: 0.8rem;
-        padding: 5px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-
-        i{
-            font-size: 0.7rem;
-        }
-
-        &[data-up]{
-            color: rgb(51, 241, 255);
-        }
-
-        &[data-down]{
-            color: #ff3d3d;
-        }
-    }
 
     .version {
         font-size: 0.7rem;

@@ -1,8 +1,8 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { showQuickSettingsPanel, showThemesPanel } from "./modalManager";
+    import { showQuickSettingsPanel, showThemesPanel } from "$lib/components/modalManager";
     import { currentTheme, buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod} from "$lib/store";
-    import { themesMap } from "$lib/themes";
+    import { themes } from "$lib/themes";
 
     type Settings = {
         buttonSoundEnabled: boolean;
@@ -227,7 +227,7 @@
                     </div>
                     <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 90}}>
                         <button class="hyper" id="chooseQuickEmojiButton"
-                            >Change Emoji <span class="quickEmojiIcon">{themesMap[$currentTheme]['emoji']}</span
+                            >Change Emoji <span class="quickEmojiIcon">{themes[$currentTheme].quickEmoji}</span
                             ></button
                         >
                     </div>
