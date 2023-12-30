@@ -4,7 +4,7 @@
     import { onDestroy, onMount } from "svelte";
     import { currentTheme } from "$lib/store";
     import type { Unsubscriber } from "svelte/motion";
-    import { themes } from "$lib/themes.js";
+    import { themes } from "$lib/themes";
 
     export let data;
     currentTheme.set(data.themename);
