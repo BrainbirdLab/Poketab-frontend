@@ -29,14 +29,14 @@
 
             if (e.target !== node) {
                 const targetElement = e.target as HTMLElement;
-				currentTheme.set(targetElement.id);
-                console.log(`Theme ${toSentenceCase(targetElement.id)} applied`);
-				showPopupMessage(`${toSentenceCase(targetElement.id)} theme applied`);
+                const theme = toSentenceCase(targetElement.id);
+                console.log(`Theme ${theme} applied`);
+				showPopupMessage(`${theme} theme applied`);
 				//make a request to the server to update the cookie
 				const themeRequest = new XMLHttpRequest();
 				themeRequest.open('PUT', '/theme');
 				themeRequest.setRequestHeader('Content-Type', 'application/json');
-				themeRequest.send(JSON.stringify({ theme: $currentTheme }));
+				themeRequest.send(JSON.stringify({ theme }));
 				//after response from server
 				themeRequest.onreadystatechange = () => {
 					if (themeRequest.readyState == 4 && themeRequest.status == 200) {
@@ -46,7 +46,7 @@
 					}
 				};
 				//edit css variables
-				currentTheme.set($currentTheme);
+				currentTheme.set(theme);
 			}
 
             showThemesPanel.set(false);
