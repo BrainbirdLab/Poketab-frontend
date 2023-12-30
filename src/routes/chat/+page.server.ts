@@ -1,26 +1,17 @@
 import { themes } from '$lib/themes';
 
 export async function load({cookies}) {
-    const theme = cookies.get('theme');
-    if (theme){
-        if (theme in themes){
-            cookies.set('theme', theme, {path: '/'});
-            return {
-                theme: themes[theme],
-                themename: theme,
-            }
-        } else {
-            cookies.set('theme', 'ocean', {path: '/'});
-            return {
-                theme: themes['ocean'],
-                themename: 'ocean',
-            }
+
+    const theme: string = cookies.get('theme') || 'Ocean';
+    if (theme in themes){
+        cookies.set('theme', theme, {path: '/'});
+        return {
+            themename: theme,
         }
     } else {
-        cookies.set('theme', 'ocean', {path: '/'});
+        cookies.set('theme', 'Ocean', {path: '/'});
         return {
-            theme: themes['ocean'],
-            themename: 'ocean',
+            themename: 'Ocean',
         }
     }
 }

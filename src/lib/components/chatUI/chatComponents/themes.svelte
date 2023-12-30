@@ -1,15 +1,16 @@
 <script lang="ts">
 
-    import { toSentenceCase } from "$lib/utils";
+    import { emojis, toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showThemesPanel } from "$lib/components/modalManager";
-    import { showPopupMessage } from "$lib/components/popup";
+    import { showToastMessage } from "$lib/components/toast";
     import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
+    import { onDestroy } from "svelte";
 	
-	let loadedEmoji = localStorage.getItem('quickEmoji');
+	let loadedEmoji = localStorage.getItem('quickEmoji') || themes[$currentTheme].quickEmoji;
 
-	if (loadedEmoji != themes[$currentTheme].quickEmoji){
+	if (!emojis.includes(loadedEmoji)){
 		loadedEmoji = themes[$currentTheme].quickEmoji;
 	}
 	
@@ -18,6 +19,10 @@
 	const unsubQuickEmoji = quickEmoji.subscribe((val) => {
 		localStorage.setItem('quickEmoji', val);
 	});
+
+    onDestroy(() => {
+        unsubQuickEmoji();
+    });
 
     function hideThemes(node: HTMLElement){
 
@@ -31,7 +36,7 @@
                 const targetElement = e.target as HTMLElement;
                 const theme = toSentenceCase(targetElement.id);
                 console.log(`Theme ${theme} applied`);
-				showPopupMessage(`${theme} theme applied`);
+				showToastMessage(`${theme} theme applied`);
 				//make a request to the server to update the cookie
 				const themeRequest = new XMLHttpRequest();
 				themeRequest.open('PUT', '/theme');
@@ -40,13 +45,14 @@
 				//after response from server
 				themeRequest.onreadystatechange = () => {
 					if (themeRequest.readyState == 4 && themeRequest.status == 200) {
-						console.log('Theme updated');
+						showToastMessage(`${theme} theme applied`);
 					} else{
-						console.log('Theme update failed');
+						showToastMessage(`Could not apply ${theme} theme`);
 					}
 				};
 				//edit css variables
 				currentTheme.set(theme);
+                quickEmoji.set(themes[theme].quickEmoji);
 			}
 
             showThemesPanel.set(false);
@@ -68,7 +74,7 @@
     <ul class="themeList" transition:fly={{y: 30, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
         <li transition:fly|global={{y: 20, delay: i*20}} class="theme hoverShadow clickable playable" id="{themename}" data-duration="{i}">
-            <img class="themeIcon" class:selected={$currentTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{toSentenceCase(themename)}</span>
+            <img class="themeIcon" class:selected={$currentTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{themename}</span>
         </li>
         {/each}
     </ul>

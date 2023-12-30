@@ -7,6 +7,15 @@ export const splashMessage = writable('');
 export const userTypingString = writable('');
 export const currentTheme = writable('ocean');
 
+type ErrorLog = {
+    text: string,
+    icon: string,
+};
+
+export const joinError: Writable<ErrorLog> = writable({text: '', icon: ''});
+
+export const joinKey: Writable<string> = writable('');
+
 export enum SEND_METHOD {
     ENTER = "Enter",
     CTRL_ENTER = "Ctrl+Enter",

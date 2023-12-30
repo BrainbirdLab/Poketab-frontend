@@ -1,19 +1,22 @@
-import type { User } from '$lib/store.js';
+import type { User } from '$lib/store';
+import { themes } from '$lib/themes';
+import { error, type NumericRange } from '@sveltejs/kit';
 import { io } from 'socket.io-client';
 
 type fetchResponse = {
   success: boolean,
   message: string,
-  statusCode: number,
   icon: string,
+  statusCode: number,
   users: {[key: string]: User},
   maxUsers: number,
   key: string,
+  themename: string,
 }
 
 const server = import.meta.env.VITE_SOCKET_SERVER_URL;
 
-export async function load({ params }) {
+export async function load({ params, cookies }) {
 
   const { key } = params;
 
@@ -32,39 +35,50 @@ export async function load({ params }) {
 
     console.log('Connecting to server...');
 
+    const themename: string = cookies.get('theme') || 'Ocean';
+    if (themename in themes){
+        cookies.set('theme', themename, {path: '/'});
+    } else {
+        cookies.set('theme', 'Ocean', {path: '/'});
+    }
+
     socket.connect();
 
     socket.on('connect_error', (err) => {
       console.log('%cConnection error - Dynamic route', 'color: red');
+      socket.disconnect();
       resolve({
         success: false,
-        message: 'Could not connect to server',
+        message: 'Server is down',
         statusCode: 500,
-        icon: 'error',
+        icon: '❌',
         users: {},
         maxUsers: 0,
         key: '',
+        themename: '',
       });
-      socket.disconnect();
     });
     
     socket.emit('fetchKeyData', key, (res: fetchResponse) => {
       console.log('Key data fetched');
-      resolve({...res, key});
+      resolve({...res, key, themename});
     });
   });
+
   
   console.log(`Searching for key ${key}`);
   // Wait for the fetchDataPromise to resolve
   const res = await fetchDataPromise;
 
-  console.log(res);
+  // If the server is down, return an error
+  if (res.statusCode === 500) {
+    return error(res.statusCode as NumericRange<400, 599>, { message: res.message });
+  }
+
   // Disconnect from the authSocket
   socket.disconnect();
 
   return {
-    props: {
-      res,
-    },
-  }
+    ...res,
+  };
 }

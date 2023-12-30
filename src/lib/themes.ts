@@ -12,7 +12,7 @@ type ThemeAccent = {
 
 //theme colors and backgrounds
 export const themes: ThemeAccent = {
-    'blue': {
+    'Blue': {
         secondary: 'hsl(213, 98%, 57%)',
         foreground: '#e1eeff',
         msg_get: 'hsl(213, 40%, 57%)',
@@ -21,7 +21,7 @@ export const themes: ThemeAccent = {
         msg_send_reply: 'hsl(213, 35%, 27%)',
         quickEmoji: '🥶',
     },
-    'ocean': {
+    'Ocean': {
         secondary: 'hsl(187, 100%, 37%)',
         foreground: '#e1eeff',
         msg_get: 'hsl(187, 40%, 57%)',
@@ -30,7 +30,7 @@ export const themes: ThemeAccent = {
         msg_send_reply: 'hsl(187, 40%, 32%)',
         quickEmoji: '🐳',
     },
-    'cyberpunk': {
+    'Cyberpunk': {
         secondary: 'hsl(233, 100%, 71%)',
         foreground: '#e1eeff',
         msg_get: 'hsl(233, 40%, 57%)',
@@ -39,7 +39,7 @@ export const themes: ThemeAccent = {
         msg_send_reply: 'hsl(233, 24%, 32%)',
         quickEmoji: '👾',
     },
-    'geometry': {
+    'Geometry': {
         secondary: 'hsl(15, 98%, 57%)',
         foreground: '#e1eeff',
         msg_get: 'hsl(15, 40%, 57%)',
@@ -48,7 +48,7 @@ export const themes: ThemeAccent = {
         msg_send_reply: 'hsl(15, 35%, 27%)',
         quickEmoji: '🔥',
     },
-    'blackboard': {
+    'Blackboard': {
         secondary: 'hsl(216, 37%, 44%)',
         foreground: '#e1eeff',
         msg_get: 'hsl(216, 27%, 33%)',
@@ -57,7 +57,7 @@ export const themes: ThemeAccent = {
         msg_send_reply: 'hsl(216, 20%, 21%)',
         quickEmoji: '👽',
     },
-    'forest': {
+    'Forest': {
         secondary: 'hsl(162, 60%, 42%)',
         foreground: '#e1eeff',
         msg_get: 'hsl(162, 18%, 41%)',

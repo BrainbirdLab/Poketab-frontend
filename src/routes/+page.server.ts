@@ -5,35 +5,22 @@ config();
 
 const version = process.env.npm_package_version;
 
-const server = import.meta.env.VITE_SOCKET_SERVER_URL;
-
 export const prerender = true;
 
 export async function load({cookies}) {
 
-    const theme = cookies.get('theme');
+    const theme = cookies.get('theme') || 'Ocean';
 
-    if (theme){
-        if (theme in themes){
-            cookies.set('theme', theme, {path: '/'});
-            return {
-                theme: themes[theme],
-                themename: theme,
-                version: version,
-            }
-        } else {
-            cookies.set('theme', 'ocean', {path: '/'});
-            return {
-                theme: themes['ocean'],
-                themename: 'ocean',
-                version: version,
-            }
+    if (theme in themes){
+        cookies.set('theme', theme, {path: '/'});
+        return {
+            themename: theme,
+            version: version,
         }
     } else {
-        cookies.set('theme', 'ocean', {path: '/'});
+        cookies.set('theme', 'Ocean', {path: '/'});
         return {
-            theme: themes['ocean'],
-            themename: 'ocean',
+            themename: 'Ocean',
             version: version,
         }
     }

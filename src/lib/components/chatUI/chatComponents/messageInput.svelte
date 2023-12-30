@@ -5,9 +5,8 @@
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
 
-    import {SEND_METHOD, currentTheme, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
+    import {SEND_METHOD, quickEmoji, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "../../modalManager";
-    import { themes } from "$lib/themes";
     import { onDestroy } from "svelte";
     
     let newMessage = '';
@@ -28,7 +27,7 @@
         newMessage = filterMessage(emojiParser(newMessage));
 
         if (quickEmoji){
-            newMessage = $quickEmojiEnabled ? themes[$currentTheme].quickEmoji : '';
+            newMessage = $quickEmojiEnabled ? $quickEmoji : '';
             message.type = 'emoji';
             message.kind = 'text';
         } else if (isEmoji(newMessage)) {
@@ -170,7 +169,7 @@
         </div>          
         <!-- Send Button-->
         {#if $quickEmojiEnabled && newMessage.trim().length <= 0}
-        <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send">{themes[$currentTheme].quickEmoji}</button>
+        <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send">{$quickEmoji}</button>
         {:else}
         <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
         {/if}

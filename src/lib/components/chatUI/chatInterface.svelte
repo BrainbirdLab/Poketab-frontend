@@ -13,7 +13,7 @@
         LocationMessageObj,
         TextMessageObj,
     } from "$lib/messages";
-    import { showPopupMessage } from "$lib/components/popup";
+    import { showToastMessage } from "$lib/components/toast";
     import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
@@ -51,7 +51,7 @@
     async function invite() {
         try {
             if (!navigator.share) {
-                showPopupMessage("Sharing in not supported by this browser");
+                showToastMessage("Sharing in not supported by this browser");
                 return;
             }
             await navigator.share({
@@ -59,9 +59,9 @@
                 text: "Join chat!",
                 url: `${location.origin}/join/${$chatRoomStore.Key}`,
             });
-            showPopupMessage("Shared!");
+            showToastMessage("Shared!");
         } catch (err) {
-            showPopupMessage(`${err}`);
+            showToastMessage(`${err}`);
         }
     }
 

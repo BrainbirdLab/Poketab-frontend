@@ -1,8 +1,10 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { showQuickSettingsPanel, showThemesPanel } from "$lib/components/modalManager";
-    import { currentTheme, buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod} from "$lib/store";
+    import { currentTheme, buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod, quickEmoji} from "$lib/store";
     import { themes } from "$lib/themes";
+    import EmojiPicker from "./emojiPicker.svelte";
+    import { spin } from "$lib/utils";
 
     type Settings = {
         buttonSoundEnabled: boolean;
@@ -17,6 +19,8 @@
         quickEmojiEnabled: true,
         sendMethod: SEND_METHOD.ENTER,
     };
+
+    let showQuickEmojiDrawer = false;
 
     function setDefaultChatSettings(){
         sendMethod.set(defaultSettings.sendMethod);
@@ -99,8 +103,9 @@
                     setToLocalStorage({ sendMethod: SEND_METHOD.CTRL_ENTER });
                 } else if (target.id == "enter") {
                     setToLocalStorage({ sendMethod: SEND_METHOD.ENTER });
-                } else if (target.id == "chooseQuickEmojiButton") {
-                    //!TODO: Add quick emoji picker
+                } else if (target.id == "chooseQuickEmoji") {
+                    showQuickEmojiDrawer = !showQuickEmojiDrawer;
+                    console.log("showQuickEmojiDrawer", showQuickEmojiDrawer);
                 }
             }
         };
@@ -111,6 +116,7 @@
         return {
             destroy() {
                 node.onclick = null;
+                showQuickEmojiDrawer = false;
                 unsub();
             },
         };
@@ -118,8 +124,9 @@
 
 </script>
 
-{#if $showQuickSettingsPanel}
-    <div
+
+    {#if $showQuickSettingsPanel}
+        <div
         class="quickSettingsPanelWrapper"
         transition:fly={{ y: 30, duration: 100 }}
         use:handleClick
@@ -225,11 +232,22 @@
                             <span class="toggleButton" />
                         </label>
                     </div>
-                    <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 90}}>
-                        <button class="hyper" id="chooseQuickEmojiButton"
-                            >Change Emoji <span class="quickEmojiIcon">{themes[$currentTheme].quickEmoji}</span
-                            ></button
-                        >
+                    {#if showQuickEmojiDrawer}
+                        <EmojiPicker height="10rem" bind:selectedEmoji={$quickEmoji} onClose={() => {
+                            showQuickEmojiDrawer = false;
+                        }}/>
+                    {/if}
+                    <div class="field-checkers btn play-sound hoverShadow" id="chooseQuickEmoji"  transition:fly|global={{y: 20, delay: 90}}>
+                        <div class="wrapper">
+                            <div class="label">Change quick emoji </div>
+                            {#if showQuickEmojiDrawer}
+                            <i in:spin={{duration: 200, degree: 180}} id="closeQuickEmojiDrawer" class="fa-solid fa-caret-down"></i>
+                            {:else}
+                            <button in:spin={{duration: 200, degree: 180}} class="hyper" id="chooseQuickEmojiButton">
+                                {$quickEmoji}
+                            </button>
+                            {/if}
+                        </div>
                     </div>
                 </div>
 
@@ -278,13 +296,24 @@
             cursor: pointer;
             user-select: none;
             flex-direction: row;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             gap: 5px;
             padding: 10px;
             padding: 5px 10px;
             width: 100%;
             border-radius: 10px;
+            font-size: 0.9rem;
+
+            .wrapper{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 5px;
+                width: 100%;
+                pointer-events: none;
+            }
 
             input {
                 cursor: pointer;
@@ -337,26 +366,34 @@
                 }
             }
 
-            #chooseQuickEmojiButton {
-                color: var(--secondary-dark);
-                background: transparent;
-                border: none;
-                padding: 5px;
-                cursor: pointer;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                transition: 100ms ease-in-out;
-                .quickEmojiIcon {
-                    font-size: 1.5rem;
-                }
-            }
+            
         }
-
+        
         #themeButton {
             background: var(--secondary-dark);
             margin-top: 10px;
+        }
+    }
+
+    #chooseQuickEmojiButton {
+        color: var(--secondary-dark);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: 100ms ease-in-out;
+        pointer-events: none;
+    }
+    
+    #chooseQuickEmoji {
+        flex-direction: column;
+        
+        button, i{
+            font-size: 2rem;
+            padding: inherit;
+            color: var(--secondary-dark);
         }
     }
 

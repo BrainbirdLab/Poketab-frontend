@@ -1,17 +1,19 @@
 
 <script lang="ts">
-    import { fly, slide } from "svelte/transition";
+    import { fade, fly } from "svelte/transition";
     import {showMessageOptions} from "../../modalManager";
     import { socket } from "$lib/components/socket";
     import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messages";
     import { selfInfoStore } from "$lib/store";
     import { showReplyToast } from "$lib/components/messages/messageUtils";
-    import { showPopupMessage } from "$lib/components/popup";
+    import { showToastMessage } from "$lib/components/toast";
+    import EmojiPicker from "./emojiPicker.svelte";
+    import { emojis, spin } from "$lib/utils";
+    import { onMount } from "svelte";
 
     const reactArray = {
-        primary: ['💙', '😆', '😠', '😢', '😮', '🙂'],
-        last: '🌻',
-        expanded: ['😀', '😁', '😂', '🤣', '😃', '😄', '😅', '😆', '😉', '😊', '😋', '😎', '😍', '😘', '🥰', '😗', '😙', '😚', '🙂', '🤗', '🤩', '🤔', '🤨', '😐', '😑', '😶', '🙄', '😏', '😣', '😥', '😮', '🤐', '😯', '😪', '😫', '🥱', '😴', '😌', '😛', '😜', '😝', '🤤', '😒', '😓', '😔', '😕', '🙃', '🤑', '😲', '🙁', '😖', '😞', '😟', '😤', '😢', '😭', '😦', '😧', '😨', '😩', '🤯', '😬', '😰', '😱', '🥵', '🥶', '😳', '🤪', '😵', '🥴', '😠', '😡', '🤬', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '😇', '🥳', '🥺', '🤠', '🤡', '🤥', '🤫', '🤭', '🧐', '🤓', '😈', '👿', '👹', '👺', '💀', '☠', '👻', '👽', '👾', '🤖', '💩', '😺', '😸', '😹', '😻', '🙈', '🙉', '🙊', '🐵', '🐶', '🐺', '🐱', '🦁', '🐯', '🦒', '🦊', '🦝', '🐮', '🐷', '🐗', '🐭', '🐹', '🐰', '🐻', '🐨', '🐼', '🐸', '🦓', '🐴', '🦄', '🐔', '🐲', '🐽', '🐧', '🐥', '🐤', '🐣', '🌻', '🌸', '🥀', '🌼', '🌷', '🌹', '🏵️', '🌺', '🦇', '🦋', '🐌', '🐛', '🦟', '🦗', '🐜', '🐝', '🐞', '🦂', '🕷', '🕸', '🦠', '🧞‍♀️', '🧞‍♂️', '🗣', '👀', '🦴', '🦷', '👅', '👄', '🧠', '🦾', '🦿', '👩🏻', '👨🏻', '🧑🏻', '👧🏻', '👦🏻', '🧒🏻', '👶🏻', '👵🏻', '👴🏻', '🧓🏻', '👩🏻‍🦰', '👨🏻‍🦰', '👩🏻‍🦱', '👨🏻‍🦱', '👩🏻‍🦲', '👨🏻‍🦲', '👩🏻‍🦳', '👨🏻‍🦳', '👱🏻‍♀️', '👱🏻‍♂️', '👸🏻', '🤴🏻', '👳🏻‍♀️', '👳🏻‍♂️', '👲🏻', '🧔🏻', '👼🏻', '🤶🏻', '🎅🏻', '👮🏻‍♀️', '👮🏻‍♂️', '🕵🏻‍♀️', '🕵🏻‍♂️', '💂🏻‍♀️', '💂🏻‍♂️', '👷🏻‍♀️', '👷🏻‍♂️', '👩🏻‍⚕️', '👨🏻‍⚕️', '👩🏻‍🎓', '👨🏻‍🎓', '👩🏻‍🏫', '👨🏻‍🏫', '👩🏻‍⚖️', '👨🏻‍⚖️', '👩🏻‍🌾', '👨🏻‍🌾', '👩🏻‍🍳', '👨🏻‍🍳', '👩🏻‍🔧', '👨🏻‍🔧', '👩🏻‍🏭', '👨🏻‍🏭', '👩🏻‍💼', '👨🏻‍💼', '👩🏻‍🔬', '👨🏻‍🔬', '👩🏻‍💻', '👨🏻‍💻', '👩🏻‍🎤', '👨🏻‍🎤', '👩🏻‍🎨', '👨🏻‍🎨', '👩🏻‍✈️', '👨🏻‍✈️', '👩🏻‍🚀', '👨🏻‍🚀', '👩🏻‍🚒', '👨🏻‍🚒', '🧕🏻', '👰🏻', '🤵🏻', '🤱🏻', '🤰🏻', '🦸🏻‍♀️', '🦸🏻‍♂️', '🦹🏻‍♀️', '🦹🏻‍♂️', '🧙🏻‍♀️', '🧙🏻‍♂️', '🧚🏻‍♀️', '🧚🏻‍♂️', '🧛🏻‍♀️', '🧛🏻‍♂️', '🧜🏻‍♀️', '🧜🏻‍♂️', '🧝🏻‍♀️', '🧝🏻‍♂️', '🧟🏻‍♀️', '🧟🏻‍♂️', '🙍🏻‍♀️', '🙍🏻‍♂️', '🙎🏻‍♀️', '🙎🏻‍♂️', '🙅🏻‍♀️', '🙅🏻‍♂️', '🙆🏻‍♀️', '🙆🏻‍♂️', '🧏🏻‍♀️', '🧏🏻‍♂️', '💁🏻‍♀️', '💁🏻‍♂️', '🙋🏻‍♀️', '🙋🏻‍♂️', '🙇🏻‍♀️', '🙇🏻‍♂️', '🤦🏻‍♀️', '🤦🏻‍♂️', '🤷🏻‍♀️', '🤷🏻‍♂️', '💆🏻‍♀️', '💆🏻‍♂️', '💇🏻‍♀️', '💇🏻‍♂️', '🧖🏻‍♀️', '🧖🏻‍♂️', '🤹🏻‍♀️', '🤹🏻‍♂️', '👩🏻‍🦽', '👨🏻‍🦽', '👩🏻‍🦼', '👨🏻‍🦼', '👩🏻‍🦯', '👨🏻‍🦯', '🧎🏻‍♀️', '🧎🏻‍♂️', '🧍🏻‍♀️', '🧍🏻‍♂️', '🚶🏻‍♀️', '🚶🏻‍♂️', '🏃🏻‍♀️', '🏃🏻‍♂️', '💃🏻', '🕺🏻', '🧗🏻‍♀️', '🧗🏻‍♂️', '🧘🏻‍♀️', '🧘🏻‍♂️', '🛀🏻', '🛌🏻', '🕴🏻', '🏇🏻', '🏂🏻', '💪🏻', '🦵🏻', '🦶🏻', '👂🏻', '🦻🏻', '👃🏻', '🤏🏻', '👈🏻', '👉🏻', '☝🏻', '👆🏻', '👇🏻', '✌🏻', '🤞🏻', '🖖🏻', '🤘🏻', '🤙🏻', '🖐🏻', '✋🏻', '👌🏻', '👍🏻', '👎🏻', '✊🏻', '👊🏻', '🤛🏻', '🤜🏻', '🤚🏻', '👋🏻', '🤟🏻', '✍🏻', '👏🏻', '👐🏻', '🙌🏻', '🤲🏻', '🙏🏻', '🤝🏻', '💅🏻', '📌', '❤️', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍', '💔', '❣', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '💌', '💢', '💥', '💤', '💦', '💨', '💫'],
+        reacts: ['💙', '😆', '😠', '😢', '😮', '🙂'],
+        last: '🌻'
     };
 
     let reactIsExpanded = false;
@@ -19,12 +21,21 @@
     $: reactedEmoji = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy[$selfInfoStore.uid] || '';
     $: messageKind = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.kind;
 
+    let selectedReact = '';
+
     const messageOptions: {[key: string]: string} = {
         Reply: 'fa-solid fa-reply',
         Copy: 'fa-solid fa-clone',
         Download: 'fa-solid fa-download',
         Delete: 'fa-solid fa-trash',
     };
+
+    onMount(() => {
+        const lastReact = localStorage.getItem('lastReact') || reactArray.last;
+        if (emojis.includes(lastReact)){
+            reactArray.last = lastReact;
+        }
+    });
 
     function getMessageOptions(){
         const arr = [];
@@ -49,24 +60,30 @@
             if (e.target == node){
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
-            } else if (e.target instanceof HTMLElement && e.target.classList.contains('react')) {
-                const react = e.target.dataset.react;
-                if (react && reactArray.expanded.includes(react)) {
+            } else if (e.target instanceof HTMLElement && e.target.classList.contains('emoji')) {
+                selectedReact = e.target.dataset.emoji as string || '';
+                if (selectedReact && emojis.includes(selectedReact)) {
                     messageDatabase.update((messages) => {
                         const message = messages.get($eventTriggerMessageId) as MessageObj;
                         if (message) {
-                            //if same react is clicked again, remove it
-                            if (message.reactedBy[$selfInfoStore.uid] == react) {
+                            //if same emoji is clicked again, remove it
+                            if (message.reactedBy[$selfInfoStore.uid] == selectedReact) {
                                 delete message.reactedBy[$selfInfoStore.uid];
                             } else {
-                                message.reactedBy[$selfInfoStore.uid] = react;
+                               
+                                if (!reactArray.reacts.includes(selectedReact) && emojis.includes(selectedReact)){
+                                    reactArray.last = selectedReact;
+                                    localStorage.setItem('lastReact', selectedReact);
+                                }
+
+                                message.reactedBy[$selfInfoStore.uid] = selectedReact;
                             }
                         }
                         return messages;
                     });
 
-                    //send the react to the server via socket
-                    socket.emit('react', $eventTriggerMessageId, $selfInfoStore.uid, react);
+                    //send the emoji to the server via socket
+                    socket.emit('react', $eventTriggerMessageId, $selfInfoStore.uid, selectedReact);
                 }
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
@@ -81,13 +98,13 @@
                     const msg = $messageDatabase.get($eventTriggerMessageId) as TextMessageObj;
 
                     if (!navigator.clipboard){
-                        showPopupMessage('Copy not supported');
+                        showToastMessage('Copy not supported');
                         return;
                     }
 
                     navigator.clipboard.writeText(msg.message);
 
-                    showPopupMessage('Copied to clipboard!');
+                    showToastMessage('Copied to clipboard!');
 
                 } else if (e.target.classList.contains('Download')) {
                     console.log('download');
@@ -115,29 +132,26 @@
 {#if $showMessageOptions}
 <div class="optionsContainer" use:clickHandler>
     <div class="reactionsChooser" transition:fly={{y: -10, duration: 200}}>
-        {#if !reactIsExpanded}
-            <div class="primary">
-                {#each reactArray.primary as react, i}
-                    <div class:shown={showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
-                        <div class="react" data-react="{react}">{react}</div>
-                    </div>    
-                {/each}
-                <div class:shown={showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == reactArray.last}>
-                    <div class="react" data-react="{reactArray.last}">{reactArray.last}</div>
-                </div>
-                <button class="more roundedBtn" title="More" on:click={()=>{reactIsExpanded = true}}><i class="fa-solid fa-plus"></i></button>
-            </div>
-        {:else}
-        <div class="expandedReacts" transition:slide|global>
-            <div class="reacts">
-                {#each reactArray.expanded as react}
-                <div class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
-                    <div class="react" data-react="{react}">{react}</div>
-                </div>
-                {/each}
-            </div>
-        </div>
+        {#if reactIsExpanded}
+            <EmojiPicker selectedEmoji={selectedReact} exclude={[...reactArray.last, ...reactArray.reacts]} onClose={()=>{
+                reactIsExpanded = false;
+            }}/>
         {/if}
+        <div class="primary">
+            {#each reactArray.reacts as react}
+                <div class:shown={showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
+                    <div class="emoji" data-emoji="{react}">{react}</div>
+                </div>    
+            {/each}
+            <div class:shown={showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == reactArray.last}>
+                <div class="emoji" data-emoji="{reactArray.last}">{reactArray.last}</div>
+            </div>
+            {#if !reactIsExpanded}
+                <button in:spin={{duration: 250, degree: 180}} class="more roundedBtn" title="More" on:click={()=>{reactIsExpanded = true}}><i class="fa-solid fa-caret-up"></i></button>
+            {:else}
+                <button in:spin={{duration: 250, degree: 180}} class="more roundedBtn" title="Less" on:click={()=>{reactIsExpanded = false}}><i class="fa-solid fa-caret-down"></i></button>
+            {/if}
+        </div>
     </div>
     <div class="messageOptions" transition:fly={{y: 10, duration: 200}}>
         {#each getMessageOptions() as option, i}
@@ -191,7 +205,6 @@
             > * {
                 pointer-events: none;
             }
-
         }
     }
 
@@ -219,7 +232,8 @@
             filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
             max-width: min(300px, 95vw);
             background: var(--option-color);
-            border-radius: 25px;
+            border-radius: 23px;
+            padding: 5px;
         }
 
         .reactContainer.selected{
@@ -232,22 +246,11 @@
             font-size: 1.5rem;
             animation: bubbleUp 500ms ease-in-out forwards;
             opacity: 0;
-            //add animation delay of 50ms for each react
+            //add animation delay of 50ms for each emoji
             @for $i from 0 through 6 {
                 &:nth-of-type(#{$i + 1}) {
                     animation-delay: #{($i * 50)}ms !important;
                 }
-            }
-        }
-        
-        .react{
-            filter: saturate(0.7);
-            transition: all 100ms ease-in-out;
-            transform-origin: bottom;
-
-            &:hover{
-                transform: translateY(-5px);
-                filter: saturate(1) drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
             }
         }
         
@@ -257,7 +260,8 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            padding: 5px;
+            gap: 1.4px;
+            transition: 200ms ease-in-out;
 
             .more{
                 background: #ffffff15;
@@ -267,31 +271,6 @@
             }
         }
         
-    }
-
-    .expandedReacts{
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        height: 55vh;
-        padding: 15px;
-        overflow: visible;
-        background: var(--option-color);
-        border-radius: 25px;
-        padding: 5px 10px;
-        
-        .reacts{
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            height: 100%;
-            overflow-y: scroll;
-            gap: 5px;
-        }
     }
 
     @keyframes bubbleUp {

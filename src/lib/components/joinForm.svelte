@@ -4,9 +4,8 @@
     import {socket, reConnectSocket} from "$lib/components/socket";
     import {formNotification, reconnectButtonEnabled, socketConnected, type User} from "$lib/store";
 
-    import {formActionButtonDisabled, chatRoomStore, showUserInputForm} from "$lib/store";
-
-    let key = '';
+    import {formActionButtonDisabled, chatRoomStore, showUserInputForm, joinError, joinKey} from "$lib/store";
+    import { onDestroy, onMount } from "svelte";
 
     function testKey(k: string){
         return /^[a-zA-Z0-9]{2}-[a-zA-Z0-9]{3}-[a-zA-Z0-9]{2}$/.test(k);
@@ -18,26 +17,26 @@
         }
         if (e.key == 'Enter') {
             checkKey();
-        } else if (/^[a-zA-Z0-9]$/.test(e.key) && key.length < 9) {
+        } else if (/^[a-zA-Z0-9]$/.test(e.key) && $joinKey.length < 9) {
             // Only allow letters and numbers
-            if (key.length == 2 || key.length == 6) {
-                key += '-';
+            if ($joinKey.length == 2 || $joinKey.length == 6) {
+                $joinKey += '-';
             }
-            key += e.key;
+            $joinKey += e.key;
         } else if (e.key == 'Backspace') {
-            if (key.length > 0) {
+            if ($joinKey.length > 0) {
                 // Remove '-' if the previous character is '-'
-                if (key.at(-2) == '-') {
-                    key = key.slice(0, -2);
+                if ($joinKey.at(-2) == '-') {
+                    $joinKey = $joinKey.slice(0, -2);
                 } else {
-                    key = key.slice(0, -1);
+                    $joinKey = $joinKey.slice(0, -1);
                 }
             }
         }
     }
 
     function parseKey(e: ClipboardEvent){
-        //console.log('Parsing key');
+        //console.log('Parsing $joinKey');
         e.preventDefault();
         //convert abcedfg to ab-cde-fg
         let value = e.clipboardData?.getData('text/plain');
@@ -47,19 +46,17 @@
             value = value.slice(0, 2) + '-' + value.slice(2, 5) + '-' + value.slice(5, 7);
         }
         if (testKey(value)){
-            key = value;
+            $joinKey = value;
             checkKey();
         }
     }
 
-    export let errLog = '';
-    export let errIcon = '';
     let errAnimation = '';
     let LabelText = 'Enter key';
     let LabelIcon = 'fa-solid fa-key';
 
     $: {
-        if (errLog){
+        if ($joinError.text){
             errAnimation = 'shake';
             //console.log('Shaking');
             setTimeout(() => {
@@ -84,34 +81,34 @@
     function checkKey(){
         console.log('Checking key');
 
-        errLog = '';
+        $joinError.text = '';
 
-        if (!key){
+        if (!$joinKey){
             console.log('Key is empty');
-            errLog = 'Key is required';
-            errIcon = 'fa-solid fa-triangle-exclamation';
+            $joinError.text = 'Key is required';
+            $joinError.icon = 'fa-solid fa-triangle-exclamation';
             return;
         }else{
-            errLog = '';
+            $joinError.text = '';
         }
 
-        if (!testKey(key)){
-            console.log('Invalid key', key);
-            errLog = 'Invalid key';
-            errIcon = 'fa-solid fa-triangle-exclamation';
+        if (!testKey($joinKey)){
+            console.log('Invalid key', $joinKey);
+            $joinError.text = 'Invalid key';
+            $joinError.icon = 'fa-solid fa-triangle-exclamation';
             return;
         }else{
-            errLog = '';
+            $joinError.text = '';
         }
 
         joinActionText = 'Checking...';
         formActionButtonDisabled.set(true);
 
-        errIcon = '';
+        $joinError.icon = '';
 
         console.log('Fetching key data');
 
-        socket.emit('fetchKeyData', key, (res: fetchResponse) => {
+        socket.emit('fetchKeyData', $joinKey, (res: fetchResponse) => {
 
             joinActionText = 'Join Chat';
             //joinActionDisabled = false;
@@ -125,15 +122,15 @@
                     return;
                 }
 
-                errLog = res.message;
-                errIcon = res.icon;
+                $joinError.text = res.message;
+                $joinError.icon = res.icon;
                 return;
             }
 
             console.log('Key data fetched');
 
             chatRoomStore.update(room => {
-                room.Key = key;
+                room.Key = $joinKey;
                 room.userList = res.users;
                 room.maxUsers = res.maxUsers;
                 return room;
@@ -144,15 +141,25 @@
             
         }).on('error', (err: string) => {
             console.log(err);
-            errLog = err;
-            errIcon = 'fa-solid fa-circle-exclamation';
+            $joinError.text = err;
+            $joinError.icon = 'fa-solid fa-circle-exclamation';
         });
     }
 
     function createChat(){
-        key = '';
+        $joinKey = '';
         showUserInputForm.set(true);
     }
+
+    onMount(() => {
+        console.log('Mounting join form');
+        reconnectButtonEnabled.set(false);
+    });
+
+    onDestroy(() => {
+        console.log('Destroying join form');
+        joinError.set({text: '', icon: ''});
+    })
 </script>
 
 <svelte:head>
@@ -166,8 +173,8 @@
     </div>
     <div class="formField">
         <label for="key">{LabelText} <i class="{LabelIcon}"></i></label>
-        <div class="err {errAnimation}">{errLog} <i class="{errIcon}"></i></div>
-        <input on:paste={parseKey} on:keydown={validateKey} id="key" type="text" bind:value={key} name="key" placeholder="xx-xxx-xx">
+        <div class="err {errAnimation}">{$joinError.text} <i class="{$joinError.icon}"></i></div>
+        <input on:paste={parseKey} on:keydown={validateKey} id="key" type="text" bind:value={$joinKey} name="key" placeholder="xx-xxx-xx">
     </div>
     <div class="formFieldContainer">
         <div class="formField">

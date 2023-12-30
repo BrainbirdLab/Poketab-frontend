@@ -1,21 +1,21 @@
 <script lang="ts">
     import { fly, scale } from "svelte/transition";
     import { showAttachmentPickerPanel } from "$lib/components/modalManager";
-    import { showPopupMessage } from "$lib/components/popup";
+    import { showToastMessage } from "$lib/components/toast";
     import { socket } from "$lib/components/socket";
     import { selfInfoStore } from "$lib/store";
 
     function transmitLocation() {
 
         if (!navigator.geolocation){
-            showPopupMessage('Geolocation is not supported by this browser.');
+            showToastMessage('Geolocation is not supported by this browser.');
         }
 
         console.log("Transmitting location...");
 
         //try to get location with high accuracy and timeout of 5 seconds.
         let timeout = setTimeout(() => {
-            showPopupMessage('Unable to get location.');
+            showToastMessage('Unable to get location.');
         }, 5000);
 
         navigator.geolocation.getCurrentPosition((position) => {
@@ -25,7 +25,7 @@
             socket.emit('location', {latitude, longitude}, $selfInfoStore.uid);
         }, (error) => {
             clearTimeout(timeout);
-            showPopupMessage('Unable to get location.');
+            showToastMessage('Unable to get location.');
         }, {
             enableHighAccuracy: true,
             timeout: 5000,

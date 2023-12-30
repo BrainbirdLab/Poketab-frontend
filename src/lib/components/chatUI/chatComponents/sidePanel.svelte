@@ -3,7 +3,7 @@
 
     import {chatRoomStore, currentPage, joinedChat, selfInfoStore, splashMessage, type User} from "$lib/store";
     import {clearModals, showQuickSettingsPanel, showSidePanel} from "$lib/components/modalManager";
-    import { showPopupMessage } from "$lib/components/popup";
+    import { showToastMessage } from "$lib/components/toast";
     import { socket } from "$lib/components/socket";
     import { messageDatabase } from "$lib/messages";
 
@@ -20,7 +20,7 @@
 
     function copyKey(){
         navigator.clipboard.writeText($chatRoomStore.Key).then(() => {
-            showPopupMessage('Copied to clipboard!');
+            showToastMessage('Copied to clipboard!');
             copyKeyIcon = 'fa-solid fa-check';
             if (copyTimeout) clearTimeout(copyTimeout);
             copyTimeout = setTimeout(() => {
@@ -29,7 +29,7 @@
         })
         .catch(err => {
             console.log(err);
-            showPopupMessage('Failed to copy');
+            showToastMessage('Failed to copy');
         });
     }
 

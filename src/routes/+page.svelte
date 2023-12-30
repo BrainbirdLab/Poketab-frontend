@@ -7,6 +7,9 @@
     import { themes } from "$lib/themes";
 
     export let data;
+
+    console.log(data);
+
     currentTheme.set(data.themename);
     const version = data.version;
 
@@ -16,6 +19,7 @@
 
     onMount(() => {
         unsubTheme = currentTheme.subscribe((val) => {
+            console.log(`Theme ${val} applied`);
             document.documentElement.style.setProperty("--secondary-dark", themes[val].secondary);
             document.documentElement.style.setProperty("--msg-get", themes[val].msg_get);
             document.documentElement.style.setProperty("--msg-get-reply", themes[val].msg_get_reply);
@@ -137,6 +141,11 @@
         color: var(--secondary-dark, #419eff);
     }
     .maincontainer {
+        background: rgba(0, 0, 0, 0.6117647059) var(--pattern);
+        background-blend-mode: soft-light;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         color: white;
         padding: 10% 20px 0px 20px;
         display: flex;

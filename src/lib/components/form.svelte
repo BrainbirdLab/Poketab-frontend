@@ -18,10 +18,6 @@
             socket.connect();
         }
     });
-    
-
-    export let errLog = '';
-    export let errIcon = '';
 
 </script>
 
@@ -40,7 +36,7 @@
 {#if $showUserInputForm}
     <InputForm />
 {:else}
-    <JoinForm errIcon={errIcon} errLog={errLog}/>
+    <JoinForm/>
 {/if}
 
 <style lang="scss">
