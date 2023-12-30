@@ -1,40 +1,18 @@
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
     import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
-    import { onDestroy, onMount } from "svelte";
+    import { onMount } from "svelte";
     import { currentTheme } from "$lib/store";
-    import type { Unsubscriber } from "svelte/motion";
-    import { themes } from "$lib/themes";
 
     export let data;
-
-    console.log(data);
 
     currentTheme.set(data.themename);
     const version = data.version;
 
     let mounted = false;
 
-    let unsubTheme: Unsubscriber;
-
     onMount(() => {
-        unsubTheme = currentTheme.subscribe((val) => {
-            console.log(`Theme ${val} applied`);
-            document.documentElement.style.setProperty("--secondary-dark", themes[val].secondary);
-            document.documentElement.style.setProperty("--msg-get", themes[val].msg_get);
-            document.documentElement.style.setProperty("--msg-get-reply", themes[val].msg_get_reply);
-            document.documentElement.style.setProperty("--msg-send", themes[val].msg_send);
-            document.documentElement.style.setProperty("--msg-send-reply", themes[val].msg_send_reply);
-            document.documentElement.style.setProperty('--pattern', `url('/images/backgrounds/${val}_w.webp')`);
-        });
         mounted = true;
-    });
-
-    onDestroy(() => {
-        if (unsubTheme) {
-            unsubTheme();
-            
-        }
     });
 
     const featureItemsData = [
