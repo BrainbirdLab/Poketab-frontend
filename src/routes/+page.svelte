@@ -3,6 +3,8 @@
     import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
     import { onDestroy, onMount } from "svelte";
     import { currentTheme } from "$lib/store";
+    import type { Unsubscriber } from "svelte/motion";
+    import { themes } from "$lib/themes.js";
 
     export let data;
     currentTheme.set(data.themename);
@@ -10,23 +12,24 @@
 
     let mounted = false;
 
-    const unsubTheme = currentTheme.subscribe((val) => {
-        if (mounted) {
-            document.documentElement.style.setProperty("--secondary-dark", data.theme.secondary);
-            document.documentElement.style.setProperty("--msg-get", data.theme.msg_get);
-            document.documentElement.style.setProperty("--msg-get-reply", data.theme.msg_get_reply);
-            document.documentElement.style.setProperty("--msg-send", data.theme.msg_send);
-            document.documentElement.style.setProperty("--msg-send-reply", data.theme.msg_send_reply);
-            document.documentElement.style.setProperty('--pattern', `url('/images/backgrounds/${val}_w.webp')`);
-        }
-    });
+    let unsubTheme: Unsubscriber;
 
     onMount(() => {
+        unsubTheme = currentTheme.subscribe((val) => {
+            document.documentElement.style.setProperty("--secondary-dark", themes[val].secondary);
+            document.documentElement.style.setProperty("--msg-get", themes[val].msg_get);
+            document.documentElement.style.setProperty("--msg-get-reply", themes[val].msg_get_reply);
+            document.documentElement.style.setProperty("--msg-send", themes[val].msg_send);
+            document.documentElement.style.setProperty("--msg-send-reply", themes[val].msg_send_reply);
+            document.documentElement.style.setProperty('--pattern', `url('/images/backgrounds/${val}_w.webp')`);
+        });
         mounted = true;
     });
 
     onDestroy(() => {
-        unsubTheme();
+        if (unsubTheme) {
+            unsubTheme();
+        }
     });
 
     const featureItemsData = [
