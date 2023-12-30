@@ -152,12 +152,10 @@
     }
 
     onMount(() => {
-        console.log('Mounting join form');
         reconnectButtonEnabled.set(false);
     });
 
     onDestroy(() => {
-        console.log('Destroying join form');
         joinError.set({text: '', icon: ''});
     })
 </script>

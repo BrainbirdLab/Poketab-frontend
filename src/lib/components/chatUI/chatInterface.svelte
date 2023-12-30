@@ -57,7 +57,7 @@
             await navigator.share({
                 title: "Poketab Messenger",
                 text: "Join chat!",
-                url: `${location.origin}/join/${$chatRoomStore.Key}`,
+                url: `${location.origin}/chat/${$chatRoomStore.Key}`,
             });
             showToastMessage("Shared!");
         } catch (err) {

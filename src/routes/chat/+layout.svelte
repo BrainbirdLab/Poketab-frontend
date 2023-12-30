@@ -10,7 +10,7 @@
     import type { Unsubscriber } from "svelte/store";
     import { themes } from "$lib/themes";
     import {page} from "$app/stores";
-    import {goto, replaceState} from "$app/navigation";
+    import {goto} from "$app/navigation";
 
     splashMessage.set("Connecting to server...");
 

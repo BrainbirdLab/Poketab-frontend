@@ -19,5 +19,4 @@
         });
         showUserInputForm.set(true);
     }
-    
 </script>

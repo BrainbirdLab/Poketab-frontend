@@ -33,6 +33,7 @@
     onDestroy(() => {
         if (unsubTheme) {
             unsubTheme();
+            
         }
     });
 
