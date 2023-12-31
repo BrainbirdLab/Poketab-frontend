@@ -5,4 +5,27 @@
 
 <svelte:body on:contextmenu|preventDefault/>
 
-<slot />
+<div class="maincontainer">
+    <slot />
+</div>
+
+<style lang="scss">
+    .maincontainer {
+        background: rgba(0, 0, 0, 0.6117647059) var(--pattern);
+        background-blend-mode: soft-light;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: white;
+        padding: 10% 20px 0px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: justify;
+        gap: 20px;
+        height: 100%;
+        width: 100%;
+        overflow: scroll;
+    }
+</style>
