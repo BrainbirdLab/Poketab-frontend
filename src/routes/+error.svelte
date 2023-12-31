@@ -19,13 +19,23 @@
             {$page.error?.message}
         </h3>
     </div>
+    <a href="/" class="btn button-animate play-sound">
+        Home
+    </a>
 </div>
 
-<a href="/" class="btn button-animate play-sound">
-    Home
-</a>
 
 <style>
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        background: var(--primary-dark, #0b0c10);
+    }
 
     .text {
         display: flex;

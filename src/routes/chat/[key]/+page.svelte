@@ -19,4 +19,6 @@
         });
         showUserInputForm.set(true);
     }
+
+    console.log('[key] +page.svelte');
 </script>

@@ -1,11 +1,20 @@
 <script>
-    export let message = '';
+    import { splashMessage } from "$lib/store";
+    import { onMount } from "svelte";
+
+    let mounted = false;
+
+    onMount(() => {
+        mounted = true;
+    });
 </script>
 
-<div class="container">
-    <div class="text">{message}</div>
-    <i class="fa-solid fa-circle-notch fa-spin"></i>
-</div>
+{#if mounted && $splashMessage}    
+    <div class="container">
+        <div class="text">{$splashMessage}</div>
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+    </div>
+{/if}
 
 <style lang="scss">
     .container {

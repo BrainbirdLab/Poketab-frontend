@@ -35,11 +35,12 @@ export async function load({ params, cookies }) {
 
     console.log('Connecting to server...');
 
-    const themename: string = cookies.get('theme') || 'Ocean';
+    let themename: string = cookies.get('theme') || 'Ocean';
     if (themename in themes){
         cookies.set('theme', themename, {path: '/'});
     } else {
         cookies.set('theme', 'Ocean', {path: '/'});
+        themename = 'Ocean';
     }
 
     socket.connect();

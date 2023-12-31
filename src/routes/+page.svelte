@@ -2,16 +2,15 @@
     import { fade, fly } from "svelte/transition";
     import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
     import { onMount } from "svelte";
-    import { currentTheme } from "$lib/store";
-
+    
     export let data;
 
-    currentTheme.set(data.themename);
     const version = data.version;
 
     let mounted = false;
-
+    
     onMount(() => {
+        console.log("Mounted Root +page.svelte");
         mounted = true;
     });
 
@@ -55,15 +54,11 @@
     ];
 </script>
 
-<svelte:head>
-    <title>Poketab - Get Started</title>
-</svelte:head>
-
 {#if mounted}
 <div class="maincontainer">
     <ReactiveLogo />
     <h1 class="title" transition:fly={{x: 20}}>
-        Poketab Messenger <span class="version">v.{version}</span>
+        Poketab Messenger <span class="version">{version}</span>
     </h1>
     <div class="slogan" transition:fly={{x:-10, delay: 300}}>A Secure and User-Friendly Chatting WebApp</div>
 

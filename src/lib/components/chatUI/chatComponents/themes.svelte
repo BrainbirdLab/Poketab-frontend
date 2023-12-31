@@ -7,6 +7,8 @@
     import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
     import { onDestroy } from "svelte";
+
+    console.log($currentTheme);
 	
 	let loadedEmoji = localStorage.getItem('quickEmoji') || themes[$currentTheme].quickEmoji;
 
@@ -24,7 +26,7 @@
         unsubQuickEmoji();
     });
 
-    function hideThemes(node: HTMLElement){
+    function handleThemes(node: HTMLElement){
 
         const method = (e: Event) => {
 
@@ -39,9 +41,8 @@
 				showToastMessage(`${theme} theme applied`);
 				//make a request to the server to update the cookie
 				const themeRequest = new XMLHttpRequest();
-				themeRequest.open('PUT', '/theme');
-				themeRequest.setRequestHeader('Content-Type', 'application/json');
-				themeRequest.send(JSON.stringify({ theme }));
+				themeRequest.open('PUT', `/theme/${theme}`);
+				themeRequest.send();
 				//after response from server
 				themeRequest.onreadystatechange = () => {
 					if (themeRequest.readyState == 4 && themeRequest.status == 200) {
@@ -69,8 +70,12 @@
     }
 </script>
 
+<svelte:head>
+    <link rel="stylesheet" href="/themes/{$currentTheme}.css">
+</svelte:head>
+
 {#if $showThemesPanel}
-<div id="themePicker" class="themePicker active" use:hideThemes>
+<div id="themePicker" class="themePicker active" use:handleThemes>
     <ul class="themeList" transition:fly={{y: 30, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
         <li transition:fly|global={{y: 20, delay: i*20}} class="theme hoverShadow clickable playable" id="{themename}" data-duration="{i}">
