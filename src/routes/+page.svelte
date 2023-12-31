@@ -55,58 +55,73 @@
 </script>
 
 {#if mounted}
-<ReactiveLogo />
-<h1 class="title" transition:fly={{x: 20}}>
-    Poketab Messenger <span class="version">{version}</span>
-</h1>
-<div class="slogan" transition:fly={{x:-10, delay: 300}}>A Secure and User-Friendly Chatting WebApp</div>
 
-<div class="more" transition:fly={{x: 10, delay: 350}}>
-    Poketab Messenger is a chat app that offers a temporary and secure way
-    to connect with friends and family. It requires no login or account
-    creation and has a range of features, including rich text typing, code
-    highlighting, location sharing, file transfers, and personalized themes
-    and stickers. The app is serverless, ensuring that no data is stored on
-    its servers. Simply start a chat and share the link with friends for a
-    hassle-free communication experience with guaranteed privacy and
-    security.
-</div>
-
-<div class="links">
-    <a id="login" class="button-animate btn play-sound" href="/chat"
-        transition:fly={{y: 10, delay: 600}}
-        >Start Chat
-    </a>
-    <a
-        id="github"
-        class="button-animate btn play-sound"
-        href="https://github.com/itsfuad/poketab-messenger"
-        transition:fly={{y: 10, delay: 700}}
-        >View Source
-    </a>
-</div>
-
-<div class="titleText" in:fly={{x: 10, delay: 800}}>What does it offer?</div>
-<div class="feature" in:fade|global={{delay: 1000}}>
-    {#each featureItemsData as feature}
-        <div class="feature-item" >
-            <i class={feature.iconClass} />
-            <div class="feature-item-title">
-                {feature.title}
+<div class="container">
+    <ReactiveLogo />
+    <h1 class="title" transition:fly={{x: 20}}>
+        Poketab Messenger <span class="version">{version}</span>
+    </h1>
+    <div class="slogan" transition:fly={{x:-10, delay: 300}}>A Secure and User-Friendly Chatting WebApp</div>
+    
+    <div class="more" transition:fly={{x: 10, delay: 350}}>
+        Poketab Messenger is a chat app that offers a temporary and secure way
+        to connect with friends and family. It requires no login or account
+        creation and has a range of features, including rich text typing, code
+        highlighting, location sharing, file transfers, and personalized themes
+        and stickers. The app is serverless, ensuring that no data is stored on
+        its servers. Simply start a chat and share the link with friends for a
+        hassle-free communication experience with guaranteed privacy and
+        security.
+    </div>
+    
+    <div class="links">
+        <a id="login" class="button-animate btn play-sound" href="/chat"
+            transition:fly={{y: 10, delay: 600}}
+            >Start Chat
+        </a>
+        <a
+            id="github"
+            class="button-animate btn play-sound"
+            href="https://github.com/itsfuad/poketab-messenger"
+            transition:fly={{y: 10, delay: 700}}
+            >View Source
+        </a>
+    </div>
+    
+    <div class="titleText" in:fly={{x: 10, delay: 800}}>What does it offer?</div>
+    <div class="feature" in:fade|global={{delay: 1000}}>
+        {#each featureItemsData as feature}
+            <div class="feature-item" >
+                <i class={feature.iconClass} />
+                <div class="feature-item-title">
+                    {feature.title}
+                </div>
+                <div class="detail">
+                    {feature.description}
+                </div>
             </div>
-            <div class="detail">
-                {feature.description}
-            </div>
-        </div>
-    {/each}
-</div>
-
-<div class="footer">
-    <a href="mailto:support@poketab.live">support@poketab.live</a>
+        {/each}
+    </div>
+    
+    <div class="footer">
+        <a href="mailto:support@poketab.live">support@poketab.live</a>
+    </div>
 </div>
 {/if}
 
 <style lang="scss">
+
+    .container{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 20px;
+        padding: 20px;
+        height: 100%;
+        width: 100%;
+        overflow: scroll;
+    }
 
     .version {
         font-size: 0.7rem;
@@ -117,7 +132,7 @@
         color: #ffffff95;
         width: clamp(300px, 60vw, 1000px);
     }
-    
+
     a {
         text-decoration: none;
         padding: 10px;

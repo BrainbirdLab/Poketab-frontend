@@ -17,7 +17,6 @@
         background-position: center;
         background-repeat: no-repeat;
         color: white;
-        padding: 10% 20px 0px 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
