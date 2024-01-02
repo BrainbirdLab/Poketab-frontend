@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
-
+    import { page } from "$app/stores";
 
     let logo: HTMLElement;
     let styleLeft = "transform: rotate(-79.186deg);";

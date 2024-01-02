@@ -5,7 +5,7 @@
     
     import {socket, reConnectSocket} from "$lib/components/socket";
     import { formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, selfInfoStore, socketConnected, joinedChat, isTaken, currentPage, formNotification, splashMessage} from "$lib/store";
-
+    
     let selectedname = '';
     let selectedAvatar = '';
     let selectedMaxUser = 2;

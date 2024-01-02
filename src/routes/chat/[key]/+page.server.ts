@@ -71,8 +71,10 @@ export async function load({ params, cookies }) {
   // Wait for the fetchDataPromise to resolve
   const res = await fetchDataPromise;
 
+  console.log(res.statusCode);
+
   // If the server is down, return an error
-  if (res.statusCode === 500) {
+  if (res.statusCode === 500 || res.statusCode === 400) {
     return error(res.statusCode as NumericRange<400, 599>, { message: res.message });
   }
 

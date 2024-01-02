@@ -70,10 +70,6 @@
     }
 </script>
 
-<svelte:head>
-    <link rel="stylesheet" href="/themes/{$currentTheme}.css">
-</svelte:head>
-
 {#if $showThemesPanel}
 <div id="themePicker" class="themePicker active" use:handleThemes>
     <ul class="themeList" transition:fly={{y: 30, duration: 100}}>

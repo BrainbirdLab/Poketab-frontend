@@ -1,10 +1,8 @@
 <script lang="ts">
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import Form from "$lib/components/form.svelte";
-    import { currentPage, joinedChat } from "$lib/store";
+    import { currentPage, joinedChat, currentTheme } from "$lib/store";
     import { onMount } from "svelte";
-
-    console.log('root +page.svelte');
 
     let mounted = false;
 
@@ -16,6 +14,10 @@
     });
     
 </script>
+
+<svelte:head>
+    <link rel="stylesheet" href="/themes/{$currentTheme}.css">
+</svelte:head>
 
 {#if mounted}
 <div class="content">
