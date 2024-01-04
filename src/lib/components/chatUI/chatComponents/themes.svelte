@@ -7,8 +7,6 @@
     import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
     import { onDestroy } from "svelte";
-
-    console.log($currentTheme);
 	
 	let loadedEmoji = localStorage.getItem('quickEmoji') || themes[$currentTheme].quickEmoji;
 

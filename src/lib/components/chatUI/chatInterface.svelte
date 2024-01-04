@@ -1,7 +1,7 @@
 <script lang="ts">
     import "$lib/components/messages/message.scss";
     import MessageInput from "./chatComponents/messageInput.svelte";
-    import TextMessage from "$lib/components/messages/message.svelte";
+    import TextMessage from "$lib/components/messages/TextMessage.svelte";
     import {
         MessageObj,
         ServerMessageObj,
@@ -41,10 +41,11 @@
     import { spring } from "svelte/motion";
     import MessageReplyToast from "./chatComponents/messageReplyToast.svelte";
     import ScrollDownPopup from "./chatComponents/scrollDownPopup.svelte";
-    import { filterMessage, getFormattedDate, makeClasslist, showReplyToast } from "$lib/components/messages/messageUtils";
+    import { filterBadWords, getFormattedDate, makeClasslist, showReplyToast } from "$lib/components/messages/messageUtils";
     import DeletedMessage from "$lib/components/messages/deletedMessage.svelte";
     import LocationMessage from "$lib/components/messages/locationMessage.svelte";
     import NavBar from "./chatComponents/navbar.svelte";
+    import { Prism } from "$lib/prism/prism.min";
 
     let isOffline = false;
 
@@ -89,6 +90,8 @@
         if (!lastMessageObj) {
             return;
         }
+
+        Prism.highlightAll();
 
         const timeStamp = lastMessageObj.timeStamp;
 
@@ -153,7 +156,7 @@
         }
 
         if (message instanceof TextMessageObj){
-            message.message = filterMessage(message.message);
+            message.message = filterBadWords(message.message);
         }
 
         messageDatabase.update((messages) => {
@@ -172,6 +175,7 @@
             return;
         }
 
+        console.log('link preview data received');
         console.log(data);
         
         messageDatabase.update((messages) => {

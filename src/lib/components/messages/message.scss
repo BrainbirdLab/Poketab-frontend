@@ -111,21 +111,6 @@
     visibility: hidden;
 }
 
-.message[data-mtype="emoji"]{
-    .messageMain{
-        .msg{
-            background: none !important;
-            border-radius: 18px;
-            padding: 0 !important;
-            .data{
-                padding: 0 !important;
-                font-size: 2rem !important;
-                width: min-content;
-            }
-        }
-    }
-}
-
 //if previous message has react
 
 .message:has(.reactsContainer){
@@ -318,14 +303,25 @@
         border-bottom-right-radius: 18px;
         overflow: hidden;
         &[data-mtype="text"] .data{
+            white-space: pre-wrap;
+            display: block;
+            padding: 8px 10px;
+            min-width: 34px;
             a{
                 color: inherit;
+                word-break: break-all;
                 &::after{
                     content: '\f08e';
                     font-family: 'FontAwesome';
                     font-size: 0.8rem;
                     padding: 0 5px;
                 }
+            }
+        }
+
+        &[data-mtype="emoji"]{
+            .data{
+                font-size: 2rem;
             }
         }
         &[data-mtype="text"], [data-mtype="file"]{
@@ -338,4 +334,51 @@
 
 .messageReply + .messageMain{
     margin-top: -20px;
+}
+
+pre{
+    white-space: pre-wrap;
+    background: rgb(17 29 42);
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-top: 25px;
+    tab-size: 2;
+    margin-left: -9px;
+    margin-right: -9px;
+
+    &::after{
+        position: absolute;
+        content: attr(data-clip);
+        top: 0;
+        right: 0;
+        width: max-content;
+        height: max-content;
+        padding: 3px 4px;
+        background: #ffffff2b;
+        border-radius: 4px;
+        font-size: 0.6rem;
+        margin: 2px;
+        transition: 100ms;
+    }
+
+    &::before{
+        position: absolute;
+        content: attr(data-lang);
+        top: 0;
+        left: 0;
+        width: max-content;
+        height: max-content;
+        padding: 3px 4px;
+        border-radius: 4px;
+        font-size: 0.6rem;
+        margin: 2px;
+        transition: 100ms;
+        color: #ffffff82;
+    }
+
+    code{
+        background: transparent;
+    }
 }

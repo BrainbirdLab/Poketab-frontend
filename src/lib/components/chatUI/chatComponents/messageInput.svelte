@@ -1,6 +1,6 @@
 <script lang="ts">
     import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj } from "$lib/messages";
-    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterMessage, showReplyToast } from "$lib/components/messages/messageUtils";
+    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser } from "$lib/components/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
@@ -11,21 +11,16 @@
     
     let newMessage = '';
 
-    function parseLink(text: string) {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, function(url) {
-            //prevent XSS
-            const url2 = url.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            return '<a href="' + url2 + '" target="_blank">' + url + "</a>";
-        });
-    }
-
+    const codeParser = new TextParser();
+    
     function insertMessage(quickEmoji = false){
+        
+        inputbox.style.height = 'min-content';
 
         const message: TextMessageObj = new TextMessageObj();
 
-        newMessage = filterMessage(emojiParser(newMessage));
-
+        newMessage = filterBadWords(emojiParser(newMessage));
+        
         if (quickEmoji){
             newMessage = $quickEmojiEnabled ? $quickEmoji : '';
             message.type = 'emoji';
@@ -36,6 +31,9 @@
         } else {
             message.type = 'text';
             message.kind = 'text';
+            newMessage = codeParser.parse(newMessage);
+            //use prism to highlight code
+            //newMessage = Prism.highlight(newMessage, Prism.languages.javascript, 'javascript');
         }
 
         if (newMessage.trim() === ''){
@@ -43,15 +41,11 @@
         }
 
         const tempId = crypto.randomUUID();
+
         message.id = tempId;
         message.message = newMessage.trim();
-        message.message = parseLink(message.message);
-
         message.sender = $selfInfoStore.uid;
 
-
-
-        
         //console.log(message);
         if ($replyTargetId){
             message.replyTo = $replyTargetId;
@@ -74,7 +68,7 @@
         endTypingStatus();
 
         setTimeout(() => {
-            document.getElementById('textbox')?.focus();
+            inputbox.focus();
         }, 100);
     }
 
@@ -104,37 +98,41 @@
 
     const inputHandler = (e: Event) => {
 
-        const target = e.target as HTMLDivElement;
-
-        if (isWhitespace(target.innerText)) {
-            target.innerText = '';
-        }
-
-        const clone = target.cloneNode(true) as HTMLDivElement;
-        clone.style.height = 'min-content';
-        clone.style.position = 'absolute';
-        clone.style.top = '-9999px';
-        document.body.appendChild(clone);
-        // Set the new height based on the content
-        target.style.height = `${clone.scrollHeight}px`;
-        document.body.removeChild(clone);
+        updateTextareaHeight();
         
         //userTypingString.set('You are typing');
         sendTypingStatus();
     };
 
-    function keyDownHandler(e: KeyboardEvent){
+    function updateTextareaHeight() {
 
-        const target = e.target as HTMLDivElement;
+        if (isWhitespace(inputbox.innerText)) {
+            inputbox.innerText = '';
+        }
+
+        const clone = inputbox.cloneNode(true) as HTMLDivElement;
+        clone.style.width = inputbox.offsetWidth + 'px';
+        clone.style.height = 'auto';
+        clone.style.zIndex = '-99999';
+        clone.style.visibility = 'hidden';
+
+        inputbox.after(clone);
+
+        const height = clone.offsetHeight;
+
+        inputbox.style.height = height + 'px';
+
+        clone.remove();
+    }
+
+    function keyDownHandler(e: KeyboardEvent){
 
         if ($sendMethod == SEND_METHOD.ENTER && e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             insertMessage();
-            target.style.height = 'min-content';
         } else if ($sendMethod == SEND_METHOD.CTRL_ENTER && e.key === 'Enter' && e.ctrlKey) {
             e.preventDefault();
             insertMessage();
-            target.style.height = 'min-content';
         }
     }
 
@@ -163,7 +161,7 @@
         <!-- Text input -->
         <div class="inputField">
             <div class="textbox-wrapper">
-              <div bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
+              <div on:paste={updateTextareaHeight} bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
             </div>
             <Recorder />
         </div>          
@@ -235,8 +233,8 @@
                 overflow: hidden;
                 padding: 10px 30px 10px 20px;
                 border-radius:25px;
-                transition: 200ms;
                 min-height: 41px;
+                transition: height 150ms ease-in-out;
                 
                 #textbox {
                     
@@ -248,7 +246,8 @@
                     max-height: 5em;
                     line-height: 1.4rem;
                     font-size: 0.8rem;
-                    transition: 200ms;
+                    transition: height 150ms ease-in-out;
+                    text-align: left;
 
                     &::before {
                         content: attr(data-placeholder);

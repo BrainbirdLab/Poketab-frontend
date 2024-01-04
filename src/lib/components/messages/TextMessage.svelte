@@ -50,22 +50,6 @@
 
 <style lang="scss">
 
-    .msg{
-        &[data-mtype="text"]{
-            .data{
-                padding: 8px 10px;
-                min-width: 34px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-        }
-        &[data-mtype="emoji"]{
-            font-size: 2rem;
-        }
-    }
-
     .linkMetadata{
         width: 100%;
         border-bottom-left-radius: inherit;
@@ -87,6 +71,7 @@
         background: #111d2a;
         padding: 10px;
         display: flex;
+        text-align: left;
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;

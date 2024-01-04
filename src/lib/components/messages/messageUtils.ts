@@ -1,7 +1,7 @@
 import { MessageObj, messageDatabase, lastMessageId } from "$lib/messages";
 import { get, writable } from "svelte/store";
 import { chatRoomStore, selfInfoStore } from "$lib/store";
-import { socket } from "./../socket";
+import { socket } from "$lib/components/socket";
 import { badWords } from "./censoredWords";
 
 export const showReplyToast = writable(false);
@@ -161,8 +161,9 @@ export class TextParser {
 		if (text == null || text == ''){
 			return '';
 		}
-		// Escape special characters
-		text = escapeXSS(text);
+
+		//parse links
+		text = this.parseLink(text);
 
 		// Parse markdown codes
 		text = this.escapeBackTicks(text);
@@ -177,9 +178,7 @@ export class TextParser {
 		text = this.parseHeading(text);
 		text = this.parseCode(text);
 		text = this.parseMono(text);
-		text = this.parseLink(text);
-		text = this.parseEmoji(text);
-	
+
 		return text;
 	}
   
@@ -236,7 +235,7 @@ export class TextParser {
 				//console.log(`Unsupported language: ${lang}`);
 				lang = 'txt';
 			}
-			//console.log(`Language found: ${lang}`);
+			console.log(`Language found: ${lang}`);
 			lang = `class="language-${lang} line-numbers" data-lang="${lang}" data-clip="Copy"`;
 			return `<pre ${lang}><code>${code.trim()}</code></pre>`;
 		});
@@ -245,7 +244,7 @@ export class TextParser {
 	isSupportedLanguage(lang: string) {
 		const supportedLangs = ['js', 'py', 'java', 'html', 'css', 'cpp', 'c', 'php', 'sh', 'sql', 'json', 'txt', 'xml', 'cs', 'go', 'rb', 'bat'];
 		return supportedLangs.includes(lang);
-	}	  
+	}
 
 	// Function to parse mono text
 	parseMono(text: string) {
@@ -254,17 +253,8 @@ export class TextParser {
   
 	// Function to parse links
 	parseLink(text: string) {
+		console.log(`Parsing links: ${text}`);
 		return text.replace(this.linkRegex, '<a href=\'$&\' rel=\'noopener noreferrer\' target=\'_blank\'>$&</a>');
-	}
-
-	parseEmoji(text: string) {
-		//replace white space with empty string
-		//if contains emoji
-		if (this.emojiRegex.test(text)){
-			return text.replace(this.emojiRegex, '<span class="emoticon data">$&</span>');
-		} else {
-			return `<span class="data text-content">${text}</span>`;
-		}
 	}
 }
 
@@ -363,7 +353,7 @@ export function sanitize(str: string){
 	return str;
 }
 
-export function filterMessage(message: string){
+export function filterBadWords(message: string){
 
     const words = message.split(' ');
 
@@ -377,6 +367,5 @@ export function filterMessage(message: string){
 		}
 		return word;
 	});
-
     return filteredWords.join(' ');
 }

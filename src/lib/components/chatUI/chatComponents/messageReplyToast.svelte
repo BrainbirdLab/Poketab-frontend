@@ -40,6 +40,7 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
+        max-width: 98vw;
         padding: 10px;
         border-radius: 10px;
         background: var(--primary-dark);
@@ -64,7 +65,7 @@
             .replyData{
                 font-size: 0.7rem;
                 color: grey;
-
+                white-space: break-spaces;
                 img{
                     width: 100%;
                     height: 100%;
