@@ -229,15 +229,25 @@ export class TextParser {
 	// Function to parse code blocks
 	parseCode(text: string) {
 		const regex = /```(\w*)([^`]+?)```/gs;
-		return text.replace(regex, (match, lang, code) => {
+		return text.replace(regex, (match, lang: string, code: string) => {
 			//console.log(`Language found: ${lang} lang=='' ${lang == ''} lang==undefined ${lang == undefined} isSupportedLanguage ${this.isSupportedLanguage(lang)}`);
 			if (lang == '' || lang == undefined || !this.isSupportedLanguage(lang)) {
 				//console.log(`Unsupported language: ${lang}`);
 				lang = 'txt';
 			}
 			console.log(`Language found: ${lang}`);
-			lang = `class="language-${lang} line-numbers" data-lang="${lang}" data-clip="Copy"`;
-			return `<pre ${lang}><code>${code.trim()}</code></pre>`;
+			lang = `class="language-${lang} line-numbers" data-lang="${lang}"`;
+			return `
+				<pre ${lang}>
+					<button class="copy-btn" title="Copy to clipboard">Copy</button>
+					<span class="line-row">
+						${code.trim().split('\n').map((line: string, index: number) => `<span class="line-number">${index + 1}</span>`).join('')}
+					</span>
+					<code>
+						${code.trim()}
+					</code>
+				</pre>
+			`;
 		});
 	}
 		
@@ -253,7 +263,7 @@ export class TextParser {
   
 	// Function to parse links
 	parseLink(text: string) {
-		console.log(`Parsing links: ${text}`);
+		//console.log(`Parsing links: ${text}`);
 		return text.replace(this.linkRegex, '<a href=\'$&\' rel=\'noopener noreferrer\' target=\'_blank\'>$&</a>');
 	}
 }

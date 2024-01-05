@@ -45,7 +45,7 @@
     import DeletedMessage from "$lib/components/messages/deletedMessage.svelte";
     import LocationMessage from "$lib/components/messages/locationMessage.svelte";
     import NavBar from "./chatComponents/navbar.svelte";
-    import { Prism } from "$lib/prism/prism.min";
+    import hljs from "highlight.js";
 
     let isOffline = false;
 
@@ -91,7 +91,7 @@
             return;
         }
 
-        Prism.highlightAll();
+        hljs.highlightAll();
 
         const timeStamp = lastMessageObj.timeStamp;
 
@@ -380,6 +380,8 @@
             //console.log(`Seen last message ${($messageDatabase.get($lastSeenMessage) as MessageObj).message} by ${$selfInfoStore.name}`);
             socket.emit("seen", $selfInfoStore.uid, $lastMessageId);
         };
+
+        hljs.highlightAll();
     });
 
     onDestroy(() => {
@@ -427,6 +429,8 @@
         let swipeStarted = false;
         let replyTrigger = false;
 
+        const actionTimeout = new Map<string, NodeJS.Timeout>();
+
         messages.onclick = (evt) => {
             const target = evt.target as HTMLElement;
 
@@ -447,15 +451,16 @@
             if (time) {
 
                 time.textContent = getFormattedDate(messageObj.timeStamp);
-                time.classList.toggle("active");
+                time.classList.add("active");
 
-                if (messageObj.timeout) {
-                    clearTimeout(messageObj.timeout);
+                if (actionTimeout.has(message.id + 'show-time')){
+                    clearTimeout(actionTimeout.get(message.id + 'show-time') as NodeJS.Timeout);
                 }
 
-                messageObj.timeout = setTimeout(() => {
+                actionTimeout.set(message.id + 'show-time', setTimeout(() => {
                     time.classList.remove("active");
-                }, 1500);
+                    actionTimeout.delete(message.id + 'show-time');
+                }, 1400));
             }
 
             //if message is a sticker, show the sticker panel of that group
@@ -480,11 +485,46 @@
                             behavior: "smooth",
                             block: "center",
                         });
-                        //remove highlight after 2 seconds
-                        setTimeout(() => {
+                        //use action timeout to remove highlight
+                        if (actionTimeout.has(message.id + 'reply-highlight')){
+                            clearTimeout(actionTimeout.get(message.id + 'reply-highlight') as NodeJS.Timeout);
+                        }
+
+                        actionTimeout.set(message.id + 'reply-highlight', setTimeout(() => {
                             replyMessage.classList.remove("highlight");
-                        }, 1000);
+                            actionTimeout.delete(message.id + 'reply-highlight');
+                        }, 1400));
                     }
+                }
+            }
+
+            else if (target.classList.contains("copy-btn")){
+                //copy the code
+                const pre = target.closest('pre') as HTMLElement;
+                if (!pre){
+                    return;
+                }
+
+                const code = pre.querySelector('code') as HTMLElement;
+
+                if (code){
+                    const c = code.textContent;
+                    if (!c?.trim()){
+                        return;
+                    }
+                    navigator.clipboard.writeText(c);
+                    target.textContent = 'Copied!';
+
+                    if (actionTimeout.has(message.id + 'copy')){
+                        clearTimeout(actionTimeout.get(message.id + 'copy') as NodeJS.Timeout);
+                    }
+
+                    actionTimeout.set(message.id + 'copy', setTimeout(() => {
+                        target.textContent = 'Copy';
+                        actionTimeout.delete(message.id + 'copy');
+                    }, 1000));
+
+                    showToastMessage('Copied!');
                 }
             }
         };
@@ -492,6 +532,10 @@
         // Listen for a swipe on left
         messages.ontouchstart = (evt) => {
             const target = evt.target as HTMLElement;
+            if (target.tagName == "CODE"){
+                console.log("Returning for ", target.tagName);
+                return;
+            }
             if (target.closest(".message")) {
                 xStart = evt.touches[0].clientX / 3;
                 yStart = evt.touches[0].clientY / 3;

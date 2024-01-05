@@ -336,9 +336,18 @@
     margin-top: -20px;
 }
 
+//if code has no pre parent
+:not(pre) > code{
+    background: #ffffff4a;
+    border-radius: 5px;
+    padding: 0 3px;
+    font-family: monospace;
+}
+
 pre{
-    white-space: pre-wrap;
-    background: rgb(17 29 42);
+    display: grid;
+    grid-auto-flow: column;
+    background: #282c34;
     border-radius: 5px;
     padding: 5px;
     margin-top: 5px;
@@ -347,22 +356,21 @@ pre{
     tab-size: 2;
     margin-left: -9px;
     margin-right: -9px;
+    position: relative;
+    cursor: default;
 
-    &::after{
+    .copy-btn{
         position: absolute;
-        content: attr(data-clip);
-        top: 0;
-        right: 0;
-        width: max-content;
-        height: max-content;
-        padding: 3px 4px;
-        background: #ffffff2b;
-        border-radius: 4px;
+        top: 2px;
+        right: 2px;
         font-size: 0.6rem;
-        margin: 2px;
-        transition: 100ms;
+        color: #ffffff82;
+        background: var(--glass);
+        padding: 3px;
+        border-radius: 5px;
     }
 
+    
     &::before{
         position: absolute;
         content: attr(data-lang);
@@ -377,8 +385,36 @@ pre{
         transition: 100ms;
         color: #ffffff82;
     }
-
+    
     code{
         background: transparent;
+        font-family: monospace;
+        font-size: 0.7rem;
+        overflow-x: scroll;
+        width: 100%;
+        cursor: text;
+        user-select: text;
+        span {
+            font-family: monospace;
+            user-select: text;
+        }
     }
+}
+
+::selection{
+    background: var(--glass);
+}
+
+.line-row{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: min-content;
+    font-size: 0.7rem;
+    line-height: 0.85rem;
+    padding: 0 5px;
+    margin-right: 2px;
+    color: var(--grayscale-gs-secondary-1);
+    border-right: 1px solid var(--glass);
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import "$lib/prism/prism.css";
+    import "$lib/styles/atom.css";
     import { formNotification, formActionButtonDisabled, currentTheme } from "$lib/store";
     import { onMount } from "svelte";
     import { socket } from "$lib/components/socket";
