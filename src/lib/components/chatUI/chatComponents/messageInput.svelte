@@ -1,6 +1,6 @@
 <script lang="ts">
     import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj } from "$lib/messages";
-    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser } from "$lib/components/messages/messageUtils";
+    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
@@ -19,7 +19,7 @@
 
         const message: TextMessageObj = new TextMessageObj();
 
-        newMessage = filterBadWords(emojiParser(newMessage));
+        newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
         
         if (quickEmoji){
             newMessage = $quickEmojiEnabled ? $quickEmoji : '';
@@ -32,8 +32,6 @@
             message.type = 'text';
             message.kind = 'text';
             newMessage = codeParser.parse(newMessage);
-            //use prism to highlight code
-            //newMessage = Prism.highlight(newMessage, Prism.languages.javascript, 'javascript');
         }
 
         if (newMessage.trim() === ''){
@@ -46,7 +44,6 @@
         message.message = newMessage.trim();
         message.sender = $selfInfoStore.uid;
 
-        //console.log(message);
         if ($replyTargetId){
             message.replyTo = $replyTargetId;
             eventTriggerMessageId.set('');

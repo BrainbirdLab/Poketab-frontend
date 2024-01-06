@@ -220,9 +220,6 @@
                 border-top-right-radius: 18px;
             }
         }
-        .messageTitle{
-            display: flex;
-        }
     }
     &.end{
         .messageMain{
@@ -364,10 +361,15 @@ pre{
         top: 2px;
         right: 2px;
         font-size: 0.6rem;
-        color: #ffffff82;
-        background: var(--glass);
+        color: rgb(255 255 255);
+        background: #ffffff38;
         padding: 3px;
         border-radius: 5px;
+        cursor: pointer;
+
+        &::after{
+            content: attr(data-action);
+        }
     }
 
     
@@ -415,6 +417,25 @@ pre{
     line-height: 0.85rem;
     padding: 0 5px;
     margin-right: 2px;
-    color: var(--grayscale-gs-secondary-1);
     border-right: 1px solid var(--glass);
+    counter-reset: codeLine;
+
+    span {
+        counter-increment: codeLine;
+    }
+
+    span::before {
+        content: counter(codeLine);
+        color: var(--grayscale-gs-secondary-1);
+        margin-right: 5px;
+    }
+}
+
+#textbox *{
+    position: relative;
+    white-space: break-spaces;
+    color: inherit !important;
+    background: transparent !important;
+    font-size: inherit !important;
+    font-family: inherit !important;
 }

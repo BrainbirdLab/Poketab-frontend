@@ -8,7 +8,7 @@
     import { showReplyToast } from "$lib/components/messages/messageUtils";
     import { showToastMessage } from "$lib/components/toast";
     import EmojiPicker from "./emojiPicker.svelte";
-    import { emojis, spin } from "$lib/utils";
+    import { copyText, emojis, spin } from "$lib/utils";
     import { onMount } from "svelte";
 
     const reactArray = {
@@ -97,14 +97,14 @@
                     //console.log('copy');
                     const msg = $messageDatabase.get($eventTriggerMessageId) as TextMessageObj;
 
-                    if (!navigator.clipboard){
-                        showToastMessage('Copy not supported');
-                        return;
-                    }
+                    if (!msg) return;
 
-                    navigator.clipboard.writeText(msg.message);
-
-                    showToastMessage('Copied to clipboard!');
+                    //make html element to put data
+                    const elem = document.createElement('div');
+                    elem.innerHTML = msg.message;
+                    const text = elem.innerText;
+                    //copy the text
+                    copyText(text);
 
                 } else if (e.target.classList.contains('Download')) {
                     console.log('download');

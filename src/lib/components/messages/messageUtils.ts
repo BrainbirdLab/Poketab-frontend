@@ -237,22 +237,12 @@ export class TextParser {
 			}
 			console.log(`Language found: ${lang}`);
 			lang = `class="language-${lang} line-numbers" data-lang="${lang}"`;
-			return `
-				<pre ${lang}>
-					<button class="copy-btn" title="Copy to clipboard">Copy</button>
-					<span class="line-row">
-						${code.trim().split('\n').map((line: string, index: number) => `<span class="line-number">${index + 1}</span>`).join('')}
-					</span>
-					<code>
-						${code.trim()}
-					</code>
-				</pre>
-			`;
+			return `<pre ${lang}><div class="copy-btn" title="Copy to clipboard" data-action="Copy"></div><span class="line-row">${code.trim().split('\n').map(() => `<span class="line-number"></span>`).join('')}</span><code>${formatCode(code)}</code></pre>`;
 		});
 	}
 		
 	isSupportedLanguage(lang: string) {
-		const supportedLangs = ['js', 'py', 'java', 'html', 'css', 'cpp', 'c', 'php', 'sh', 'sql', 'json', 'txt', 'xml', 'cs', 'go', 'rb', 'bat'];
+		const supportedLangs = ['js', 'ts', 'py', 'java', 'html', 'css', 'cpp', 'c', 'php', 'sh', 'sql', 'json', 'txt', 'xml', 'cs', 'go', 'rb', 'bat', 'rs', 'swift', 'kt', 'lua', 'dart', 'r', 'scala', 'vb', 'asm', 'ini', 'perl', 'coffee', 'h', 'm', 'pl', 'lisp', 'hs', 'erl', 'pas', 'd', 'groovy', 'fs', 'jl', 'vbnet', 'clojure', 'tcl', 'matlab', 'vbscript', 'objectivec', 'delphi', 'rust', 'elixir', 'fsharp', 'powershell', 'scheme', 'haskell', 'ocaml', 'prolog', 'pascal', 'livescript', 'julia', 'elm', 'erlang', 'dlang', 'coffeescript', 'csharp', 'c++', 'c#', 'objective-c'];
 		return supportedLangs.includes(lang);
 	}
 
@@ -266,6 +256,40 @@ export class TextParser {
 		//console.log(`Parsing links: ${text}`);
 		return text.replace(this.linkRegex, '<a href=\'$&\' rel=\'noopener noreferrer\' target=\'_blank\'>$&</a>');
 	}
+}
+
+function formatCode(inputCode: string, spacesPerIndent = 2) {
+    const lines = inputCode.split('\n');
+    let currentIndentation = 0;
+    let formattedCode = '';
+
+    lines.forEach(line => {
+        // Trim leading and trailing whitespaces
+        const trimmedLine = line.trim();
+
+        // Update current indentation based on colons (for Python) or braces (for JavaScript)
+        if (trimmedLine.endsWith(':') || trimmedLine.endsWith('{')) {
+            formattedCode += ' '.repeat(currentIndentation) + trimmedLine + '\n';
+            currentIndentation += spacesPerIndent;
+        } else if (trimmedLine.startsWith('}') || trimmedLine.startsWith(']') || trimmedLine.startsWith(')')) {
+            currentIndentation = Math.max(0, currentIndentation - spacesPerIndent);
+            formattedCode += ' '.repeat(currentIndentation) + trimmedLine + '\n';
+        } else {
+            formattedCode += ' '.repeat(currentIndentation) + trimmedLine + '\n';
+        }
+    });
+
+    return formattedCode.trim();
+}
+
+export function getTextData(message: string){
+	const elem = document.createElement('div');
+	elem.innerHTML = message;
+	const text = elem.innerText;
+	if(text.length > 150){
+		return text.slice(0, 140) + '...' + text.slice(-20);
+	}
+	return text;
 }
 
 /**

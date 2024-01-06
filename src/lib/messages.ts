@@ -60,6 +60,9 @@ export type linkPreviewType = {
 export class TextMessageObj extends MessageObj {
     
     message: string;
+    type: 'text' | 'emoji' | 'deleted';
+    kind: 'text' | 'deleted';
+    
     linkPreviewData?: linkPreviewType | null;
     
     constructor() {
@@ -73,6 +76,8 @@ export class TextMessageObj extends MessageObj {
 
 export class StickerMessageObj extends MessageObj {
     src: string;
+    type: 'sticker';
+    kind: 'sticker';
     groupName: string;
     number: number;
     constructor() {
@@ -89,12 +94,14 @@ export class FileMessageObj extends MessageObj {
     src: string;
     name: string;
     size: number;
+    kind: 'file';
     loaded: boolean;
     downloadLink: string;
     constructor() {
         super();
         this.src = '';
         this.name = '';
+        this.kind = 'file';
         this.size = 0;
         this.loaded = false;
         this.downloadLink = '';
@@ -106,7 +113,6 @@ export class AudioMessageObj extends FileMessageObj {
     constructor() {
         super();
         this.type = 'audio';
-        this.kind = 'file';
         this.duration = 0.0;
     }
 }

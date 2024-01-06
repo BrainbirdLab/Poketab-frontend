@@ -31,7 +31,7 @@
     } from "$lib/components/modalManager";
     import ConnectivityState from "./chatComponents/connectivityState.svelte";
     import Themes from "./chatComponents/themes.svelte";
-    import { afterUpdate, onDestroy, onMount } from "svelte";
+    import { afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
     import StickersKeyboard from "./chatComponents/stickersKeyboard.svelte";
     import Attachments from "./chatComponents/attachments.svelte";
     import MessageOptions from "./chatComponents/messageOptions.svelte";
@@ -46,6 +46,7 @@
     import LocationMessage from "$lib/components/messages/locationMessage.svelte";
     import NavBar from "./chatComponents/navbar.svelte";
     import hljs from "highlight.js";
+    import { copyText } from "$lib/utils";
 
     let isOffline = false;
 
@@ -70,19 +71,36 @@
 
     let timeStampInterval: NodeJS.Timeout | null = null;
 
-    afterUpdate(() => {
+    let scrolledOffset = 0;
 
-        if (messages &&
-            messages.offsetHeight + messages.scrollTop >
-                messages.scrollHeight - 200) {
-            messages.scrollTop = messages.scrollHeight;
+    beforeUpdate(() => {
+        if (!messages) {
+            return;
         }
+        scrolledOffset = messages.scrollHeight - messages.scrollTop - messages.clientHeight;
+    });
 
+    afterUpdate(() => {
+        //hljs.highlightAll();
+        if (scrolledOffset > 200){
+            return;
+        }
+        
         //last message
         const lastMessage = messages.lastElementChild as HTMLElement;
-
+        
         if (!lastMessage.classList.contains("message")) {
             return;
+        }
+
+        messages.scrollTop = messages.scrollHeight;
+
+        //if last message is a code block, highlight it
+        if (lastMessage.querySelector('code')){
+            //highlight all code blocks
+            lastMessage.querySelectorAll('code').forEach((block) => {
+                hljs.highlightElement(block as HTMLElement);
+            });
         }
 
         const lastMessageObj = $messageDatabase.get(lastMessage.id) as MessageObj;
@@ -91,7 +109,6 @@
             return;
         }
 
-        hljs.highlightAll();
 
         const timeStamp = lastMessageObj.timeStamp;
 
@@ -382,12 +399,14 @@
         };
 
         hljs.highlightAll();
+
+        //scroll to the last message
+        messages.scrollTop = messages.scrollHeight;
     });
 
     onDestroy(() => {
         document.onkeydown = null;
         window.onfocus = null;
-        messages.onscroll = null;
     });
 
     function handleRightClick(e: MouseEvent) {
@@ -433,6 +452,10 @@
 
         messages.onclick = (evt) => {
             const target = evt.target as HTMLElement;
+
+            if (target.tagName == "CODE"){
+                return;
+            }
 
             const message = target.closest(".message") as HTMLElement;
 
@@ -512,16 +535,18 @@
                     if (!c?.trim()){
                         return;
                     }
-                    navigator.clipboard.writeText(c);
-                    target.textContent = 'Copied!';
+                    
+                    copyText(c);
 
-                    if (actionTimeout.has(message.id + 'copy')){
-                        clearTimeout(actionTimeout.get(message.id + 'copy') as NodeJS.Timeout);
+                    target.dataset.action = 'Copied!';
+
+                    if (actionTimeout.has(message.id + 'copy-code')){
+                        clearTimeout(actionTimeout.get(message.id + 'copy-code') as NodeJS.Timeout);
                     }
 
-                    actionTimeout.set(message.id + 'copy', setTimeout(() => {
-                        target.textContent = 'Copy';
-                        actionTimeout.delete(message.id + 'copy');
+                    actionTimeout.set(message.id + 'copy-code', setTimeout(() => {
+                        target.dataset.action = 'Copy';
+                        actionTimeout.delete(message.id + 'copy-code');
                     }, 1000));
 
                     showToastMessage('Copied!');
@@ -533,7 +558,6 @@
         messages.ontouchstart = (evt) => {
             const target = evt.target as HTMLElement;
             if (target.tagName == "CODE"){
-                console.log("Returning for ", target.tagName);
                 return;
             }
             if (target.closest(".message")) {
@@ -545,6 +569,11 @@
         messages.ontouchmove = (evt) => {
             try {
                 const target = evt.target as HTMLElement;
+
+                if (target.tagName == "CODE"){
+                    return;
+                }
+
                 const message = target.closest(".message") as HTMLElement;
 
                 if (target.closest(".msg") && $messageDatabase.has(message.id)) {

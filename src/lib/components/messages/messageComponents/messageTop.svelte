@@ -1,6 +1,7 @@
 <script lang="ts">
     import { MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messages";
     import { chatRoomStore, selfInfoStore } from "$lib/store";
+    import { getTextData } from "../messageUtils";
 
     export let replyTo: string;
     export let sender: string;
@@ -39,6 +40,8 @@
 
         return title;
     }
+
+
 </script>
 
 {#if classList.includes("title")}
@@ -52,7 +55,7 @@
 {#if replyTo}
     <div class="messageReply {replyMessage.kind}">
         {#if replyMessage instanceof TextMessageObj}
-            {replyMessage.message}
+            {getTextData(replyMessage.message)}
         {:else if replyMessage instanceof StickerMessageObj}
             <img src={replyMessage.src} class="sticker" alt="Sticker" />
         {/if}
@@ -67,6 +70,7 @@
         flex-direction: row;
         align-items: baseline;
         gap: 5px;
+        margin-top: 15px;
     }
 
     .messageReply {
