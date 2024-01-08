@@ -61,6 +61,12 @@
     margin-bottom: 1px;
     z-index: 1;
     transition: 200ms ease-in-out;
+    cursor: pointer;
+
+    * {
+        pointer-events: none;
+    }
+
     .count{
         font-size: 0.8rem;
         padding: 0 5px 0 0;

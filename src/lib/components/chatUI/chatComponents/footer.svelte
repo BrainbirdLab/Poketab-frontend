@@ -156,7 +156,7 @@
                 //skip if entry height is decreasing
                 if (entry.contentRect.height < lastHeight){
                     lastHeight = entry.contentRect.height;
-                    console.log('Height decreased');
+                    //console.log('Height decreased');
                     return;
                 }
 
@@ -164,7 +164,7 @@
 
                 if ($messageScrolledPx < 200){
                     $messageContainer.scrollTo({top: $messageContainer.scrollHeight});
-                    console.log('Scrolled due to footer update');
+                    //console.log('Scrolled due to footer update');
                 }
  
             }

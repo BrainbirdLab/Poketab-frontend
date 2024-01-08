@@ -93,7 +93,7 @@
 
         //scroll to the last message
         $messageContainer.scrollTo({ top: $messageContainer.scrollHeight, behavior: "smooth" });
-        console.log('scrolling to bottom');
+        //console.log('scrolling to bottom');
 
         //last message
         const lastMessage = $messageContainer.lastElementChild as HTMLElement;
@@ -513,16 +513,25 @@
                 }, 1400));
             }
 
+            if (target.classList.contains('reactsContainer')){
+                console.log('reacts container clicked');
+
+                //get reacts
+                const reacts = (messageObj as MessageObj).reactedBy;
+                console.log(reacts);
+                return;
+            }
+
             //if message is a sticker, show the sticker panel of that group
             if (target.classList.contains("msg") && messageObj.kind == "sticker") {
 
                 const stickerGroup = (messageObj as StickerMessageObj).groupName;
                 selectedSticker.set(stickerGroup);
                 showStickersPanel.set(true);
-
+                return;
             }
             //if message is a reply, scroll to the replied message
-            else if (target.classList.contains("messageReply")) {
+            if (target.classList.contains("messageReply")) {
 
                 const messageObj = $messageDatabase.get(message.id) as MessageObj;
                 const replyId = messageObj.replyTo;
@@ -546,9 +555,10 @@
                         }, 1400));
                     }
                 }
+                return;
             }
 
-            else if (target.classList.contains("copy-btn")){
+            if (target.classList.contains("copy-btn")){
                 //copy the code
                 const pre = target.closest('pre') as HTMLElement;
                 if (!pre){
@@ -578,6 +588,8 @@
 
                     showToastMessage('Copied!');
                 }
+
+                return;
             }
         };
 
