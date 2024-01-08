@@ -603,7 +603,7 @@
 
                 const message = target.closest(".message") as HTMLElement;
 
-                if (target.closest(".msg") && $messageDatabase.has(message.id)) {
+                if (target.closest(".msg") && $messageDatabase.has(message.id) && ($messageDatabase.get(message.id) as MessageObj).kind != 'deleted') {
                     //console.log(xDiff);
 
                     xDiff = xStart - evt.touches[0].clientX / 3;

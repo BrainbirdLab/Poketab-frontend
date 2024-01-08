@@ -7,6 +7,13 @@
     $: message = $messageDatabase.get($replyTargetId) as MessageObj || null;
     $: sender = message ? (message?.sender == $selfInfoStore.uid ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'unknown';
 
+
+    $: {
+        if (message && message.kind == 'deleted'){
+            closeReplyToast();
+        }
+    }
+
     function closeReplyToast(){
         showReplyToast.set(false);
         replyTargetId.set('');
