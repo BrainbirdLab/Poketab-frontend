@@ -26,6 +26,7 @@
         showAttachmentPickerPanel,
         showMessageOptions,
         showQuickSettingsPanel,
+        showReactsOnMessageModal,
         showSidePanel,
         showStickersPanel,
         showThemesPanel,
@@ -49,6 +50,7 @@
     import hljs from "highlight.js";
     import { copyText } from "$lib/utils";
     import type { Unsubscriber } from "svelte/store";
+    import ReactsOnMessage from "./chatComponents/reactsOnMessage.svelte";
 
     let isOffline = false;
 
@@ -516,9 +518,8 @@
             if (target.classList.contains('reactsContainer')){
                 console.log('reacts container clicked');
 
-                //get reacts
-                const reacts = (messageObj as MessageObj).reactedBy;
-                console.log(reacts);
+                eventTriggerMessageId.set(message.id);
+                showReactsOnMessageModal.set(true);
                 return;
             }
 
@@ -748,6 +749,7 @@
 <Attachments />
 <ConnectivityState bind:offline={isOffline} />
 <MessageOptions />
+<ReactsOnMessage />
 
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>

@@ -91,6 +91,17 @@ showMessageOptions.subscribe(value => {
 });
 
 
+export const showReactsOnMessageModal = writable(false);
+showReactsOnMessageModal.subscribe(value => {
+    if (value){
+        activeModalsStack.push(showReactsOnMessageModal);
+    } else {
+        //remove it from the stack array
+        activeModalsStack = activeModalsStack.filter(modal => modal !== showReactsOnMessageModal);
+    }
+});
+
+
 //clear all modals from stack and set all modals to false
 export function clearModals(){
     activeModalsStack.forEach(modal => {
