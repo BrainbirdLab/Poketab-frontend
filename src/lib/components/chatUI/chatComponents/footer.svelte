@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj } from "$lib/messages";
+    import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer } from "$lib/messages";
     import { makeClasslist, sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
@@ -7,7 +7,7 @@
 
     import {SEND_METHOD, quickEmoji, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "../../modalManager";
-    import { onDestroy } from "svelte";
+    import { afterUpdate, onDestroy, onMount } from "svelte";
     
     let newMessage = '';
 
@@ -141,47 +141,79 @@
         }
     });
 
+    let footer: HTMLDivElement;
+    let observer: ResizeObserver;
+
+    let lastHeight = 0;
+
+    onMount(() => {
+        //on height change
+        observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                //console.log(entry.contentRect.height);
+                const navbar = document.querySelector('.navbar') as HTMLElement;
+                const footer = document.querySelector('.footer') as HTMLElement;
+                $messageContainer.style.height = 'auto';
+                $messageContainer.style.height = `calc(100vh - ${navbar.offsetHeight + footer.offsetHeight}px)`;
+                if (Math.floor(entry.contentRect.height) < lastHeight){ //skips slight height changes like ~0.2px
+                    return;
+                }
+                if ($messageScrolledPx < 200){
+                    $messageContainer.scrollTo({top: $messageContainer.scrollHeight});
+                    //console.log('Scrolled due to footer update');
+                }
+                lastHeight = entry.contentRect.height;
+            }
+        });
+
+        observer.observe(footer);
+    });
+
     onDestroy(() => {
         unsub();
+        observer.disconnect();
     });
 
 </script>
     
-<div class="footer" transition:fly={{y: 30}}>
+<div class="footer" transition:fly={{y: 30}} bind:this={footer}>
     <!--typing indicator-->
+    <slot />
 
     <div class="chatInput">
         <button on:click={() => {showStickersPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
         
         <button on:click={() => {showAttachmentPickerPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
-        
         <!-- Text input -->
         <div class="inputField">
             <div class="textbox-wrapper">
               <div on:paste={updateTextareaHeight} bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
             </div>
             <Recorder />
-        </div>          
+        </div>
         <!-- Send Button-->
         {#if $quickEmojiEnabled && newMessage.trim().length <= 0}
-        <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send">{$quickEmoji}</button>
+        <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
         {:else}
-        <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
+        <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
         {/if}
-        </div>
+    </div>
 </div>
 
 <style lang="scss">
 
     .footer {
         position: relative;
-        left: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
         width: 100%;
-        transform: translateX(-50%);
         padding: inherit;
         transition: 300ms ease-in-out;
         bottom: 0px;
-        padding: 10px 0px;
+        padding: 0px 0px 10px 0;
+        z-index: 10;
     }
 
     .chatInput{
@@ -191,6 +223,7 @@
         align-items: flex-end;
         position: relative;
         padding: 0 3px;
+        width: 100%;
 
         #send {
             border: none;
@@ -223,15 +256,18 @@
             width: 100%;
             
             .textbox-wrapper {
-                //@at-rootpadding: 10px 38px 10px 25px;
                 position: relative;
                 width: 100%;
                 background: var(--glass);
                 overflow: hidden;
                 padding: 10px 30px 10px 20px;
-                border-radius:25px;
-                min-height: 41px;
+                border-radius: 25px;
+                min-height: 45px;
                 transition: height 150ms ease-in-out;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
                 
                 #textbox {
                     

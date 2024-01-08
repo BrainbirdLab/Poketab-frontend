@@ -30,8 +30,6 @@
         font-size: 0.9rem;
         padding: 5px;
         color: var(--foreground-dark);
-        //background: var(--primary-dark);
-        //filter: drop-shadow(0 4px 5px black);
         i {
             color: inherit;
             font-size: 0.9rem;

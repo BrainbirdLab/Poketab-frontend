@@ -95,7 +95,7 @@
     right: 0;
     z-index: 55;
     transition: 100ms ease-in-out;
-    filter: drop-shadow(0 4px 5px black);
+    filter: drop-shadow(0 4px 5px var(--shadow));
 
     .themeList {
         display: flex;

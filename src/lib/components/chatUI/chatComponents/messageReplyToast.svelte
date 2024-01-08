@@ -14,7 +14,7 @@
 
 </script>
     {#if $showReplyToast && $replyTargetId}
-    <div class="container" transition:slide={{duration: 100, axis: "y"}}>
+    <div class="replybox" transition:slide={{duration: 100, axis: "y"}}>
         <div class="content">
             <div class="top">
                 <div class="title" out:fade={{duration: 200}} in:fly={{y: 10, delay: 200, duration: 200}}>
@@ -34,7 +34,7 @@
     </div>
     {/if}
 <style lang="scss">
-    .container{
+    .replybox{
         display: flex;
         flex-direction: row;
         align-items: flex-start;
@@ -42,10 +42,11 @@
         width: 100%;
         max-width: 98vw;
         padding: 10px;
+        margin-bottom: 10px;
         gap: 10px;
         border-radius: 10px;
         background: var(--primary-dark);
-        filter: drop-shadow(0 4px 5px black);
+        filter: drop-shadow(0 4px 5px var(--shadow));
         transition: 300ms ease-in-out;
         position: relative;
 

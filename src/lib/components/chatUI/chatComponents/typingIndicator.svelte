@@ -4,8 +4,8 @@
 
 </script>
 
+{#if $userTypingString}
 <div class="indicatorWrapper">
-    {#if $userTypingString}
     <div id="typingIndicator" transition:fly={{y: 5, duration: 100}}>
         <div class="text">{$userTypingString}</div>
         <div class="bubble">
@@ -14,8 +14,8 @@
             <div class="dot bouncing" />
         </div>
     </div>
-    {/if}
 </div>
+{/if}
 
 <style lang="scss">
 

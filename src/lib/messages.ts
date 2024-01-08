@@ -122,3 +122,5 @@ export const messageDatabase = writable<Map<string, MessageObj | ServerMessageOb
 
 export const eventTriggerMessageId = writable<string>('');
 export const replyTargetId = writable<string>('');
+export const messageScrolledPx = writable<number>(0);
+export const messageContainer = writable<HTMLElement>();

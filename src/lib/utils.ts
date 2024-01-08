@@ -57,3 +57,7 @@ function fallbackCopyTextToClipboard(text: string){
 
     document.body.removeChild(textArea);
 }
+
+export function adjustMessagePosition(){
+    console.log('adjustMessagePosition');
+}

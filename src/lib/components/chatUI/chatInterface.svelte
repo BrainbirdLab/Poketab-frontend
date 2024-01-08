@@ -1,6 +1,6 @@
 <script lang="ts">
     import "$lib/components/messages/message.scss";
-    import MessageInput from "./chatComponents/messageInput.svelte";
+    import Footer from "./chatComponents/footer.svelte";
     import TextMessage from "$lib/components/messages/TextMessage.svelte";
     import {
         MessageObj,
@@ -12,6 +12,7 @@
         replyTargetId,
         LocationMessageObj,
         TextMessageObj,
+        messageContainer
     } from "$lib/messages";
     import { showToastMessage } from "$lib/components/toast";
     import SidePanel from "./chatComponents/sidePanel.svelte";
@@ -67,17 +68,15 @@
         }
     }
 
-    let messages: HTMLElement;
-
     let timeStampInterval: NodeJS.Timeout | null = null;
 
     let scrolledOffset = 0;
 
     beforeUpdate(() => {
-        if (!messages) {
+        if (!$messageContainer) {
             return;
         }
-        scrolledOffset = messages.scrollHeight - messages.scrollTop - messages.clientHeight;
+        scrolledOffset = $messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight;
     });
 
     afterUpdate(() => {
@@ -85,15 +84,16 @@
         if (scrolledOffset > 200){
             return;
         }
-        
+
+        //scroll to the last message
+        $messageContainer.scrollTo({ top: $messageContainer.scrollHeight, behavior: "smooth" });
+
         //last message
-        const lastMessage = messages.lastElementChild as HTMLElement;
+        const lastMessage = $messageContainer.lastElementChild as HTMLElement;
         
         if (!lastMessage.classList.contains("message")) {
             return;
         }
-
-        messages.scrollTop = messages.scrollHeight;
 
         //if last message is a code block, highlight it
         if (lastMessage.querySelector('code')){
@@ -152,6 +152,16 @@
 
         if (e.key === "a" && e.altKey) {
             showAttachmentPickerPanel.update((value) => !value);
+        }
+
+        if (e.altKey === true && e.key === "3"){
+            userTypingString.set('You are typing');
+            console.log('typing');
+        } 
+
+        if (e.altKey === true && e.key === "4"){
+            userTypingString.set('');
+            console.log('typing end');
         }
     };
 
@@ -233,7 +243,7 @@
 
                 const navbar = document.querySelector('.navbar') as HTMLElement;
                 const footer = document.querySelector('.footer') as HTMLElement;
-                messages.style.height = `calc(100vh - ${navbar.offsetHeight + footer.offsetHeight}px)`;
+                $messageContainer.style.height = `calc(100vh - ${navbar.offsetHeight + footer.offsetHeight}px)`;
             }
         } catch (e){
             console.log(e);
@@ -381,11 +391,14 @@
     });
 
     onMount(() => {
-        //make a system where you can push and pop modals from the stack
-        //when a modal or panel is opened, push it to the stack
-        //when a new modal or panel is opened, push it to the stack
-        //when a modal or panel is closed, pop it from the stack
-        //when esc is pressed, pop the top modal or panel from the stack
+
+
+        const navbar = document.querySelector('.navbar') as HTMLElement;
+        const footer = document.querySelector('.footer') as HTMLElement;
+        $messageContainer.style.height = 'auto';
+        $messageContainer.style.height = `calc(100vh - ${navbar.offsetHeight + footer.offsetHeight}px)`;
+        
+
         document.onkeydown = keyBindingHandler;
 
         window.onfocus = () => {
@@ -401,7 +414,7 @@
         hljs.highlightAll();
 
         //scroll to the last message
-        messages.scrollTop = messages.scrollHeight;
+        $messageContainer.scrollTo({ top: $messageContainer.scrollHeight, behavior: "smooth" });
     });
 
     onDestroy(() => {
@@ -436,8 +449,6 @@
     }
 
     function handleMessages(node: HTMLElement) {
-        messages = node as HTMLElement;
-
         //on horizontal scroll on a single message, move the message to swipe reply
         let xStart = 0;
         let yStart = 0;
@@ -450,7 +461,7 @@
 
         const actionTimeout = new Map<string, NodeJS.Timeout>();
 
-        messages.onclick = (evt) => {
+        node.onclick = (evt) => {
             const target = evt.target as HTMLElement;
 
             if (target.tagName == "CODE"){
@@ -555,7 +566,7 @@
         };
 
         // Listen for a swipe on left
-        messages.ontouchstart = (evt) => {
+        node.ontouchstart = (evt) => {
             const target = evt.target as HTMLElement;
             if (target.tagName == "CODE"){
                 return;
@@ -566,7 +577,7 @@
             }
         };
 
-        messages.ontouchmove = (evt) => {
+        node.ontouchmove = (evt) => {
             try {
                 const target = evt.target as HTMLElement;
 
@@ -636,7 +647,7 @@
 
         let unsub: () => void;
 
-        messages.ontouchend = (evt) => {
+        node.ontouchend = (evt) => {
             try {
                 if (!swipeStarted) return;
 
@@ -688,10 +699,10 @@
 
         return {
             destroy() {
-                messages.ontouchstart = null;
-                messages.ontouchmove = null;
-                messages.ontouchend = null;
-                messages.onclick = null;
+                node.ontouchstart = null;
+                node.ontouchmove = null;
+                node.ontouchend = null;
+                node.onclick = null;
                 if (unsub) unsub();
             },
         };
@@ -713,7 +724,7 @@
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
         <NavBar />
-        <ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={messages}>
+        <ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={$messageContainer}>
             <div class="welcome_wrapper" in:fly={{ x: -50 }} out:fade={{ duration: 100 }} >
                 <li class="welcomeText">
                     <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
@@ -740,10 +751,11 @@
                 {/if}
             {/each}
         </ul>
-        <ScrollDownPopup messageContainer={messages} bind:notice={notice}/>
-        <TypingIndicator />
-        <MessageReplyToast />
-        <MessageInput />
+        <Footer>
+            <ScrollDownPopup bind:notice={notice}/>
+            <TypingIndicator />
+            <MessageReplyToast />
+        </Footer>
     </div>
 </div>
 
@@ -786,7 +798,6 @@
             overflow-y: scroll;
             overflow-x: hidden;
             color: var(--foreground-dark);
-            scroll-behavior: smooth;
             scrollbar-width: none;
             list-style: none;
             z-index: 1;

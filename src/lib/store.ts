@@ -7,6 +7,7 @@ export const splashMessage = writable('');
 export const userTypingString = writable('');
 export const currentTheme = writable('Ocean');
 
+
 type ErrorLog = {
     text: string,
     icon: string,

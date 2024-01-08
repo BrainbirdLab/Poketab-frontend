@@ -139,7 +139,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            filter: drop-shadow(0 4px 5px black);
+            filter: drop-shadow(0 4px 5px var(--shadow));
 
             #keyname {
                 border-radius: 10px;

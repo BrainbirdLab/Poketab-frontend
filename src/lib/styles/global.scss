@@ -28,6 +28,7 @@ html{
     --amplitude: 0px;
     --positionForStickers: relative;
     --option-color: #1d3046;
+    --shadow: #0000007a;
 }
 
 .emoji{
@@ -42,8 +43,10 @@ html{
 }
 
 //hide scrollbar
+
 ::-webkit-scrollbar {
     display: none;
+
 }
 
 //disable image drag

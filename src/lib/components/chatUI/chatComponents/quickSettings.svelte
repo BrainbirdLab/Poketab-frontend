@@ -241,9 +241,9 @@
                         <div class="wrapper">
                             <div class="label">Change quick emoji </div>
                             {#if showQuickEmojiDrawer}
-                            <i in:spin={{duration: 800, degree: 180}} id="closeQuickEmojiDrawer" class="fa-solid fa-caret-down"></i>
+                            <i in:spin={{duration: 200, degree: 180}} id="closeQuickEmojiDrawer" class="fa-solid fa-caret-down"></i>
                             {:else}
-                            <button in:spin={{duration: 800, degree: 180}} class="hyper" id="chooseQuickEmojiButton">
+                            <button in:spin={{duration: 200, degree: 180}} class="hyper" id="chooseQuickEmojiButton">
                                 {$quickEmoji}
                             </button>
                             {/if}
@@ -406,7 +406,7 @@
         background: var(--primary-dark);
         padding: 15px;
         border-radius: 10px;
-        filter: drop-shadow(2px 4px 6px #000);
+        filter: drop-shadow(2px 4px 6px var(--shadow));
         font-size: 0.8rem;
         width: min(80vw, 315px);
         max-height: 90vh;

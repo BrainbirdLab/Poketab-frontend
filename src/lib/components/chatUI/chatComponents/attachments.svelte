@@ -144,7 +144,7 @@
             justify-content: center;
             width: max-content;
             background: var(--primary-dark);
-            filter: drop-shadow(0 4px 5px black);
+            filter: drop-shadow(0 4px 5px var(--shadow));
             z-index: 20;
             transform-origin: bottom;
             transition: 200ms;
