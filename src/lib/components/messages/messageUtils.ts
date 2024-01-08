@@ -28,14 +28,14 @@ export function getFormattedDate(time: number) {
 
 export function makeClasslist(message: MessageObj){
 
-    message.classList = ' end';
+    let classList = ' end';
 
     if (message.sender === get(selfInfoStore).uid){
-        message.classList += ' self';
+        classList += ' self';
     }
 
     if (get(chatRoomStore).maxUsers > 2 || message.replyTo){
-        message.classList += ' title';
+        classList += ' title';
     }
 
     if (get(messageDatabase).size > 0){
@@ -44,32 +44,32 @@ export function makeClasslist(message: MessageObj){
 		
         if (lastMessageObj instanceof MessageObj && lastMessageObj?.type != 'sticker' && lastMessageObj?.type != 'emoji'){
             if (lastMessageObj?.sender !== message.sender){
-                message.classList += ' newGroup';
+                classList += ' newGroup';
             }
             if (message.type == 'sticker'){
-                message.classList += ' start';
-                return message.classList;
+                classList += ' start';
+                return classList;
             }
     
             if (lastMessageObj.sender === message.sender && message.type != 'emoji' && !message.replyTo){
                 //last message is from the same user
                 lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
             } else {
-                message.classList += ' start';
+                classList += ' start';
             }
         } else {
-            message.classList += ' start';
+            classList += ' start';
         }
 
     } else {
-        message.classList += ' start';
+        classList += ' start';
     }
 
-	if (!message.classList.includes('start')){
-		message.classList = message.classList.replace('title', '');
+	if (!classList.includes('start') && classList.includes('title')){
+		classList = classList.replace('title', '');
 	}
 
-    return message.classList;
+    return classList;
 }
 
 export function sendMessage(message: MessageObj, tempId: string){

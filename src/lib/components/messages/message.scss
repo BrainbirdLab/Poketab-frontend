@@ -12,7 +12,7 @@
     align-items: flex-end;
     position: relative;
     padding: 0 18px 0 5px;
-    transition: filter 200ms ease-in-out;
+    transition: filter 200ms ease-in-out, height 200ms ease-in-out;
 
     .messageContainer{
         display: flex;

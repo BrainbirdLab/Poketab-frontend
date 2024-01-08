@@ -93,7 +93,7 @@
 
         &.sticker {
             padding: 0 !important;
-            background: none !important;
+            background: hsl(0deg 0% 100% / 15%);
         }
 
         img {
@@ -105,7 +105,7 @@
             &.sticker {
                 height: 100px;
                 width: 100px;
-                background: #ffffff80;
+                background: none;
                 filter: brightness(0.5);
             }
         }

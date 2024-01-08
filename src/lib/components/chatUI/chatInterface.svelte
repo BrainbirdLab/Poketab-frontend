@@ -48,6 +48,7 @@
     import NavBar from "./chatComponents/navbar.svelte";
     import hljs from "highlight.js";
     import { copyText } from "$lib/utils";
+    import type { Unsubscriber } from "svelte/store";
 
     let isOffline = false;
 
@@ -79,7 +80,12 @@
         scrolledOffset = $messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight;
     });
 
-    afterUpdate(() => {
+    let messageUnsubscriber: Unsubscriber;
+
+    function updateUI(){
+
+        
+
         //hljs.highlightAll();
         if (scrolledOffset > 200){
             return;
@@ -87,6 +93,7 @@
 
         //scroll to the last message
         $messageContainer.scrollTo({ top: $messageContainer.scrollHeight, behavior: "smooth" });
+        console.log('scrolling to bottom');
 
         //last message
         const lastMessage = $messageContainer.lastElementChild as HTMLElement;
@@ -124,7 +131,7 @@
             }
             time.textContent = getFormattedDate(timeStamp);
         }, 10000);
-    });
+    }
 
     const keyBindingHandler = (e: KeyboardEvent) => {
         //console.log(e.key);
@@ -237,13 +244,20 @@
                 message.replyTo = '';
                 messageDatabase.update((messages) => {
                     //change the message to "This message was deleted"
+                    if (message.classList.includes('title')){
+                        if ($chatRoomStore.maxUsers <= 2){
+                            //remove the title
+                            message.classList = message.classList.replace('title', '');
+                        }
+                    }
                     messages.set(messageId, message);
                     return messages;
                 });
 
-                const navbar = document.querySelector('.navbar') as HTMLElement;
-                const footer = document.querySelector('.footer') as HTMLElement;
-                $messageContainer.style.height = `calc(100vh - ${navbar.offsetHeight + footer.offsetHeight}px)`;
+                $messageContainer.style.height = 'auto';
+                setTimeout(() => {
+                    $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
+                }, 10);
             }
         } catch (e){
             console.log(e);
@@ -392,11 +406,10 @@
 
     onMount(() => {
 
+        messageUnsubscriber = messageDatabase.subscribe(updateUI);
 
-        const navbar = document.querySelector('.navbar') as HTMLElement;
-        const footer = document.querySelector('.footer') as HTMLElement;
         $messageContainer.style.height = 'auto';
-        $messageContainer.style.height = `calc(100vh - ${navbar.offsetHeight + footer.offsetHeight}px)`;
+        $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
         
 
         document.onkeydown = keyBindingHandler;
@@ -420,6 +433,9 @@
     onDestroy(() => {
         document.onkeydown = null;
         window.onfocus = null;
+        if (messageUnsubscriber){
+            messageUnsubscriber();
+        }
     });
 
     function handleRightClick(e: MouseEvent) {

@@ -19,7 +19,6 @@
                 <div class="msg" data-mtype="deleted">
                     <div class="data">This message was deleted</div>
                 </div>
-                <div class="messageTime">Just Now</div>
             </div>
         </div>
     </div>

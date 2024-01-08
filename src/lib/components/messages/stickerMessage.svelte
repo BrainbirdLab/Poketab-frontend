@@ -20,7 +20,7 @@
                 <div class="msg" data-mtype="sticker">
                     <img src="{message.src}" alt="{message.src}" data-sticker="{message.groupName}" class="data"/>
                 </div>
-                <div class="messageTime">Just Now</div>
+                <div class="messageTime">Just now</div>
             </div>
             <Reacts reactedBy={message.reactedBy} />
         </div>
@@ -32,7 +32,7 @@
     .msg{
         height: 100px;
         width: 100px;
-        background: #ffffff20;
+        background: hsl(0deg 0% 100% / 15%);
 
         img{
             height: 100%;

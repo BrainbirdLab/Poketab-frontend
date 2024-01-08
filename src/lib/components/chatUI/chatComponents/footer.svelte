@@ -7,7 +7,7 @@
 
     import {SEND_METHOD, quickEmoji, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "../../modalManager";
-    import { afterUpdate, onDestroy, onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     
     let newMessage = '';
 
@@ -51,9 +51,8 @@
             showReplyToast.set(false);
         }
         
-        message.classList = makeClasslist(message);
-        
         messageDatabase.update(msg => {
+            message.classList = makeClasslist(message);
             msg.set(tempId, message);
             return msg;
         });
@@ -150,19 +149,24 @@
         //on height change
         observer = new ResizeObserver(entries => {
             for (let entry of entries) {
-                //console.log(entry.contentRect.height);
-                const navbar = document.querySelector('.navbar') as HTMLElement;
-                const footer = document.querySelector('.footer') as HTMLElement;
+
                 $messageContainer.style.height = 'auto';
-                $messageContainer.style.height = `calc(100vh - ${navbar.offsetHeight + footer.offsetHeight}px)`;
-                if (Math.floor(entry.contentRect.height) < lastHeight){ //skips slight height changes like ~0.2px
+                $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
+
+                //skip if entry height is decreasing
+                if (entry.contentRect.height < lastHeight){
+                    lastHeight = entry.contentRect.height;
+                    console.log('Height decreased');
                     return;
                 }
+
+                lastHeight = entry.contentRect.height;
+
                 if ($messageScrolledPx < 200){
                     $messageContainer.scrollTo({top: $messageContainer.scrollHeight});
-                    //console.log('Scrolled due to footer update');
+                    console.log('Scrolled due to footer update');
                 }
-                lastHeight = entry.contentRect.height;
+ 
             }
         });
 
