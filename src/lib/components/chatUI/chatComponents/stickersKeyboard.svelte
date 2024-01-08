@@ -146,19 +146,26 @@
         }
     }
 
+    function moveHeads(direction: 'left' | 'right'){
+        stickerHeader.scrollBy({
+            left: direction === 'left' ? -100 : 100,
+            behavior: 'smooth'
+        });
+    }
+
 </script>
 
 {#if $showStickersPanel}
 <div class="stickerKeyboardContainer" transition:fly|global={{y: 20, duration: 100}} use:stickersHandler>
     <div class="stickerKeyboard">
         <div class="headers">
-            <div class="prev navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></div>
+            <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>
             <div class="stickerHeader" id="stickerHeader" bind:this={stickerHeader}>
                 {#each Stickers as sticker}
                     <img class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
                 {/each}
             </div>
-            <div class="next navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></div>
+            <button on:click={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></button>
         </div>
         <div class="stickersBody" id="stickersBody" use:stickersBodyHandler>
             {#each Stickers as sticker}
