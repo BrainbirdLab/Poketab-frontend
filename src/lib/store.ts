@@ -32,6 +32,22 @@ export const quickEmoji = writable('');
 export const reconnectButtonEnabled = writable(false);
 export const formActionButtonDisabled = writable(true);
 
+/*
+export const reactArray = {
+    reacts: ['💙', '😆', '😠', '😢', '😮', '🙂'] as readonly string[],
+    last: '🌻'
+};
+*/
+
+
+export const reactArray: Writable<{
+    reacts: readonly string[],
+    last: string,
+}> = writable({
+    reacts: ['💙', '😆', '😠', '😢', '😮', '🙂'],
+    last: '🌻'
+});
+
 //export const clientOnline = writable(false);
 
 

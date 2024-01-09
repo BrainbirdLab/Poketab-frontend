@@ -1,16 +1,14 @@
 <script lang="ts">
-    import { TextMessageObj, type MessageObj, StickerMessageObj, messageContainer, messageScrolledPx } from "$lib/messages";
+    import { TextMessageObj, type MessageObj, StickerMessageObj, messageContainer, messageScrolledPx, notice } from "$lib/messages";
     import { chatRoomStore } from "$lib/store";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
-
-    export let notice: MessageObj | null;
 
     let showScrollPopUp = false;
 
     $: {
         if ($messageScrolledPx < 200){
-            notice = null;
+            notice.set(null);
         }
     }
 
@@ -42,12 +40,12 @@
     <button class="popup" tabindex="-1" transition:fly={{y: 20, duration: 200}} on:click={()=>{
         $messageContainer.scrollTo({top: $messageContainer.scrollHeight, behavior: "smooth"});
     }}>
-    {#if notice && $messageScrolledPx > 200}
+    {#if $notice && $messageScrolledPx > 200}
         <div class="content">
-            <img src="/images/avatars/{$chatRoomStore.userList[notice.sender].avatar}(custom).webp" alt="avatar">
-            {#if notice instanceof TextMessageObj}
-                {notice.message}
-            {:else if notice instanceof StickerMessageObj}
+            <img src="/images/avatars/{$chatRoomStore.userList[$notice.sender].avatar}(custom).webp" alt="avatar">
+            {#if $notice instanceof TextMessageObj}
+                {$notice.message}
+            {:else if $notice instanceof StickerMessageObj}
                 Sticker
             {/if}
         </div>

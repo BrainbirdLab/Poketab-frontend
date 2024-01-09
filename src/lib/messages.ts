@@ -30,7 +30,7 @@ export class MessageObj {
     kind: string;
     sender: string;
     replyTo: string;
-    timeout: NodeJS.Timeout | undefined;
+    timeout: number | undefined;
     seenBy: { [key: string]: boolean}
     reactedBy: { [key: string]: string}
     timeStamp: number;
@@ -124,3 +124,4 @@ export const eventTriggerMessageId = writable<string>('');
 export const replyTargetId = writable<string>('');
 export const messageScrolledPx = writable<number>(0);
 export const messageContainer = writable<HTMLElement>();
+export const notice = writable<MessageObj | null>(null);

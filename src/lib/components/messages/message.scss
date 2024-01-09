@@ -279,13 +279,15 @@
     }
 }
 
-
 //!Main Message Element
 .messageMain{
     display: flex;
     color: white;
     position: relative;
     flex-direction: row;
+    transition: none;
+    max-width: 100%;
+    width: min-content;
 
     & > * {
         border-radius: 5px 18px 18px 5px;
@@ -327,6 +329,11 @@
             }
         }
     }
+}
+
+.data{
+    width: max-content;
+    max-width: 100%;
 }
 
 .messageReply + .messageMain{

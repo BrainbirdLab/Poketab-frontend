@@ -28,10 +28,10 @@
                         {/if}
                         <div class="linkMetadata__details">
                             {#if message.linkPreviewData.title}
-                            <div class="linkMetadata__title">{message.linkPreviewData.title}</div>
+                            <div class="linkMetadata__title">{@html message.linkPreviewData.title}</div>
                             {/if}
                             {#if message.linkPreviewData.description}
-                            <div class="linkMetadata__description">{message.linkPreviewData.description}</div>
+                            <div class="linkMetadata__description">{@html message.linkPreviewData.description}</div>
                             {/if}
                             {#if message.linkPreviewData.url}
                             <div class="linkMetadata__url">{message.linkPreviewData.url}</div>

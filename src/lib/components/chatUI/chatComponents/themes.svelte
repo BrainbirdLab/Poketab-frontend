@@ -1,20 +1,12 @@
 <script lang="ts">
 
-    import { emojis, toSentenceCase } from "$lib/utils";
+    import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showThemesPanel } from "$lib/components/modalManager";
     import { showToastMessage } from "$lib/components/toast";
     import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
     import { onDestroy } from "svelte";
-	
-	let loadedEmoji = localStorage.getItem('quickEmoji') || themes[$currentTheme].quickEmoji;
-
-	if (!emojis.includes(loadedEmoji)){
-		loadedEmoji = themes[$currentTheme].quickEmoji;
-	}
-	
-	quickEmoji.set(loadedEmoji);
 
 	const unsubQuickEmoji = quickEmoji.subscribe((val) => {
 		localStorage.setItem('quickEmoji', val);
@@ -79,6 +71,7 @@
     </ul>
 </div>
 {/if}
+
 
 
 <style lang="scss">

@@ -5,7 +5,7 @@
     import { getTextData, showReplyToast } from "$lib/components/messages/messageUtils";
 
     $: message = $messageDatabase.get($replyTargetId) as MessageObj || null;
-    $: sender = message ? (message?.sender == $selfInfoStore.uid ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'unknown';
+    $: sender = message ? (message?.sender == $selfInfoStore.uid ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'Unknown';
 
 
     $: {

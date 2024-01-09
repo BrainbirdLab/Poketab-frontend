@@ -12,14 +12,13 @@
         replyTargetId,
         LocationMessageObj,
         TextMessageObj,
-        messageContainer
+        messageContainer,
     } from "$lib/messages";
     import { showToastMessage } from "$lib/components/toast";
     import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
-    import TypingIndicator from "$lib/components/chatUI/chatComponents/typingIndicator.svelte";
-    import { chatRoomStore, selfInfoStore, userTypingString } from "$lib/store";
+    import { chatRoomStore, currentTheme, quickEmoji, selfInfoStore, userTypingString, type User } from "$lib/store";
     import {
         activeModalsStack,
         selectedSticker,
@@ -37,20 +36,20 @@
     import StickersKeyboard from "./chatComponents/stickersKeyboard.svelte";
     import Attachments from "./chatComponents/attachments.svelte";
     import MessageOptions from "./chatComponents/messageOptions.svelte";
-    import StickerMessage from "$lib/components/messages/stickerMessage.svelte";
-    import ServerMessage from "$lib/components/messages/serverMessage.svelte";
+    import StickerMessage from "$lib/components/messages/StickerMessage.svelte";
+    import ServerMessage from "$lib/components/messages/ServerMessage.svelte";
     import { socket } from "$lib/components/socket";
     import { spring } from "svelte/motion";
-    import MessageReplyToast from "./chatComponents/messageReplyToast.svelte";
-    import ScrollDownPopup from "./chatComponents/scrollDownPopup.svelte";
-    import { filterBadWords, getFormattedDate, makeClasslist, showReplyToast } from "$lib/components/messages/messageUtils";
-    import DeletedMessage from "$lib/components/messages/deletedMessage.svelte";
-    import LocationMessage from "$lib/components/messages/locationMessage.svelte";
+    import { getFormattedDate, showReplyToast } from "$lib/components/messages/messageUtils";
+    import DeletedMessage from "$lib/components/messages/DeletedMessage.svelte";
+    import LocationMessage from "$lib/components/messages/LocationMessage.svelte";
     import NavBar from "./chatComponents/navbar.svelte";
     import hljs from "highlight.js";
-    import { copyText } from "$lib/utils";
+    import { copyText, emojis } from "$lib/utils";
     import type { Unsubscriber } from "svelte/store";
     import ReactsOnMessage from "./chatComponents/reactsOnMessage.svelte";
+    import { themes } from "$lib/themes";
+    import MessageSockets from "./messageSockets.svelte";
 
     let isOffline = false;
 
@@ -71,7 +70,7 @@
         }
     }
 
-    let timeStampInterval: NodeJS.Timeout | null = null;
+    let timeStampInterval: number | null = null;
 
     let scrolledOffset = 0;
 
@@ -82,11 +81,18 @@
         scrolledOffset = $messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight;
     });
 
-    let messageUnsubscriber: Unsubscriber;
+    let unsubMessageDatabase: Unsubscriber;
+
+    afterUpdate(() => {
+        $messageContainer.style.height = "auto";
+        setTimeout(() => {
+            $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
+        }, 10);
+    });
 
     function updateUI(){
 
-        
+        console.log('updating UI');
 
         //hljs.highlightAll();
         if (scrolledOffset > 200){
@@ -94,12 +100,10 @@
         }
 
         //scroll to the last message
-        $messageContainer.scrollTo({ top: $messageContainer.scrollHeight, behavior: "smooth" });
-        //console.log('scrolling to bottom');
-
+        
         //last message
         const lastMessage = $messageContainer.lastElementChild as HTMLElement;
-        
+
         if (!lastMessage.classList.contains("message")) {
             return;
         }
@@ -174,247 +178,21 @@
         }
     };
 
-    const userTypingSet = new Set<string>();
-
-    let notice: MessageObj | null = null;
-
-    socket.on("newMessage", (message: MessageObj, messageId: string) => {
-        //console.log(message);
-
-        if(message.kind == 'text'){
-            message = Object.setPrototypeOf(message, TextMessageObj.prototype);
-        } else if (message.kind == 'sticker'){
-            message = Object.setPrototypeOf(message, StickerMessageObj.prototype);
-        } else if (message.kind == 'deleted'){
-            message = Object.setPrototypeOf(message, TextMessageObj.prototype);
-        } else if (message.kind == 'location'){
-            message = Object.setPrototypeOf(message, LocationMessageObj.prototype);
-        }
-
-        if (message instanceof TextMessageObj){
-            message.message = filterBadWords(message.message);
-        }
-
-        messageDatabase.update((messages) => {
-            message.classList = makeClasslist(message);
-            message.sent = true;
-            messages.set(messageId, message);
-            return messages;
-        });
-
-        lastMessageId.set(messageId);
-        notice = message;
-    });
-
-    socket.on('linkPreviewData', (messageId: string, data: {title: string, description: string, image: string, url: string}) => {
-        if (!$messageDatabase.has(messageId)){
-            return;
-        }
-
-        console.log('link preview data received');
-        console.log(data);
-        
-        messageDatabase.update((messages) => {
-            const message = messages.get(messageId) as MessageObj;
-            console.log(message.kind);
-            console.log(message instanceof TextMessageObj);
-            if (message && message instanceof TextMessageObj){
-                console.log('updating link preview data');
-                message.linkPreviewData = data;
-            }
-            return messages;
-        });
-    });
-
-    socket.on('deleteMessage', (messageId: string, uid: string) => {
-
-        try{
-            
-            if (!$messageDatabase.has(messageId)){
-                return;
-            }
-
-            let message = $messageDatabase.get(messageId) as TextMessageObj;
-
-            if (message.sender == uid){
-                if (!(message instanceof TextMessageObj)){
-                    message = Object.setPrototypeOf(message, TextMessageObj.prototype);
-                }
-                message.message = 'This message was deleted';
-                message.kind = 'deleted';
-                message.type = 'deleted';
-                message.replyTo = '';
-                messageDatabase.update((messages) => {
-                    //change the message to "This message was deleted"
-                    if (message.classList.includes('title')){
-                        if ($chatRoomStore.maxUsers <= 2){
-                            //remove the title
-                            message.classList = message.classList.replace('title', '');
-                        }
-                    }
-                    messages.set(messageId, message);
-                    return messages;
-                });
-
-                $messageContainer.style.height = 'auto';
-                setTimeout(() => {
-                    $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
-                }, 10);
-            }
-        } catch (e){
-            console.log(e);
-        }
-    });
-
-    socket.on('location', (coord: {latitude: number, longitude: number}, id: string, uid: string) => {
-        
-        if (!$chatRoomStore.userList[uid]){
-            return;
-        }
-
-        messageDatabase.update((messages) => {
-            const message = new LocationMessageObj(coord.latitude, coord.longitude, uid);
-
-            messages.set(id, message);
-
-            return messages;
-        });
-    });
-
-    socket.on("server_message", (msg: { text: string; id: string }, type: string) => {
-            //console.log(msg);
-
-            messageDatabase.update((messages) => {
-                const message: ServerMessageObj = new ServerMessageObj();
-                message.text = msg.text;
-                message.type = type;
-
-                messages.set(msg.id, message);
-
-                return messages;
-            });
-        },
-    );
-
-    socket.on("react", (messageId: string, uid: string, react: string) => {
-        console.log("react received");
-        messageDatabase.update((messages) => {
-            const message = messages.get(messageId) as MessageObj;
-            console.log(message);
-            if (message && message instanceof MessageObj) {
-                //if same react is clicked again, remove it
-                if (message.reactedBy[uid] == react) {
-                    //message.reactedBy.delete(uid);
-                    delete message.reactedBy[uid];
-                } else {
-                    //message.reactedBy.set(uid, react);
-                    message.reactedBy[uid] = react;
-                }
-            }
-            return messages;
-        });
-    });
-
-    socket.on("seen", (uid: string, messageId: string) => {
-        if (!uid || !messageId || !$chatRoomStore || !$chatRoomStore.userList[uid]) {
-            //console.log("invalid seen");
-            return;
-        }
-
-        chatRoomStore.update((chatRoom) => {
-            chatRoom.userList[uid].lastSeenMessage = messageId;
-            return chatRoom;
-        });
-
-        messageDatabase.update((messages) => {
-            const message = messages.get(messageId) as MessageObj;
-
-            if (message && message instanceof MessageObj) {
-                message.seenBy[uid] = true;
-            }
-
-            return messages;
-        });
-    });
-
-    socket.on("typing", (uid: string, event: "start" | "end") => {
-        if (event == "start") {
-            userTypingSet.add(uid);
-        } else {
-            userTypingSet.delete(uid);
-        }
-
-        if (userTypingSet.size > 0) {
-            // 1 person typing: 'Alex is typing'
-            // 2 people typing: 'Alex and max is typing'
-            // 3 people typing: 'Alex, max and 1 other is typing'
-            // 4 people typing: 'Alex, max and length-2 others are typing'
-            const userIdArray = Array.from(userTypingSet);
-
-            switch (userTypingSet.size) {
-                case 1:
-                    userTypingString.set(
-                        `${
-                            $chatRoomStore.userList[
-                                userIdArray.at(-1) as string
-                            ]?.name
-                        } is typing`,
-                    );
-                    break;
-                case 2:
-                    userTypingString.set(
-                        `${
-                            $chatRoomStore.userList[
-                                userIdArray.at(-1) as string
-                            ]?.name
-                        } and ${
-                            $chatRoomStore.userList[
-                                userIdArray.at(-2) as string
-                            ]?.name
-                        } are typing`,
-                    );
-                    break;
-                case 3:
-                    userTypingString.set(
-                        `${
-                            $chatRoomStore.userList[
-                                userIdArray.at(-1) as string
-                            ]?.name
-                        }, ${
-                            $chatRoomStore.userList[
-                                userIdArray.at(-2) as string
-                            ]?.name
-                        } and 1 other are typing`,
-                    );
-                    break;
-                default:
-                    userTypingString.set(
-                        `${
-                            $chatRoomStore.userList[
-                                userIdArray.at(-1) as string
-                            ]?.name
-                        }, ${
-                            $chatRoomStore.userList[
-                                userIdArray.at(-2) as string
-                            ]?.name
-                        } and ${userTypingSet.size - 2} others are typing`,
-                    );
-                    break;
-            }
-        } else {
-            userTypingString.set("");
-        }
-    });
-
     onMount(() => {
 
-        messageUnsubscriber = messageDatabase.subscribe(updateUI);
-
-        $messageContainer.style.height = 'auto';
         $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
-        
+
+        unsubMessageDatabase = messageDatabase.subscribe(updateUI);
 
         document.onkeydown = keyBindingHandler;
+
+        let loadedEmoji = localStorage.getItem('quickEmoji') || themes[$currentTheme].quickEmoji;
+
+        if (!emojis.includes(loadedEmoji)){
+            loadedEmoji = themes[$currentTheme].quickEmoji;
+        }
+
+        quickEmoji.set(loadedEmoji);
 
         window.onfocus = () => {
             if (!$lastMessageId) {
@@ -427,16 +205,13 @@
         };
 
         hljs.highlightAll();
-
-        //scroll to the last message
-        $messageContainer.scrollTo({ top: $messageContainer.scrollHeight, behavior: "smooth" });
     });
 
     onDestroy(() => {
         document.onkeydown = null;
         window.onfocus = null;
-        if (messageUnsubscriber){
-            messageUnsubscriber();
+        if (unsubMessageDatabase){
+            unsubMessageDatabase();
         }
     });
 
@@ -477,7 +252,7 @@
         let swipeStarted = false;
         let replyTrigger = false;
 
-        const actionTimeout = new Map<string, NodeJS.Timeout>();
+        const actionTimeout = new Map<string, number>();
 
         node.onclick = (evt) => {
             const target = evt.target as HTMLElement;
@@ -506,7 +281,7 @@
                 time.classList.add("active");
 
                 if (actionTimeout.has(message.id + 'show-time')){
-                    clearTimeout(actionTimeout.get(message.id + 'show-time') as NodeJS.Timeout);
+                    clearTimeout(actionTimeout.get(message.id + 'show-time') as number);
                 }
 
                 actionTimeout.set(message.id + 'show-time', setTimeout(() => {
@@ -516,8 +291,6 @@
             }
 
             if (target.classList.contains('reactsContainer')){
-                console.log('reacts container clicked');
-
                 eventTriggerMessageId.set(message.id);
                 showReactsOnMessageModal.set(true);
                 return;
@@ -547,7 +320,7 @@
                         });
                         //use action timeout to remove highlight
                         if (actionTimeout.has(message.id + 'reply-highlight')){
-                            clearTimeout(actionTimeout.get(message.id + 'reply-highlight') as NodeJS.Timeout);
+                            clearTimeout(actionTimeout.get(message.id + 'reply-highlight') as number);
                         }
 
                         actionTimeout.set(message.id + 'reply-highlight', setTimeout(() => {
@@ -579,7 +352,7 @@
                     target.dataset.action = 'Copied!';
 
                     if (actionTimeout.has(message.id + 'copy-code')){
-                        clearTimeout(actionTimeout.get(message.id + 'copy-code') as NodeJS.Timeout);
+                        clearTimeout(actionTimeout.get(message.id + 'copy-code') as number);
                     }
 
                     actionTimeout.set(message.id + 'copy-code', setTimeout(() => {
@@ -742,13 +515,22 @@
     <title>Poketab - Chat</title>
 </svelte:head>
 
-<SidePanel />
-<QuickSettings />
-<Themes />
-<StickersKeyboard />
-<Attachments />
+<MessageSockets />
+
 <ConnectivityState bind:offline={isOffline} />
+
+<SidePanel />
+
+<QuickSettings />
+
+<Themes />
+
+<StickersKeyboard />
+
+<Attachments />
+
 <MessageOptions />
+
 <ReactsOnMessage />
 
 <div class="container">
@@ -781,11 +563,7 @@
                 {/if}
             {/each}
         </ul>
-        <Footer>
-            <ScrollDownPopup bind:notice={notice}/>
-            <TypingIndicator />
-            <MessageReplyToast />
-        </Footer>
+        <Footer/>
     </div>
 </div>
 
@@ -839,7 +617,7 @@
                 place-content: center;
                 opacity: 1;
                 visibility: visible;
-                min-height: calc(80vh + 10px);
+                min-height: calc(80vh + 25px);
                 transition: 500ms;
                 .welcomeText {
                     display: flex;

@@ -8,6 +8,9 @@
     import {SEND_METHOD, quickEmoji, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "../../modalManager";
     import { onDestroy, onMount } from "svelte";
+    import MessageReplyToast from "./messageReplyToast.svelte";
+    import ScrollDownPopup from "./scrollDownPopup.svelte";
+    import TypingIndicator from "./typingIndicator.svelte";
     
     let newMessage = '';
 
@@ -74,7 +77,7 @@
         return !/[^\s]/.test(text);
     }
 
-    let isTypingTimeout: NodeJS.Timeout;
+    let isTypingTimeout: number;
 
     function sendTypingStatus(){
         socket.emit('typing', $selfInfoStore.uid, 'start');
@@ -150,9 +153,6 @@
         observer = new ResizeObserver(entries => {
             for (let entry of entries) {
 
-                $messageContainer.style.height = 'auto';
-                $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
-
                 //skip if entry height is decreasing
                 if (entry.contentRect.height < lastHeight){
                     lastHeight = entry.contentRect.height;
@@ -179,10 +179,11 @@
     });
 
 </script>
-    
+
 <div class="footer" transition:fly={{y: 30}} bind:this={footer}>
-    <!--typing indicator-->
-    <slot />
+    <ScrollDownPopup/>
+    <TypingIndicator />
+    <MessageReplyToast />
 
     <div class="chatInput">
         <button on:click={() => {showStickersPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
@@ -280,7 +281,7 @@
                     outline:none;
                     resize: none;
                     overflow-y: auto;
-                    max-height: 5em;
+                    max-height: 8rem;
                     line-height: 1.4rem;
                     font-size: 0.8rem;
                     transition: height 150ms ease-in-out;

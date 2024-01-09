@@ -1,22 +1,14 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
 
-    import {chatRoomStore, currentPage, joinedChat, selfInfoStore, splashMessage, type User} from "$lib/store";
+    import {chatRoomStore, currentPage, joinedChat, selfInfoStore, splashMessage} from "$lib/store";
     import {clearModals, showQuickSettingsPanel, showSidePanel} from "$lib/components/modalManager";
     import { showToastMessage } from "$lib/components/toast";
     import { socket } from "$lib/components/socket";
     import { messageDatabase } from "$lib/messages";
 
     let copyKeyIcon = 'fa-regular fa-clone';
-    let copyTimeout: NodeJS.Timeout | null = null;
-
-
-    socket.on('updateUserList', (users: {[key: string]: User}) => {
-        chatRoomStore.update((chatRoom) => {
-            chatRoom.userList = users
-            return chatRoom;
-        });
-    });
+    let copyTimeout: number | null = null;
 
     function copyKey(){
         navigator.clipboard.writeText($chatRoomStore.Key).then(() => {

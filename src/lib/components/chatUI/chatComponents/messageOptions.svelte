@@ -1,20 +1,14 @@
 
 <script lang="ts">
-    import { fade, fly } from "svelte/transition";
-    import {showMessageOptions} from "../../modalManager";
+    import { fly } from "svelte/transition";
+    import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
     import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messages";
-    import { selfInfoStore } from "$lib/store";
+    import { selfInfoStore, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/messages/messageUtils";
-    import { showToastMessage } from "$lib/components/toast";
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, spin } from "$lib/utils";
     import { onMount } from "svelte";
-
-    const reactArray = {
-        reacts: ['💙', '😆', '😠', '😢', '😮', '🙂'],
-        last: '🌻'
-    };
 
     let reactIsExpanded = false;
 
@@ -31,9 +25,12 @@
     };
 
     onMount(() => {
-        const lastReact = localStorage.getItem('lastReact') || reactArray.last;
+        const lastReact = localStorage.getItem('lastReact') || $reactArray.last;
         if (emojis.includes(lastReact)){
-            reactArray.last = lastReact;
+            reactArray.update((reacts) => {
+                reacts.last = lastReact;
+                return reacts;
+            });
         }
     });
 
@@ -63,25 +60,6 @@
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('emoji')) {
                 selectedReact = e.target.dataset.emoji as string || '';
                 if (selectedReact && emojis.includes(selectedReact)) {
-                    messageDatabase.update((messages) => {
-                        const message = messages.get($eventTriggerMessageId) as MessageObj;
-                        if (message) {
-                            //if same emoji is clicked again, remove it
-                            if (message.reactedBy[$selfInfoStore.uid] == selectedReact) {
-                                delete message.reactedBy[$selfInfoStore.uid];
-                            } else {
-                               
-                                if (!reactArray.reacts.includes(selectedReact) && emojis.includes(selectedReact)){
-                                    reactArray.last = selectedReact;
-                                    localStorage.setItem('lastReact', selectedReact);
-                                }
-
-                                message.reactedBy[$selfInfoStore.uid] = selectedReact;
-                            }
-                        }
-                        return messages;
-                    });
-
                     //send the emoji to the server via socket
                     socket.emit('react', $eventTriggerMessageId, $selfInfoStore.uid, selectedReact);
                 }
@@ -121,31 +99,42 @@
         return {
             destroy(){
                 node.onclick = null;
+                selectedReact = '';
+                eventTriggerMessageId.set('');
             }
         }
     }
 
 </script>
 
+{#if $showMessageOptions}
 <!-- option menu for message right click -->
 <!-- This menu contains reacts, message copy, download, delete and reply options -->
-{#if $showMessageOptions}
 <div class="optionsContainer" use:clickHandler>
     <div class="reactionsChooser" transition:fly={{y: -10, duration: 200}}>
         {#if reactIsExpanded}
-            <EmojiPicker selectedEmoji={selectedReact} exclude={[...reactArray.last, ...reactArray.reacts]} onClose={()=>{
+            <EmojiPicker selectedEmoji={selectedReact} exclude={[...$reactArray.last, ...$reactArray.reacts]} onClose={()=>{
                 reactIsExpanded = false;
             }}/>
         {/if}
         <div class="primary">
-            {#each reactArray.reacts as react}
+            {#each $reactArray.reacts as react}
                 <div class:shown={showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
                     <div class="emoji" data-emoji="{react}">{react}</div>
                 </div>    
             {/each}
-            <div class:shown={showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == reactArray.last}>
-                <div class="emoji" data-emoji="{reactArray.last}">{reactArray.last}</div>
-            </div>
+            
+            <!-- Show reactedEmoji as last react if has, else show $reactArray.last as last -->
+            {#if reactedEmoji && !$reactArray.reacts.includes(reactedEmoji)}
+                <div class="reactContainer roundedBtn" class:selected={true}>
+                    <div class="emoji" data-emoji="{reactedEmoji}">{reactedEmoji}</div>
+                </div>
+            {:else}
+                <div class="reactContainer roundedBtn" class:selected={selectedReact == $reactArray.last}>
+                    <div class="emoji" data-emoji="{$reactArray.last}">{$reactArray.last}</div>
+                </div>
+            {/if}
+
             {#if !reactIsExpanded}
                 <button in:spin={{duration: 250, degree: 180}} class="more roundedBtn" title="More" on:click={()=>{reactIsExpanded = true}}><i class="fa-solid fa-caret-up"></i></button>
             {:else}

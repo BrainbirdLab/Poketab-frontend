@@ -4,11 +4,23 @@
     import { eventTriggerMessageId, messageDatabase } from "$lib/messages";
     import { showReactsOnMessageModal } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
+    import { onDestroy } from "svelte";
+
+    $: message = $messageDatabase.get($eventTriggerMessageId) as MessageObj;
 
     // [uid: string]: react-emoji
-    $: reacts = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy || {};
+    $: reacts = message?.reactedBy || {};
 
-    let selectedReact = 'All';
+    $: selectedReact = 'All';
+
+    $: reactsToShow = Object.entries(reacts).filter(([uid, react]) => selectedReact === 'All' || selectedReact === react);
+
+    //push react - count to map
+    // [react-emoji: string]: count: number
+    $: reactsCount = Array.from(new Set(Object.values(reacts))).reduce((acc, react) => {
+        acc[react] = Object.values(reacts).filter(r => r === react).length;
+        return acc;
+    }, {} as {[react: string]: number});
 
     function handleClick(node: HTMLElement) {
         node.onclick = (e) => {
@@ -16,6 +28,7 @@
 
             if (target == node){
                 $eventTriggerMessageId = '';
+                selectedReact = 'All';
                 showReactsOnMessageModal.set(false);
             }
         }
@@ -32,14 +45,20 @@
 {#if $showReactsOnMessageModal}
 <div class="wrapper" use:handleClick transition:fly={{y: 10, duration: 100}}>
     <div class="reactsOnMessage">
+        <div class="title" in:fly|global={{y: -10, duration: 250}}>Reacts on {$chatRoomStore.userList[message.sender].name}'s message</div>
         <div class="users">
-            {#each Object.entries(reacts) as [uid, react]}
-                <div class="user">
-                    <img src="/images/avatars/{$chatRoomStore.userList[uid].avatar}(custom).png" alt="{$chatRoomStore.userList[uid].name}'s Avatar">
-                    {$chatRoomStore.userList[uid].name}
-                    <div class="react-emoji">{react}</div>
+            <!-- Slow selected type of reacts -->
+            {#key reactsToShow}
+            {#each reactsToShow as [uid, react], i}
+            <div class="user">
+                <div class="userInfo" in:fly|global={{x: -5, delay: 50 * (i + 1)}}>
+                    <img src="/images/avatars/{$chatRoomStore.userList[uid].avatar}(custom).png" alt="user"/>
+                    <span>{$chatRoomStore.userList[uid].name}</span>
                 </div>
+                <span class="react-emoji" in:fly|global={{x: 5, delay: 50 * (i + 1)}}>{react}</span>
+            </div>
             {/each}
+            {/key}
         </div>
         <div class="totalReactsButtons" in:fly|global={{x: 10, duration: 150}}>
             <!-- Show which reacts appear how many times -->
@@ -49,15 +68,19 @@
                 All ({Object.keys(reacts).length})
               </div>
             </label>
-            {#each Object.values(reacts) as react}
-            <label>
-                <input type="radio" bind:group={selectedReact} value={react}/>
-                <div class="item">
-                    <span class="react-emoji">{react}</span>
-                    <span class="react-count">{Object.values(reacts).filter(r => r === react).length}</span>
-                </div>
-            </label>
-            {/each}
+            <div class="others">
+                <!-- Show each unique react and their count -->
+                {#key reactsCount}
+                {#each Object.entries(reactsCount) as [react, count]}
+                <label>
+                  <input type="radio" bind:group={selectedReact} value={react}/>
+                  <div class="item">
+                    {react} ({count})
+                  </div>
+                </label>
+                {/each}
+                {/key}
+            </div>
           </div>
     </div>
 </div>
@@ -80,20 +103,30 @@
     }
 
     .totalReactsButtons{
-        display: flex;
-        flex-direction: row;
+        display: grid;
+        grid-auto-flow: column;
         align-items: center;
         justify-content: center;
         gap: 10px;
         margin-top: auto;
         width: 100%;
 
+        .others{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 2px;
+            overflow-x: scroll;
+        }
+
         label{
             display: flex;
             flex-direction: row;
             align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
+            justify-content: flex-start;
+            font-size: 0.7rem;
+            text-align: center;
             cursor: pointer;
 
             .item{
@@ -106,6 +139,9 @@
                 border-radius: 15px;
                 transition: 100ms ease-in-out;
                 cursor: pointer;
+                * {
+                    pointer-events: none;
+                }
                 &:hover{
                     background: var(--glass);
                 }
@@ -117,6 +153,7 @@
 
             input:checked + .item{
                 background: var(--secondary-dark);
+                font-weight: 700;
             }
 
         }
@@ -135,34 +172,47 @@
         border-radius: 15px;
         filter: drop-shadow(2px 4px 6px var(--shadow));
 
+        .title{
+            color: var(--secondary-dark);
+            margin-bottom: 10px;
+        }
+
         .users{
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             overflow-y: scroll;
             width: 100%;
+            margin: 10px 0;
             gap: 10px;
 
             .user{
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                justify-content: center;
+                justify-content: space-between;
                 width: 100%;
                 gap: 5px;
-                font-size: 1rem;
+                font-size: 0.8rem;
+
+                .userInfo{
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                }
 
                 img{
-                    height: 30px;
-                    width: 30px;
+                    height: 25px;
+                    width: 25px;
                     border-radius: 50%;
                 }
 
                 .react-emoji{
-                    font-size: 1.2rem;
+                    font-size: 1rem;
                     font-weight: 500;
-                    margin-left: auto;
                     color: var(--secondary-dark);
                 }
             }

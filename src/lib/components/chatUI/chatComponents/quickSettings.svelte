@@ -1,8 +1,7 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { showQuickSettingsPanel, showThemesPanel } from "$lib/components/modalManager";
-    import { currentTheme, buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod, quickEmoji} from "$lib/store";
-    import { themes } from "$lib/themes";
+    import { buttonSoundEnabled, messageSoundEnabled, quickEmojiEnabled, SEND_METHOD, sendMethod, quickEmoji} from "$lib/store";
     import EmojiPicker from "./emojiPicker.svelte";
     import { spin } from "$lib/utils";
 
@@ -124,148 +123,148 @@
 
 </script>
 
-
-    {#if $showQuickSettingsPanel}
-        <div
-        class="quickSettingsPanelWrapper"
-        transition:fly={{ y: 30, duration: 100 }}
-        use:handleClick
-    >
-        <div class="utils">
-            <div class="title" transition:fly|global={{y: 20, delay: 0}}>
-                Settings <i class="fa-solid fa-gear" />
-                <span class="moreInfo">[Alt+s]</span>
-            </div>
-            <div class="subsettingsContainer">
-                <div class="subsettings">
-                    <div class="subtitle"  transition:fly|global={{y: 20, delay: 10}}>
-                        Sounds <i class="fa-solid fa-volume-high" />
-                    </div>
-                    <!-- Enable/disable button sounds -->
-                    <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 20}}>
-                        <input
-                            type="checkbox"
-                            id="buttonSound"
-                            bind:checked={$buttonSoundEnabled}
-                        />
-                        <label for="buttonSound">
-                            <div class="textContainer">Click Sound</div>
-                            <span class="toggleButton" />
-                        </label>
-                    </div>
-                    <!-- Enable/disable message sounds -->
-                    <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 30}}>
-                        <input
-                            type="checkbox"
-                            id="messageSound"
-                            bind:checked={$messageSoundEnabled}
-                        />
-                        <label for="messageSound">
-                            <div class="textContainer">Message sound</div>
-                            <span class="toggleButton" />
-                        </label>
-                    </div>
+{#if $showQuickSettingsPanel}
+<div
+    class="quickSettingsPanelWrapper"
+    transition:fly={{ y: 30, duration: 100 }}
+    use:handleClick
+>
+    <div class="utils">
+        <div class="title" transition:fly|global={{y: 20, delay: 0}}>
+            Settings <i class="fa-solid fa-gear" />
+            <span class="moreInfo">[Alt+s]</span>
+        </div>
+        <div class="subsettingsContainer">
+            <div class="subsettings">
+                <div class="subtitle"  transition:fly|global={{y: 20, delay: 10}}>
+                    Sounds <i class="fa-solid fa-volume-high" />
                 </div>
-
-                <div class="subsettings">
-                    <div class="subtitle"  transition:fly|global={{y: 20, delay: 40}}>
-                        Keyboard <i class="fa-regular fa-keyboard" />
-                    </div>
-                    <div
-                        class="field-checkers keyboardMode btn play-sound hoverShadow"
-                        transition:fly|global={{y: 20, delay: 50}}
-                        >
-                        <input
-                            bind:group={$sendMethod}
-                            type="radio"
-                            name="sendMethod"
-                            id="ctrl+enter"
-                            value="Ctrl+Enter"
-                        />
-                        <label for="ctrl+enter">
-                            <div class="textContainer">
-                                Use Ctrl+Enter to send
-                                <div class="moreInfo">
-                                    Enter to add newlines
-                                </div>
-                            </div>
-                            <span class="toggleButton" />
-                        </label>
-                    </div>
-
-                    <div
-                        class="field-checkers keyboardMode btn play-sound hoverShadow"
-                        transition:fly|global={{y: 20, delay: 60}}
-                    >
-                        <input
-                            bind:group={$sendMethod}
-                            type="radio"
-                            name="sendMethod"
-                            id="enter"
-                            value="Enter"
-                        />
-                        <label for="enter">
-                            <div class="textContainer">
-                                Use Enter to send
-                                <div class="moreInfo">
-                                    Shift+Enter to add newlines
-                                </div>
-                            </div>
-                            <span class="toggleButton" />
-                        </label>
-                    </div>
-                </div>
-
-                <!--Quick emoji-->
-                <div class="subsettings">
-                    <div class="subtitle"  transition:fly|global={{y: 20, delay: 70}}>
-                        Quick emoji <i class="fa-regular fa-smile" />
-                    </div>
-                    <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 80}}>
-                        <input
-                            bind:checked={$quickEmojiEnabled}
-                            type="checkbox"
-                            id="quickEmoji"
-                        />
-                        <label for="quickEmoji">
-                            <div class="textContainer">Enable quick emoji</div>
-                            <span class="toggleButton" />
-                        </label>
-                    </div>
-                    {#if showQuickEmojiDrawer}
-                        <EmojiPicker height="10rem" bind:selectedEmoji={$quickEmoji} onClose={() => {
-                            showQuickEmojiDrawer = false;
-                        }}/>
-                    {/if}
-                    <div class="field-checkers btn play-sound hoverShadow" id="chooseQuickEmoji"  transition:fly|global={{y: 20, delay: 90}}>
-                        <div class="wrapper">
-                            <div class="label">Change quick emoji </div>
-                            {#if showQuickEmojiDrawer}
-                            <i in:spin={{duration: 200, degree: 180}} id="closeQuickEmojiDrawer" class="fa-solid fa-caret-down"></i>
-                            {:else}
-                            <button in:spin={{duration: 200, degree: 180}} class="hyper" id="chooseQuickEmojiButton">
-                                {$quickEmoji}
-                            </button>
-                            {/if}
-                        </div>
-                    </div>
-                </div>
-
-                <button  transition:fly|global={{x: -10, delay: 100}}
-                    id="themeButton"
-                    on:click={() => {
-                        showThemesPanel.set(true);
-                    }}
-                    class="button btn play-sound hover"
-                    title="Select themes [Alt+t]"
-                    ><i class="fa-solid fa-palette" /><span>Theme</span><i
-                        class="fa-solid fa-brush"
+                <!-- Enable/disable button sounds -->
+                <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 20}}>
+                    <input
+                        type="checkbox"
+                        id="buttonSound"
+                        bind:checked={$buttonSoundEnabled}
                     />
-                </button>
+                    <label for="buttonSound">
+                        <div class="textContainer">Click Sound</div>
+                        <span class="toggleButton" />
+                    </label>
+                </div>
+                <!-- Enable/disable message sounds -->
+                <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 30}}>
+                    <input
+                        type="checkbox"
+                        id="messageSound"
+                        bind:checked={$messageSoundEnabled}
+                    />
+                    <label for="messageSound">
+                        <div class="textContainer">Message sound</div>
+                        <span class="toggleButton" />
+                    </label>
+                </div>
             </div>
+
+            <div class="subsettings">
+                <div class="subtitle"  transition:fly|global={{y: 20, delay: 40}}>
+                    Keyboard <i class="fa-regular fa-keyboard" />
+                </div>
+                <div
+                    class="field-checkers keyboardMode btn play-sound hoverShadow"
+                    transition:fly|global={{y: 20, delay: 50}}
+                    >
+                    <input
+                        bind:group={$sendMethod}
+                        type="radio"
+                        name="sendMethod"
+                        id="ctrl+enter"
+                        value="Ctrl+Enter"
+                    />
+                    <label for="ctrl+enter">
+                        <div class="textContainer">
+                            Use Ctrl+Enter to send
+                            <div class="moreInfo">
+                                Enter to add newlines
+                            </div>
+                        </div>
+                        <span class="toggleButton" />
+                    </label>
+                </div>
+
+                <div
+                    class="field-checkers keyboardMode btn play-sound hoverShadow"
+                    transition:fly|global={{y: 20, delay: 60}}
+                >
+                    <input
+                        bind:group={$sendMethod}
+                        type="radio"
+                        name="sendMethod"
+                        id="enter"
+                        value="Enter"
+                    />
+                    <label for="enter">
+                        <div class="textContainer">
+                            Use Enter to send
+                            <div class="moreInfo">
+                                Shift+Enter to add newlines
+                            </div>
+                        </div>
+                        <span class="toggleButton" />
+                    </label>
+                </div>
+            </div>
+
+            <!--Quick emoji-->
+            <div class="subsettings">
+                <div class="subtitle"  transition:fly|global={{y: 20, delay: 70}}>
+                    Quick emoji <i class="fa-regular fa-smile" />
+                </div>
+                <div class="field-checkers btn play-sound hoverShadow"  transition:fly|global={{y: 20, delay: 80}}>
+                    <input
+                        bind:checked={$quickEmojiEnabled}
+                        type="checkbox"
+                        id="quickEmoji"
+                    />
+                    <label for="quickEmoji">
+                        <div class="textContainer">Enable quick emoji</div>
+                        <span class="toggleButton" />
+                    </label>
+                </div>
+                {#if showQuickEmojiDrawer}
+                    <EmojiPicker height="10rem" bind:selectedEmoji={$quickEmoji} onClose={() => {
+                        showQuickEmojiDrawer = false;
+                    }}/>
+                {/if}
+                <div class="field-checkers btn play-sound hoverShadow" id="chooseQuickEmoji"  transition:fly|global={{y: 20, delay: 90}}>
+                    <div class="wrapper">
+                        <div class="label">Change quick emoji </div>
+                        {#if showQuickEmojiDrawer}
+                        <i in:spin={{duration: 200, degree: 180}} id="closeQuickEmojiDrawer" class="fa-solid fa-caret-down"></i>
+                        {:else}
+                        <button in:spin={{duration: 200, degree: 180}} class="hyper" id="chooseQuickEmojiButton">
+                            {$quickEmoji}
+                        </button>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+
+            <button  transition:fly|global={{x: -10, delay: 100}}
+                id="themeButton"
+                on:click={() => {
+                    showThemesPanel.set(true);
+                }}
+                class="button btn play-sound hover"
+                title="Select themes [Alt+t]"
+                ><i class="fa-solid fa-palette" /><span>Theme</span><i
+                    class="fa-solid fa-brush"
+                />
+            </button>
         </div>
     </div>
+</div>
 {/if}
+
 
 <style lang="scss">
     input {

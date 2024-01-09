@@ -207,10 +207,6 @@
         width: 100%;
     }
 
-    .create button{
-        background: black;
-    }
-
     label{
         color: var(--foreground-dark);
     }
@@ -226,5 +222,9 @@
     .inputForm{
         //drop shadow
         box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    }
+
+    .create button{
+        background: black;
     }
 </style>

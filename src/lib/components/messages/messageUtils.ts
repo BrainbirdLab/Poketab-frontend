@@ -28,48 +28,52 @@ export function getFormattedDate(time: number) {
 
 export function makeClasslist(message: MessageObj){
 
-    let classList = ' end';
+    let classListString = ' end';
 
     if (message.sender === get(selfInfoStore).uid){
-        classList += ' self';
-    }
-
-    if (get(chatRoomStore).maxUsers > 2 || message.replyTo){
-        classList += ' title';
+        classListString += ' self';
     }
 
     if (get(messageDatabase).size > 0){
 
         let lastMessageObj = get(messageDatabase).get(get(lastMessageId));
 		
-        if (lastMessageObj instanceof MessageObj && lastMessageObj?.type != 'sticker' && lastMessageObj?.type != 'emoji'){
-            if (lastMessageObj?.sender !== message.sender){
-                classList += ' newGroup';
-            }
-            if (message.type == 'sticker'){
-                classList += ' start';
-                return classList;
+        if (lastMessageObj instanceof MessageObj && lastMessageObj.type !== 'sticker' && lastMessageObj.type !== 'emoji'){
+
+            if (lastMessageObj?.sender !== message.sender || lastMessageObj.type !== message.type || message.replyTo){
+                classListString += ' newGroup start';
             }
     
-            if (lastMessageObj.sender === message.sender && message.type != 'emoji' && !message.replyTo){
+            if (lastMessageObj.sender === message.sender && message.type !== 'sticker' && message.type !== 'emoji' && !message.replyTo){
                 //last message is from the same user
                 lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
-            } else {
-                classList += ' start';
             }
+
+        } else if (lastMessageObj instanceof MessageObj){
+            if (lastMessageObj.type == 'sticker' || lastMessageObj.type == 'emoji'){
+				if ((message.type == 'sticker' || message.type == 'emoji') && lastMessageObj.type === message.type){
+					classListString += ' start';
+				} else {
+					classListString += ' start newGroup';
+				}
+			} else {
+				classListString += ' start newGroup';
+			}
         } else {
-            classList += ' start';
-        }
+			classListString += ' start newGroup';
+		}
 
     } else {
-        classList += ' start';
+        classListString += ' start newGroup';
     }
 
-	if (!classList.includes('start') && classList.includes('title')){
-		classList = classList.replace('title', '');
-	}
+	console.log(`${get(chatRoomStore).maxUsers} | ${message.replyTo} | ${classListString.includes('newGroup')}`)
 
-    return classList;
+	if (((get(chatRoomStore).maxUsers > 2 && !classListString.includes('self')) || message.replyTo) && classListString.includes('newGroup')){
+        classListString += ' title';
+    }
+
+    return classListString;
 }
 
 export function sendMessage(message: MessageObj, tempId: string){
