@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { MessageObj } from "$lib/messages";
+    import type { MessageObj } from "$lib/messageTypes";
 
     export let reactedBy: MessageObj["reactedBy"];
 

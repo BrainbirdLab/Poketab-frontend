@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messages";
+    import { MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messageTypes";
     import { chatRoomStore, selfInfoStore } from "$lib/store";
-    import { getTextData } from "../messageUtils";
+    import { getTextData } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
     export let replyTo: string;
     export let sender: string;

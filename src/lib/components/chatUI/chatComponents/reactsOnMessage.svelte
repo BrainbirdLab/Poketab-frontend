@@ -1,10 +1,8 @@
 <script lang="ts">
-    import type { MessageObj } from "$lib/messages";
     import { chatRoomStore } from "$lib/store";
-    import { eventTriggerMessageId, messageDatabase } from "$lib/messages";
+    import { eventTriggerMessageId, messageDatabase, type MessageObj } from "$lib/messageTypes";
     import { showReactsOnMessageModal } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
-    import { onDestroy } from "svelte";
 
     $: message = $messageDatabase.get($eventTriggerMessageId) as MessageObj;
 

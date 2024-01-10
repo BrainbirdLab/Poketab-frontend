@@ -1,4 +1,4 @@
-import { MessageObj, messageDatabase, lastMessageId } from "$lib/messages";
+import { MessageObj, messageDatabase, lastMessageId } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
 import { chatRoomStore, selfInfoStore } from "$lib/store";
 import { socket } from "$lib/components/socket";

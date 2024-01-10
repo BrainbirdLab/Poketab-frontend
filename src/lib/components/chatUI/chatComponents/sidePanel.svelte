@@ -5,7 +5,7 @@
     import {clearModals, showQuickSettingsPanel, showSidePanel} from "$lib/components/modalManager";
     import { showToastMessage } from "$lib/components/toast";
     import { socket } from "$lib/components/socket";
-    import { messageDatabase } from "$lib/messages";
+    import { messageDatabase } from "$lib/messageTypes";
 
     let copyKeyIcon = 'fa-regular fa-clone';
     let copyTimeout: number | null = null;

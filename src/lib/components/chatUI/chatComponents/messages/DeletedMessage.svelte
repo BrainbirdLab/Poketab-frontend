@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { TextMessageObj } from "$lib/messages";
+    import type { TextMessageObj } from "$lib/messageTypes";
     import MessageTop from "./messageComponents/messageTop.svelte";
     import SeenBy from "./messageComponents/seenBy.svelte";
     import MessageMeta from "./messageComponents/messageMeta.svelte";

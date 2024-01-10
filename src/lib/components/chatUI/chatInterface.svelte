@@ -1,7 +1,7 @@
 <script lang="ts">
-    import "$lib/components/messages/message.scss";
+    import "$lib/components/chatUI/chatComponents/messages/message.scss";
     import Footer from "./chatComponents/footer.svelte";
-    import TextMessage from "$lib/components/messages/TextMessage.svelte";
+    import TextMessage from "$lib/components/chatUI/chatComponents/messages/TextMessage.svelte";
     import {
         MessageObj,
         ServerMessageObj,
@@ -13,7 +13,7 @@
         LocationMessageObj,
         TextMessageObj,
         messageContainer,
-    } from "$lib/messages";
+    } from "$lib/messageTypes";
     import { showToastMessage } from "$lib/components/toast";
     import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
@@ -36,13 +36,13 @@
     import StickersKeyboard from "./chatComponents/stickersKeyboard.svelte";
     import Attachments from "./chatComponents/attachments.svelte";
     import MessageOptions from "./chatComponents/messageOptions.svelte";
-    import StickerMessage from "$lib/components/messages/StickerMessage.svelte";
-    import ServerMessage from "$lib/components/messages/ServerMessage.svelte";
+    import StickerMessage from "$lib/components/chatUI/chatComponents/messages/StickerMessage.svelte";
+    import ServerMessage from "$lib/components/chatUI/chatComponents/messages/ServerMessage.svelte";
     import { socket } from "$lib/components/socket";
     import { spring } from "svelte/motion";
-    import { getFormattedDate, showReplyToast } from "$lib/components/messages/messageUtils";
-    import DeletedMessage from "$lib/components/messages/DeletedMessage.svelte";
-    import LocationMessage from "$lib/components/messages/LocationMessage.svelte";
+    import { getFormattedDate, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import DeletedMessage from "$lib/components/chatUI/chatComponents/messages/DeletedMessage.svelte";
+    import LocationMessage from "$lib/components/chatUI/chatComponents/messages/LocationMessage.svelte";
     import NavBar from "./chatComponents/navbar.svelte";
     import hljs from "highlight.js";
     import { copyText, emojis } from "$lib/utils";

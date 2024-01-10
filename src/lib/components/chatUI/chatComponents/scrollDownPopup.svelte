@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { TextMessageObj, type MessageObj, StickerMessageObj, messageContainer, messageScrolledPx, notice } from "$lib/messages";
+    import { TextMessageObj, StickerMessageObj, messageContainer, messageScrolledPx, notice } from "$lib/messageTypes";
     import { chatRoomStore } from "$lib/store";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";

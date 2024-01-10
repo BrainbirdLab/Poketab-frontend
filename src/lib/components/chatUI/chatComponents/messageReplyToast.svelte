@@ -1,8 +1,8 @@
 <script lang="ts">
-    import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj, StickerMessageObj} from "$lib/messages";
+    import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj, StickerMessageObj} from "$lib/messageTypes";
     import {chatRoomStore, selfInfoStore} from "$lib/store";
     import { slide, fly, fade } from "svelte/transition";
-    import { getTextData, showReplyToast } from "$lib/components/messages/messageUtils";
+    import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
     $: message = $messageDatabase.get($replyTargetId) as MessageObj || null;
     $: sender = message ? (message?.sender == $selfInfoStore.uid ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'Unknown';

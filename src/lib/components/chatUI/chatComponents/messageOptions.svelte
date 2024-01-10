@@ -3,9 +3,9 @@
     import { fly } from "svelte/transition";
     import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
-    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messages";
+    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messageTypes";
     import { selfInfoStore, reactArray } from "$lib/store";
-    import { showReplyToast } from "$lib/components/messages/messageUtils";
+    import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, spin } from "$lib/utils";
     import { onMount } from "svelte";

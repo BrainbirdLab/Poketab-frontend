@@ -8,7 +8,7 @@
 
     let time = '00:00';
 
-    let timer: NodeJS.Timeout;
+    let timer: number | null = null;
 
     let audioStream: MediaStream;
 
