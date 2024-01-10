@@ -13,7 +13,6 @@
         LocationMessageObj,
         TextMessageObj,
         messageContainer,
-        messageScrolledPx,
     } from "$lib/messages";
     import { showToastMessage } from "$lib/components/toast";
     import SidePanel from "./chatComponents/sidePanel.svelte";
@@ -553,29 +552,11 @@
     <title>Poketab - Chat</title>
 </svelte:head>
 
-<MessageSockets />
-
-<ConnectivityState bind:offline={isOffline} />
-
-<SidePanel />
-
-<QuickSettings />
-
-<Themes />
-
-<StickersKeyboard />
-
-<Attachments />
-
-<MessageOptions />
-
-<ReactsOnMessage />
-
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
         <NavBar />
         <ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={$messageContainer}>
-            <div class="welcome_wrapper" in:fly={{ x: -50 }} out:fade={{ duration: 100 }} >
+            <div class="welcome_wrapper" in:fade>
                 <li class="welcomeText">
                     <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
                     <div>Share this chat link to others to join</div>
@@ -604,6 +585,24 @@
         <Footer/>
     </div>
 </div>
+
+<ConnectivityState bind:offline={isOffline} />
+
+<SidePanel />
+
+<QuickSettings />
+
+<Themes />
+
+<StickersKeyboard />
+
+<Attachments />
+
+<MessageOptions />
+
+<ReactsOnMessage />
+
+<MessageSockets />
 
 <style lang="scss">
     .container {

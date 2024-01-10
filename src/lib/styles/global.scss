@@ -132,6 +132,10 @@ button {
     cursor: pointer;
 }
 
+.hoverShadow{
+    transition: 100ms ease-in-out;
+}
+
 .hoverShadow:hover{
     background: rgba(255, 255, 255, 0.0392156863) !important;
 }
