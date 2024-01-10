@@ -120,10 +120,8 @@
     );
 
     socket.on("react", (messageId: string, uid: string, react: string) => {
-        console.log("react received");
         messageDatabase.update((messages) => {
             const message = messages.get(messageId) as MessageObj;
-            console.log(message);
             if (message && message instanceof MessageObj) {
                 //if same react is clicked again, remove it
                 if (message.reactedBy[uid] == react) {

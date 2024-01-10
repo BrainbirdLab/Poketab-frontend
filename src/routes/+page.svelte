@@ -142,7 +142,7 @@
     a:hover {
         cursor: pointer;
         transform: translateY(-3px);
-        box-shadow: 0 3px 5px black;
+        box-shadow: 0 3px 5px var(--shadow);
     }
     #login {
         background: var(--secondary-dark, #4598ff);
@@ -185,6 +185,7 @@
         align-items: flex-start;
         justify-content: center;
         background: #22283bba;
+        box-shadow: 0 3px 5px var(--shadow);
         backdrop-filter: blur(2px);
         padding: 35px;
         border-radius: 10px;

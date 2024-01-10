@@ -13,6 +13,7 @@
         LocationMessageObj,
         TextMessageObj,
         messageContainer,
+        messageScrolledPx,
     } from "$lib/messages";
     import { showToastMessage } from "$lib/components/toast";
     import SidePanel from "./chatComponents/sidePanel.svelte";
@@ -32,7 +33,7 @@
     } from "$lib/components/modalManager";
     import ConnectivityState from "./chatComponents/connectivityState.svelte";
     import Themes from "./chatComponents/themes.svelte";
-    import { afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
+    import { tick, afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
     import StickersKeyboard from "./chatComponents/stickersKeyboard.svelte";
     import Attachments from "./chatComponents/attachments.svelte";
     import MessageOptions from "./chatComponents/messageOptions.svelte";
@@ -72,42 +73,79 @@
 
     let timeStampInterval: number | null = null;
 
-    let scrolledOffset = 0;
+    let unsubMessageDatabase: Unsubscriber;
+
+    let lastHeight = 0;
+    let heightChanged = 0;
+    let scrolledToBottomPx = 0;
+
+    let timeout: number | null = null;
+
+    /**
+     * Auto scroll to bottom when new message arrives if scrolled to bottom if less that 200 px. (Smooth scroll)
+     * If user reacts to message, lift up the messages that much it went down. And on react remove, if scrolled then scroll down that much px
+    */
 
     beforeUpdate(() => {
         if (!$messageContainer) {
             return;
         }
-        scrolledOffset = $messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight;
+
+        $messageContainer.style.height = 'auto';
     });
 
-    let unsubMessageDatabase: Unsubscriber;
 
     afterUpdate(() => {
-        $messageContainer.style.height = "auto";
-        setTimeout(() => {
-            $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
-        }, 10);
-    });
-
-    function updateUI(){
-
-        console.log('updating UI');
-
-        //hljs.highlightAll();
-        if (scrolledOffset > 200){
+        if (!$messageContainer) {
             return;
         }
 
-        //scroll to the last message
+        $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
+
+        scrolledToBottomPx = Math.floor($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.offsetHeight);
+        heightChanged = $messageContainer.scrollHeight - lastHeight;
+    });
+
+    async function updateUI(){
+
+        await tick();
+
+        if (!$messageContainer){
+            return;
+        }
+
+
+        //console.log('update ui', heightChanged, scrolledToBottomPx);
+
+        if (timeout){
+            clearTimeout(timeout);
+        }
         
+        if (heightChanged < 10){
+            if (heightChanged > 0) { //height increase
+                $messageContainer.scrollTop += heightChanged;
+                //console.log('%cScrolled Up', 'color: orange;');
+            } else if (heightChanged < 0 && scrolledToBottomPx > 0){
+                //console.log('%cScrolled Down', 'color: pink;');
+                $messageContainer.scrollTop += heightChanged;
+            }
+        } else if (heightChanged > 10 && scrolledToBottomPx < 200){
+            //console.log('%cSmooth scroll', 'color: lime;');
+            $messageContainer.scrollTo({
+                top: $messageContainer.scrollHeight,
+                behavior: "smooth",
+            });
+        }
+
+        lastHeight = $messageContainer.scrollHeight;
+
         //last message
         const lastMessage = $messageContainer.lastElementChild as HTMLElement;
-
+        
         if (!lastMessage.classList.contains("message")) {
             return;
         }
-
+        
         //if last message is a code block, highlight it
         if (lastMessage.querySelector('code')){
             //highlight all code blocks
@@ -180,7 +218,7 @@
 
     onMount(() => {
 
-        $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
+        //$messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
 
         unsubMessageDatabase = messageDatabase.subscribe(updateUI);
 

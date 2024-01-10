@@ -67,8 +67,6 @@ export function makeClasslist(message: MessageObj){
         classListString += ' start newGroup';
     }
 
-	console.log(`${get(chatRoomStore).maxUsers} | ${message.replyTo} | ${classListString.includes('newGroup')}`)
-
 	if (((get(chatRoomStore).maxUsers > 2 && !classListString.includes('self')) || message.replyTo) && classListString.includes('newGroup')){
         classListString += ' title';
     }

@@ -18,6 +18,7 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
+        padding: 10px;
     }
 
     .serverMessage[data-type="join"]{
