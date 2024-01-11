@@ -1,10 +1,8 @@
 <script lang="ts">
     import { TextMessageObj, StickerMessageObj, messageContainer, messageScrolledPx, notice } from "$lib/messageTypes";
-    import { chatRoomStore } from "$lib/store";
+    import { chatRoomStore, showScrollPopUp } from "$lib/store";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
-
-    let showScrollPopUp = false;
 
     $: {
         if ($messageScrolledPx < 200){
@@ -21,10 +19,10 @@
             //console.log('scrolling...');
             messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
             if ( $messageScrolledPx > 200) {
-                showScrollPopUp = true;
+                showScrollPopUp.set(true);
                 //console.log('show');
             } else {
-                showScrollPopUp = false;
+                showScrollPopUp.set(false);
                 //console.log('hide');
             }
         };
@@ -36,7 +34,7 @@
 
 </script>
 
-{#if showScrollPopUp}
+{#if $showScrollPopUp}
     <button class="popup" tabindex="-1" transition:fly={{y: 20, duration: 200}} on:click={()=>{
         $messageContainer.scrollTo({top: $messageContainer.scrollHeight, behavior: "smooth"});
     }}>

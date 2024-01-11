@@ -18,7 +18,7 @@
     import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
-    import { chatRoomStore, currentTheme, quickEmoji, selfInfoStore, userTypingString, type User } from "$lib/store";
+    import { chatRoomStore, currentTheme, quickEmoji, selfInfoStore, userTypingString, type User, showScrollPopUp } from "$lib/store";
     import {
         activeModalsStack,
         selectedSticker,
@@ -128,7 +128,7 @@
                 //console.log('%cScrolled Down', 'color: pink;');
                 $messageContainer.scrollTop += heightChanged;
             }
-        } else if (heightChanged > 10 && scrolledToBottomPx < 200){
+        } else if (heightChanged > 10 && !$showScrollPopUp){
             //console.log('%cSmooth scroll', 'color: lime;');
             $messageContainer.scrollTo({
                 top: $messageContainer.scrollHeight,
