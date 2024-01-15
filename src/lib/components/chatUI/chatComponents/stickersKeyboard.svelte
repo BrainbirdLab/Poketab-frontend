@@ -1,9 +1,10 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { showStickersPanel, selectedSticker } from "$lib/components/modalManager";
-    import { selfInfoStore } from "$lib/store";
+    import { myId } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, messageDatabase, replyTargetId } from "$lib/messageTypes";
     import { makeClasslist, sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { elasticInOut } from "svelte/easing";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -72,7 +73,7 @@
                 messageObj.src = src;
                 messageObj.groupName = group;
                 messageObj.number = Number(serial);
-                messageObj.sender = $selfInfoStore.uid;
+                messageObj.sender = $myId.uid;
                 messageObj.type = 'sticker';
                 messageObj.kind = 'sticker';
 
@@ -156,13 +157,13 @@
 </script>
 
 {#if $showStickersPanel}
-<div class="stickerKeyboardContainer" transition:fly|global={{y: 20, duration: 100}} use:stickersHandler>
+<div class="stickerKeyboardContainer" transition:fly|global={{y: 20, duration: 100, easing: elasticInOut}} use:stickersHandler>
     <div class="stickerKeyboard">
         <div class="headers">
             <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>
             <div class="stickerHeader" id="stickerHeader" bind:this={stickerHeader}>
                 {#each Stickers as sticker}
-                    <img class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
+                    <img loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
                 {/each}
             </div>
             <button on:click={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></button>
@@ -171,7 +172,7 @@
             {#each Stickers as sticker}
                 <div class="stickerBoard {sticker.name}" id="{sticker.name}">
                     {#each Array.from({ length: parseInt(sticker.count) }) as _, i}
-                        <img class="stickerItem" data-serial={i+1} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
+                        <img loading="lazy" class="stickerItem" data-serial={i+1} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
                     {/each}
                 </div>
             {/each}

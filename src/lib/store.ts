@@ -57,7 +57,7 @@ export type User = {
     uid: string,
     name: string,
     avatar: string,
-    lastSeenMessage: string,
+    lastSeenMessage: string | null,
 }
 
 type chatRoomStoreType = {
@@ -66,12 +66,7 @@ type chatRoomStoreType = {
     maxUsers: number,
 };
 
-export const selfInfoStore: Writable<User> = writable({
-    uid: '',
-    name: '',
-    avatar: '',
-    lastSeenMessage: '',
-});
+export const myId: Writable<string> = writable('');
 
 export const chatRoomStore: Writable<chatRoomStoreType> = writable({
     Key: '',

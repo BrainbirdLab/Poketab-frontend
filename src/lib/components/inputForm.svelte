@@ -4,7 +4,7 @@
     import { onDestroy, onMount } from "svelte";
     
     import {socket, reConnectSocket} from "$lib/components/socket";
-    import { formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, selfInfoStore, socketConnected, joinedChat, isTaken, currentPage, formNotification, splashMessage} from "$lib/store";
+    import { formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, myId, socketConnected, joinedChat, isTaken, currentPage, formNotification, splashMessage} from "$lib/store";
     
     let selectedname = '';
     let selectedAvatar = '';
@@ -110,7 +110,7 @@
                     return room;
                 });
 
-                selfInfoStore.update(info => {
+                myId.update(info => {
                     info.uid = res.userId;
                     info.name = selectedname;
                     info.avatar = selectedAvatar;
@@ -145,7 +145,7 @@
                     return room;
                 });
 
-                selfInfoStore.update(info => {
+                myId.update(info => {
                     info.uid = res.userId;
                     info.name = selectedname;
                     info.avatar = selectedAvatar;
@@ -203,7 +203,7 @@
                     <div class="avatar" in:scale|global={{delay: i*30}}>
                         <input type="radio" class="avatarInput" bind:group={selectedAvatar} name="avatar" value="{avatar}" id="{avatar}">
                         <label class="avatarLabel btn btn-animate" for="{avatar}">
-                            <img src="/images/avatars/{avatar}(custom).webp" alt="{avatar}">
+                            <img loading="lazy" src="/images/avatars/{avatar}(custom).webp" alt="{avatar}">
                         </label>
                     </div>
                     {/if}

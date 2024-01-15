@@ -1,6 +1,6 @@
 import { MessageObj, messageDatabase, lastMessageId } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
-import { chatRoomStore, selfInfoStore } from "$lib/store";
+import { chatRoomStore, myId } from "$lib/store";
 import { socket } from "$lib/components/socket";
 import { badWords } from "./censoredWords";
 
@@ -30,7 +30,7 @@ export function makeClasslist(message: MessageObj){
 
     let classListString = ' end';
 
-    if (message.sender === get(selfInfoStore).uid){
+    if (message.sender === get(myId)){
         classListString += ' self';
     }
 
@@ -87,7 +87,7 @@ export function sendMessage(message: MessageObj, tempId: string){
         lastMessageId.set(messageId);
 
         if (document.hasFocus()){
-            socket.emit('seen', get(selfInfoStore).uid, get(lastMessageId));
+            socket.emit('seen', get(myId), get(lastMessageId));
         }
     });
 }

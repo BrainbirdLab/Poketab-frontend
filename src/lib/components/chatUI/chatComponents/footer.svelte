@@ -5,7 +5,7 @@
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
 
-    import {SEND_METHOD, quickEmoji, quickEmojiEnabled, selfInfoStore, sendMethod} from "$lib/store";
+    import {SEND_METHOD, quickEmoji, quickEmojiEnabled, myId, sendMethod} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "$lib/components/modalManager";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";
@@ -45,7 +45,7 @@
 
         message.id = tempId;
         message.message = newMessage.trim();
-        message.sender = $selfInfoStore.uid;
+        message.sender = $myId;
 
         if ($replyTargetId){
             message.replyTo = $replyTargetId;
@@ -80,7 +80,7 @@
     let isTypingTimeout: number;
 
     function sendTypingStatus(){
-        socket.emit('typing', $selfInfoStore.uid, 'start');
+        socket.emit('typing', $myId, 'start');
 
         if (isTypingTimeout) {
             clearTimeout(isTypingTimeout)
@@ -92,7 +92,7 @@
     }
 
     function endTypingStatus(){
-        socket.emit('typing', $selfInfoStore.uid, 'end');
+        socket.emit('typing', $myId, 'end');
     }
 
     const inputHandler = (e: Event) => {
@@ -156,6 +156,7 @@
                 //skip if entry height is decreasing
                 if (entry.contentRect.height < lastHeight){
                     lastHeight = entry.contentRect.height;
+                    $messageContainer.style.height = $messageContainer.scrollHeight + 'px';
                     //console.log('Height decreased');
                     return;
                 }

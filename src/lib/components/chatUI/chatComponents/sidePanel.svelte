@@ -1,11 +1,12 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
 
-    import {chatRoomStore, currentPage, joinedChat, selfInfoStore, splashMessage} from "$lib/store";
+    import {chatRoomStore, currentPage, joinedChat, myId, splashMessage} from "$lib/store";
     import {clearModals, showQuickSettingsPanel, showSidePanel} from "$lib/components/modalManager";
     import { showToastMessage } from "$lib/components/toast";
     import { socket } from "$lib/components/socket";
     import { messageDatabase } from "$lib/messageTypes";
+    import { elasticInOut } from "svelte/easing";
 
     let copyKeyIcon = 'fa-regular fa-clone';
     let copyTimeout: number | null = null;
@@ -36,12 +37,7 @@
                 userList: {},
                 maxUsers: 2,
             });
-            selfInfoStore.set({
-                uid: '',
-                name: '',
-                avatar: '',
-                lastSeenMessage: '',
-            });
+            myId.set('');
             messageDatabase.update(messages => {
                 messages.clear();
                 return messages;
@@ -74,7 +70,7 @@
 </script>
 
 {#if $showSidePanel}
-<div id="sidebarWrapper" transition:fly={{x:-30, duration: 100}} use:closeSideBar>
+<div id="sidebarWrapper" transition:fly={{x:-30, duration: 100, easing: elasticInOut}} use:closeSideBar>
     <div id="sidebar">
         <div class="topbar">
             <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i> {KEY}</button>
@@ -82,13 +78,13 @@
         <ul id="userlist">
             <li class="user">
                 <div class="avt">
-                    <img src="/images/avatars/{$selfInfoStore.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
+                    <img src="/images/avatars/{$chatRoomStore.userList[$myId].avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
                     <i class="fa-solid fa-circle activeStatus"></i>
                 </div>
-                <span>{$selfInfoStore.name} (You)</span>
+                <span>{$chatRoomStore.userList[$myId].name} (You)</span>
             </li>
             {#each Object.entries($chatRoomStore.userList) as [id, User]}
-                {#if User.uid != $selfInfoStore.uid}
+                {#if User.uid != $myId}
                     <li class="user">
                         <div class="avt">
                             <img src="/images/avatars/{User.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">

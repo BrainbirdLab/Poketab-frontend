@@ -1,6 +1,6 @@
 <script lang="ts">
     import { MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messageTypes";
-    import { chatRoomStore, selfInfoStore } from "$lib/store";
+    import { chatRoomStore, myId } from "$lib/store";
     import { getTextData } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
     export let replyTo: string;
@@ -13,10 +13,10 @@
         let title = "";
 
         if (replyTo && $messageDatabase.has(replyTo)) {
-            if (sender == $selfInfoStore.uid) {
+            if (sender == $myId) {
                 const repliedTo = $messageDatabase.get(replyTo) as MessageObj;
                 title = `You replied to ${
-                    repliedTo.sender == $selfInfoStore.uid
+                    repliedTo.sender == $myId
                         ? "yourself"
                         : $chatRoomStore.userList[repliedTo.sender]?.name
                 }`;
@@ -25,13 +25,13 @@
                 title = `${
                     $chatRoomStore.userList[sender]?.name
                 } replied to ${
-                    repliedTo.sender == $selfInfoStore.uid
+                    repliedTo.sender == $myId
                         ? "you"
                         : $chatRoomStore.userList[repliedTo.sender]?.name
                 }`;
             }
         } else {
-            if (sender == $selfInfoStore.uid) {
+            if (sender == $myId) {
                 title = "You";
             } else {
                 title = $chatRoomStore.userList[sender]?.name;

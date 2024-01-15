@@ -3,6 +3,7 @@
     import { eventTriggerMessageId, messageDatabase, type MessageObj } from "$lib/messageTypes";
     import { showReactsOnMessageModal } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
+    import { elasticInOut } from "svelte/easing";
 
     $: message = $messageDatabase.get($eventTriggerMessageId) as MessageObj;
 
@@ -41,7 +42,7 @@
 </script>
 
 {#if $showReactsOnMessageModal}
-<div class="wrapper" use:handleClick transition:fly={{y: 10, duration: 100}}>
+<div class="wrapper" use:handleClick transition:fly={{y: 10, duration: 100, easing: elasticInOut}}>
     <div class="reactsOnMessage">
         <div class="title" in:fly|global={{y: -10, duration: 250}}>Reacts on {$chatRoomStore.userList[message.sender].name}'s message</div>
         <div class="users">

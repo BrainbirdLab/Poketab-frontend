@@ -1,7 +1,7 @@
 <script lang="ts">
 
     import { MessageObj, TextMessageObj, StickerMessageObj, LocationMessageObj, messageDatabase, lastMessageId, notice, ServerMessageObj } from "$lib/messageTypes";
-    import { type User, chatRoomStore, userTypingString, selfInfoStore, reactArray } from "$lib/store";
+    import { type User, chatRoomStore, userTypingString, myId, reactArray } from "$lib/store";
     import { filterBadWords, makeClasslist } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { socket } from "$lib/components/socket";
     import { emojis } from "$lib/utils";
@@ -129,7 +129,7 @@
                     delete message.reactedBy[uid];
                 } else {
                     //if its my own react
-                    if ($selfInfoStore.uid == uid){
+                    if ($myId.uid == uid){
                         if (!$reactArray.reacts.includes(react) && emojis.includes(react)){
                             reactArray.update((val) => {
                                 val.last = react;

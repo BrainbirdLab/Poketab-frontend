@@ -1,4 +1,4 @@
-let popupTimeout: NodeJS.Timeout | null = null;
+let popupTimeout: number | null = null;
 /**
  * Shows a toast message for 1 second
  * @param {string} text Text to show in the popup

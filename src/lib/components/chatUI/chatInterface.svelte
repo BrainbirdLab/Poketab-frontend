@@ -18,7 +18,7 @@
     import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade, fly } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
-    import { chatRoomStore, currentTheme, quickEmoji, selfInfoStore, userTypingString, type User, showScrollPopUp } from "$lib/store";
+    import { chatRoomStore, currentTheme, quickEmoji, myId, userTypingString, type User, showScrollPopUp } from "$lib/store";
     import {
         activeModalsStack,
         selectedSticker,
@@ -95,6 +95,7 @@
 
 
     afterUpdate(() => {
+
         if (!$messageContainer) {
             return;
         }
@@ -112,9 +113,6 @@
         if (!$messageContainer){
             return;
         }
-
-
-        //console.log('update ui', heightChanged, scrolledToBottomPx);
 
         if (timeout){
             clearTimeout(timeout);
@@ -238,7 +236,7 @@
             }
 
             //console.log(`Seen last message ${($messageDatabase.get($lastSeenMessage) as MessageObj).message} by ${$selfInfoStore.name}`);
-            socket.emit("seen", $selfInfoStore.uid, $lastMessageId);
+            socket.emit("seen", $myId, $lastMessageId);
         };
 
         hljs.highlightAll();
@@ -546,6 +544,8 @@
             },
         };
     }
+
+    console.log("Mounted chatInterface.svelte");
 </script>
 
 <svelte:head>

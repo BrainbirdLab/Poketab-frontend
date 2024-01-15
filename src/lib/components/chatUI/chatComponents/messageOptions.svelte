@@ -4,7 +4,7 @@
     import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
     import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messageTypes";
-    import { selfInfoStore, reactArray } from "$lib/store";
+    import { myId, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, spin } from "$lib/utils";
@@ -12,7 +12,7 @@
 
     let reactIsExpanded = false;
 
-    $: reactedEmoji = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy[$selfInfoStore.uid] || '';
+    $: reactedEmoji = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy[$myId] || '';
     $: messageKind = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.kind;
 
     let selectedReact = '';
@@ -44,7 +44,7 @@
         }
         
         //if the sender is me, add delete option
-        if (($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.sender == $selfInfoStore.uid){
+        if (($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.sender == $myId){
             arr.push('Delete');
         }
 
@@ -61,7 +61,7 @@
                 selectedReact = e.target.dataset.emoji as string || '';
                 if (selectedReact && emojis.includes(selectedReact)) {
                     //send the emoji to the server via socket
-                    socket.emit('react', $eventTriggerMessageId, $selfInfoStore.uid, selectedReact);
+                    socket.emit('react', $eventTriggerMessageId, $myId, selectedReact);
                 }
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
@@ -88,7 +88,7 @@
                     console.log('download');
                 } else if (e.target.classList.contains('Delete')) {
                     //console.log('delete');
-                    socket.emit('deleteMessage', $eventTriggerMessageId, $selfInfoStore.uid);
+                    socket.emit('deleteMessage', $eventTriggerMessageId, $myId);
                 }
 
                 reactIsExpanded = false;
