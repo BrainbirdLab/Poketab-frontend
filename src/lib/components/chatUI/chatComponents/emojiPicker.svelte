@@ -1,7 +1,7 @@
 <script lang="ts">
     import { slide } from "svelte/transition";
     import { emojis } from "$lib/utils";
-    import { bounceOut, sineIn } from "svelte/easing";
+    import { elasticOut } from "svelte/easing";
 
     export let selectedEmoji = '';
     export let height = "55vh";
@@ -30,7 +30,7 @@
 
 </script>
 
-<div class="emojiPicker" style="height: {height};" in:slide|global={{duration: 400, easing: bounceOut}} out:slide|global={{duration: 100, easing: sineIn}} use:handleClick>
+<div class="emojiPicker" style="height: {height};" in:slide|global={{duration: 200, easing: elasticOut}} out:slide|global={{duration: 100}} use:handleClick>
     {#if showClose}
     <button class="down">
         <i class="fa-solid fa-chevron-down"></i>

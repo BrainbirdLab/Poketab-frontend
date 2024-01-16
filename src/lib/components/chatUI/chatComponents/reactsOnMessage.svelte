@@ -3,7 +3,6 @@
     import { eventTriggerMessageId, messageDatabase, type MessageObj } from "$lib/messageTypes";
     import { showReactsOnMessageModal } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
-    import { elasticInOut } from "svelte/easing";
 
     $: message = $messageDatabase.get($eventTriggerMessageId) as MessageObj;
 
@@ -42,9 +41,9 @@
 </script>
 
 {#if $showReactsOnMessageModal}
-<div class="wrapper" use:handleClick transition:fly={{y: 10, duration: 100, easing: elasticInOut}}>
+<div class="wrapper" use:handleClick transition:fly|global={{y: 40, duration: 100}}>
     <div class="reactsOnMessage">
-        <div class="title" in:fly|global={{y: -10, duration: 250}}>Reacts on {$chatRoomStore.userList[message.sender].name}'s message</div>
+        <div class="title">Reacts on {$chatRoomStore.userList[message.sender].name}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
             {#key reactsToShow}
@@ -59,7 +58,7 @@
             {/each}
             {/key}
         </div>
-        <div class="totalReactsButtons" in:fly|global={{x: 10, duration: 150}}>
+        <div class="totalReactsButtons" in:fly|global={{x: 20, duration: 150}}>
             <!-- Show which reacts appear how many times -->
             <label>
               <input type="radio" bind:group={selectedReact} value="All"/>

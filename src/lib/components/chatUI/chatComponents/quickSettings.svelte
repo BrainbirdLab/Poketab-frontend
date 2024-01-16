@@ -104,7 +104,6 @@
                     setToLocalStorage({ sendMethod: SEND_METHOD.ENTER });
                 } else if (target.id == "chooseQuickEmoji") {
                     showQuickEmojiDrawer = !showQuickEmojiDrawer;
-                    console.log("showQuickEmojiDrawer", showQuickEmojiDrawer);
                 }
             }
         };
@@ -126,7 +125,7 @@
 {#if $showQuickSettingsPanel}
 <div
     class="quickSettingsPanelWrapper"
-    transition:fly={{ y: 30, duration: 100 }}
+    transition:fly={{ y: 40, duration: 100 }}
     use:handleClick
 >
     <div class="utils">

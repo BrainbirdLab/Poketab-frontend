@@ -4,7 +4,6 @@
     import { myId } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, messageDatabase, replyTargetId } from "$lib/messageTypes";
     import { makeClasslist, sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { bounceOut, sineIn } from "svelte/easing";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -157,7 +156,7 @@
 </script>
 
 {#if $showStickersPanel}
-<div class="stickerKeyboardContainer" in:fly|global={{y: 20, duration: 200, easing: bounceOut}} out:fly|global={{y: 20, duration: 100, easing: sineIn}} use:stickersHandler>
+<div class="stickerKeyboardContainer" transition:fly|global={{y: 40, duration: 100}} use:stickersHandler>
     <div class="stickerKeyboard">
         <div class="headers">
             <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>

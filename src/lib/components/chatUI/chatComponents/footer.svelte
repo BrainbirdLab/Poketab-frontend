@@ -184,8 +184,12 @@
 <div class="footer" transition:fly={{y: 30}} bind:this={footer}>
 
     <ScrollDownPopup/>
+    
     <TypingIndicator />
-    <MessageReplyToast />
+
+    {#if $showReplyToast && $replyTargetId}
+        <MessageReplyToast />
+    {/if}
 
     <div class="chatInput">
         <button on:click={() => {showStickersPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>

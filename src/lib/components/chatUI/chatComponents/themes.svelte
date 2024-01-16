@@ -62,9 +62,9 @@
 
 {#if $showThemesPanel}
 <div id="themePicker" class="themePicker active" use:handleThemes>
-    <ul class="themeList" transition:fly={{y: 30, duration: 100}}>
+    <ul class="themeList" transition:fly={{y: 40, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
-        <li transition:fly|global={{y: 20, delay: i*20}} class="theme hoverShadow clickable playable" id="{themename}" data-duration="{i}">
+        <li transition:fly|global={{y: 20, delay: 50 * (i + 1)}} class="theme hoverShadow clickable playable" id="{themename}">
             <img class="themeIcon" class:selected={$currentTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{themename}</span>
         </li>
         {/each}

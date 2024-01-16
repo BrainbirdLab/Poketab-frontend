@@ -6,7 +6,7 @@
     import { showToastMessage } from "$lib/components/toast";
     import { socket } from "$lib/components/socket";
     import { messageDatabase } from "$lib/messageTypes";
-    import { sineIn, bounceOut } from "svelte/easing";
+    import { sineIn, bounceOut, elasticOut } from "svelte/easing";
 
     let copyKeyIcon = 'fa-regular fa-clone';
     let copyTimeout: number | null = null;
@@ -70,7 +70,7 @@
 </script>
 
 {#if $showSidePanel}
-<div id="sidebarWrapper" in:fly={{x: -30, duration: 200, easing: bounceOut}} out:fly={{x: -30, duration: 100, easing: sineIn}} use:closeSideBar>
+<div id="sidebarWrapper" in:fly={{x: -30, duration: 200, easing: elasticOut}} out:fly={{x: -30, duration: 100, easing: sineIn}} use:closeSideBar>
     <div id="sidebar">
         <div class="topbar">
             <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i> {KEY}</button>
