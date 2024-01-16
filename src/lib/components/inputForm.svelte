@@ -110,12 +110,7 @@
                     return room;
                 });
 
-                myId.update(info => {
-                    info.uid = res.userId;
-                    info.name = selectedname;
-                    info.avatar = selectedAvatar;
-                    return info;
-                });
+                myId.set(res.userId);
 
                 console.log('Created key: ' + $chatRoomStore.Key);
                 
@@ -145,12 +140,7 @@
                     return room;
                 });
 
-                myId.update(info => {
-                    info.uid = res.userId;
-                    info.name = selectedname;
-                    info.avatar = selectedAvatar;
-                    return info;
-                });
+                myId.set(res.userId);
 
                 console.log('Joined key: ' + $chatRoomStore.Key);
 

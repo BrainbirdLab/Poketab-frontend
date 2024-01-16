@@ -1,3 +1,4 @@
+
 type Options = {
 	minScale: number;
 	maxScale: number;
@@ -50,8 +51,6 @@ class AttachPanZoom {
 		const self = this;
 		this.element.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
 
-
-
 		// Capture when the mouse is down on the element or not
 		this.element.addEventListener('mousedown', function (e) {
 			e.preventDefault();
@@ -59,10 +58,18 @@ class AttachPanZoom {
 			self.panning = true;
 			self.oldX = e.clientX;
 			self.oldY = e.clientY;
+			this.style.transition = '0ms';
+			this.style.cursor = 'grabbing';
 		});
 
-		this.element.addEventListener('mouseup', function () { self.panning = false; });
-		this.element.addEventListener('mouseleave', function () { self.panning = false; });
+		this.element.addEventListener('mouseup', function () { 
+			self.panning = false; 
+			this.style.transition = '100ms';
+		});
+		this.element.addEventListener('mouseleave', function () { 
+			self.panning = false; 
+			this.style.transition = '100ms';
+		});
 
 		this.element.addEventListener('mousemove', function (e) {
 			if (self.panning) {
@@ -198,6 +205,4 @@ class AttachPanZoom {
 			}
 		};
 	}
-
-
 }

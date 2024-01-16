@@ -33,7 +33,7 @@ export class MessageObj {
     timeout: number | undefined;
     seenBy: { [key: string]: boolean}
     reactedBy: { [key: string]: string}
-    timeStamp: number;
+    readonly timeStamp: number;
 
     constructor() {
         this.id = '';
@@ -49,6 +49,7 @@ export class MessageObj {
         this.reactedBy = {};
     }
 }
+
 
 export type linkPreviewType = {
     title: string,

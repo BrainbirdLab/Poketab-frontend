@@ -19,7 +19,7 @@
         Consequatur, pariatur.
     </div>
     <div class="lightbox">
-        <img src="./../images/avatars/bullbasaur.webp" alt="">
+        <img src="./../../static/images/pikachu.png" alt="">
     </div>
     <div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum sit aut, doloremque odio dicta dolores tempora
@@ -63,7 +63,7 @@
             width: 100px;
             height: 100px;
             cursor: grab;
-            transition: 100ms;
+            transition: 200ms;
         }
     </style>
 
@@ -148,10 +148,20 @@
                     this.panning = true;
                     this.oldX = e.clientX;
                     this.oldY = e.clientY;
+                    this.style.transition = '0ms';
+                    this.style.cursor = 'grabbing';
                 });
 
-                ele.addEventListener('mouseup', function () { this.panning = false; });
-                ele.addEventListener('mouseleave', function () { this.panning = false; });
+                ele.addEventListener('mouseup', function () { 
+                    this.panning = false; 
+                    this.style.transition = '200ms';
+                    this.style.cursor = 'grab';
+                });
+                ele.addEventListener('mouseleave', function () { 
+                    this.panning = false; 
+                    this.style.transition = '200ms';
+                    this.style.cursor = 'grab';
+                });
 
                 ele.addEventListener('mousemove', function (e) {
                     if (this.panning) {

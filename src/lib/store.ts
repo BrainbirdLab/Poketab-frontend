@@ -62,7 +62,7 @@ export type User = {
 
 type chatRoomStoreType = {
     Key: string,
-    userList: {[key: string]: User},
+    userList: { readonly [key: string]: User},
     maxUsers: number,
 };
 

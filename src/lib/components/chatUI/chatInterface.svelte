@@ -16,7 +16,7 @@
     } from "$lib/messageTypes";
     import { showToastMessage } from "$lib/components/toast";
     import SidePanel from "./chatComponents/sidePanel.svelte";
-    import { fade, fly } from "svelte/transition";
+    import { fade } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
     import { chatRoomStore, currentTheme, quickEmoji, myId, userTypingString, type User, showScrollPopUp } from "$lib/store";
     import {

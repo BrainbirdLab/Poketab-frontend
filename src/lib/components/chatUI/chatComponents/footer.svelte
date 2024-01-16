@@ -22,8 +22,12 @@
 
         const message: TextMessageObj = new TextMessageObj();
 
-        newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
+        if (!quickEmoji && newMessage.trim() === ''){
+            return;
+        }
         
+        newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
+
         if (quickEmoji){
             newMessage = $quickEmojiEnabled ? $quickEmoji : '';
             message.type = 'emoji';
@@ -37,9 +41,6 @@
             newMessage = codeParser.parse(newMessage);
         }
 
-        if (newMessage.trim() === ''){
-            return;
-        }
 
         const tempId = crypto.randomUUID();
 

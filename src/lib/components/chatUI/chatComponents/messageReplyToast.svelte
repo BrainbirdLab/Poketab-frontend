@@ -3,9 +3,10 @@
     import {chatRoomStore, myId} from "$lib/store";
     import { slide, fly, fade } from "svelte/transition";
     import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { bounceOut } from "svelte/easing";
 
     $: message = $messageDatabase.get($replyTargetId) as MessageObj || null;
-    $: sender = message ? (message?.sender == $myId.uid ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'Unknown';
+    $: sender = message ? (message?.sender == $myId ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'Unknown';
 
 
     $: {
@@ -21,16 +22,16 @@
 
 </script>
     {#if $showReplyToast && $replyTargetId}
-    <div class="replybox" transition:slide={{duration: 100, axis: "y"}}>
+    <div class="replybox" in:slide={{duration: 400, axis: "y", easing: bounceOut}} out:slide={{duration: 100, axis: "y"}}>
         <div class="content">
             <div class="top">
-                <div class="title" out:fade={{duration: 200}} in:fly={{y: 10, delay: 200, duration: 200}}>
+                <div class="title" out:fade={{duration: 200}} in:fly={{y: 20, delay: 200, duration: 200}}>
                     <i class="fa-solid fa-reply"></i>
                     Repliying to {sender}
                 </div>
                 <button in:fade={{delay: 300, duration: 200}} class="close" on:click={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="replyData" out:fade={{duration: 200}} in:fly={{x: 5, delay: 250, duration: 200}}>
+            <div class="replyData" out:fade={{duration: 200}} in:fly={{x: 20, delay: 200, duration: 400}}>
                 {#if message instanceof TextMessageObj}
                     {getTextData(message.message)}
                 {:else if message instanceof StickerMessageObj}
@@ -109,10 +110,8 @@
                 color: grey;
                 white-space: pre-wrap;
                 img{
-                    width: 100%;
-                    height: 100%;
-                    max-width: 50px;
-                    max-height: 50px;
+                    width: 50px;
+                    height: 50px;
                 }
             }
         }

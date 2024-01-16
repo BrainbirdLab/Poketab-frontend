@@ -129,7 +129,7 @@
                     delete message.reactedBy[uid];
                 } else {
                     //if its my own react
-                    if ($myId.uid == uid){
+                    if ($myId == uid){
                         if (!$reactArray.reacts.includes(react) && emojis.includes(react)){
                             reactArray.update((val) => {
                                 val.last = react;
