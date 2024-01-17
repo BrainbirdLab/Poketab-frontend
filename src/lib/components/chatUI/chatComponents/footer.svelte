@@ -5,7 +5,7 @@
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
 
-    import {SEND_METHOD, quickEmoji, quickEmojiEnabled, myId, sendMethod} from "$lib/store";
+    import {SEND_METHOD, quickEmoji, quickEmojiEnabled, myId, sendMethod, chatRoomStore} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "$lib/components/modalManager";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";
@@ -81,7 +81,7 @@
     let isTypingTimeout: number;
 
     function sendTypingStatus(){
-        socket.emit('typing', $myId, 'start');
+        socket.emit('typing', $myId, $chatRoomStore.Key, 'start');
 
         if (isTypingTimeout) {
             clearTimeout(isTypingTimeout)
@@ -93,7 +93,7 @@
     }
 
     function endTypingStatus(){
-        socket.emit('typing', $myId, 'end');
+        socket.emit('typing', $myId, $chatRoomStore.Key, 'end');
     }
 
     const inputHandler = (e: Event) => {

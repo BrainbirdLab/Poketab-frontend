@@ -14,7 +14,7 @@
     </div>
 </a>
 
-<style>
+<style lang="scss">
     .mapContainer {
         display: flex;
         flex-direction: row;
@@ -24,6 +24,7 @@
         border-radius: 10px;
         padding: 0.5rem;
         margin: 0.5rem 0;
+        text-decoration: none;
     }
 
     .title{
@@ -41,6 +42,13 @@
 
     .mapContainer .text {
         font-size: 0.8rem;
+        color: var(--secondary-dark);
+        &::after {
+            content: "\f08e";
+            font-family: "FontAwesome";
+            font-size: 0.8rem;
+            padding: 0 5px;
+        }
     }
 
     @keyframes rotate {

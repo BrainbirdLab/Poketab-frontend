@@ -236,7 +236,7 @@
             }
 
             //console.log(`Seen last message ${($messageDatabase.get($lastSeenMessage) as MessageObj).message} by ${$selfInfoStore.name}`);
-            socket.emit("seen", $myId, $lastMessageId);
+            socket.emit("seen", $myId, $chatRoomStore.Key, $lastMessageId);
         };
 
         hljs.highlightAll();

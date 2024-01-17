@@ -4,7 +4,7 @@
     import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
     import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messageTypes";
-    import { myId, reactArray } from "$lib/store";
+    import { chatRoomStore, myId, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, spin } from "$lib/utils";
@@ -61,7 +61,7 @@
                 selectedReact = e.target.dataset.emoji as string || '';
                 if (selectedReact && emojis.includes(selectedReact)) {
                     //send the emoji to the server via socket
-                    socket.emit('react', $eventTriggerMessageId, $myId, selectedReact);
+                    socket.emit('react', $eventTriggerMessageId, $chatRoomStore.Key, $myId, selectedReact);
                 }
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
@@ -88,7 +88,7 @@
                     console.log('download');
                 } else if (e.target.classList.contains('Delete')) {
                     //console.log('delete');
-                    socket.emit('deleteMessage', $eventTriggerMessageId, $myId);
+                    socket.emit('deleteMessage', $eventTriggerMessageId, $chatRoomStore.Key, $myId);
                 }
 
                 reactIsExpanded = false;

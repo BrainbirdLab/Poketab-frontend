@@ -3,7 +3,7 @@
     import { showAttachmentPickerPanel } from "$lib/components/modalManager";
     import { showToastMessage } from "$lib/components/toast";
     import { socket } from "$lib/components/socket";
-    import { myId } from "$lib/store";
+    import { chatRoomStore, myId } from "$lib/store";
     import { selectedFiles } from "$lib/messageTypes";
     import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
@@ -37,7 +37,7 @@
             clearTimeout(timeout);
             const {latitude, longitude} = position.coords;
             console.log(`${latitude}°N, ${longitude}°E`);
-            socket.emit('location', {latitude, longitude}, $myId);
+            socket.emit('location', {latitude, longitude}, $chatRoomStore.Key, $myId);
         }, (error) => {
             clearTimeout(timeout);
             showToastMessage('Unable to get location.');
@@ -53,6 +53,8 @@
         const clickHandler = async (e: Event) => {
 
             const target = e.target as HTMLElement;
+
+            console.log(target);
             
             if (target === fileBtn){
                 acceptedTypes = null;
@@ -169,9 +171,8 @@
         <!-- Location input -->
         <div transition:scale={{duration: 250}}
             class="location button-animate btn icon play-sound attachmentButton"
-            id="send-location"
         >
-            <button>
+            <button bind:this={locationBtn}>
                 <i class="fa-solid fa-location-crosshairs fa-shake" />
             </button>
             <div class="text">Location</div>

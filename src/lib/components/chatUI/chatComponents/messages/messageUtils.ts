@@ -75,7 +75,7 @@ export function makeClasslist(message: MessageObj){
 }
 
 export function sendMessage(message: MessageObj, tempId: string){
-    socket.emit('newMessage', message, (messageId: string) => {
+    socket.emit('newMessage', message, get(chatRoomStore).Key, (messageId: string) => {
         messageDatabase.update(msg => {
             message.sent = true;
 			message.id = messageId;
@@ -87,7 +87,7 @@ export function sendMessage(message: MessageObj, tempId: string){
         lastMessageId.set(messageId);
 
         if (document.hasFocus()){
-            socket.emit('seen', get(myId), get(lastMessageId));
+            socket.emit('seen', get(myId), get(chatRoomStore).Key, get(lastMessageId));
         }
     });
 }
