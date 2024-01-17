@@ -7,6 +7,7 @@
     import { socket } from "$lib/components/socket";
     import { messageDatabase } from "$lib/messageTypes";
     import { sineIn, bounceOut, elasticOut } from "svelte/easing";
+    import { flip } from "svelte/animate";
 
     let copyKeyIcon = 'fa-regular fa-clone';
     let copyTimeout: number | null = null;
@@ -70,29 +71,27 @@
 </script>
 
 {#if $showSidePanel}
-<div id="sidebarWrapper" in:fly={{x: -30, duration: 200, easing: elasticOut}} out:fly={{x: -30, duration: 100, easing: sineIn}} use:closeSideBar>
+<div id="sidebarWrapper" transition:fly={{x: -30, duration: 100}} use:closeSideBar>
     <div id="sidebar">
         <div class="topbar">
             <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i> {KEY}</button>
         </div>
         <ul id="userlist">
-            <li class="user">
+            <li class="user" in:fly|global={{y: 10, duration: 150, delay: 50}}>
                 <div class="avt">
                     <img src="/images/avatars/{$chatRoomStore.userList[$myId].avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
                     <i class="fa-solid fa-circle activeStatus"></i>
                 </div>
                 <span>{$chatRoomStore.userList[$myId].name} (You)</span>
             </li>
-            {#each Object.entries($chatRoomStore.userList) as [id, User]}
-                {#if User.uid != $myId}
-                    <li class="user">
-                        <div class="avt">
-                            <img src="/images/avatars/{User.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
-                            <i class="fa-solid fa-circle activeStatus"></i>
-                        </div>
-                        <span>{User.name}</span>
-                    </li>
-                {/if}
+            {#each Object.entries($chatRoomStore.userList).filter(([id, _]) => id !== $myId) as [id, User], i (id)}
+                <li class="user" in:fly|global={{y: 10, duration: 150, delay: 50 * (i + 2)}} out:fly={{x: -20, duration: 100}} animate:flip={{duration: 100}}>
+                    <div class="avt">
+                        <img src="/images/avatars/{User.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
+                        <i class="fa-solid fa-circle activeStatus"></i>
+                    </div>
+                    <span>{User.name}</span>
+                </li>
             {/each}
         </ul>
         <div class="footer_options">
@@ -112,7 +111,6 @@
         position: fixed;
         display: flex;
         flex-direction: row;
-        transition: 100ms ease-in-out;
         z-index: 60;
         backdrop-filter: brightness(0.8);
 
@@ -121,7 +119,6 @@
             border-radius: 0 5px 5px 0;
             background: var(--primary-dark);
             backdrop-filter: blur(10px);
-            z-index: 90;
             display: flex;
             width: 75%;
             flex-direction: column;

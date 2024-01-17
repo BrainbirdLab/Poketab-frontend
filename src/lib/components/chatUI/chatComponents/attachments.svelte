@@ -144,7 +144,7 @@
             class="upload_file button-animate btn icon play-sound attachmentButton"
         >
             <button bind:this={fileBtn}>
-                <i class="fa-regular fa-file-lines fa-shake" />
+                <i class="fa-regular fa-file-lines" />
             </button>
             <div class="text">File</div>
         </div>
@@ -153,7 +153,7 @@
             class="upload_image button-animate btn icon play-sound attachmentButton"
         >
             <button bind:this={imageBtn}>
-                <i class="fa-regular fa-image fa-shake" />
+                <i class="fa-regular fa-image" />
             </button>
             <div class="text">Image</div>
         </div>
@@ -163,7 +163,7 @@
             class="upload_audio button-animate btn icon play-sound attachmentButton"
         >
             <button bind:this={audioBtn}>
-                <i class="fa-solid fa-music fa-shake" />
+                <i class="fa-solid fa-music" />
             </button>
             <div class="text">Audio</div>
         </div>
@@ -173,7 +173,7 @@
             class="location button-animate btn icon play-sound attachmentButton"
         >
             <button bind:this={locationBtn}>
-                <i class="fa-solid fa-location-crosshairs fa-shake" />
+                <i class="fa-solid fa-location-crosshairs" />
             </button>
             <div class="text">Location</div>
         </div>
