@@ -30,7 +30,7 @@
 
 </script>
 
-<div class="emojiPicker" style="height: {height};" in:slide|global={{duration: 200, easing: elasticOut}} out:slide|global={{duration: 100}} use:handleClick>
+<div class="emojiPicker" style="height: {height};" in:slide={{duration: 600, easing: elasticOut}} out:slide={{duration: 100}} use:handleClick>
     {#if showClose}
     <button class="down">
         <i class="fa-solid fa-chevron-down"></i>
