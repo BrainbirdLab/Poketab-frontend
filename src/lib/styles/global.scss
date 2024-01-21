@@ -13,6 +13,7 @@
     -ms-overflow-style: none;
     font-family: 'Com';
     color: var(--foreground-dark);
+    caret-color: var(--foreground-dark);
 }
 
 
@@ -139,10 +140,6 @@ button {
 
 .hoverShadow:hover{
     background: rgba(255, 255, 255, 0.0392156863) !important;
-}
-
-input{
-    caret-color: var(--foreground-dark);
 }
 
 a {

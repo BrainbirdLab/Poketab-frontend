@@ -1,26 +1,35 @@
 <script lang="ts">
 
-    import { MessageObj, TextMessageObj, StickerMessageObj, LocationMessageObj, messageDatabase, lastMessageId, notice, ServerMessageObj } from "$lib/messageTypes";
+    import { MessageObj, TextMessageObj, StickerMessageObj, LocationMessageObj, messageDatabase, lastMessageId, notice, ServerMessageObj, FileMessageObj, ImageMessageObj, AudioMessageObj } from "$lib/messageTypes";
     import { type User, chatRoomStore, userTypingString, myId, reactArray } from "$lib/store";
     import { filterBadWords, makeClasslist } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { socket } from "$lib/components/socket";
     import { emojis } from "$lib/utils";
 
-        socket.on("newMessage", (message: MessageObj, messageId: string) => {
+    socket.on("newMessage", (message: MessageObj, messageId: string) => {
         //console.log(message);
 
-        if(message.kind == 'text'){
+        if(message.baseType == 'text' || message.baseType == 'deleted'){
             message = Object.setPrototypeOf(message, TextMessageObj.prototype);
-        } else if (message.kind == 'sticker'){
+        } else if (message.baseType == 'sticker'){
             message = Object.setPrototypeOf(message, StickerMessageObj.prototype);
-        } else if (message.kind == 'deleted'){
-            message = Object.setPrototypeOf(message, TextMessageObj.prototype);
-        } else if (message.kind == 'location'){
+        } else if (message.baseType == 'file'){
+            //basetype is file but it can be 'file', 'image' or 'audio'
+            message = Object.setPrototypeOf(message, FileMessageObj.prototype);
+        } else if (message.baseType === 'image'){
+            message = Object.setPrototypeOf(message, ImageMessageObj.prototype);
+        } else if (message.baseType === 'audio'){
+            message = Object.setPrototypeOf(message, AudioMessageObj.prototype);
+        } else if (message.baseType == 'location'){
             message = Object.setPrototypeOf(message, LocationMessageObj.prototype);
         }
-
+        
         if (message instanceof TextMessageObj){
             message.message = filterBadWords(message.message);
+        } else if (message instanceof FileMessageObj){
+
+            console.log('File message received', message.loaded);
+
         }
 
         messageDatabase.update((messages) => {
@@ -44,7 +53,7 @@
         
         messageDatabase.update((messages) => {
             const message = messages.get(messageId) as MessageObj;
-            console.log(message.kind);
+            console.log(message.baseType);
             console.log(message instanceof TextMessageObj);
             if (message && message instanceof TextMessageObj){
                 console.log('updating link preview data');
@@ -71,7 +80,6 @@
                     message = Object.setPrototypeOf(message, TextMessageObj.prototype);
                 }
                 message.message = 'This message was deleted';
-                message.kind = 'deleted';
                 message.type = 'deleted';
                 message.replyTo = '';
                 messageDatabase.update((messages) => {

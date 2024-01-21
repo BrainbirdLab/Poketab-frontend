@@ -13,7 +13,7 @@
     let reactIsExpanded = false;
 
     $: reactedEmoji = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy[$myId] || '';
-    $: messageKind = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.kind;
+    $: messageKind = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.baseType;
 
     let selectedReact = '';
 
@@ -39,7 +39,7 @@
         arr.push('Reply');
         if (messageKind == 'text'){
             arr.push('Copy');
-        } else if (messageKind == 'file'){
+        } else if (messageKind == 'file' || messageKind == 'audio'){
             arr.push('Download');
         }
         

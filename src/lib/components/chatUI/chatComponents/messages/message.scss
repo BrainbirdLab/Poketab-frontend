@@ -202,7 +202,7 @@
         .messageMain{
             flex-direction: row-reverse;
             .msg{
-                &[data-mtype="text"], [data-mtype="file"]{
+                &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="image"], &[data-mtype="audio"]{
                     .data{
                         background: var(--msg-send);
                     }
@@ -323,7 +323,7 @@
                 font-size: 2rem;
             }
         }
-        &[data-mtype="text"], [data-mtype="file"]{
+        &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="image"], &[data-mtype="audio"]{
             .data{
                 background: var(--msg-get);
             }

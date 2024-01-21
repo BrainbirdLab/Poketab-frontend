@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messageTypes";
+    import { FileMessageObj, MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messageTypes";
     import { chatRoomStore, myId } from "$lib/store";
     import { getTextData } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
@@ -53,9 +53,11 @@
     </div>
 {/if}
 {#if replyTo}
-    <div class="messageReply {replyMessage.kind}">
+    <div class="messageReply {replyMessage.baseType}">
         {#if replyMessage instanceof TextMessageObj}
             {getTextData(replyMessage.message)}
+        {:else if replyMessage instanceof FileMessageObj}    
+            {getTextData(replyMessage.name)}
         {:else if replyMessage instanceof StickerMessageObj}
             <img src={replyMessage.src} class="sticker" alt="Sticker" />
         {/if}
@@ -86,6 +88,14 @@
         cursor: pointer;
         z-index: 0;
         padding: 8px 8px 25px 8px;
+
+        &::before{
+            content: "\f0c6";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 1rem;
+            padding-right: 3px;
+        }
 
         > * {
             pointer-events: none;

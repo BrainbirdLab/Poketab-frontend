@@ -26,6 +26,18 @@ export function getFormattedDate(time: number) {
 	}
 }
 
+export function getSize(size: number) {
+	if (size < 1024) {
+		return size + " Bytes";
+	} else if (size < 1024 * 1024) {
+		return (size / 1024).toFixed(2) + " Kb";
+	} else if (size < 1024 * 1024 * 1024) {
+		return (size / 1024 / 1024).toFixed(2) + " Mb";
+	} else {
+		return (size / 1024 / 1024 / 1024).toFixed(2) + " Gb";
+	}
+}
+
 export function makeClasslist(message: MessageObj){
 
     let classListString = ' end';
@@ -37,32 +49,32 @@ export function makeClasslist(message: MessageObj){
     if (get(messageDatabase).size > 0){
 
         let lastMessageObj = get(messageDatabase).get(get(lastMessageId));
-		
-        if (lastMessageObj instanceof MessageObj && lastMessageObj.type !== 'sticker' && lastMessageObj.type !== 'emoji'){
 
-            if (lastMessageObj?.sender !== message.sender || lastMessageObj.type !== message.type || message.replyTo){
-                classListString += ' newGroup start';
-            }
-    
-            if (lastMessageObj.sender === message.sender && message.type !== 'sticker' && message.type !== 'emoji' && !message.replyTo){
-                //last message is from the same user
-                lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
-            }
+		if (lastMessageObj instanceof MessageObj){
 
-        } else if (lastMessageObj instanceof MessageObj){
-            if (lastMessageObj.type == 'sticker' || lastMessageObj.type == 'emoji'){
-				if ((message.type == 'sticker' || message.type == 'emoji') && lastMessageObj.type === message.type){
-					classListString += ' start';
-				} else {
-					classListString += ' start newGroup';
-				}
-			} else {
+			if (message.replyTo){
 				classListString += ' start newGroup';
+			} else {
+				if (message.baseType == 'sticker'){
+					classListString += ' start';
+				}
+		
+				if (message.baseType != lastMessageObj.baseType || lastMessageObj.sender !== message.sender){
+					classListString += ' start newGroup';
+				} else {
+					if (lastMessageObj.baseType === message.baseType){
+						//two messages of same kind
+						if ( (message.baseType === 'text' || message.baseType === 'file') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
+							lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
+						} else {
+							classListString += ' start';
+						}
+					}
+				}
 			}
-        } else {
+		} else {
 			classListString += ' start newGroup';
 		}
-
     } else {
         classListString += ' start newGroup';
     }
@@ -74,8 +86,25 @@ export function makeClasslist(message: MessageObj){
     return classListString;
 }
 
+export function remainingTime(totalTime: number, elapsedTime: number) {
+	// Check if totalTime and elapsedTime are finite numbers and if totalTime is greater than 0
+	if(isFinite(totalTime) && totalTime > 0 && isFinite(elapsedTime)){
+		// Calculate the remaining time
+		const remaining = Math.floor(totalTime) - Math.floor(elapsedTime);
+		// Calculate the minutes and seconds from the remaining time
+		const minutes = Math.floor(remaining / 60);
+		const seconds = Math.floor(remaining % 60);
+		// Return the remaining time in the format "mm:ss"
+		return minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+	}else{
+		// Return "00:00" if totalTime and elapsedTime are not valid numbers
+		return '00:00';
+	}
+}
+
 export function sendMessage(message: MessageObj, tempId: string){
     socket.emit('newMessage', message, get(chatRoomStore).Key, (messageId: string) => {
+
         messageDatabase.update(msg => {
             message.sent = true;
 			message.id = messageId;

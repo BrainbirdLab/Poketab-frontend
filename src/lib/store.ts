@@ -33,6 +33,7 @@ export const reconnectButtonEnabled = writable(false);
 export const formActionButtonDisabled = writable(true);
 
 export const showScrollPopUp = writable(false);
+export const listenScroll = writable(true);
 
 /*
 export const reactArray = {

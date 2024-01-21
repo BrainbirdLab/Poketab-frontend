@@ -1,6 +1,6 @@
 <script lang="ts">
     import { TextMessageObj, StickerMessageObj, messageContainer, messageScrolledPx, notice } from "$lib/messageTypes";
-    import { chatRoomStore, showScrollPopUp } from "$lib/store";
+    import { chatRoomStore, listenScroll, showScrollPopUp } from "$lib/store";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
 
@@ -14,23 +14,40 @@
         
         messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
 
-        $messageContainer.onscroll = () => {
-            //if scrolled up more than 200px
-            //console.log('scrolling...');
-            messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
-            if ( $messageScrolledPx > 200) {
-                showScrollPopUp.set(true);
-                //console.log('show');
-            } else {
-                showScrollPopUp.set(false);
-                //console.log('hide');
-            }
-        };
+        listenScroll.set(true);
     })
 
     onDestroy(() => {
         $messageContainer.onscroll = null;
     });
+
+    listenScroll.subscribe((value) => {
+
+        if (!$messageContainer){
+            return;
+        }
+
+        if (value){
+            //console.log('listening to scroll');
+            $messageContainer.onscroll = scrollHandler;
+        } else {
+            //console.log('stop listening to scroll');
+            $messageContainer.onscroll = null;
+        }
+    });
+
+    function scrollHandler(){
+        //if scrolled up more than 200px
+        //console.log('scrolling...');
+        messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
+        if ( $messageScrolledPx > 200) {
+            showScrollPopUp.set(true);
+            //console.log('show');
+        } else {
+            showScrollPopUp.set(false);
+            //console.log('hide');
+        }
+    }
 
 </script>
 

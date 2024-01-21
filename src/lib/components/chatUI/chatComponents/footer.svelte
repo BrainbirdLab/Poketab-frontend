@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer } from "$lib/messageTypes";
+    import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { makeClasslist, sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
@@ -14,38 +14,62 @@
     
     let newMessage = '';
 
+    let recorder: Recorder;
+
     const codeParser = new TextParser();
     
     function insertMessage(quickEmoji = false){
-        
-        inputbox.style.height = 'min-content';
 
-        const message: TextMessageObj = new TextMessageObj();
 
-        if (!quickEmoji && newMessage.trim() === ''){
-            return;
-        }
-        
-        newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
+        let message: MessageObj;
 
-        if (quickEmoji){
-            newMessage = $quickEmojiEnabled ? $quickEmoji : '';
-            message.type = 'emoji';
-            message.kind = 'text';
-        } else if (isEmoji(newMessage)) {
-            message.type = 'emoji';
-            message.kind = 'text';
+        if ($voiceMessageAudio){
+            console.log('Sending voice message');
+
+            message = new AudioMessageObj();
+
+            if (message instanceof AudioMessageObj){
+                message.url = $voiceMessageAudio.src;
+                message.audio.src = message.url;
+                message.duration = recorder.getDuration();
+                message.name = `${$chatRoomStore.userList[message.sender].name}'s voice message'`;
+            }
+
+            recorder.closeRecorder();
+
         } else {
-            message.type = 'text';
-            message.kind = 'text';
-            newMessage = codeParser.parse(newMessage);
-        }
+            inputbox.style.height = 'min-content';
+    
+            message = new TextMessageObj();
+    
+            if (!quickEmoji && newMessage.trim() === ''){
+                return;
+            }
+            
+            newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
+    
+            if (quickEmoji){
+                newMessage = $quickEmojiEnabled ? $quickEmoji : '';
+                message.type = 'emoji';
+                message.baseType = 'text';
+            } else if (isEmoji(newMessage)) {
+                message.type = 'emoji';
+                message.baseType = 'text';
+            } else {
+                message.type = 'text';
+                message.baseType = 'text';
+                newMessage = codeParser.parse(newMessage);
+            }
 
+            if (message instanceof TextMessageObj){
+                message.message = newMessage.trim();
+                newMessage = '';
+            }
+        }
 
         const tempId = crypto.randomUUID();
 
         message.id = tempId;
-        message.message = newMessage.trim();
         message.sender = $myId;
 
         if ($replyTargetId){
@@ -60,8 +84,6 @@
             msg.set(tempId, message);
             return msg;
         });
-
-        newMessage = '';
 
         sendMessage(message, tempId);
 
@@ -150,6 +172,11 @@
     let lastHeight = 0;
 
     onMount(() => {
+
+        voiceMessageAudio.subscribe(val => {
+            console.log(val);
+        });
+
         //on height change
         observer = new ResizeObserver(entries => {
             for (let entry of entries) {
@@ -179,6 +206,8 @@
         observer.disconnect();
     });
 
+
+
 </script>
 
 <div class="footer" transition:fly={{y: 30}} bind:this={footer}>
@@ -187,26 +216,26 @@
     
     <TypingIndicator />
 
-    {#if $showReplyToast && $replyTargetId}
-        <MessageReplyToast />
-    {/if}
-
+    
     <div class="chatInput">
         <button on:click={() => {showStickersPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
         
         <button on:click={() => {showAttachmentPickerPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">
+            {#if $showReplyToast && $replyTargetId}
+                <MessageReplyToast />
+            {/if}
             <div class="textbox-wrapper">
-              <div on:paste={updateTextareaHeight} bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
+                <div on:paste={updateTextareaHeight} bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
+                <Recorder bind:this={recorder}/>
             </div>
-            <Recorder />
         </div>
         <!-- Send Button-->
-        {#if $quickEmojiEnabled && newMessage.trim().length <= 0}
-        <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
+        {#if $quickEmojiEnabled && newMessage.trim().length === 0 && !$voiceMessageAudio}
+            <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
         {:else}
-        <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
+            <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
         {/if}
     </div>
 </div>
@@ -256,23 +285,23 @@
         }
 
         .inputField {
-            padding: 0 5px;
             margin: 0;
             border-radius: 25px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
             width: 100%;
+            background: var(--glass);
+            border-radius: 24px;
             
             .textbox-wrapper {
                 position: relative;
                 width: 100%;
-                background: var(--glass);
+                padding: 5px 40px 5px 15px;
                 overflow: hidden;
-                padding: 10px 30px 10px 20px;
-                border-radius: 25px;
                 min-height: 45px;
                 transition: height 150ms ease-in-out;
                 display: flex;

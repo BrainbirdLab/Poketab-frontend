@@ -1,17 +1,18 @@
 <script lang="ts">
-    import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj, StickerMessageObj} from "$lib/messageTypes";
+    import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj, AudioMessageObj} from "$lib/messageTypes";
     import {chatRoomStore, myId} from "$lib/store";
-    import { slide, fly, fade } from "svelte/transition";
+    import { slide, fly, fade, scale } from "svelte/transition";
     import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { bounceOut, elasticOut } from "svelte/easing";
     import { onDestroy, onMount } from "svelte";
+    import { getIcon } from "$lib/utils";
 
     $: message = $messageDatabase.get($replyTargetId) as MessageObj || null;
     $: sender = message ? (message?.sender == $myId ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'Unknown';
 
 
     $: {
-        if (message && message.kind == 'deleted'){
+        if (message && message.baseType == 'deleted'){
             closeReplyToast();
         }
     }
@@ -36,6 +37,7 @@
 
     onMount(() => {
         userClosed = false;
+        console.log(message);
     });
 
     onDestroy(() => {
@@ -44,22 +46,30 @@
 
 </script>
 <div class="replybox" in:slide={{duration: 600, easing: elasticOut}} out:closeAnimation={{duration: 500, easing: bounceOut}}>
-    <div class="content">
-        <div class="top">
-            <div class="title" out:fade={{duration: 200}} in:fly={{y: 20, delay: 200, duration: 200}}>
-                <i class="fa-solid fa-reply"></i>
-                Repliying to {sender}
+    
+    <div class="wrapper">
+        <div class="content">
+            <div class="top">
+                <div class="title" out:fade|global={{duration: 200}} in:fly|global={{y: 20, delay: 200, duration: 200}}>
+                    <i class="fa-solid fa-reply"></i>
+                    Repliying to {sender}
+                </div>
+                <button out:scale|global={{duration: 50}} in:scale|global={{delay: 300, duration: 200}} class="close" on:click={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <button in:fade={{delay: 300, duration: 200}} class="close" on:click={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="replyData" out:fade={{duration: 200}} in:fly={{x: 10, delay: 200, duration: 300}}>
-            {#if message instanceof TextMessageObj}
-                {getTextData(message.message)}
-            {:else if message instanceof StickerMessageObj}
-                <img src="{message.src}" alt="sticker reply" />
-            {/if}
+            <div class="replyData" out:fade|global={{duration: 200}} in:fly|global={{x: 10, delay: 150, duration: 300}}>
+                {#if message instanceof TextMessageObj}
+                    {getTextData(message.message)}
+                {:else if message instanceof ImageMessageObj}
+                    <img class="image" src="{message.url}" alt="{message.name}">
+                {:else if message instanceof FileMessageObj}
+                <i class="icon fa-solid {getIcon(message.type)}"></i> {getTextData(message.name)}
+                {:else if message instanceof StickerMessageObj}
+                    <img class="sticker" src="{message.src}" alt="sticker reply" />
+                {/if}
+            </div>
         </div>
     </div>
+    
 </div>
 <style lang="scss">
     .replybox{
@@ -69,22 +79,25 @@
         justify-content: space-between;
         width: 100%;
         max-width: 98vw;
-        padding: 10px;
-        margin-bottom: 10px;
         gap: 10px;
-        border-radius: 10px;
-        background: var(--primary-dark);
-        filter: drop-shadow(0 4px 5px var(--shadow));
-        transition: 300ms ease-in-out;
+        //filter: drop-shadow(0 4px 5px var(--shadow));
         position: relative;
-
+        
+        .wrapper{
+            padding: 3px;
+            border-radius: 21px 21px 10px 10px;
+            width: 100%;
+        }
+        
         .content{
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
+            padding: 10px;
             gap: 5px;
-            border-radius: 10px;
+            border-radius: inherit;
+            background: var(--glass);
             width: 100%;
 
             .top{
@@ -127,11 +140,28 @@
 
             .replyData{
                 font-size: 0.7rem;
-                color: grey;
-                white-space: pre-wrap;
-                img{
+                color: #cbcbcb;
+                overflow: hidden;
+                width: 100%;
+                white-space: pre;
+                text-align: left;
+                text-overflow: ellipsis;
+
+                .sticker{
                     width: 50px;
                     height: 50px;
+                }
+
+                .image{
+                    max-height: 100px;
+                    max-width: 100px;
+                    border-radius: 3px;
+                }
+
+                .icon{
+                    font-size: 20px;
+                    padding-right: 5px;
+                    color: #ffffffae;
                 }
             }
         }

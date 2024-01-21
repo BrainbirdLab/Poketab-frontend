@@ -1,13 +1,15 @@
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 
 export const lastMessageId = writable('');
 
 export class ServerMessageObj {
     text: string;
     type: string;
+    baseType: 'server';
     constructor() {
         this.text = '';
         this.type = '';
+        this.baseType = 'server';
     }
 }
 
@@ -15,10 +17,12 @@ export class LocationMessageObj {
     lat: number;
     lon: number;
     uid: string;
+    baseType: 'location';
     constructor(lat: number, lon: number, uid: string) {
         this.lat = lat;
         this.lon = lon;
         this.uid = uid;
+        this.baseType = 'location';
     }
 }
 
@@ -27,7 +31,7 @@ export class MessageObj {
     classList: string;
     sent: boolean;
     type: string;
-    kind: string;
+    baseType: string;
     sender: string;
     replyTo: string;
     timeout: number | undefined;
@@ -40,7 +44,7 @@ export class MessageObj {
         this.classList = '';
         this.sent = false;
         this.type = '';
-        this.kind = '';
+        this.baseType = '';
         this.sender = '';
         this.replyTo = '';
         this.timeStamp = Date.now();
@@ -61,15 +65,17 @@ export type linkPreviewType = {
 export class TextMessageObj extends MessageObj {
     
     message: string;
+
     type: 'text' | 'emoji' | 'deleted';
-    kind: 'text' | 'deleted';
+
+    baseType: 'text';
     
     linkPreviewData?: linkPreviewType | null;
     
     constructor() {
         super();
         this.type = 'text';
-        this.kind = 'text';
+        this.baseType = 'text';
         this.message = '';
         this.linkPreviewData = null;
     }
@@ -78,13 +84,13 @@ export class TextMessageObj extends MessageObj {
 export class StickerMessageObj extends MessageObj {
     src: string;
     type: 'sticker';
-    kind: 'sticker';
+    baseType: 'sticker';
     groupName: string;
     number: number;
     constructor() {
         super();
         this.type = 'sticker';
-        this.kind = 'sticker';
+        this.baseType = 'sticker';
         this.src = '';
         this.groupName = '';
         this.number = 0;
@@ -92,38 +98,52 @@ export class StickerMessageObj extends MessageObj {
 }
 
 export class FileMessageObj extends MessageObj {
-    src: string;
+    url: string;
     name: string;
     size: number;
-    kind: 'file';
+    baseType: 'file' | 'image' | 'audio';
     loaded: boolean;
-    downloadLink: string;
     constructor() {
         super();
-        this.src = '';
+        this.url = '';
         this.name = '';
-        this.kind = 'file';
+        this.baseType = 'file';
         this.size = 0;
         this.loaded = false;
-        this.downloadLink = '';
+    }
+}
+
+export class ImageMessageObj extends FileMessageObj {
+    width: number;
+    height: number;
+    constructor() {
+        super();
+        this.baseType = 'image';
+        this.width = 0;
+        this.height = 0;
     }
 }
 
 export class AudioMessageObj extends FileMessageObj {
+
+    audio: HTMLAudioElement;
     duration: number;
+
     constructor() {
         super();
-        this.type = 'audio';
-        this.duration = 0.0;
+        this.baseType = 'audio';
+        this.audio = new Audio();
+        this.duration = 0;
     }
 }
 
-
-export const messageDatabase = writable<Map<string, MessageObj | ServerMessageObj | LocationMessageObj>>(new Map());
+export const messageDatabase: Writable<Map<string, MessageObj | ServerMessageObj | LocationMessageObj>> = writable(new Map());
 
 export const eventTriggerMessageId = writable<string>('');
 export const replyTargetId = writable<string>('');
 export const selectedFiles = writable<FileList>();
+export const currentPlayingAudioMessage = writable<AudioMessageObj | null>(null);
+export const voiceMessageAudio = writable<HTMLAudioElement | null>(null);
 
 export const messageScrolledPx = writable<number>(0);
 export const messageContainer = writable<HTMLElement>();

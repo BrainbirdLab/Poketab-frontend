@@ -13,12 +13,15 @@
         LocationMessageObj,
         TextMessageObj,
         messageContainer,
+        FileMessageObj,
+        AudioMessageObj,
+        currentPlayingAudioMessage,
     } from "$lib/messageTypes";
     import { showToastMessage } from "$lib/components/toast";
     import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
-    import { chatRoomStore, currentTheme, quickEmoji, myId, userTypingString, type User, showScrollPopUp } from "$lib/store";
+    import { chatRoomStore, currentTheme, quickEmoji, myId, userTypingString, type User, showScrollPopUp, listenScroll } from "$lib/store";
     import {
         activeModalsStack,
         selectedSticker,
@@ -50,6 +53,8 @@
     import ReactsOnMessage from "./chatComponents/reactsOnMessage.svelte";
     import { themes } from "$lib/themes";
     import MessageSockets from "./messageSockets.svelte";
+    import FileMessage from "./chatComponents/messages/FileMessage.svelte";
+    import AudioMessage from "./chatComponents/messages/AudioMessage.svelte";
 
     let isOffline = false;
 
@@ -128,10 +133,18 @@
             }
         } else if (heightChanged > 10 && !$showScrollPopUp){
             //console.log('%cSmooth scroll', 'color: lime;');
+            
+            listenScroll.set(false);
+            
             $messageContainer.scrollTo({
                 top: $messageContainer.scrollHeight,
                 behavior: "smooth",
             });
+
+            $messageContainer.onscrollend = () => {
+                listenScroll.set(true);
+                $messageContainer.onscrollend = null;
+            }
         }
 
         lastHeight = $messageContainer.scrollHeight;
@@ -267,7 +280,7 @@
 
             const messageObj = $messageDatabase.get(id) as MessageObj;
 
-            if (messageObj?.kind == 'deleted'){
+            if (messageObj?.baseType == 'deleted'){
                 return;
             }
 
@@ -331,8 +344,77 @@
                 return;
             }
 
+            
+            if (messageObj instanceof AudioMessageObj && target.closest('.data')){
+                
+                if (target.classList.contains('control')){
+                    
+                    
+                    console.log(messageObj.audio.paused ? 'Playing...' : 'Paused');
+                    
+                    if (messageObj.audio.paused){
+                        //stop all other audios
+                        if ($currentPlayingAudioMessage && $currentPlayingAudioMessage.audio.src !== messageObj.audio.src){
+                            $currentPlayingAudioMessage.audio.pause();
+                            $currentPlayingAudioMessage.audio.currentTime = 0;
+                            $currentPlayingAudioMessage.audio.ontimeupdate = null;
+                            $currentPlayingAudioMessage.audio.onended = null;
+                        }
+
+                        currentPlayingAudioMessage.set(messageObj);
+
+                        messageObj.audio.play();
+
+                        messageObj.audio.ontimeupdate = () => {
+                            messageDatabase.update((messages) => {
+                                messages.set(message.id, messageObj);
+                                return messages;
+                            });
+                        }
+
+                        messageObj.audio.onended = () => {
+                            messageObj.audio.currentTime = 0;
+                            messageObj.audio.onended = null;
+                            messageObj.audio.ontimeupdate = null;
+                            currentPlayingAudioMessage.set(null);
+                            
+                            messageDatabase.update((messages) => {
+                                messages.set(message.id, messageObj);
+                                return messages;
+                            });
+                        }
+
+                    } else if (!messageObj.audio.paused && target.classList.contains('fa-stop')) {
+                        messageObj.audio.currentTime = 0;
+                        messageObj.audio.pause();
+                    } else if (!messageObj.audio.paused && !messageObj.audio.ended){
+                        messageObj.audio.pause();
+                    }
+
+                    return;
+                }
+
+                const audioContainer = target.closest('.data') as HTMLElement;
+
+                if (!messageObj.audio.paused && evt.offsetX < audioContainer.offsetWidth && evt.offsetX > 0) {
+                    //if duration is not finite, then set it to 0 and wait for it to be updated
+                    if (!isFinite(messageObj.audio.duration)) {
+                        showToastMessage('Please wait for the audio to load');
+                        return;
+                    }
+                    //get the calculated time and seek to it
+                    const duration = messageObj.audio.duration;
+                    const time = (evt.offsetX / audioContainer.offsetWidth) * duration;
+                    //console.log(time);
+                    messageObj.audio.currentTime = time;
+                    //seekAudioMessage(audio, time);
+				}
+
+                return;
+            }
+
             //if message is a sticker, show the sticker panel of that group
-            if (target.classList.contains("msg") && messageObj.kind == "sticker") {
+            if (target.classList.contains("msg") && messageObj.baseType == "sticker") {
 
                 const stickerGroup = (messageObj as StickerMessageObj).groupName;
                 selectedSticker.set(stickerGroup);
@@ -424,7 +506,7 @@
 
                 const message = target.closest(".message") as HTMLElement;
 
-                if (target.closest(".msg") && $messageDatabase.has(message.id) && ($messageDatabase.get(message.id) as MessageObj).kind != 'deleted') {
+                if (target.closest(".msg") && $messageDatabase.has(message.id) && ($messageDatabase.get(message.id) as MessageObj).baseType != 'deleted') {
                     //console.log(xDiff);
 
                     xDiff = xStart - evt.touches[0].clientX / 3;
@@ -568,11 +650,15 @@
             </div>
             {#each [...$messageDatabase] as [id, message]}
                 {#if message instanceof MessageObj}
-                    {#if message instanceof TextMessageObj && message.kind == "text"}
+                    {#if message instanceof TextMessageObj && (message.type === "text" || message.type === "emoji")}
                         <TextMessage message={message} id={id} />
                     {:else if message instanceof StickerMessageObj}
                         <StickerMessage message={message} id={id}/>
-                    {:else if message instanceof TextMessageObj && message.kind == "deleted"}
+                    {:else if message instanceof AudioMessageObj}
+                        <AudioMessage file={message} id={id}/>
+                    {:else if message instanceof FileMessageObj}
+                        <FileMessage file={message} id={id}/>
+                    {:else if message instanceof TextMessageObj && message.type === "deleted"}
                         <DeletedMessage message={message} id={id}/>
                     {/if}
                 {:else if message instanceof ServerMessageObj}

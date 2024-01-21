@@ -1,10 +1,9 @@
 <script lang="ts">
     import "$lib/styles/atom.css";
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import { chatRoomStore, myId } from "$lib/store";
-
-
+    import { messageDatabase, TextMessageObj, StickerMessageObj, FileMessageObj, AudioMessageObj } from "$lib/messageTypes";
 
     $chatRoomStore.Key = "00-000-00";
     $chatRoomStore.maxUsers = 2;
@@ -25,9 +24,43 @@
 
     $myId = "uid-1";
 
+    
     let mounted = false;
-
+    
     onMount(() => {
+        
+        const audio = new Audio("./sounds/audio.mp3");
+
+        audio.onloadeddata = () => {
+            //console.log("audio loaded");
+            //console.log(audio.duration);
+    
+            messageDatabase.update((msg) => {
+        
+                const m = new AudioMessageObj();
+                m.audio.src = "./sounds/audio.mp3";
+                m.sender = "uid-1";
+                m.url = "./sounds/audio.mp3";
+                m.name = "Audio 1";
+                m.classList = "self start";
+                m.sent = true;
+        
+                msg.set("msg-1", m);
+
+                const m2 = new AudioMessageObj();
+                m2.audio.src = "./sounds/audio2.mp3";
+                m2.sender = "uid-1";
+                m2.url = "./sounds/audio2.mp3";
+                m2.name = "Audio 2";
+                m2.classList = "self end";
+                m2.sent = true;
+
+                msg.set("msg-2", m2);
+    
+                return msg;
+            });
+        }
+
 
         mounted = true;
 

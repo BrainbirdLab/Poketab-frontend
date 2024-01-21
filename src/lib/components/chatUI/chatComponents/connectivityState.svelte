@@ -13,7 +13,7 @@
 
         //on offline
         window.addEventListener('offline', () => {
-            console.log('Offline - conectivityState.svelte');
+            //console.log('Offline - conectivityState.svelte');
             title = 'You are offline';
             offline = true;
             icon = 'fa-circle-exclamation';
@@ -22,7 +22,7 @@
         });
 
         socket.on('connect', ()=>{
-            console.log('Connected - conectivityState.svelte');
+            //console.log('Connected - conectivityState.svelte');
             retry = 1;
 
             if (title == ''){
@@ -37,14 +37,14 @@
         });
 
         socket.on('connection_error', () => {
-            console.log('Connection error - conectivityState.svelte');
+            //console.log('Connection error - conectivityState.svelte');
             title = 'Could not connect. Retrying... ' + retry++;
             icon = 'fa-circle-exclamation';
         });
 
         //on online
         window.addEventListener('online', () => {
-            console.log('Back to Online - conectivityState.svelte');
+            //console.log('Back to Online - conectivityState.svelte');
             title = 'Back to online';
             offline = false;
             icon = 'fa-wifi';

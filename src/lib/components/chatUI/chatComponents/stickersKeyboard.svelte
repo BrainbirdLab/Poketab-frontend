@@ -74,7 +74,7 @@
                 messageObj.number = Number(serial);
                 messageObj.sender = $myId;
                 messageObj.type = 'sticker';
-                messageObj.kind = 'sticker';
+                messageObj.baseType = 'sticker';
 
                 const tempId = crypto.randomUUID();
 

@@ -1,4 +1,8 @@
 <script lang="ts">
+    import { showToastMessage } from "$lib/components/toast";
+
+
+    import { voiceMessageAudio } from "$lib/messageTypes";
 
     let recorderActive = false;
     let recordingState = false;
@@ -16,11 +20,14 @@
 
     let audioChunks: Blob[] = [];
 
-    let audio: HTMLAudioElement = new Audio();
     let audioUrl = '';
 
     let audioDuration = 0;
     let elapsedTime = 0;
+
+    export function getDuration(){
+        return audioDuration;
+    }
 
     function timeToPrintable(time: number){
         let minutes = Math.floor(time / 60);
@@ -35,39 +42,49 @@
     }
 
     function updatePlayingTimer(){
-        const remainingTime = audioDuration - Math.round(audio.currentTime);
+
+        if (!$voiceMessageAudio){
+            return;
+        }
+
+        const remainingTime = audioDuration - Math.round($voiceMessageAudio.currentTime);
         time = timeToPrintable(remainingTime);
     }
 
     function playAudio(){
-        console.log('Playing audio');
         micIcon = 'fa-pause';
 
         // play audio
-        if (audio){
-            audio.play();
-            audio.addEventListener('timeupdate', () => {
-                const progress = audio.currentTime / audioDuration;
+        if ($voiceMessageAudio){
+            $voiceMessageAudio.play();
+            $voiceMessageAudio.ontimeupdate = () => {
+                if (!$voiceMessageAudio){
+                    return;
+                }
+                const progress = $voiceMessageAudio.currentTime / audioDuration;
                 document.documentElement.style.setProperty('--recordedAudioPlaybackProgress', `${progress * 100}%`);
                 updatePlayingTimer();
-            });
-            audio.addEventListener('ended', () => {
+            };
+            $voiceMessageAudio.onended = () => {
+                if (!$voiceMessageAudio){
+                    return;
+                }
                 console.log('Audio ended');
                 micIcon = 'fa-play';
                 time = timeToPrintable(audioDuration);
                 document.documentElement.style.setProperty('--recordedAudioPlaybackProgress', `0%`);
-            });
+                $voiceMessageAudio.ontimeupdate = null;
+            };
         } else {
             console.log('Audio is not available');
         }
     }
 
     function pauseAudio(){
-        console.log('Pausing audio');
         micIcon = 'fa-play';
 
-        if (audio){
-            audio.pause();
+        if ($voiceMessageAudio){
+            $voiceMessageAudio.pause();
         } else {
             console.log('Audio is not available');
         }
@@ -79,6 +96,7 @@
         navigator.mediaDevices.getUserMedia({audio: true})
         .then(mediaStream => {
                 console.log('Recording started');
+                recorderActive = true;
                 recordingState = true;
                 playState = false;
                 micIcon = 'fa-stop';
@@ -88,23 +106,26 @@
                 //start recording timer
                 updateRecordingTimer();
 
-                audioRecorder.addEventListener('dataavailable', (evt) => {
+                audioRecorder.ondataavailable = (evt) => {
                     audioChunks.push(evt.data);
-                });
+                };
 
-                audioRecorder.addEventListener('stop', () => {
+                audioRecorder.onstop = () => {
                     console.log('Recording stopped');
 
                     const audioBlob = new Blob(audioChunks, {type: 'audio/mp3'});
                     audioUrl = URL.createObjectURL(audioBlob);
-                    audio.src = audioUrl;
-                });
+
+                   voiceMessageAudio.set(new Audio(audioUrl));
+
+                    audioRecorder.ondataavailable = null;
+                };
 
                 audioRecorder.start();
 
-        }).catch(err => {
-            console.log('Error occured while starting recording');
-            console.log(err);
+        }).catch((err: MediaError) => {
+            console.log(err.message);
+            showToastMessage(err.message);
         });
     }
 
@@ -115,7 +136,6 @@
 
         // stop timer if it is running
         if (timer){
-            console.log('Stopping timer');
             clearInterval(timer);
             audioDuration = elapsedTime;
         }
@@ -130,8 +150,6 @@
         // this plays role to show the recorder, start recording, stop recording, play and pause the recorded audio
         // if the recorder is not active, it will be activated
         if (!recorderActive){
-            console.log('Activating recorder');
-            recorderActive = true;
             startRecording();
         } else {
             if (playState){
@@ -146,18 +164,19 @@
         }
     }
 
-    function closeRecorder(){
-        console.log('Closing recorder');
+    export function closeRecorder(){
         // close recorder if it is active
         if (recordingState){
             stopRecording();
         }
 
         //if audio
-        if (audio){
-            audio.pause();
-            audio.currentTime = 0;
-            audio.src = '';
+        if ($voiceMessageAudio){
+            $voiceMessageAudio.pause();
+            $voiceMessageAudio.currentTime = 0;
+            
+            voiceMessageAudio.set(null);
+
             URL.revokeObjectURL(audioUrl);
         }
 
@@ -176,28 +195,30 @@
 
 <!-- Microphone -->
 <div class="voiceRecorder" class:active={recorderActive} id="recorderOverlay" data-recordingstate="{recordingState}">
-    <button class="recordBtn btn button-animate small btn roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
-        <i class="fa-solid {micIcon}" id="micIcon"></i>
-    </button>
-    <div class="recording">
-        {#if recordingState}
-        <span class="recordingText"><i class="fa-solid fa-circle recordIcon"></i></span>
-        {/if}
-        <span id="recordingTime" class="recordingTime">{time}</span>
+    <div class="container">
+        <button class="recordBtn btn button-animate small btn roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
+            <i class="fa-solid {micIcon}" id="micIcon"></i>
+        </button>
+        <div class="recording">
+            {#if recordingState}
+            <span class="recordingText"><i class="fa-solid fa-circle recordIcon"></i></span>
+            {/if}
+            <span id="recordingTime" class="recordingTime">{time}</span>
+        </div>
+        <button class="cancelBtn btn button-animate btn small play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" on:click={closeRecorder}>
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="audiovisualizer"></div>
     </div>
-    <button class="cancelBtn btn button-animate btn small play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" on:click={closeRecorder}>
-        <i class="fa-solid fa-xmark"></i>
-    </button>
-    <div id="audiovisualizer"></div>
 </div>
 
 <style lang="scss">
     .voiceRecorder {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
         gap: 10px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        flex-direction: row;
         background: none;
         position: absolute;
         height: 100%;
@@ -210,7 +231,6 @@
         transform: translateY(0px);
         opacity: 1;
         visibility: visible;
-        pointer-events: all;
         &.active {
             width: 100%;
             background: var(--primary-dark);
@@ -228,6 +248,15 @@
             z-index: -1;
         }
 
+        .container{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            pointer-events: all;
+        }
+
         .recording {
             display: flex;
             justify-content: center;
@@ -241,7 +270,7 @@
                 justify-content: center;
                 .recordIcon {
                     font-size: 0.6rem !important;
-                    color: indianred;
+                    color: var(--red);
                     animation: blink 0.5s infinite alternate;
                 }
             }
@@ -251,7 +280,7 @@
         }
 
         .btn {
-            margin: 2px;
+            margin: 5px;
             padding: 10px 15px;
             display: flex;
             align-items: center;
