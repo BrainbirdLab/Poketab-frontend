@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FileMessageObj, MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messageTypes";
+    import { FileMessageObj, ImageMessageObj, MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messageTypes";
     import { chatRoomStore, myId } from "$lib/store";
     import { getTextData } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
@@ -56,6 +56,8 @@
     <div class="messageReply {replyMessage.baseType}">
         {#if replyMessage instanceof TextMessageObj}
             {getTextData(replyMessage.message)}
+        {:else if replyMessage instanceof ImageMessageObj}
+            <img src={replyMessage.url} class="image" alt="{replyMessage.name}" />
         {:else if replyMessage instanceof FileMessageObj}    
             {getTextData(replyMessage.name)}
         {:else if replyMessage instanceof StickerMessageObj}
@@ -87,7 +89,10 @@
         text-overflow: ellipsis;
         cursor: pointer;
         z-index: 0;
-        padding: 8px 8px 25px 8px;
+
+        &:not(.image, .sticker){
+            padding: 8px 8px 25px 8px;
+        }
 
         &.text::before{
             content: "\f10d";
@@ -97,7 +102,7 @@
             padding-right: 3px;
         }
 
-        &:not(.text)::before{
+        &:not(.text, .sticker, .image)::before{
             content: "\f0c6";
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
@@ -110,8 +115,11 @@
         }
 
         &.sticker {
-            padding: 0 !important;
             background: hsl(0deg 0% 100% / 15%);
+        }
+
+        &.image{
+            filter: brightness(0.5);
         }
 
         img {
