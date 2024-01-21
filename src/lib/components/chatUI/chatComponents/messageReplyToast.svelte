@@ -62,7 +62,8 @@
                 {:else if message instanceof ImageMessageObj}
                     <img class="image" src="{message.url}" alt="{message.name}">
                 {:else if message instanceof FileMessageObj}
-                <i class="icon fa-solid {getIcon(message.type)}"></i> {getTextData(message.name)}
+                    <i class="icon fa-solid {getIcon(message.type)}"></i> 
+                    {getTextData(message.name)}
                 {:else if message instanceof StickerMessageObj}
                     <img class="sticker" src="{message.src}" alt="sticker reply" />
                 {/if}
@@ -115,7 +116,6 @@
                     align-items: center;
                     justify-content: center;
                     gap: 5px;
-    
                 }
 
                 .close{
@@ -139,23 +139,25 @@
 
 
             .replyData{
-                font-size: 0.7rem;
-                color: #cbcbcb;
                 overflow: hidden;
                 width: 100%;
                 white-space: pre;
                 text-align: left;
                 text-overflow: ellipsis;
+                font-size: 0.8rem;
+                color: #c5c5c5;
 
                 .sticker{
                     width: 50px;
                     height: 50px;
+                    display: block;
                 }
 
                 .image{
                     max-height: 100px;
                     max-width: 100px;
                     border-radius: 3px;
+                    display: block;
                 }
 
                 .icon{

@@ -89,7 +89,15 @@
         z-index: 0;
         padding: 8px 8px 25px 8px;
 
-        &::before{
+        &.text::before{
+            content: "\f10d";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 1rem;
+            padding-right: 3px;
+        }
+
+        &:not(.text)::before{
             content: "\f0c6";
             font-family: "Font Awesome 6 Free";
             font-weight: 900;

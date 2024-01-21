@@ -191,9 +191,9 @@
 
                 lastHeight = entry.contentRect.height;
 
-                if ($messageScrolledPx < 50){
+                if ($messageScrolledPx < 200){
                     $messageContainer.scrollTo({top: $messageContainer.scrollHeight});
-                    //console.log('Scrolled due to footer update');
+                    console.log('Scrolled due to footer update');
                 }
             }
         });
