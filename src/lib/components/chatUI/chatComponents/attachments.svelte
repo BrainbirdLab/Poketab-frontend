@@ -130,7 +130,7 @@
         filePicker.dispatchEvent(new Event('change'));
     }
 
-    function sendFiles() {
+    async function sendFiles() {
         //console.log('sendFiles event');
 
         //copy files to variable
@@ -171,82 +171,88 @@
         });
         */
 
-        const res = files.map((file) => {
-            return new Promise( async (resolve, reject) => {
-                //make files to objectURL
-                const url = URL.createObjectURL(file);
+        for (const file of files){
 
-                const tempId = crypto.randomUUID();
+            //await tick();
 
-                let message: FileMessageObj;
+            //make files to objectURL
+            const url = URL.createObjectURL(file);
 
-                if (sendAs !== 'audio'){
-                    
-                    if (sendAs === 'file'){
-                        message = new FileMessageObj();
-                    } else {
-                        message = new ImageMessageObj();
-                    }
-                    
-                    message.id = tempId;
-                    message.sender = $myId;
-                    message.size = file.size;
-                    message.type = file.type;
-                    message.name = file.name;
+            const tempId = crypto.randomUUID();
 
-                    if (message instanceof ImageMessageObj){
-                        //add thumbnail
-                        const res = await makeThumbnailFromImage(file, 40);
-                        message.url = res.url;
-                        message.width = res.width;
-                        message.height = res.height;
-                    }
+            let message: FileMessageObj | ImageMessageObj | AudioMessageObj;
 
-                    message.classList = makeClasslist(message);
-                    sendMessage(message, tempId);
-                    console.log('Message sent');
-                    message.url = url;
-                    //message.sent = true;
-                    
+            if (sendAs !== 'audio'){
+                
+                if (sendAs === 'file'){
+                    message = new FileMessageObj();
                 } else {
-
-                    message = new AudioMessageObj();
-
-                    if (message instanceof AudioMessageObj){ //This is unnecessary but typescript doesn't know that. So we have to do this. :)
-                        message.id = tempId;
-                        message.sender = $myId;
-                        message.size = file.size;
-                        message.name = file.name;
-                        message.audio = new Audio(url);
-                        message.url = url;
-                        message.classList = makeClasslist(message);
-                        sendMessage(message, tempId);
-                        console.log('Message sent');
-                        //message.sent = true;
+                    message = new ImageMessageObj();
+                }
+                
+                message.id = tempId;
+                message.sender = $myId;
+                message.size = file.size;
+                message.type = file.type;
+                message.name = file.name;
+                message.url = url;
+                
+                if (message instanceof ImageMessageObj) {
+                    try {
+                        const thumbnail = await makeThumbnailFromImage(file, 40);
+                        message.thumbnail = thumbnail.url;
+                        message.width = thumbnail.width;
+                        message.height = thumbnail.height;
+                    } catch (err) {
+                        console.error(err);
                     }
                 }
                 
-                //lastMessageId.set(tempId);
-                
+                //$messageDatabase.set(tempId, message);
                 messageDatabase.update((msg) => {
-                    message.loaded = true;
-                    console.log('Database updated');
+                    message.classList = makeClasslist(message);
                     msg.set(tempId, message);
                     return msg;
                 });
+                console.log('Set message in database === ' + file.name);
+                console.log(document.getElementById(tempId));
+                sendMessage(message);
 
-            });
-        });
+            } else {
 
-        Promise.all(res).then((res) => {
-            console.log(res);
-            showToastMessage('Files sent.');
-            //socket.emit('files', res, $chatRoomStore.Key, $myId);
-        }).catch((err) => {
-            console.log(err);
-            showToastMessage('Unable to send files.');
-        });
+                message = new AudioMessageObj();
 
+                if (message instanceof AudioMessageObj) { // Here we used this to make typescript happy
+
+                    message.id = tempId;
+                    message.sender = $myId;
+                    message.size = file.size;
+                    message.name = file.name;
+                    message.audio = new Audio(url);
+                    message.url = url;
+                    
+                    await new Promise((resolve) => {
+                        
+                        (message as AudioMessageObj).audio.addEventListener('loadedmetadata', () => {
+                            if (message instanceof AudioMessageObj) {
+                                message.duration = message.audio.duration;
+                                resolve(null);
+                            }
+                        }, { once: true });
+                    });
+                    
+                    //$messageDatabase.set(tempId, message);
+                    
+                    messageDatabase.update((msg) => {
+                        message.classList = makeClasslist(message);
+                        msg.set(tempId, message);
+                        return msg;
+                    });
+
+                    sendMessage(message);
+                }
+            }
+        };
     }
 
     function handleClick(node: HTMLElement){

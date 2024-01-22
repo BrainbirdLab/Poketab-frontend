@@ -234,6 +234,11 @@
         &.active {
             width: 100%;
             background: var(--primary-dark);
+
+            .recording{
+                opacity: 1;
+            }
+
             #audiovisualizer {
                 background: rgba(255, 255, 255, 0.0509803922);
             }
@@ -264,6 +269,8 @@
             flex-direction: row;
             gap: 5px;
             pointer-events: none;
+            transition: 200ms ease-in-out;
+            opacity: 0;
             .recordingText {
                 display: flex;
                 align-items: center;

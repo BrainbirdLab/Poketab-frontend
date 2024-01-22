@@ -7,16 +7,24 @@
     $: message = $messageDatabase.get($eventTriggerMessageId) as MessageObj;
 
     // [uid: string]: react-emoji
-    $: reacts = message?.reactedBy || {};
+    $: reacts = message?.reactedBy || new Map<string, string>();
 
     $: selectedReact = 'All';
 
-    $: reactsToShow = Object.entries(reacts).filter(([uid, react]) => selectedReact === 'All' || selectedReact === react);
+    //$: reactsToShow = Object.entries(reacts).filter(([uid, react]) => selectedReact === 'All' || selectedReact === react);
+    //reacts is a map, we have to filter by the value of the map, not the key
+    $: reactsToShow = Array.from(reacts.entries()).filter(([uid, react]) => selectedReact === 'All' || selectedReact === react);
 
     //push react - count to map
     // [react-emoji: string]: count: number
-    $: reactsCount = Array.from(new Set(Object.values(reacts))).reduce((acc, react) => {
+    /*$: reactsCount = Array.from(new Set(Object.values(reacts))).reduce((acc, react) => {
         acc[react] = Object.values(reacts).filter(r => r === react).length;
+        return acc;
+    }, {} as {[react: string]: number});
+    */
+
+    $: reactsCount = Array.from(new Set(reacts.values())).reduce((acc, react) => {
+        acc[react] = Array.from(reacts.values()).filter(r => r === react).length;
         return acc;
     }, {} as {[react: string]: number});
 
@@ -43,19 +51,19 @@
 {#if $showReactsOnMessageModal}
 <div class="wrapper" use:handleClick transition:fly|global={{y: 40, duration: 100}}>
     <div class="reactsOnMessage">
-        <div class="title">Reacts on {$chatRoomStore.userList[message.sender].name}'s message</div>
+        <div class="title">Reacts on {$chatRoomStore.userList[message.sender]?.name || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
             {#key reactsToShow}
             {#each reactsToShow as [uid, react], i}
-            <div class="user">
-                <div class="userInfo" in:fly|global={{x: -5, delay: 50 * (i + 1)}}>
-                    <img src="/images/avatars/{$chatRoomStore.userList[uid].avatar}(custom).png" alt="user"/>
-                    <span>{$chatRoomStore.userList[uid].name}</span>
+                <div class="user">
+                    <div class="userInfo" in:fly|global={{x: -5, delay: 50 * (i + 1)}}>
+                        <img src="/images/avatars/{$chatRoomStore.userList[uid]?.avatar || "rip"}(custom).png" alt="user"/>
+                        <span>{$chatRoomStore.userList[uid]?.name || "Zombie"}</span>
+                    </div>
+                    <span class="react-emoji" in:fly|global={{x: 5, delay: 50 * (i + 1)}}>{react}</span>
                 </div>
-                <span class="react-emoji" in:fly|global={{x: 5, delay: 50 * (i + 1)}}>{react}</span>
-            </div>
-            {/each}
+                {/each}
             {/key}
         </div>
         <div class="totalReactsButtons" in:fly|global={{x: 20, duration: 150}}>
@@ -63,7 +71,7 @@
             <label>
               <input type="radio" bind:group={selectedReact} value="All"/>
               <div class="item">
-                All ({Object.keys(reacts).length})
+                All ({reacts.size})
               </div>
             </label>
             <div class="others">

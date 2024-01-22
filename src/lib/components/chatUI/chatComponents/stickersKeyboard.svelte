@@ -68,15 +68,16 @@
 
                 const src = `/stickers/${group}/animated/${serial}.webp`;
 
+                const tempId = crypto.randomUUID();
                 const messageObj = new StickerMessageObj();
                 messageObj.src = src;
                 messageObj.groupName = group;
                 messageObj.number = Number(serial);
                 messageObj.sender = $myId;
+                messageObj.id = tempId;
                 messageObj.type = 'sticker';
                 messageObj.baseType = 'sticker';
 
-                const tempId = crypto.randomUUID();
 
                 if ($replyTargetId){
                     messageObj.replyTo = $replyTargetId;
@@ -92,7 +93,7 @@
                     return msg;
                 });
 
-                sendMessage(messageObj, tempId);
+                sendMessage(messageObj);
 
                 showStickersPanel.set(false);
             }

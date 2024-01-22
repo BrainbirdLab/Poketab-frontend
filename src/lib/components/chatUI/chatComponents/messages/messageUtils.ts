@@ -1,8 +1,9 @@
-import { MessageObj, messageDatabase, lastMessageId } from "$lib/messageTypes";
+import { MessageObj, messageDatabase, lastMessageId, messageContainer } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
 import { chatRoomStore, myId } from "$lib/store";
 import { socket } from "$lib/components/socket";
 import { badWords } from "./censoredWords";
+import { tick } from "svelte";
 
 export const showReplyToast = writable(false);
 
@@ -64,7 +65,7 @@ export function makeClasslist(message: MessageObj){
 				} else {
 					if (lastMessageObj.baseType === message.baseType){
 						//two messages of same kind
-						if ( (message.baseType === 'text' || message.baseType === 'file') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
+						if ( (message.baseType === 'text' || message.baseType === 'file' || message.baseType === 'image' || message.baseType === 'audio') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
 							lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
 						} else {
 							classListString += ' start';
@@ -102,11 +103,15 @@ export function remainingTime(totalTime: number, elapsedTime: number) {
 	}
 }
 
-export function sendMessage(message: MessageObj, tempId: string){
+export async function sendMessage(message: MessageObj){
+
+	//get(messageContainer).scrollTo({ top: get(messageContainer).scrollHeight, behavior: 'smooth' });
+
     socket.emit('newMessage', message, get(chatRoomStore).Key, (messageId: string) => {
 
         messageDatabase.update(msg => {
             message.sent = true;
+			const tempId = message.id;
 			message.id = messageId;
             msg.delete(tempId);
             msg.set(messageId, message);
@@ -321,6 +326,20 @@ export function getTextData(message: string){
 		return text.slice(0, 140) + '...' + text.slice(-20);
 	}
 	return text;
+}
+
+export function shortenString(message: string, maxLength: number){
+	// example input: "Hello, this is a very long message. I want to shorten it."
+	// example output: "Hello, this...shorten it."
+
+	if (message.length <= maxLength){
+		return message;
+	}
+
+	const firstHalf = message.slice(0, maxLength / 2);
+	const secondHalf = message.slice(-maxLength / 2);
+
+	return firstHalf + '...' + secondHalf;
 }
 
 /**

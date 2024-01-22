@@ -23,13 +23,31 @@
         } else if (message.baseType == 'location'){
             message = Object.setPrototypeOf(message, LocationMessageObj.prototype);
         }
+
+
+        //The message is recieved as Object, All properties of type Map, Set are lost as they become Object.
+        //So we need to convert them back to Map, Set.. etc 🤧
+
+        //convert reactedBy to Map
+        console.log(message.reactedBy);
+        message.reactedBy = new Map(Object.entries(message.reactedBy));
+        //convert seenBy to Set
+        console.log(message.seenBy);
+        message.seenBy = new Set(Object.keys(message.seenBy));
+
+        //Ready to go ... ✨✨
         
         if (message instanceof TextMessageObj){
             message.message = filterBadWords(message.message);
         } else if (message instanceof FileMessageObj){
-
             console.log('File message received', message.loaded);
-
+            if (message instanceof ImageMessageObj){
+                message.url = message.thumbnail;
+                //clear the thumbnail
+                message.thumbnail = '';
+            } else if (message instanceof AudioMessageObj){
+                message.audio = new Audio(message.url);
+            }
         }
 
         messageDatabase.update((messages) => {
@@ -132,9 +150,8 @@
             const message = messages.get(messageId) as MessageObj;
             if (message && message instanceof MessageObj) {
                 //if same react is clicked again, remove it
-                if (message.reactedBy[uid] == react) {
-                    //message.reactedBy.delete(uid);
-                    delete message.reactedBy[uid];
+                if (message.reactedBy.get(uid) == react) {
+                    message.reactedBy.delete(uid);
                 } else {
                     //if its my own react
                     if ($myId == uid){
@@ -146,8 +163,7 @@
                             localStorage.setItem('lastReact', react);
                         }
                     }
-                    //message.reactedBy.set(uid, react);
-                    message.reactedBy[uid] = react;
+                    message.reactedBy.set(uid, react);
                 }
             }
             return messages;
@@ -176,7 +192,7 @@
             const message = messages.get(messageId) as MessageObj;
 
             if (message && message instanceof MessageObj) {
-                message.seenBy[uid] = true;
+                message.seenBy.add(uid);
             }
 
             return messages;

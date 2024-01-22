@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { TextMessageObj, StickerMessageObj, messageContainer, messageScrolledPx, notice } from "$lib/messageTypes";
+    import { TextMessageObj, StickerMessageObj, messageContainer, messageScrolledPx, notice, FileMessageObj } from "$lib/messageTypes";
     import { chatRoomStore, listenScroll, showScrollPopUp } from "$lib/store";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
+    import { toSentenceCase } from "$lib/utils";
 
     $: {
         if ($messageScrolledPx < 200){
@@ -28,11 +29,12 @@
         }
 
         if (value){
-            //console.log('listening to scroll');
+            console.log('listening to scroll');
             $messageContainer.onscroll = scrollHandler;
         } else {
-            //console.log('stop listening to scroll');
+            console.log('stop listening to scroll');
             $messageContainer.onscroll = null;
+            messageScrolledPx.set(0);
         }
     });
 
@@ -42,10 +44,8 @@
         messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
         if ( $messageScrolledPx > 200) {
             showScrollPopUp.set(true);
-            //console.log('show');
         } else {
             showScrollPopUp.set(false);
-            //console.log('hide');
         }
     }
 
@@ -62,6 +62,8 @@
                 {$notice.message}
             {:else if $notice instanceof StickerMessageObj}
                 Sticker
+            {:else if $notice instanceof FileMessageObj}
+                {toSentenceCase($notice.baseType)}
             {/if}
         </div>
     {:else}

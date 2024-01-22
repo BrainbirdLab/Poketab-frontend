@@ -1,26 +1,15 @@
 <script lang="ts">
     import { getSize } from "./messageUtils";
-    import { ImageMessageObj, type FileMessageObj } from "$lib/messageTypes";
+    import { ImageMessageObj, type FileMessageObj, messageScrolledPx } from "$lib/messageTypes";
     import Reacts from "./messageComponents/reacts.svelte";
     import MessageTop from "./messageComponents/messageTop.svelte";
     import SeenBy from "./messageComponents/seenBy.svelte";
     import MessageMeta from "./messageComponents/messageMeta.svelte";
     import { getIcon } from "$lib/utils";
+    import { myId, showScrollPopUp } from "$lib/store";
 
     export let file: FileMessageObj;
     export let id: string;
-
-
-    let autoScrollOnLoad: ((e: Event) => void) | null = (e: Event) => {
-        //scroll to bottom of this element
-        const self = e.currentTarget as HTMLElement;
-        self.scrollIntoView({behavior: 'smooth', block: 'end'});
-        //remove the event listener
-        if (autoScrollOnLoad){
-            self.removeEventListener('load', autoScrollOnLoad);
-            autoScrollOnLoad = null;
-        }
-    }
 
 </script>
 
@@ -57,7 +46,7 @@
                                 </div>
                             </div>
                         {:else}
-                            <img src="{file.url}" alt="{file.name}" height="{file.height}" width="{file.width}" style={ file.loaded ? "" : "filter: blur(10px); transform: scale(1.1); transition: 500ms ease-in-out;"} on:load={autoScrollOnLoad}>
+                            <img src="{file.url}" alt="{file.name}" height="{file.height}" width="{file.width}" style={ file.loaded || file.sender === $myId ? "" : "filter: blur(10px); transform: scale(1.1); transition: 500ms ease-in-out;"}>
                         {/if}
                     </div>
                 </div>

@@ -1,9 +1,10 @@
 <script lang="ts">
     import "$lib/styles/atom.css";
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
-    import { onMount, tick } from "svelte";
+    import { onMount } from "svelte";
     import { chatRoomStore, myId } from "$lib/store";
-    import { messageDatabase, TextMessageObj, StickerMessageObj, FileMessageObj, AudioMessageObj } from "$lib/messageTypes";
+    import { messageDatabase, AudioMessageObj } from "$lib/messageTypes";
+
 
     $chatRoomStore.Key = "00-000-00";
     $chatRoomStore.maxUsers = 2;

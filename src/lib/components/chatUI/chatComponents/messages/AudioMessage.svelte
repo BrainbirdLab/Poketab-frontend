@@ -10,12 +10,9 @@
     export let file: AudioMessageObj;
     export let id: string;
 
-    let duration = file.duration === 0 ? NaN : file.duration;
+    let duration = file.duration;
 
-    file.audio.onloadedmetadata = () => {
-        duration = isFinite(file.audio.duration) ? file.audio.duration : file.duration;
-        file.audio.onloadedmetadata = null;
-    }
+    console.log(file.name, file.duration, file.audio);
     
 </script>
 
@@ -51,7 +48,7 @@
                                     {remainingTime(duration, 0)}
                                     {/if}
                                 {:else}
-                                    Play
+                                    --:--
                                 {/if}
                             {:else}
                                 {remainingTime(duration, file.audio.currentTime)}

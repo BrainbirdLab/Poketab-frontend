@@ -3,6 +3,7 @@
 
     export let sender: string;
     export let sent: boolean;
+
 </script>
 
 <div class="replyIcon">
@@ -13,6 +14,6 @@
 {/if}
 {#if sender != $myId}
     <div class="avatar">
-        <img src="/images/avatars/{($chatRoomStore.userList[sender]?.avatar)}(custom).webp" width="30px" height="30px" alt="avatar">
+        <img src="/images/avatars/{$chatRoomStore.userList[sender]?.avatar || 'rip'}(custom).webp" width="30px" height="30px" alt="avatar">
     </div>
 {/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj, AudioMessageObj} from "$lib/messageTypes";
+    import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj} from "$lib/messageTypes";
     import {chatRoomStore, myId} from "$lib/store";
     import { slide, fly, fade, scale } from "svelte/transition";
     import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";

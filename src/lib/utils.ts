@@ -1,6 +1,5 @@
 import { cubicOut } from "svelte/easing";
 import { showToastMessage } from "./components/toast";
-import type { FileMessageObj } from "./messageTypes";
 
 
 export function toSentenceCase(inputString: string) {
@@ -47,7 +46,6 @@ export function getIcon(type: string){
     const match = type.match(regex);
 
     if (match){
-        console.log(match[0]);
         return iconMap[match[0]];
     } else {
         return iconMap['file'];

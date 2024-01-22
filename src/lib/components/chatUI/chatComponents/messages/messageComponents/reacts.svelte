@@ -1,28 +1,29 @@
 <script lang="ts">
-    import type { MessageObj } from "$lib/messageTypes";
+    import { chatRoomStore } from "$lib/store";
 
-    export let reactedBy: MessageObj["reactedBy"];
 
-    let reacts: {[key: string]: string[]} = {};
+    export let reactedBy: Map<string, string>;
+
+    let reacts: Map<string, string[]> = new Map();
 
     $: {
-        //convert reacts to object group by react, and uid
-        reacts = {};
-        for (const [uid, react] of Object.entries(reactedBy)) {
-            if (react in reacts) {
-                reacts[react].push(uid);
+        //convert reacts to map group by react, and uid
+        reacts = new Map();
+        for (const [uid, react] of reactedBy){
+            if (reacts.has(react)) {
+                reacts.get(react)?.push(uid);
             } else {
-                reacts[react] = [uid];
+                reacts.set(react, [uid]);
             }
         }
     }
 
 </script>
 
-{#if Object.entries(reactedBy).length > 0}
+{#if reactedBy.size > 0}
     <div class="reactsContainer">
         <div class="reacts">
-            {#each Object.entries(reacts) as [react, uids]}
+            {#each reacts as [react, uids]}
                 <div class="react-group">
                     {#each uids as uid}
                         <div class="react-container" data-uid={uid}>
@@ -37,10 +38,10 @@
                 </div>
             {/each}
         </div>
-        {#if Object.entries(reactedBy).length > 1}
+        {#if reactedBy.size > 1}
             <div class="count">
                 <!-- Show number of reacts -->
-                {Object.entries(reactedBy).length}
+                {reactedBy.size}
             </div>
         {/if}
     </div>
@@ -60,8 +61,12 @@
     margin-top: -10px;
     margin-bottom: 1px;
     z-index: 1;
-    transition: 200ms ease-in-out;
+    //transition: 200ms ease-in-out;
     cursor: pointer;
+
+    &:hover{
+        filter: brightness(0.9);
+    }
 
     * {
         pointer-events: none;
@@ -76,10 +81,6 @@
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
-        //show last 3 reacts
-        &:not(:nth-last-child(-n+3)){
-            display: none;
-        }
 
         .react-group{
             display: flex;

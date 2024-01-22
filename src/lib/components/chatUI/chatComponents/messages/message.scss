@@ -85,6 +85,7 @@
         color: gray;
         font-size: 0.6rem;
         padding: 0 0 0 15px;
+        margin-bottom: 10px;
         visibility: hidden;
         opacity: 0;
         transition: 200ms ease-in-out;
@@ -202,7 +203,7 @@
         .messageMain{
             flex-direction: row-reverse;
             .msg{
-                &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="image"], &[data-mtype="audio"]{
+                &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="audio"]{
                     .data{
                         background: var(--msg-send);
                     }
@@ -250,25 +251,6 @@
 .message.self:has(.seenBy > img:nth-child(2)) + .message.self .msg {
     border-top-left-radius: 18px !important;
     border-top-right-radius: 18px !important;
-}
-
-
-
-.seenBy{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 1px;
-    position: absolute;
-    max-width: 70px;
-    right: 2px;
-    z-index: 10;
-    img{
-        height: 12px;
-        width: 12px;
-        margin: 1px;
-    }
 }
 
 .msg-item.serverMessage{
@@ -323,7 +305,18 @@
                 font-size: 2rem;
             }
         }
-        &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="image"], &[data-mtype="audio"]{
+
+        &[data-mtype="image"]{
+            .data{
+                background: var(--glass);
+
+                &:hover{
+                    filter: brightness(1.1) contrast(0.9);
+                }
+            }
+        }
+
+        &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="audio"]{
             .data{
                 background: var(--msg-get);
             }

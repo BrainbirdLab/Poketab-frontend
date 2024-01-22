@@ -86,7 +86,7 @@
             return msg;
         });
 
-        sendMessage(message, tempId);
+        sendMessage(message);
 
         endTypingStatus();
 
@@ -173,10 +173,6 @@
     let lastHeight = 0;
 
     onMount(() => {
-
-        voiceMessageAudio.subscribe(val => {
-            console.log(val);
-        });
 
         //on height change
         observer = new ResizeObserver(entries => {
@@ -270,7 +266,7 @@
             border: none;
             position: relative;
             background: transparent;
-            margin-right: 3px;
+            margin: 5px;
         }
 
         .quickEmoji, .sendIcon{
@@ -282,7 +278,7 @@
         }
 
         .inputBtn {
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
 
         .inputField {

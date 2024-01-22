@@ -69,7 +69,6 @@
                 text: "Join chat!",
                 url: `${location.origin}/chat/${$chatRoomStore.Key}`,
             });
-            showToastMessage("Shared!");
         } catch (err) {
             showToastMessage(`${err}`);
         }
@@ -132,19 +131,31 @@
                 $messageContainer.scrollTop += heightChanged;
             }
         } else if (heightChanged > 10 && !$showScrollPopUp){
-            //console.log('%cSmooth scroll', 'color: lime;');
+            console.log('%cSmooth scroll', 'color: lime;');
             
             listenScroll.set(false);
+
+            //if the message is image, wait for it to load
+            const lastMessage = $messageContainer.lastElementChild as HTMLElement;
+            if ($messageDatabase.has(lastMessage.id) && lastMessage.querySelector('img')){
+
+                await new Promise((resolve) => {
+                    const img = lastMessage.querySelector('img') as HTMLImageElement;
+                    img.addEventListener('load', () => {
+                        resolve(null);
+                    }, {once: true});
+                });
+            }
             
             $messageContainer.scrollTo({
                 top: $messageContainer.scrollHeight,
                 behavior: "smooth",
             });
 
-            $messageContainer.onscrollend = () => {
+            $messageContainer.addEventListener('scrollend', () => {
+                console.log('scroll end');
                 listenScroll.set(true);
-                $messageContainer.onscrollend = null;
-            }
+            }, {once: true});
         }
 
         lastHeight = $messageContainer.scrollHeight;
@@ -350,7 +361,7 @@
                 if (target.classList.contains('control')){
                     
                     
-                    console.log(messageObj.audio.paused ? 'Playing...' : 'Paused');
+                    //console.log(messageObj.audio.paused ? 'Playing...' : 'Paused');
                     
                     if (messageObj.audio.paused){
                         //stop all other audios
@@ -363,7 +374,10 @@
 
                         currentPlayingAudioMessage.set(messageObj);
 
-                        messageObj.audio.play();
+                        messageObj.audio.play().catch((err) => {
+                            console.log(err);
+                            showToastMessage("Audio data is not loaded yet");
+                        });
 
                         messageObj.audio.ontimeupdate = () => {
                             messageDatabase.update((messages) => {

@@ -12,7 +12,7 @@
 
     let reactIsExpanded = false;
 
-    $: reactedEmoji = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy[$myId] || '';
+    $: reactedEmoji = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy.get($myId) || '';
     $: messageKind = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.baseType;
 
     let selectedReact = '';

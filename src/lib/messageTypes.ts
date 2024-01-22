@@ -35,8 +35,12 @@ export class MessageObj {
     sender: string;
     replyTo: string;
     timeout: number | undefined;
-    seenBy: { [key: string]: boolean}
-    reactedBy: { [key: string]: string}
+    //seenBy: { [key: string]: boolean}
+    //reactedBy: { [key: string]: string}
+
+    seenBy: Set<string> = new Set();
+    reactedBy: Map<string, string> = new Map();
+
     readonly timeStamp: number;
 
     constructor() {
@@ -49,8 +53,10 @@ export class MessageObj {
         this.replyTo = '';
         this.timeStamp = Date.now();
         this.timeout = undefined;
-        this.seenBy = {};
-        this.reactedBy = {};
+        //this.seenBy = {};
+        //this.reactedBy = {};
+        this.seenBy = new Set();
+        this.reactedBy = new Map();
     }
 }
 
@@ -116,9 +122,11 @@ export class FileMessageObj extends MessageObj {
 export class ImageMessageObj extends FileMessageObj {
     width: number;
     height: number;
+    thumbnail: string;
     constructor() {
         super();
         this.baseType = 'image';
+        this.thumbnail = '';
         this.width = 0;
         this.height = 0;
     }
