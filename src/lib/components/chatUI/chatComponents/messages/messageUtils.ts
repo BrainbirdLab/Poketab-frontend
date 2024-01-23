@@ -103,14 +103,13 @@ export function remainingTime(totalTime: number, elapsedTime: number) {
 	}
 }
 
-export async function sendMessage(message: MessageObj){
+export function sendMessage(message: MessageObj){
 
 	//get(messageContainer).scrollTo({ top: get(messageContainer).scrollHeight, behavior: 'smooth' });
-
+	
     socket.emit('newMessage', message, get(chatRoomStore).Key, (messageId: string) => {
-
-        messageDatabase.update(msg => {
-            message.sent = true;
+		messageDatabase.update(msg => {
+			message.sent = true;
 			const tempId = message.id;
 			message.id = messageId;
             msg.delete(tempId);
@@ -118,11 +117,11 @@ export async function sendMessage(message: MessageObj){
             return msg;
         });
 
-        lastMessageId.set(messageId);
+		console.log('message sent');
 
-        if (document.hasFocus()){
-            socket.emit('seen', get(myId), get(chatRoomStore).Key, get(lastMessageId));
-        }
+		if (document.hasFocus()){
+			socket.emit('seen', get(myId), get(chatRoomStore).Key, get(lastMessageId));
+		}
     });
 }
 

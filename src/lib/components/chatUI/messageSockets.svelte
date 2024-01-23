@@ -27,12 +27,8 @@
 
         //The message is recieved as Object, All properties of type Map, Set are lost as they become Object.
         //So we need to convert them back to Map, Set.. etc 🤧
-
-        //convert reactedBy to Map
-        console.log(message.reactedBy);
         message.reactedBy = new Map(Object.entries(message.reactedBy));
         //convert seenBy to Set
-        console.log(message.seenBy);
         message.seenBy = new Set(Object.keys(message.seenBy));
 
         //Ready to go ... ✨✨
@@ -54,11 +50,14 @@
             message.classList = makeClasslist(message);
             message.sent = true;
             messages.set(messageId, message);
+            lastMessageId.set(messageId);
+            notice.set(message);
+            console.log('new message received');
             return messages;
         });
 
-        lastMessageId.set(messageId);
-        notice.set(message);
+        console.log('Done updating message database');
+
     });
 
     socket.on('linkPreviewData', (messageId: string, data: {title: string, description: string, image: string, url: string}) => {

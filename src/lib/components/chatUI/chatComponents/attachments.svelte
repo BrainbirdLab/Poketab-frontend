@@ -130,7 +130,7 @@
         filePicker.dispatchEvent(new Event('change'));
     }
 
-    async function sendFiles() {
+    function sendFiles() {
         //console.log('sendFiles event');
 
         //copy files to variable
@@ -173,8 +173,6 @@
 
         for (const file of files){
 
-            //await tick();
-
             //make files to objectURL
             const url = URL.createObjectURL(file);
 
@@ -198,25 +196,31 @@
                 message.url = url;
                 
                 if (message instanceof ImageMessageObj) {
-                    try {
-                        const thumbnail = await makeThumbnailFromImage(file, 40);
-                        message.thumbnail = thumbnail.url;
-                        message.width = thumbnail.width;
-                        message.height = thumbnail.height;
-                    } catch (err) {
-                        console.error(err);
-                    }
+                    makeThumbnailFromImage(file, 40).then((thumbnail) => {
+                        if (message instanceof ImageMessageObj) {
+                            message.thumbnail = thumbnail.url;
+                            message.width = thumbnail.width;
+                            message.height = thumbnail.height;
+                            sendMessage(message);
+                        }
+                    });
+                } else {
+                    sendMessage(message);
                 }
                 
+                message.classList = makeClasslist(message);
                 //$messageDatabase.set(tempId, message);
                 messageDatabase.update((msg) => {
-                    message.classList = makeClasslist(message);
+                    lastMessageId.set(tempId);
                     msg.set(tempId, message);
                     return msg;
                 });
+
+                
+
+                
                 console.log('Set message in database === ' + file.name);
-                console.log(document.getElementById(tempId));
-                sendMessage(message);
+                console.log(document.getElementById(message.id));
 
             } else {
 
@@ -230,26 +234,26 @@
                     message.name = file.name;
                     message.audio = new Audio(url);
                     message.url = url;
-                    
-                    await new Promise((resolve) => {
-                        
-                        (message as AudioMessageObj).audio.addEventListener('loadedmetadata', () => {
-                            if (message instanceof AudioMessageObj) {
-                                message.duration = message.audio.duration;
-                                resolve(null);
-                            }
-                        }, { once: true });
-                    });
-                    
-                    //$messageDatabase.set(tempId, message);
-                    
-                    messageDatabase.update((msg) => {
-                        message.classList = makeClasslist(message);
-                        msg.set(tempId, message);
-                        return msg;
-                    });
 
-                    sendMessage(message);
+                    (message as AudioMessageObj).audio.addEventListener('loadedmetadata', async () => {
+                        if (message instanceof AudioMessageObj) {
+                            message.duration = message.audio.duration;
+
+                            message.classList = makeClasslist(message);
+
+                            messageDatabase.update((msg) => {
+                                lastMessageId.set(tempId);
+                                msg.set(tempId, message);
+                                return msg;
+                            });
+
+
+                            console.log('Set message in database === ' + file.name);
+                            console.log(document.getElementById(message.id));
+                            sendMessage(message);
+                        }
+                    }, { once: true });
+                    
                 }
             }
         };
