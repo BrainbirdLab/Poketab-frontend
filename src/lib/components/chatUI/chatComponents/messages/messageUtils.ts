@@ -39,54 +39,6 @@ export function getSize(size: number) {
 	}
 }
 
-export function makeClasslist(message: MessageObj){
-
-    let classListString = ' end';
-
-    if (message.sender === get(myId)){
-        classListString += ' self';
-    }
-
-    if (get(messageDatabase).size > 0){
-
-        let lastMessageObj = get(messageDatabase).get(get(lastMessageId));
-
-		if (lastMessageObj instanceof MessageObj){
-
-			if (message.replyTo){
-				classListString += ' start newGroup';
-			} else {
-				if (message.baseType == 'sticker'){
-					classListString += ' start';
-				}
-		
-				if (message.baseType != lastMessageObj.baseType || lastMessageObj.sender !== message.sender){
-					classListString += ' start newGroup';
-				} else {
-					if (lastMessageObj.baseType === message.baseType){
-						//two messages of same kind
-						if ( (message.baseType === 'text' || message.baseType === 'file' || message.baseType === 'image' || message.baseType === 'audio') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
-							lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
-						} else {
-							classListString += ' start';
-						}
-					}
-				}
-			}
-		} else {
-			classListString += ' start newGroup';
-		}
-    } else {
-        classListString += ' start newGroup';
-    }
-
-	if (((get(chatRoomStore).maxUsers > 2 && !classListString.includes('self')) || message.replyTo) && classListString.includes('newGroup')){
-        classListString += ' title';
-    }
-
-    return classListString;
-}
-
 export function remainingTime(totalTime: number, elapsedTime: number) {
 	// Check if totalTime and elapsedTime are finite numbers and if totalTime is greater than 0
 	if(isFinite(totalTime) && totalTime > 0 && isFinite(elapsedTime)){
@@ -107,18 +59,20 @@ export function sendMessage(message: MessageObj){
 
 	//get(messageContainer).scrollTo({ top: get(messageContainer).scrollHeight, behavior: 'smooth' });
 	
+
+	message.sender = get(myId);
+	message.id = Math.random().toString(36);
+
+	console.log(`Id: ${message.id}`);
+
+	messageDatabase.add(message);
+
     socket.emit('newMessage', message, get(chatRoomStore).Key, (messageId: string) => {
-		messageDatabase.update(msg => {
-			message.sent = true;
-			const tempId = message.id;
-			message.id = messageId;
-            msg.delete(tempId);
-            msg.set(messageId, message);
-            return msg;
-        });
+		
+		messageDatabase.markDelevered(message, messageId);
 
-		console.log('message sent');
-
+		console.log(`New message id: ${messageId}`);
+		
 		if (document.hasFocus()){
 			socket.emit('seen', get(myId), get(chatRoomStore).Key, get(lastMessageId));
 		}

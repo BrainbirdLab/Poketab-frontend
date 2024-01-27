@@ -58,7 +58,7 @@ export type User = {
     uid: string,
     name: string,
     avatar: string,
-    lastSeenMessage: string | null,
+    lastSeenMessage?: string | null,
 }
 
 type chatRoomStoreType = {

@@ -39,10 +39,7 @@
                 maxUsers: 2,
             });
             myId.set('');
-            messageDatabase.update(messages => {
-                messages.clear();
-                return messages;
-            });
+            messageDatabase.reset();
             joinedChat.set(false);
             currentPage.set('form');
             splashMessage.set('');
@@ -70,7 +67,6 @@
 
 </script>
 
-{#if $showSidePanel}
 <div id="sidebarWrapper" transition:fly={{x: -30, duration: 100}} use:closeSideBar>
     <div id="sidebar">
         <div class="topbar">
@@ -100,8 +96,6 @@
         </div>
     </div>
 </div>
-{/if}
-
 
 <style lang="scss">
     #sidebarWrapper {

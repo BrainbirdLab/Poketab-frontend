@@ -1,14 +1,14 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
     export let seenBy: Set<string>;
-    export let messageId: string;
+    export let id: string;
 </script>
 
 {#if seenBy.size > 0}
 {#key seenBy}
 <div class="seenBy">
     {#each seenBy as uid}
-        {#if $chatRoomStore.userList[uid]?.lastSeenMessage == messageId}
+        {#if $chatRoomStore.userList[uid]?.lastSeenMessage == id}
             <img alt="seen" data-uid="{uid}" src="/images/avatars/{$chatRoomStore.userList[uid].avatar}(custom)-mini.webp" />
         {/if}
     {/each}

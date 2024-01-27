@@ -7,7 +7,7 @@
     import { AudioMessageObj, FileMessageObj, ImageMessageObj, MessageObj, lastMessageId, messageDatabase, selectedFiles } from "$lib/messageTypes";
     import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
-    import { makeClasslist, sendMessage } from "./messages/messageUtils";
+    import { sendMessage } from "./messages/messageUtils";
     import AudioMessage from "./messages/AudioMessage.svelte";
 
     let locationBtn: HTMLButtonElement;
@@ -176,7 +176,7 @@
             //make files to objectURL
             const url = URL.createObjectURL(file);
 
-            const tempId = crypto.randomUUID();
+            const messageId = crypto.randomUUID();
 
             let message: FileMessageObj | ImageMessageObj | AudioMessageObj;
 
@@ -188,7 +188,7 @@
                     message = new ImageMessageObj();
                 }
                 
-                message.id = tempId;
+                message.id = messageId;
                 message.sender = $myId;
                 message.size = file.size;
                 message.type = file.type;
@@ -207,18 +207,7 @@
                 } else {
                     sendMessage(message);
                 }
-                
-                message.classList = makeClasslist(message);
-                //$messageDatabase.set(tempId, message);
-                messageDatabase.update((msg) => {
-                    lastMessageId.set(tempId);
-                    msg.set(tempId, message);
-                    return msg;
-                });
 
-                
-
-                
                 console.log('Set message in database === ' + file.name);
                 console.log(document.getElementById(message.id));
 
@@ -228,7 +217,7 @@
 
                 if (message instanceof AudioMessageObj) { // Here we used this to make typescript happy
 
-                    message.id = tempId;
+                    message.id = messageId;
                     message.sender = $myId;
                     message.size = file.size;
                     message.name = file.name;
@@ -238,15 +227,6 @@
                     (message as AudioMessageObj).audio.addEventListener('loadedmetadata', async () => {
                         if (message instanceof AudioMessageObj) {
                             message.duration = message.audio.duration;
-
-                            message.classList = makeClasslist(message);
-
-                            messageDatabase.update((msg) => {
-                                lastMessageId.set(tempId);
-                                msg.set(tempId, message);
-                                return msg;
-                            });
-
 
                             console.log('Set message in database === ' + file.name);
                             console.log(document.getElementById(message.id));

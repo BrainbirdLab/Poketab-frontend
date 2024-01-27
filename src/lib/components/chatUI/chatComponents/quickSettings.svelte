@@ -122,7 +122,6 @@
 
 </script>
 
-{#if $showQuickSettingsPanel}
 <div
     class="quickSettingsPanelWrapper"
     transition:fly={{ y: 40, duration: 100 }}
@@ -262,7 +261,6 @@
         </div>
     </div>
 </div>
-{/if}
 
 
 <style lang="scss">

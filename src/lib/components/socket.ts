@@ -1,12 +1,22 @@
-import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, splashMessage } from "$lib/store";
+import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, splashMessage, showUserInputForm } from "$lib/store";
 import { get, writable } from "svelte/store";
 import {io} from "socket.io-client";
 import { chatRoomStore, type User } from "$lib/store";
+import { browser } from "$app/environment";
 
 //get server value from .env file
 const server = import.meta.env.VITE_SOCKET_SERVER_URL;
 
 export const socket = io(server);
+
+export type socketResponse = {
+    success: boolean,
+    message: string,
+    icon: string,
+    statusCode: number,
+    users: {[key: string]: User},
+    maxUsers: number,
+}
 
 export function reConnectSocket(){
     console.log('%cReconnecting server', 'color: lime');
@@ -16,13 +26,45 @@ export function reConnectSocket(){
     socket.connect();
 }
 
-socket.on('updateUserListWR', (users: {[key: string]: User}) => {
-    console.log('Updating user list - WR');
-    chatRoomStore.update((chatRoom) => {
-        chatRoom.userList = users
-        return chatRoom;
+function resetChatRoomStore(msg: string){
+
+    showUserInputForm.set(false);
+
+    formNotification.set(msg);
+
+    chatRoomStore.set({
+        Key: '',
+        userList: {},
+        maxUsers: 0,
     });
-});
+
+    setTimeout(() => {
+        formNotification.set('');
+    }, 3000);
+}
+
+//if browser
+if (browser){
+    socket.on('updateUserListWR', (users: {[key: string]: User}) => {
+        //console.log('Updating user list - WR');
+
+        const userlen = Object.keys(users).length;
+
+        //console.log('User list length: ' + userlen);
+
+        if (userlen < 1) {
+            resetChatRoomStore('Chat no longer exists');
+        } else if(userlen >= get(chatRoomStore).maxUsers){
+            resetChatRoomStore('Oops!! Chat is full');
+        } else {
+            formNotification.set('');
+            chatRoomStore.update((chatRoom) => {
+                chatRoom.userList = users;
+                return chatRoom;
+            });
+        }
+    });
+}
 
 socket.on('connect', () => {
     console.log('%cConnected to server', 'color: blue');

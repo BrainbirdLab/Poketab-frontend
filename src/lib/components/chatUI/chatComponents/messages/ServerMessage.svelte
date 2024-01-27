@@ -1,11 +1,10 @@
 <script lang="ts">
     import type { ServerMessageObj } from "$lib/messageTypes";
     export let message: ServerMessageObj;
-    export let id: string;
 </script>
 
 
-<div class="msg-item serverMessage" id="{id}" data-type="{message.type}">
+<div class="msg-item serverMessage" id="{message.id}" data-type="{message.type}">
     {message.text}
 </div>
 

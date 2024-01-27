@@ -3,7 +3,7 @@
     import { showStickersPanel, selectedSticker } from "$lib/components/modalManager";
     import { myId } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, messageDatabase, replyTargetId } from "$lib/messageTypes";
-    import { makeClasslist, sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -86,13 +86,6 @@
                     showReplyToast.set(false);
                 }
 
-                messageObj.classList = makeClasslist(messageObj);
-                
-                messageDatabase.update(msg => {
-                    msg.set(tempId, messageObj);
-                    return msg;
-                });
-
                 sendMessage(messageObj);
 
                 showStickersPanel.set(false);
@@ -156,7 +149,6 @@
 
 </script>
 
-{#if $showStickersPanel}
 <div class="stickerKeyboardContainer" transition:fly|global={{y: 40, duration: 100}} use:stickersHandler>
     <div class="stickerKeyboard">
         <div class="headers">
@@ -179,7 +171,6 @@
         </div>
     </div>
 </div>
-{/if}
 
 <style lang="scss">
     .stickerKeyboardContainer {

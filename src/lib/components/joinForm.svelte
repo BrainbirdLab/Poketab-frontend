@@ -166,8 +166,7 @@
 
 <div class="inputForm" in:fly={{x: 30}}>
     <div class="formtitle">
-        <div class="text">Join chat</div>
-        <img src="/images/pokeball.png" alt="Pokeball Logo">
+        Join chat <i class="fa-solid fa-people-group"></i>
     </div>
     <div class="formField">
         <label for="key">{LabelText} <i class="{LabelIcon}"></i></label>
@@ -217,6 +216,9 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
+        i{
+            font-size: 2rem;
+        }
     }
 
     .inputForm{

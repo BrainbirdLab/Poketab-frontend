@@ -2,14 +2,9 @@ import type { User } from '$lib/store';
 import { themes } from '$lib/themes';
 import { error, type NumericRange } from '@sveltejs/kit';
 import { io } from 'socket.io-client';
+import type { socketResponse } from '$lib/components/socket.js';
 
-type fetchResponse = {
-  success: boolean,
-  message: string,
-  icon: string,
-  statusCode: number,
-  users: {[key: string]: User},
-  maxUsers: number,
+type fetchResponse = socketResponse & {
   key: string,
   themename: string,
 }
@@ -60,7 +55,7 @@ export async function load({ params, cookies }) {
       });
     });
     
-    socket.emit('fetchKeyData', key, (res: fetchResponse) => {
+    socket.emit('fetchKeyData', key, true, (res: socketResponse) => {
       console.log('Key data fetched');
       resolve({...res, key, themename});
     });

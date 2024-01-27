@@ -3,7 +3,7 @@
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import { onMount } from "svelte";
     import { chatRoomStore, myId } from "$lib/store";
-    import { messageDatabase, AudioMessageObj } from "$lib/messageTypes";
+    import { AudioMessageObj, messageDatabase } from "$lib/messageTypes";
 
 
     $chatRoomStore.Key = "00-000-00";

@@ -60,7 +60,6 @@
     }
 </script>
 
-{#if $showThemesPanel}
 <div id="themePicker" class="themePicker active" use:handleThemes>
     <ul class="themeList" transition:fly={{y: 40, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
@@ -70,7 +69,6 @@
         {/each}
     </ul>
 </div>
-{/if}
 
 
 

@@ -49,7 +49,7 @@
     import NavBar from "./chatComponents/navbar.svelte";
     import hljs from "highlight.js";
     import { copyText, emojis } from "$lib/utils";
-    import type { Unsubscriber } from "svelte/store";
+    import { get, type Unsubscriber } from "svelte/store";
     import ReactsOnMessage from "./chatComponents/reactsOnMessage.svelte";
     import { themes } from "$lib/themes";
     import MessageSockets from "./messageSockets.svelte";
@@ -137,7 +137,7 @@
 
             //if the message is image, wait for it to load
             const lastMessage = $messageContainer.lastElementChild as HTMLElement;
-            if ($messageDatabase.has(lastMessage.id) && lastMessage.querySelector('img')){
+            if (messageDatabase.has(lastMessage.id) && lastMessage.querySelector('img')){
 
                 await new Promise((resolve) => {
                     const img = lastMessage.querySelector('img') as HTMLImageElement;
@@ -175,7 +175,7 @@
             });
         }
 
-        const lastMessageObj = $messageDatabase.get(lastMessage.id) as MessageObj;
+        const lastMessageObj = messageDatabase.getMessage(lastMessage.id) as MessageObj;
 
         if (!lastMessageObj) {
             return;
@@ -285,11 +285,11 @@
                 return;
             }
             
-            if (!$messageDatabase.has(id)) {
+            if (!messageDatabase.has(id)) {
                 return;
             }
 
-            const messageObj = $messageDatabase.get(id) as MessageObj;
+            const messageObj = messageDatabase.getMessage(id) as MessageObj;
 
             if (messageObj?.baseType == 'deleted'){
                 return;
@@ -326,11 +326,11 @@
                 return;
             }
 
-            if (!$messageDatabase.has(message.id)){
+            if (!messageDatabase.has(message.id)){
                 return;
             }
 
-            const messageObj = $messageDatabase.get(message.id) as MessageObj;
+            const messageObj = messageDatabase.getMessage(message.id) as MessageObj;
 
             //show the time on click
             const time = message.querySelector(".messageTime") as HTMLElement;
@@ -380,8 +380,8 @@
                         });
 
                         messageObj.audio.ontimeupdate = () => {
+
                             messageDatabase.update((messages) => {
-                                messages.set(message.id, messageObj);
                                 return messages;
                             });
                         }
@@ -391,9 +391,7 @@
                             messageObj.audio.onended = null;
                             messageObj.audio.ontimeupdate = null;
                             currentPlayingAudioMessage.set(null);
-                            
                             messageDatabase.update((messages) => {
-                                messages.set(message.id, messageObj);
                                 return messages;
                             });
                         }
@@ -438,7 +436,7 @@
             //if message is a reply, scroll to the replied message
             if (target.classList.contains("messageReply")) {
 
-                const messageObj = $messageDatabase.get(message.id) as MessageObj;
+                const messageObj = messageDatabase.getMessage(message.id) as MessageObj;
                 const replyId = messageObj.replyTo;
                 //scroll to the replied message
                 if (replyId) {
@@ -520,7 +518,7 @@
 
                 const message = target.closest(".message") as HTMLElement;
 
-                if (target.closest(".msg") && $messageDatabase.has(message.id) && ($messageDatabase.get(message.id) as MessageObj).baseType != 'deleted') {
+                if (target.closest(".msg") && messageDatabase.has(message.id) && (messageDatabase.getMessage(message.id) as MessageObj).baseType != 'deleted') {
                     //console.log(xDiff);
 
                     xDiff = xStart - evt.touches[0].clientX / 3;
@@ -542,7 +540,7 @@
                         //console.log('horizontal');
                         const replyIcon = message.querySelector(".replyIcon") as HTMLElement;
 
-                        const { classList, sent } = $messageDatabase.get(message.id) as MessageObj;
+                        const { classList, sent } = messageDatabase.getMessage(message.id) as MessageObj;
 
                         swipeStarted = true;
                         replyIcon.dataset.swipeStart = "true";
@@ -587,10 +585,10 @@
                 const target = evt.target as HTMLElement;
                 const message = target.closest(".message") as HTMLElement;
 
-                if (target.closest(".msg") && $messageDatabase.has(message.id)) {
+                if (target.closest(".msg") && messageDatabase.has(message.id)) {
                     touchEnded = true;
 
-                    const { classList, sent } = $messageDatabase.get(
+                    const { classList, sent } = messageDatabase.getMessage(
                         message.id,
                     ) as MessageObj;
 
@@ -662,23 +660,23 @@
                     </button>
                 </li>
             </div>
-            {#each [...$messageDatabase] as [id, message]}
+            {#each $messageDatabase as message}
                 {#if message instanceof MessageObj}
                     {#if message instanceof TextMessageObj && (message.type === "text" || message.type === "emoji")}
-                        <TextMessage message={message} id={id} />
+                        <TextMessage message={message} />
                     {:else if message instanceof StickerMessageObj}
-                        <StickerMessage message={message} id={id}/>
+                        <StickerMessage message={message}/>
                     {:else if message instanceof AudioMessageObj}
-                        <AudioMessage file={message} id={id}/>
+                        <AudioMessage file={message}/>
                     {:else if message instanceof FileMessageObj}
-                        <FileMessage file={message} id={id}/>
+                        <FileMessage file={message}/>
                     {:else if message instanceof TextMessageObj && message.type === "deleted"}
-                        <DeletedMessage message={message} id={id}/>
+                        <DeletedMessage message={message}/>
                     {/if}
                 {:else if message instanceof ServerMessageObj}
-                    <ServerMessage message={message} id={id} />
+                    <ServerMessage message={message} />
                 {:else if message instanceof LocationMessageObj}
-                    <LocationMessage id={id} lat={message.lat} lon={message.lon} uid={message.uid}/>
+                    <LocationMessage location={message}/>
                 {/if}
             {/each}
         </ul>
@@ -688,19 +686,32 @@
 
 <ConnectivityState bind:offline={isOffline} />
 
-<SidePanel />
+{#if $showSidePanel}
+    <SidePanel />
+{/if}
 
-<QuickSettings />
+{#if $showQuickSettingsPanel}
+    <QuickSettings />
+{/if}
 
-<Themes />
+{#if $showThemesPanel}
+    <Themes />
+{/if}
 
-<StickersKeyboard />
+{#if $showStickersPanel}
+    <StickersKeyboard />
+{/if}
 
 <Attachments />
 
-<MessageOptions />
+{#if $showMessageOptions}
+    <MessageOptions />
+{/if}
 
-<ReactsOnMessage />
+{#if $showReactsOnMessageModal}
+    <ReactsOnMessage />
+{/if}
+
 
 <MessageSockets />
 

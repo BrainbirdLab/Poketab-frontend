@@ -9,16 +9,15 @@
     import { myId, showScrollPopUp } from "$lib/store";
 
     export let file: FileMessageObj;
-    export let id: string;
 
 </script>
 
-<li class="message msg-item {file.classList}" id="{id}"> <!-- noreply notitle delevered start end self react -->
-    <SeenBy seenBy={file.seenBy} messageId={id} />
+<li class="message msg-item {file.classList}" id="{file.id}"> <!-- noreply notitle delevered start end self react -->
+    <SeenBy seenBy={file.seenBy} id={file.id} />
     <div class="messageContainer">
-        <MessageMeta sender={file.sender} sent={file.sent}/>
+        <MessageMeta senderId={file.sender} isSent={file.sent}/>
         <div class="messageBody">
-            <MessageTop sender={file.sender} classList={file.classList} replyTo={file.replyTo}/>
+            <MessageTop senderId={file.sender} classList={file.classList} replyTo={file.replyTo}/>
             <div class="messageMain">
                 <div class="msg" data-mtype="{file.baseType}">
                     <div class="data">

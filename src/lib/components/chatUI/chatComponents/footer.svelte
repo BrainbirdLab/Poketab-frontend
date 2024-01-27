@@ -1,6 +1,6 @@
 <script lang="ts">
     import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
-    import { makeClasslist, sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
@@ -68,23 +68,12 @@
             }
         }
 
-        const tempId = crypto.randomUUID();
-
-        message.id = tempId;
-        message.sender = $myId;
-
         if ($replyTargetId){
             message.replyTo = $replyTargetId;
             eventTriggerMessageId.set('');
             replyTargetId.set('');
             showReplyToast.set(false);
         }
-        
-        messageDatabase.update(msg => {
-            message.classList = makeClasslist(message);
-            msg.set(tempId, message);
-            return msg;
-        });
 
         sendMessage(message);
 
@@ -297,7 +286,7 @@
             .textbox-wrapper {
                 position: relative;
                 width: 100%;
-                padding: 5px 40px 5px 15px;
+                padding: 5px 40px 5px 20px;
                 overflow: hidden;
                 min-height: 45px;
                 transition: height 150ms ease-in-out;

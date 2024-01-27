@@ -6,16 +6,15 @@
     import MessageMeta from "./messageComponents/messageMeta.svelte";
 
     export let message: TextMessageObj;
-    export let id: string;
 
 </script>
 
-<li class="message msg-item {message.classList}" id="{id}">
-    <SeenBy seenBy={message.seenBy} messageId={id} />
+<li class="message msg-item {message.classList}" id="{message.id}">
+    <SeenBy seenBy={message.seenBy} id={message.id} />
     <div class="messageContainer" >
-        <MessageMeta sender={message.sender} sent={message.sent}/>
+        <MessageMeta senderId={message.sender} isSent={message.sent}/>
         <div class="messageBody">
-            <MessageTop sender={message.sender} replyTo={message.replyTo} classList={message.classList}/>
+            <MessageTop senderId={message.sender} replyTo={message.replyTo} classList={message.classList}/>
             <div class="messageMain">
                 <div class="msg" data-mtype="{message.type}">
                     <div class="data">{@html message.message}</div>

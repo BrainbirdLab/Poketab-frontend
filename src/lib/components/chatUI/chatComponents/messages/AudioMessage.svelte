@@ -8,20 +8,16 @@
     import { remainingTime } from "./messageUtils";
 
     export let file: AudioMessageObj;
-    export let id: string;
 
     let duration = file.duration;
-
-    console.log(file.name, file.duration, file.audio);
-    
 </script>
 
-<li class="message msg-item {file.classList}" id="{id}"> <!-- noreply notitle delevered start end self react -->
-    <SeenBy seenBy={file.seenBy} messageId={id} />
+<li class="message msg-item {file.classList}" id="{file.id}"> <!-- noreply notitle delevered start end self react -->
+    <SeenBy seenBy={file.seenBy} id={file.id} />
     <div class="messageContainer">
-        <MessageMeta sender={file.sender} sent={file.sent}/>
+        <MessageMeta senderId={file.sender} isSent={file.sent}/>
         <div class="messageBody">
-            <MessageTop sender={file.sender} classList={file.classList} replyTo={file.replyTo}/>
+            <MessageTop senderId={file.sender} classList={file.classList} replyTo={file.replyTo}/>
             <div class="messageMain">
                 <div class="msg" data-mtype="file">
                     <div class="data" style="--progress: { (file.audio.currentTime / duration) * 100 }%; transition: {file.audio.currentTime === 0 ? "none" : "150ms"};">

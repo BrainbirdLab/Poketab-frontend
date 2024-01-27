@@ -12,8 +12,8 @@
 
     let reactIsExpanded = false;
 
-    $: reactedEmoji = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.reactedBy.get($myId) || '';
-    $: messageKind = ($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.baseType;
+    $: reactedEmoji = (messageDatabase.getMessage($eventTriggerMessageId) as MessageObj)?.reactedBy.get($myId) || '';
+    $: messageKind = (messageDatabase.getMessage($eventTriggerMessageId) as MessageObj)?.baseType;
 
     let selectedReact = '';
 
@@ -36,17 +36,23 @@
 
     function getMessageOptions(){
         const arr = [];
-        arr.push('Reply');
+
+        const sender = (messageDatabase.getMessage($eventTriggerMessageId) as MessageObj)?.sender;
+
+        if (sender && $chatRoomStore.userList[sender]){
+            arr.push('Reply');
+            //if the sender is me, add delete option
+            if (sender == $myId){
+                arr.push('Delete');
+            }
+        }
+
         if (messageKind == 'text'){
             arr.push('Copy');
         } else if (messageKind == 'file' || messageKind == 'audio'){
             arr.push('Download');
         }
         
-        //if the sender is me, add delete option
-        if (($messageDatabase.get($eventTriggerMessageId) as MessageObj)?.sender == $myId){
-            arr.push('Delete');
-        }
 
         return arr;
     }
@@ -73,7 +79,7 @@
                     showReplyToast.set(true);
                 } else if (e.target.classList.contains('Copy')) {
                     //console.log('copy');
-                    const msg = $messageDatabase.get($eventTriggerMessageId) as TextMessageObj;
+                    const msg = messageDatabase.getMessage($eventTriggerMessageId) as TextMessageObj;
 
                     if (!msg) return;
 
@@ -107,7 +113,6 @@
 
 </script>
 
-{#if $showMessageOptions}
 <!-- option menu for message right click -->
 <!-- This menu contains reacts, message copy, download, delete and reply options -->
 <div class="optionsContainer" use:clickHandler>
@@ -151,7 +156,6 @@
         {/each}
     </div>
 </div>
-{/if}
 
 <style lang="scss">
 

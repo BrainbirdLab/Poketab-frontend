@@ -3,7 +3,7 @@
     import { fly, scale } from "svelte/transition";
     import { onDestroy, onMount } from "svelte";
     
-    import {socket, reConnectSocket} from "$lib/components/socket";
+    import {socket, reConnectSocket, type socketResponse} from "$lib/components/socket";
     import { formActionButtonDisabled, reconnectButtonEnabled, showUserInputForm, chatRoomStore, myId, socketConnected, joinedChat, isTaken, currentPage, formNotification, splashMessage} from "$lib/store";
     
     let selectedname = '';
@@ -27,9 +27,23 @@
         }
     }
 
-    let actionButtonText = $chatRoomStore.Key ? 'Join' : 'Create';
+    $: actionButtonText = $chatRoomStore.Key ? 'Join' : 'Create';
 
     let mounted = false;
+
+    if ($chatRoomStore.Key){
+        socket.emit('fetchKeyData', $chatRoomStore.Key, false, (res: socketResponse) => {
+            if (!res.success){
+                showUserInputForm.set(false);
+            } else {
+                chatRoomStore.update(room => {
+                    room.userList = res.users;
+                    return room;
+                });
+                showUserInputForm.set(true);
+            }
+        });
+    }
 
     onMount(() => {
         mounted = true;
@@ -168,6 +182,13 @@
 
 {#if mounted}
 <div class="inputForm" in:fly={{y: 30}}>
+    <div class="formtitle">
+        {#if !$chatRoomStore.Key}
+            Create chat <i class="fa-solid fa-meteor"></i>
+        {:else}
+            Join chat <i class="fa-solid fa-handshake"></i>
+        {/if}
+    </div>
     <div class="formField">
         <label for="name">Choose your name <i class="fa-solid fa-signature"></i></label>
         {#if nameErr}            
@@ -305,6 +326,22 @@
 
     .redirect{
         width: 100%;
+    }
+
+    .formtitle {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+
+        i{
+            font-size: 2rem;
+        }
+    }
+
+    .fa-meteor{
+        color: coral;
     }
 
     #redirect{

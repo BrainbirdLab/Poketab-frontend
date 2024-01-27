@@ -1,16 +1,15 @@
 <script lang="ts">
+    import type { LocationMessageObj } from "$lib/messageTypes";
     import { chatRoomStore } from "$lib/store";
 
-    export let id: string;
-    export let lat: number;
-    export let lon: number;
-    export let uid: string;
+    export let location: LocationMessageObj;
+
 </script>
 
-<a class="mapContainer" id={id} href={`https://maps.google.com/maps?q=${lat},${lon}`} target="_blank">
+<a class="mapContainer" id={location.id} href={`https://maps.google.com/maps?q=${location.lat},${location.lon}`} target="_blank">
     <div class="title">
         <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
-        <div class="text">{$chatRoomStore.userList[uid].name}'s Location</div>
+        <div class="text">{$chatRoomStore.userList[location.uid].name}'s Location</div>
     </div>
 </a>
 

@@ -1,15 +1,21 @@
-import { writable, type Writable } from "svelte/store";
+import { get, writable, type Updater, type Writable, type Subscriber } from "svelte/store";
+import { tick } from "svelte";
+import { chatRoomStore, myId } from "./store";
 
 export const lastMessageId = writable('');
 
 export class ServerMessageObj {
+    id: string;
     text: string;
     type: string;
     baseType: 'server';
+    readonly timeStamp: number;
     constructor() {
+        this.id = '';
         this.text = '';
         this.type = '';
         this.baseType = 'server';
+        this.timeStamp = Date.now();
     }
 }
 
@@ -17,12 +23,16 @@ export class LocationMessageObj {
     lat: number;
     lon: number;
     uid: string;
+    id: string;
     baseType: 'location';
-    constructor(lat: number, lon: number, uid: string) {
+    readonly timeStamp: number;
+    constructor(lat: number, lon: number, id: string, uid: string) {
         this.lat = lat;
         this.lon = lon;
         this.uid = uid;
+        this.id = id;
         this.baseType = 'location';
+        this.timeStamp = Date.now();
     }
 }
 
@@ -145,7 +155,155 @@ export class AudioMessageObj extends FileMessageObj {
     }
 }
 
-export const messageDatabase: Writable<Map<string, MessageObj | ServerMessageObj | LocationMessageObj>> = writable(new Map());
+
+class MessageDatabase{
+
+    #messageDatabaseArray: Writable<Array<MessageObj | ServerMessageObj | LocationMessageObj>>;
+    #messageIndexMap: Map<string, number>;
+
+    constructor() {
+        this.#messageDatabaseArray = writable([]);
+        this.#messageIndexMap = new Map();
+    }
+
+    add(message: MessageObj | ServerMessageObj | LocationMessageObj) {
+        //this.#messageDatabaseArray.push(message);
+        
+        this.#messageDatabaseArray.update(arr => {
+            arr.push(message);
+            this.#messageIndexMap.set(message.id, get(this.#messageDatabaseArray).length - 1);
+            if (message instanceof MessageObj){
+                message.classList = this.#makeClasslist(message);
+            }
+            return arr;
+        });
+    }
+
+
+    getMessage(id: string) {
+        //return this.#messageDatabaseArray[this.#messageIndexMap.get(id) as number];
+        return get(this.#messageDatabaseArray)[this.#messageIndexMap.get(id) as number];
+    }
+
+    getMessageByIndex(index: number) {
+        //return this.#messageDatabaseArray[index];
+        return get(this.#messageDatabaseArray).at(index);
+    }
+
+    /**
+     * Resets the message database
+     */
+    reset(){
+        this.#messageDatabaseArray.update(arr => {
+            arr.length = 0;
+            return arr;
+        })
+        this.#messageIndexMap.clear();
+    }
+
+    /**
+     * 
+     * @param id Message id
+     * @returns Index of the message in dataArray
+     */
+    getIndex(id: string) {
+        return this.#messageIndexMap.get(id) as number;
+    }
+
+    #makeClasslist(message: MessageObj){
+
+        let classListString = ' end';
+    
+        if (message.sender === get(myId)){
+            classListString += ' self';
+        }
+    
+        if (get(this.#messageDatabaseArray).length > 0){
+            
+            const index = this.getIndex(message.id);
+
+            let lastMessageObj = this.getMessageByIndex(index - 1);
+    
+            if (lastMessageObj instanceof MessageObj){
+    
+                if (message.replyTo){
+                    classListString += ' start newGroup';
+                } else {
+                    if (message.baseType == 'sticker'){
+                        classListString += ' start';
+                    }
+            
+                    if (message.baseType != lastMessageObj.baseType || lastMessageObj.sender !== message.sender){
+                        classListString += ' start newGroup';
+                    } else {
+                        if (lastMessageObj.baseType === message.baseType){
+                            //two messages of same kind
+                            if ( (message.baseType === 'text' || message.baseType === 'file' || message.baseType === 'image' || message.baseType === 'audio') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
+                                lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
+                            } else {
+                                classListString += ' start';
+                            }
+                        }
+                    }
+                }
+            } else {
+                classListString += ' start newGroup';
+            }
+        } else {
+            classListString += ' start newGroup';
+        }
+    
+        if (((get(chatRoomStore).maxUsers > 2 && !classListString.includes('self')) || message.replyTo) && classListString.includes('newGroup')){
+            classListString += ' title';
+        }
+    
+        return classListString;
+    }
+
+    /**
+     * 
+     * @param oldId Client generated temporary Message Id
+     * @param newId Server generated id after delivering the message to the server for relaying
+     * @returns void
+     */
+    markDelevered(message: MessageObj, newId: string) {
+
+        this.#messageDatabaseArray.update((array) => {
+            const index = this.getIndex(message.id);
+            if (index && array[index] instanceof MessageObj){
+                this.#messageIndexMap.delete(message.id);
+                message.id = newId;
+                message.sent = true;
+                array[index] = message;
+                this.#messageIndexMap.set(message.id, index);
+            }
+            return array;
+        });
+    }
+
+    subscribe(fn: Subscriber<Array<MessageObj | ServerMessageObj | LocationMessageObj>>) {
+        return this.#messageDatabaseArray.subscribe(fn);
+    }
+
+    //svelte store/update like
+    update(fn: Updater<Array<MessageObj | ServerMessageObj | LocationMessageObj>>) {
+        this.#messageDatabaseArray.update(fn);
+    }
+
+    has(id: string) {
+        return this.#messageIndexMap.has(id);
+    }
+
+    length(){
+        //return this.#messageDatabaseArray.length;
+        return get(this.#messageDatabaseArray).length;
+    }
+}
+
+
+export const messageDatabase = new MessageDatabase();
+
+
 
 export const eventTriggerMessageId = writable<string>('');
 export const replyTargetId = writable<string>('');

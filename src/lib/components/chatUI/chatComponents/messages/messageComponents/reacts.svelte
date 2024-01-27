@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { chatRoomStore } from "$lib/store";
-
 
     export let reactedBy: Map<string, string>;
 

@@ -4,7 +4,7 @@
     import { showReactsOnMessageModal } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
 
-    $: message = $messageDatabase.get($eventTriggerMessageId) as MessageObj;
+    $: message = messageDatabase.getMessage($eventTriggerMessageId) as MessageObj;
 
     // [uid: string]: react-emoji
     $: reacts = message?.reactedBy || new Map<string, string>();
@@ -48,10 +48,9 @@
 
 </script>
 
-{#if $showReactsOnMessageModal}
 <div class="wrapper" use:handleClick transition:fly|global={{y: 40, duration: 100}}>
     <div class="reactsOnMessage">
-        <div class="title">Reacts on {$chatRoomStore.userList[message.sender]?.name || "Zombie"}'s message</div>
+        <div class="title">Reacts on {$chatRoomStore.userList[message?.sender]?.name || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
             {#key reactsToShow}
@@ -90,7 +89,6 @@
           </div>
     </div>
 </div>
-{/if}
 
 <style lang="scss">
 

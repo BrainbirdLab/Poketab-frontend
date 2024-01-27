@@ -7,12 +7,12 @@
     import { onDestroy, onMount } from "svelte";
     import { getIcon } from "$lib/utils";
 
-    $: message = $messageDatabase.get($replyTargetId) as MessageObj || null;
-    $: sender = message ? (message?.sender == $myId ? 'self' : $chatRoomStore.userList[message?.sender]?.name) : 'Unknown';
+    $: message = messageDatabase.getMessage($replyTargetId) as MessageObj || null;
+    $: sender = message ? (message?.sender === $myId ? 'self' : $chatRoomStore.userList[message?.sender]?.name || 'Zombie') : 'Zombie';
 
 
     $: {
-        if (message && message.baseType == 'deleted'){
+        if (!message || message.baseType == 'deleted' || !$chatRoomStore.userList[message.sender]){
             closeReplyToast();
         }
     }

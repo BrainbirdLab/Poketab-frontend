@@ -2,9 +2,10 @@
 
     import { MessageObj, TextMessageObj, StickerMessageObj, LocationMessageObj, messageDatabase, lastMessageId, notice, ServerMessageObj, FileMessageObj, ImageMessageObj, AudioMessageObj } from "$lib/messageTypes";
     import { type User, chatRoomStore, userTypingString, myId, reactArray } from "$lib/store";
-    import { filterBadWords, makeClasslist } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { socket } from "$lib/components/socket";
     import { emojis } from "$lib/utils";
+    import { get } from "svelte/store";
 
     socket.on("newMessage", (message: MessageObj, messageId: string) => {
         //console.log(message);
@@ -46,36 +47,25 @@
             }
         }
 
-        messageDatabase.update((messages) => {
-            message.classList = makeClasslist(message);
-            message.sent = true;
-            messages.set(messageId, message);
-            lastMessageId.set(messageId);
-            notice.set(message);
-            console.log('new message received');
-            return messages;
-        });
+        message.sent = true;
+        message.id = messageId;
+        messageDatabase.add(message);
+        lastMessageId.set(messageId);
+        notice.set(message);
+        console.log('new message received');
 
         console.log('Done updating message database');
 
     });
 
     socket.on('linkPreviewData', (messageId: string, data: {title: string, description: string, image: string, url: string}) => {
-        if (!$messageDatabase.has(messageId)){
+
+        if (!messageDatabase.has(messageId)){
             return;
         }
 
-        console.log('link preview data received');
-        console.log(data);
-        
         messageDatabase.update((messages) => {
-            const message = messages.get(messageId) as MessageObj;
-            console.log(message.baseType);
-            console.log(message instanceof TextMessageObj);
-            if (message && message instanceof TextMessageObj){
-                console.log('updating link preview data');
-                message.linkPreviewData = data;
-            }
+
             return messages;
         });
     });
@@ -86,26 +76,32 @@
 
             console.log('delete req received');
             
-            if (!$messageDatabase.has(messageId)){
+            if (!messageDatabase.has(messageId) || !$chatRoomStore.userList[uid]){
                 return;
             }
 
-            let message = $messageDatabase.get(messageId) as TextMessageObj;
+            let message = messageDatabase.getMessage(messageId) as TextMessageObj;
 
             if (message.sender == uid){
-                if (!(message instanceof TextMessageObj)){
-                    message = Object.setPrototypeOf(message, TextMessageObj.prototype);
-                }
-                message.message = 'This message was deleted';
-                message.type = 'deleted';
-                message.replyTo = '';
+
+                const classList = message.classList;
+                const sender = message.sender;
+                const sent = message.sent;
+                const id = message.id;
+
                 messageDatabase.update((messages) => {
                     //change the message to "This message was deleted"
-                    if (message.classList.includes('title')){
-                        //remove the title
-                        message.classList = message.classList.replace('title', '');
-                    }
-                    messages.set(messageId, message);
+                    message = new TextMessageObj();
+                    message.message = 'This message was deleted';
+                    message.id = ``
+                    message.type = 'deleted';
+                    message.replyTo = '';
+                    message.sender = sender;
+                    message.sent = sent;
+                    message.classList = classList.replace('title', '');
+
+                    messages[messageDatabase.getIndex(id)] = message;
+
                     return messages;
                 });
             }
@@ -120,33 +116,33 @@
             return;
         }
 
-        messageDatabase.update((messages) => {
-            const message = new LocationMessageObj(coord.latitude, coord.longitude, uid);
+        const message = new LocationMessageObj(coord.latitude, coord.longitude, id, uid);
 
-            messages.set(id, message);
-
-            return messages;
-        });
+        messageDatabase.add(message);
     });
 
     socket.on("server_message", (msg: { text: string; id: string }, type: string) => {
             //console.log(msg);
 
-            messageDatabase.update((messages) => {
-                const message: ServerMessageObj = new ServerMessageObj();
-                message.text = msg.text;
-                message.type = type;
+            const message: ServerMessageObj = new ServerMessageObj();
+            message.text = msg.text;
+            message.id = msg.id;
+            message.type = type;
 
-                messages.set(msg.id, message);
-
-                return messages;
-            });
+            messageDatabase.add(message);
         },
     );
 
     socket.on("react", (messageId: string, uid: string, react: string) => {
+
+        if (!uid || !messageId || !$chatRoomStore || !$chatRoomStore.userList[uid] || !messageDatabase.has(messageId)){
+            //console.log("invalid seen");
+            return;
+        }
+
+        const message = messageDatabase.getMessage(messageId) as MessageObj;
+
         messageDatabase.update((messages) => {
-            const message = messages.get(messageId) as MessageObj;
             if (message && message instanceof MessageObj) {
                 //if same react is clicked again, remove it
                 if (message.reactedBy.get(uid) == react) {
@@ -177,7 +173,7 @@
     });
 
     socket.on("seen", (uid: string, messageId: string) => {
-        if (!uid || !messageId || !$chatRoomStore || !$chatRoomStore.userList[uid]) {
+        if (!uid || !messageId || !$chatRoomStore || !$chatRoomStore.userList[uid] || !messageDatabase.has(messageId)){
             //console.log("invalid seen");
             return;
         }
@@ -187,8 +183,9 @@
             return chatRoom;
         });
 
+        const message = messageDatabase.getMessage(messageId) as MessageObj;
+
         messageDatabase.update((messages) => {
-            const message = messages.get(messageId) as MessageObj;
 
             if (message && message instanceof MessageObj) {
                 message.seenBy.add(uid);

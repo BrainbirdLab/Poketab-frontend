@@ -4,43 +4,15 @@
     import { getTextData } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
     export let replyTo: string;
-    export let sender: string;
+    export let senderId: string;
     export let classList: string;
 
-    $: replyMessage = $messageDatabase.get(replyTo) as MessageObj;
+    $: index = messageDatabase.getIndex(replyTo);
 
-    function getTitle() {
-        let title = "";
+    $: replyMessage = $messageDatabase[index] as MessageObj;
 
-        if (replyTo && $messageDatabase.has(replyTo)) {
-            if (sender == $myId) {
-                const repliedTo = $messageDatabase.get(replyTo) as MessageObj;
-                title = `You replied to ${
-                    repliedTo.sender == $myId
-                        ? "yourself"
-                        : $chatRoomStore.userList[repliedTo.sender]?.name
-                }`;
-            } else {
-                const repliedTo = $messageDatabase.get(replyTo) as MessageObj;
-                title = `${
-                    $chatRoomStore.userList[sender]?.name
-                } replied to ${
-                    repliedTo.sender == $myId
-                        ? "you"
-                        : $chatRoomStore.userList[repliedTo.sender]?.name
-                }`;
-            }
-        } else {
-            if (sender == $myId) {
-                title = "You";
-            } else {
-                title = $chatRoomStore.userList[sender]?.name;
-            }
-        }
-
-        return title;
-    }
-
+    $: title = replyTo ? (`${senderId === $myId ? "You" : $chatRoomStore.userList[senderId]?.name || 'A Zombie'} replied to ${replyMessage?.sender === senderId ? "self" : $chatRoomStore.userList[replyMessage?.sender]?.name || 'a Zombie'}`) 
+                : (senderId === $myId ? 'You' : $chatRoomStore.userList[senderId]?.name || 'A Zombie');
 
 </script>
 
@@ -49,19 +21,23 @@
         {#if replyTo}
             <i class="fa-solid fa-reply"></i>
         {/if}
-        {getTitle()}
+        {title}
     </div>
 {/if}
 {#if replyTo}
-    <div class="messageReply {replyMessage.baseType}">
-        {#if replyMessage instanceof TextMessageObj}
-            {getTextData(replyMessage.message)}
-        {:else if replyMessage instanceof ImageMessageObj}
-            <img src={replyMessage.url} class="image" alt="{replyMessage.name}" />
-        {:else if replyMessage instanceof FileMessageObj}    
-            {getTextData(replyMessage.name)}
-        {:else if replyMessage instanceof StickerMessageObj}
-            <img src={replyMessage.src} class="sticker" alt="Sticker" />
+    <div class="messageReply {replyMessage?.baseType || "text"}">
+        {#if replyMessage}
+            {#if replyMessage instanceof TextMessageObj}
+                {getTextData(replyMessage.message)}
+            {:else if replyMessage instanceof ImageMessageObj}
+                <img src={replyMessage.url} class="image" alt="{replyMessage.name}" />
+            {:else if replyMessage instanceof FileMessageObj}    
+                {getTextData(replyMessage.name)}
+            {:else if replyMessage instanceof StickerMessageObj}
+                <img src={replyMessage.src} class="sticker" alt="Sticker" />
+            {/if}
+        {:else}
+            Zombie message
         {/if}
     </div>
 {/if}

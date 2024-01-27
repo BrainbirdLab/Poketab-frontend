@@ -2,6 +2,7 @@
 <script lang="ts">
     import "$lib/styles/global.scss";
     console.log("Mounted root +layout.svelte");
+
 </script>
 
 <svelte:body on:contextmenu|preventDefault/>

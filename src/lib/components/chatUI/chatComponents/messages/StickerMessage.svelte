@@ -6,16 +6,15 @@
     import MessageMeta from "./messageComponents/messageMeta.svelte";
 
     export let message: StickerMessageObj
-    export let id: string;
 
 </script>
 
-<li class="message msg-item {message.classList}" id="{id}"> <!-- noreply notitle delevered start end self react -->
-    <SeenBy seenBy={message.seenBy} messageId={id} />
+<li class="message msg-item {message.classList}" id="{message.id}"> <!-- noreply notitle delevered start end self react -->
+    <SeenBy seenBy={message.seenBy} id={message.id} />
     <div class="messageContainer">
-        <MessageMeta sender={message.sender} sent={message.sent}/>
+        <MessageMeta senderId={message.sender} isSent={message.sent}/>
         <div class="messageBody">
-            <MessageTop sender={message.sender} classList={message.classList} replyTo={message.replyTo}/>
+            <MessageTop senderId={message.sender} classList={message.classList} replyTo={message.replyTo}/>
             <div class="messageMain">
                 <div class="msg" data-mtype="sticker">
                     <img src="{message.src}" alt="{message.src}" data-sticker="{message.groupName}" class="data"/>
