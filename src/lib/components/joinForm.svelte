@@ -151,10 +151,6 @@
         showUserInputForm.set(true);
     }
 
-    onMount(() => {
-        reconnectButtonEnabled.set(false);
-    });
-
     onDestroy(() => {
         joinError.set({text: '', icon: ''});
     })

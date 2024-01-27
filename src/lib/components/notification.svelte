@@ -33,11 +33,11 @@
                 }, 1000);
                 formActionButtonDisabled.set(false);
             }
-        } else if (value.includes('Could not connect')){
-            connected = '';
         } else if (value == 'Connected to server') {
             //make the background green
             connected = 'connected';
+        } else {
+            connected = '';
         }
     });
 

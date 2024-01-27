@@ -10,6 +10,7 @@
     let mounted = false;
     
     reconnectButtonEnabled.set(false);
+    
     onMount(() => {
         formNotification.set('');
         mounted = true;

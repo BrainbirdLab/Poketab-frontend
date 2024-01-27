@@ -59,7 +59,7 @@
 <div class="container">
     <ReactiveLogo />
     <h1 class="title" transition:fly={{x: 20}}>
-        Poketab Messenger <span class="version">{version}</span>
+        Poketab Messenger <span class="version">{version} (Unstable)</span>
     </h1>
     <div class="slogan" transition:fly={{x:-10, delay: 300}}>A Secure and User-Friendly Chatting WebApp</div>
     
