@@ -2,49 +2,14 @@
     import {fly} from "svelte/transition";
 
     import {chatRoomStore, currentPage, joinedChat, myId, splashMessage} from "$lib/store";
-    import {clearModals, showQuickSettingsPanel, showSidePanel} from "$lib/components/modalManager";
+    import {clearModals, showSidePanel, showThemesPanel} from "$lib/components/modalManager";
     import { showToastMessage } from "$lib/components/toast";
     import { socket } from "$lib/components/socket";
     import { messageDatabase } from "$lib/messageTypes";
     import { sineIn, bounceOut, elasticOut } from "svelte/easing";
     import { flip } from "svelte/animate";
+    import QuickSettings from "./quickSettings.svelte";
 
-    let copyKeyIcon = 'fa-regular fa-clone';
-    let copyTimeout: number | null = null;
-
-    function copyKey(){
-        navigator.clipboard.writeText($chatRoomStore.Key).then(() => {
-            showToastMessage('Copied to clipboard!');
-            copyKeyIcon = 'fa-solid fa-check';
-            if (copyTimeout) clearTimeout(copyTimeout);
-            copyTimeout = setTimeout(() => {
-                copyKeyIcon = 'fa-regular fa-clone';
-            }, 1000);
-        })
-        .catch(err => {
-            console.log(err);
-            showToastMessage('Failed to copy');
-        });
-    }
-
-    function leaveChat(){
-        console.log('Leaving chat...');
-        splashMessage.set('Leaving Chat');
-        clearModals();
-        socket.emit('leaveChat', () => {
-            console.log('Left chat');
-            chatRoomStore.set({
-                Key: '',
-                userList: {},
-                maxUsers: 2,
-            });
-            myId.set('');
-            messageDatabase.reset();
-            joinedChat.set(false);
-            currentPage.set('form');
-            splashMessage.set('');
-        });
-    }
 
     function closeSideBar(node: HTMLElement){
 
@@ -63,41 +28,34 @@
         }
     }
 
-    $: KEY = $chatRoomStore.Key;
-
 </script>
 
-<div id="sidebarWrapper" transition:fly={{x: -30, duration: 100}} use:closeSideBar>
+<div id="sidebarWrapper" transition:fly={{x: -10, duration: 100}} use:closeSideBar>
     <div id="sidebar">
-        <div class="topbar">
-            <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i> {KEY}</button>
-        </div>
         <ul id="userlist">
-            <li class="user" in:fly|global={{y: 10, duration: 150, delay: 50}}>
-                <div class="avt">
-                    <img src="/images/avatars/{$chatRoomStore.userList[$myId].avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
-                    <i class="fa-solid fa-circle activeStatus"></i>
-                </div>
-                <span>{$chatRoomStore.userList[$myId].name} (You)</span>
-            </li>
-            {#each Object.entries($chatRoomStore.userList).filter(([id, _]) => id !== $myId) as [id, User], i (id)}
-                <li class="user" in:fly|global={{y: 10, duration: 150, delay: 50 * (i + 2)}} out:fly={{x: -20, duration: 100}} animate:flip={{duration: 100}}>
+            <div class="title"><i class="fa-solid fa-user-group"></i> Peoples on this chat</div>
+            <div class="users">
+                <li class="user" in:fly|global={{y: 10, duration: 150, delay: 50}}>
                     <div class="avt">
-                        <img src="/images/avatars/{User.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
-                        <i class="fa-solid fa-circle activeStatus"></i>
+                        <img src="/images/avatars/{$chatRoomStore.userList[$myId].avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
                     </div>
-                    <span>{User.name}</span>
+                    <span>{$chatRoomStore.userList[$myId].name} (You)</span>
                 </li>
-            {/each}
+                {#each Object.entries($chatRoomStore.userList).filter(([id, _]) => id !== $myId) as [id, User], i (id)}
+                    <li class="user" in:fly|global={{y: 10, duration: 150, delay: 50 * (i + 2)}} out:fly={{x: -20, duration: 100}} animate:flip={{duration: 100}}>
+                        <div class="avt">
+                            <img src="/images/avatars/{User.avatar}(custom).webp" height="30" width="30" alt="Profile-avatar">
+                        </div>
+                        <span>{User.name}</span>
+                    </li>
+                {/each}
+            </div>
         </ul>
-        <div class="footer_options">
-            <button on:click={()=> {showQuickSettingsPanel.set(true)}}><i class="fa-solid fa-gear settings hover button-animate small btn play-sound hoverShadow" title="Quick Settings [Alt+s]"></i></button>
-            <button on:click={leaveChat} id="logoutButton" class="button hover button-animate small btn play-sound"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Leave</span></button>
-        </div>
     </div>
 </div>
 
 <style lang="scss">
+
     #sidebarWrapper {
         width: 100%;
         top: 0;
@@ -105,47 +63,56 @@
         position: fixed;
         display: flex;
         flex-direction: row;
+        align-items: center;
+        justify-content: center;
         z-index: 60;
         backdrop-filter: brightness(0.8);
 
         #sidebar{
-            padding: 10px 10px 0 10px;
-            border-radius: 0 5px 5px 0;
+            padding: 10px;
+            border-radius: 10px;
             background: var(--primary-dark);
             backdrop-filter: blur(10px);
             display: flex;
-            width: 75%;
+            max-width: 75vw;
+            width: 300px;
+            height: max-content;
+            max-height: min(400px, 75vh);
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             filter: drop-shadow(0 4px 5px var(--shadow));
-
-            #keyname {
-                border-radius: 10px;
-                font-weight: 300;
-                color: var(--secondary-dark) !important;
-                * {
-                    color: var(--secondary-dark) !important;
-                    padding: 5px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                }
-            }
+            position: relative;
 
 
             #userlist {
                 overflow: scroll;
                 display: flex;
                 flex-direction: column;
+                width: 100%;
                 align-items: flex-start;
                 justify-content: flex-start;
-                height: 100%;
-                width: 100%;
-                padding: 10px;
-                list-style: none;
-                gap: 5px;
-                border-radius: 10px;
-                scrollbar-width: none;
+
+                .title{
+                    width: 100%;
+                    padding: 10px 5px 3px;
+                    font-size: 0.9rem;
+                    i{
+                        font-size: inherit;
+                    }
+                    //border-bottom: 2px solid var(--glass);
+                }
+
+                .users{
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                    align-items: flex-start;
+                    justify-content: flex-start;
+                    gap: 5px;
+                    padding: 10px 0;
+                    overflow: scroll;
+                }
 
                 .user {
                     display: flex;
@@ -153,7 +120,7 @@
                     align-items: center;
                     justify-content: center;
                     gap: 5px;
-                    font-weight: 900;
+                    font-size: 0.8rem;
 
                     .avt {
                         position: relative;
@@ -162,39 +129,11 @@
 
                         img{
                             display: block;
-                        }
-                        .activeStatus {
-                            position: absolute;
-                            bottom: 0;
-                            right: 0;
-                            font-size: 0.5rem;
-                            color: lime;
+                            height: 30px;
+                            width: 30px;
+                            aspect-ratio: 1/1;
                         }
                     }
-                }
-            }
-
-            .footer_options {
-                display: flex;
-                flex-direction: row;
-                width: 100%;
-                padding: 10px 0;
-                align-items: center;
-                justify-content: space-between;
-
-                .fa-gear {
-                    font-size: 1.5rem;
-                    cursor: pointer;
-                }
-
-                #logoutButton {
-                    background: red;
-                    font-size: 0.8rem;
-                    color: inherit;
-                }
-
-                .settings:hover {
-                    transform: rotate(45deg);
                 }
             }
         }
@@ -203,37 +142,5 @@
     #sidebarWrapper #sidebar{
         position: relative;
     }
-
-    @media screen and (orientation: landscape) {
-    //width 2x height
-    @media screen and (min-device-aspect-ratio: 1.5 / 1) {
-
-        #sidebarWrapper {
-            #sidebar {
-                width: 25%;
-            }
-        }
-    }
-
-    //width 1.5x height
-    @media screen and (min-device-aspect-ratio: 1.2 / 1) and (max-device-aspect-ratio: 1.5 / 1) {
-
-        #sidebarWrapper {
-            #sidebar {
-                width: 35%;
-            }
-        }
-    }
-
-    //same
-    @media screen and (min-device-aspect-ratio: 1 / 1) and (max-device-aspect-ratio: 1.2 / 1) {
-
-        #sidebarWrapper {
-            #sidebar {
-                width: 50%;
-            }
-        }
-    }
-}
 
 </style>

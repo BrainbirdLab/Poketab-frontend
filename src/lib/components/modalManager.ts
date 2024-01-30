@@ -19,7 +19,6 @@ showSidePanel.subscribe(value => {
 export const showQuickSettingsPanel = writable(false); //Has shortcut key 's'
 showQuickSettingsPanel.subscribe(value => {
     if (value){
-        showSidePanel.set(false);
         activeModalsStack.push(showQuickSettingsPanel);
     } else {
         //remove it from the stack array

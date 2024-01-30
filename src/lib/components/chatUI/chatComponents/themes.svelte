@@ -6,15 +6,6 @@
     import { showToastMessage } from "$lib/components/toast";
     import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
-    import { onDestroy } from "svelte";
-
-	const unsubQuickEmoji = quickEmoji.subscribe((val) => {
-		localStorage.setItem('quickEmoji', val);
-	});
-
-    onDestroy(() => {
-        unsubQuickEmoji();
-    });
 
     function handleThemes(node: HTMLElement){
 
@@ -27,23 +18,22 @@
             if (e.target !== node) {
                 const targetElement = e.target as HTMLElement;
                 const theme = toSentenceCase(targetElement.id);
-                console.log(`Theme ${theme} applied`);
-				showToastMessage(`${theme} theme applied`);
 				//make a request to the server to update the cookie
-				const themeRequest = new XMLHttpRequest();
-				themeRequest.open('PUT', `/theme/${theme}`);
-				themeRequest.send();
-				//after response from server
-				themeRequest.onreadystatechange = () => {
-					if (themeRequest.readyState == 4 && themeRequest.status == 200) {
-						showToastMessage(`${theme} theme applied`);
-					} else{
-						showToastMessage(`Could not apply ${theme} theme`);
-					}
-				};
-				//edit css variables
-				currentTheme.set(theme);
-                quickEmoji.set(themes[theme].quickEmoji);
+                fetch(`/theme/${theme}`, {
+                     method: 'PUT'
+                }).then(response => {
+                     if (response.ok){
+                          showToastMessage(`${theme} theme applied`);
+                          //edit css variables
+                          currentTheme.set(theme);
+                          quickEmoji.set(themes[theme].quickEmoji);
+                          localStorage.setItem('quickEmoji', themes[theme].quickEmoji);
+                     } else{
+                          showToastMessage(`Could not apply ${theme} theme`);
+                     }
+                }).catch(err => {
+                     showToastMessage(`Could not apply ${theme} theme`);
+                });
 			}
 
             showThemesPanel.set(false);
@@ -54,14 +44,14 @@
         return {
             destroy(){
                 node.onclick = null;
-				unsubQuickEmoji();
             }
         }
     }
 </script>
 
-<div id="themePicker" class="themePicker active" use:handleThemes>
-    <ul class="themeList" transition:fly={{y: 40, duration: 100}}>
+{#if $showThemesPanel}
+<div class="themePicker" use:handleThemes>
+    <ul class="themeList" transition:fly={{y: 20, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
         <li transition:fly|global={{y: 20, delay: 20 * (i + 1)}} class="theme hoverShadow clickable playable" id="{themename}">
             <img class="themeIcon" class:selected={$currentTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{themename}</span>
@@ -69,8 +59,7 @@
         {/each}
     </ul>
 </div>
-
-
+{/if}
 
 <style lang="scss">
 

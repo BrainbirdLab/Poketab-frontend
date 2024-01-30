@@ -221,7 +221,7 @@ body{
     height: -moz-max-content;
     height: max-content;
     gap: 15px;
-    background: #111d2d;
+    background: var(--primary-dark, #1e394e);
     padding: 15px;
     border-radius: 10px;
     min-width: 320px;
@@ -273,7 +273,7 @@ input[type="range"] {
     -webkit-appearance: none;
     padding: 10px 0;
     width: 100%;
-    background: var(--primary-dark, #111d2a);
+    background: var(--primary-dark, #1e394e);
 }
 
 input[type="range"]:focus {

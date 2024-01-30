@@ -1,13 +1,13 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
-    import { showSidePanel } from "$lib/components/modalManager";
+    import { showQuickSettingsPanel, showSidePanel } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
 </script>
 
 <div class="navbar" transition:fly={{y: -50}}>
-    <div id="currentlyActive"><i class="fa-solid fa-user"></i> Active: {Object.keys($chatRoomStore.userList).length}/{$chatRoomStore.maxUsers}</div>
+    <button on:click={() => {showSidePanel.set(true)}} class="currentlyActive"><i class="fa-solid fa-user"></i> Active: {Object.keys($chatRoomStore.userList).length}/{$chatRoomStore.maxUsers}</button>
     <div class="optionPanel">                
-        <button id="more" class="button-animate btn hover roundedBtn play-sound hoverShadow" title="Active users and Settings [Alt+o]" on:click={()=>{showSidePanel.set(true)}}>
+        <button class="button-animate btn hover roundedBtn play-sound hoverShadow" title="Customize chat" on:click={()=>{showQuickSettingsPanel.set(true)}}>
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
     </div>
@@ -33,7 +33,7 @@
             font-size: 0.9rem;
             color: var(--foreground-dark);
         }
-        #currentlyActive {
+        .currentlyActive {
             display: flex;
             flex-direction: row;
             align-items: center;

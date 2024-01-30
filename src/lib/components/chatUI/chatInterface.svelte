@@ -21,7 +21,7 @@
     import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
-    import { chatRoomStore, currentTheme, quickEmoji, myId, userTypingString, type User, showScrollPopUp, listenScroll } from "$lib/store";
+    import { chatRoomStore, currentTheme, myId, userTypingString, type User, showScrollPopUp, listenScroll, quickEmoji } from "$lib/store";
     import {
         activeModalsStack,
         selectedSticker,
@@ -239,19 +239,17 @@
 
     onMount(() => {
 
+
+        showThemesPanel.subscribe((value) => {
+            console.log(`showThemesPanel: ${value}`);
+        });
+
         //$messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
+        quickEmoji.set(themes[$currentTheme].quickEmoji);
 
         unsubMessageDatabase = messageDatabase.subscribe(updateUI);
 
         document.onkeydown = keyBindingHandler;
-
-        let loadedEmoji = localStorage.getItem('quickEmoji') || themes[$currentTheme].quickEmoji;
-
-        if (!emojis.includes(loadedEmoji)){
-            loadedEmoji = themes[$currentTheme].quickEmoji;
-        }
-
-        quickEmoji.set(loadedEmoji);
 
         window.onfocus = () => {
             if (!$lastMessageId) {
@@ -694,9 +692,7 @@
     <QuickSettings />
 {/if}
 
-{#if $showThemesPanel}
-    <Themes />
-{/if}
+<Themes />
 
 {#if $showStickersPanel}
     <StickersKeyboard />

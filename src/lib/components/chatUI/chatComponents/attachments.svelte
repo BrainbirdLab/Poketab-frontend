@@ -171,6 +171,7 @@
         });
         */
 
+        /*
         for (const file of files){
 
             //make files to objectURL
@@ -236,7 +237,94 @@
                     
                 }
             }
-        };
+        }
+        */
+
+        //send files metadata via socket and send files via xhr separately with promise.all
+        const promisses = files.map((file) => {
+            return new Promise((resolve, reject) => {
+
+                const messageId = crypto.randomUUID();
+
+                let message: FileMessageObj | ImageMessageObj | AudioMessageObj;
+
+                if (sendAs !== 'audio'){
+                    
+                    if (sendAs === 'file'){
+                        message = new FileMessageObj();
+                    } else {
+                        message = new ImageMessageObj();
+                    }
+                    
+                    message.id = messageId;
+                    message.sender = $myId;
+                    message.size = file.size;
+                    message.type = file.type;
+                    message.name = file.name;
+                    
+                    if (message instanceof ImageMessageObj) {
+                        makeThumbnailFromImage(file, 40).then((thumbnail) => {
+                            if (message instanceof ImageMessageObj) {
+                                message.thumbnail = thumbnail.url;
+                                message.width = thumbnail.width;
+                                message.height = thumbnail.height;
+                                sendMessage(message);
+                            }
+                        });
+                    } else {
+                        sendMessage(message);
+                    }
+
+                } else {
+
+                    message = new AudioMessageObj();
+
+                    if (message instanceof AudioMessageObj) { // Here we used this to make typescript happy
+
+                        message.id = messageId;
+                        message.sender = $myId;
+                        message.size = file.size;
+                        message.name = file.name;
+                        message.audio = new Audio();
+                        message.audio.src = URL.createObjectURL(file);
+
+                        (message as AudioMessageObj).audio.addEventListener('loadedmetadata', async () => {
+                            if (message instanceof AudioMessageObj) {
+                                message.duration = message.audio.duration;
+
+                                console.log('Set message in database === ' + file.name);
+                                console.log(document.getElementById(message.id));
+                                sendMessage(message);
+                            }
+                        }, { once: true });
+                        
+                    }
+                }
+
+
+                const formData = new FormData();
+                formData.append('file', file);
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', `http://localhost:3000/upload/${$chatRoomStore.Key}/${$myId}`);
+                xhr.onload = () => {
+                    if (xhr.status === 200){
+                        resolve(xhr.responseText);
+                    } else {
+                        reject(xhr.responseText);
+                    }
+                };
+                xhr.send(formData);
+            });
+        });
+
+        Promise.all(promisses).then((res) => {
+            console.log(res);
+            showToastMessage('All files sent.');
+            //socket.emit('files', res, $chatRoomStore.Key, $myId);
+        }).catch((err) => {
+            console.log(err);
+            showToastMessage('Unable to send files.');
+        });
     }
 
     function handleClick(node: HTMLElement){

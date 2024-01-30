@@ -1,16 +1,17 @@
 <script lang="ts">
-    import { messageDatabase, replyTargetId, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
+    import { replyTargetId, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
 
-    import {SEND_METHOD, quickEmoji, quickEmojiEnabled, myId, sendMethod, chatRoomStore} from "$lib/store";
+    import {SEND_METHOD, quickEmojiEnabled, myId, sendMethod, chatRoomStore, currentTheme, quickEmoji} from "$lib/store";
     import { showAttachmentPickerPanel, showStickersPanel } from "$lib/components/modalManager";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";
     import ScrollDownPopup from "./scrollDownPopup.svelte";
     import TypingIndicator from "./typingIndicator.svelte";
+    import { themes } from "$lib/themes";
     
     let newMessage = '';
 
@@ -50,7 +51,7 @@
             newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
     
             if (quickEmoji){
-                newMessage = $quickEmojiEnabled ? $quickEmoji : '';
+                newMessage = $quickEmojiEnabled ? themes[$currentTheme].quickEmoji : '';
                 message.type = 'emoji';
                 message.baseType = 'text';
             } else if (isEmoji(newMessage)) {

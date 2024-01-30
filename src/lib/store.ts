@@ -28,7 +28,6 @@ export const messageSoundEnabled = writable(true);
 export const quickEmojiEnabled = writable(true);
 export const quickEmoji = writable('');
 
-
 export const reconnectButtonEnabled = writable(false);
 export const formActionButtonDisabled = writable(true);
 

@@ -215,6 +215,10 @@
         i{
             font-size: 2rem;
         }
+
+        .fa-people-group{
+            color: #ffb000;
+        }
     }
 
     .inputForm{
