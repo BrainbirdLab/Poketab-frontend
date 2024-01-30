@@ -1,14 +1,9 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
 
-    import {chatRoomStore, currentPage, joinedChat, myId, splashMessage} from "$lib/store";
-    import {clearModals, showSidePanel, showThemesPanel} from "$lib/components/modalManager";
-    import { showToastMessage } from "$lib/components/toast";
-    import { socket } from "$lib/components/socket";
-    import { messageDatabase } from "$lib/messageTypes";
-    import { sineIn, bounceOut, elasticOut } from "svelte/easing";
+    import {chatRoomStore, myId} from "$lib/store";
+    import {showSidePanel} from "$lib/components/modalManager";
     import { flip } from "svelte/animate";
-    import QuickSettings from "./quickSettings.svelte";
 
 
     function closeSideBar(node: HTMLElement){

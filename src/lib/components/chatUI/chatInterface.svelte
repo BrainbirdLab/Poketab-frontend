@@ -21,7 +21,7 @@
     import SidePanel from "./chatComponents/sidePanel.svelte";
     import { fade } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
-    import { chatRoomStore, currentTheme, myId, userTypingString, type User, showScrollPopUp, listenScroll, quickEmoji } from "$lib/store";
+    import { chatRoomStore, currentTheme, myId, userTypingString, showScrollPopUp, listenScroll, quickEmoji } from "$lib/store";
     import {
         activeModalsStack,
         selectedSticker,
@@ -48,8 +48,8 @@
     import LocationMessage from "$lib/components/chatUI/chatComponents/messages/LocationMessage.svelte";
     import NavBar from "./chatComponents/navbar.svelte";
     import hljs from "highlight.js";
-    import { copyText, emojis } from "$lib/utils";
-    import { get, type Unsubscriber } from "svelte/store";
+    import { copyText } from "$lib/utils";
+    import type { Unsubscriber } from "svelte/store";
     import ReactsOnMessage from "./chatComponents/reactsOnMessage.svelte";
     import { themes } from "$lib/themes";
     import MessageSockets from "./messageSockets.svelte";
