@@ -3,7 +3,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/itsfuad/Poketab-Frontend)
 ![GitHub contributors](https://img.shields.io/github/contributors/itsfuad/Poketab-Frontend?style=flat-square)
 ![GitHub last commit](https://img.shields.io/github/last-commit/itsfuad/Poketab-Frontend?style=flat-square)
-[![DeepScan grade](https://deepscan.io/api/teams/20528/projects/23967/branches/733333/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=23967&bid=733333)
+[![DeepScan grade](https://deepscan.io/api/teams/20528/projects/26417/branches/840416/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=26417&bid=840416)
 
 ![GitHub](https://img.shields.io/github/license/itsfuad/Poketab-Frontend?style=flat-square)
 ![Website](https://img.shields.io/website?down_color=Red&down_message=Offline&style=flat-square&up_color=green&up_message=Online&url=https%3A%2F%2Fpoketab.vercel.app)
