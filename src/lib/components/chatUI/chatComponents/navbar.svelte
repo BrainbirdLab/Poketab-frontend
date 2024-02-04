@@ -1,15 +1,17 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
-    import { showQuickSettingsPanel, showSidePanel } from "$lib/components/modalManager";
-    import { fly } from "svelte/transition";
+    import { showQuickSettingsPanel } from "$lib/components/modalManager";
+    import { fade, fly } from "svelte/transition";
 </script>
 
 <div class="navbar" transition:fly={{y: -50}}>
-    <button on:click={() => {showSidePanel.set(true)}} class="currentlyActive"><i class="fa-solid fa-user"></i> Active: {Object.keys($chatRoomStore.userList).length}/{$chatRoomStore.maxUsers}</button>
-    <div class="optionPanel">                
-        <button class="button-animate btn hover roundedBtn play-sound hoverShadow" title="Customize chat" on:click={()=>{showQuickSettingsPanel.set(true)}}>
+    <div class="currentlyActive"><i class="fa-solid fa-user"></i> Active: {Object.keys($chatRoomStore.userList).length}/{$chatRoomStore.maxUsers}</div>
+    <div class="optionPanel">    
+        {#if !$showQuickSettingsPanel}            
+        <button transition:fade={{duration: 100}} class="button-animate btn hover roundedBtn play-sound hoverShadow" title="Customize chat" on:click={()=>{showQuickSettingsPanel.set(true)}}>
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
+        {/if}            
     </div>
 </div>
 

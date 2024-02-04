@@ -18,7 +18,7 @@
         currentPlayingAudioMessage,
     } from "$lib/messageTypes";
     import { showToastMessage } from "$lib/components/toast";
-    import SidePanel from "./chatComponents/sidePanel.svelte";
+    import UsersPanel from "./chatComponents/usersPanel.svelte";
     import { fade } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
     import { chatRoomStore, currentTheme, myId, userTypingString, showScrollPopUp, listenScroll, quickEmoji } from "$lib/store";
@@ -29,7 +29,6 @@
         showMessageOptions,
         showQuickSettingsPanel,
         showReactsOnMessageModal,
-        showSidePanel,
         showStickersPanel,
         showThemesPanel,
     } from "$lib/components/modalManager";
@@ -49,7 +48,7 @@
     import NavBar from "./chatComponents/navbar.svelte";
     import hljs from "highlight.js";
     import { copyText } from "$lib/utils";
-    import type { Unsubscriber } from "svelte/store";
+    import { type Unsubscriber } from "svelte/store";
     import ReactsOnMessage from "./chatComponents/reactsOnMessage.svelte";
     import { themes } from "$lib/themes";
     import MessageSockets from "./messageSockets.svelte";
@@ -83,11 +82,6 @@
     let scrolledToBottomPx = 0;
 
     let timeout: number | null = null;
-
-    /**
-     * Auto scroll to bottom when new message arrives if scrolled to bottom if less that 200 px. (Smooth scroll)
-     * If user reacts to message, lift up the messages that much it went down. And on react remove, if scrolled then scroll down that much px
-    */
 
     beforeUpdate(() => {
         if (!$messageContainer) {
@@ -206,10 +200,6 @@
             }
         }
 
-        if (e.key === "o" && e.altKey) {
-            showSidePanel.update((value) => !value);
-        }
-
         if (e.key === "s" && e.altKey) {
             showQuickSettingsPanel.update((value) => !value);
         }
@@ -239,11 +229,6 @@
 
     onMount(() => {
 
-
-        showThemesPanel.subscribe((value) => {
-            console.log(`showThemesPanel: ${value}`);
-        });
-
         //$messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
         quickEmoji.set(themes[$currentTheme].quickEmoji);
 
@@ -267,6 +252,7 @@
     onDestroy(() => {
         document.onkeydown = null;
         window.onfocus = null;
+        window.onresize = null;
         if (unsubMessageDatabase){
             unsubMessageDatabase();
         }
@@ -684,10 +670,6 @@
 
 <ConnectivityState bind:offline={isOffline} />
 
-{#if $showSidePanel}
-    <SidePanel />
-{/if}
-
 {#if $showQuickSettingsPanel}
     <QuickSettings />
 {/if}
@@ -714,7 +696,7 @@
 <style lang="scss">
     .container {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: center;
         align-items: center;
         height: 100%;

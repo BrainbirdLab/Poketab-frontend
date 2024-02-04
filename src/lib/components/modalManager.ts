@@ -4,18 +4,6 @@ console.log('Modal Manager Running');
 
 export let activeModalsStack: Writable<boolean>[] = [];
 
-
-export const showSidePanel = writable(false); //Has shortcut key 'o'
-showSidePanel.subscribe(value => {
-    if (value){
-        clearModals();
-        activeModalsStack.push(showSidePanel);
-    } else {
-        //remove it from the stack array
-        activeModalsStack = activeModalsStack.filter(modal => modal !== showSidePanel);
-    }
-});
-
 export const showQuickSettingsPanel = writable(false); //Has shortcut key 's'
 showQuickSettingsPanel.subscribe(value => {
     if (value){

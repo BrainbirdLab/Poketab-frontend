@@ -23,6 +23,8 @@
     import { socket } from "$lib/components/socket";
     import { messageDatabase } from "$lib/messageTypes";
     import { showToastMessage } from "$lib/components/toast";
+    import UsersPanel from "./usersPanel.svelte";
+    import { bounceOut, elasticOut } from "svelte/easing";
 
     type Settings = {
         buttonSoundEnabled: boolean;
@@ -181,32 +183,45 @@
 </script>
 
 <div class="settingsWrapper" use:handleClick>
-    <div class="settings" transition:fly={{ x: 40, duration: 100 }}>
-        <div class="top" transition:fly|global={{ x: 20, delay: 0 }}>
+    <div class="settings" 
+        in:fly={{ x: 40, duration: 400, easing: elasticOut, opacity: 1 }}
+        out:fly={{ x: 40, duration: 100}}
+    >
+        
+        <div class="top">
             <button
                 id="back"
                 class="back button-animate clickable hover roundedBtn"
             >
-                <i class="fa-solid fa-caret-left" />
+                <i class="fa-solid fa-chevron-left" />
             </button>
-            <div class="title">
+        </div>
+
+        
+
+        <div class="subsectionsContainer">
+            
+            <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i>Copy chat key: {KEY}</button>
+            
+            <div class="subsections">
+                <div class="subtitle">
+                    Peoples on this chat <i class="fa-solid fa-users"></i>
+                </div>
+                <UsersPanel />
+            </div>
+
+            <div class="subtitle sectionHeadTitle">
                 Customize chat <i class="fa-solid fa-gears"></i>
             </div>
-        </div>
-        <div class="subsettingsContainer">
-            <button transition:fly|global={{ x: 20, delay: 10 }} id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i>Chat key: {KEY}</button>
-            <div class="subsettings">
+
+            <div class="subsections">
                 <div
-                    class="subtitle"
-                    transition:fly|global={{ x: 20, delay: 10 }}
-                >
+                    class="subtitle">
                     Sounds <i class="fa-solid fa-volume-high" />
                 </div>
                 <!-- Enable/disable button sounds -->
                 <div
-                    class="field-checkers btn play-sound hoverShadow"
-                    transition:fly|global={{ x: 20, delay: 20 }}
-                >
+                    class="field-checkers btn play-sound hoverShadow">
                     <input
                         type="checkbox"
                         id="buttonSound"
@@ -219,9 +234,7 @@
                 </div>
                 <!-- Enable/disable message sounds -->
                 <div
-                    class="field-checkers btn play-sound hoverShadow"
-                    transition:fly|global={{ x: 20, delay: 30 }}
-                >
+                    class="field-checkers btn play-sound hoverShadow">
                     <input
                         type="checkbox"
                         id="messageSound"
@@ -234,17 +247,14 @@
                 </div>
             </div>
 
-            <div class="subsettings">
+
+            <div class="subsections">
                 <div
-                    class="subtitle"
-                    transition:fly|global={{ x: 20, delay: 40 }}
-                >
+                    class="subtitle">
                     Keyboard <i class="fa-regular fa-keyboard" />
                 </div>
                 <div
-                    class="field-checkers keyboardMode btn play-sound hoverShadow"
-                    transition:fly|global={{ x: 20, delay: 50 }}
-                >
+                    class="field-checkers keyboardMode btn play-sound hoverShadow">
                     <input
                         bind:group={$sendMethod}
                         type="radio"
@@ -262,9 +272,7 @@
                 </div>
 
                 <div
-                    class="field-checkers keyboardMode btn play-sound hoverShadow"
-                    transition:fly|global={{ x: 20, delay: 60 }}
-                >
+                    class="field-checkers keyboardMode btn play-sound hoverShadow">
                     <input
                         bind:group={$sendMethod}
                         type="radio"
@@ -284,18 +292,15 @@
                 </div>
             </div>
 
+
             <!--Quick emoji-->
-            <div class="subsettings">
+            <div class="subsections">
                 <div
-                    class="subtitle"
-                    transition:fly|global={{ x: 20, delay: 70 }}
-                >
+                    class="subtitle">
                     Quick emoji <i class="fa-solid fa-face-smile-wink"></i>
                 </div>
                 <div
-                    class="field-checkers btn play-sound hoverShadow"
-                    transition:fly|global={{ x: 20, delay: 80 }}
-                >
+                    class="field-checkers btn play-sound hoverShadow">
                     <input
                         bind:checked={$quickEmojiEnabled}
                         type="checkbox"
@@ -308,9 +313,7 @@
                 </div>
                 <div
                     class="field-checkers btn play-sound hoverShadow"
-                    id="chooseQuickEmoji"
-                    transition:fly|global={{ x: 20, delay: 90 }}
-                >
+                    id="chooseQuickEmoji">
                     <div class="wrapper">
                         <div class="label">Change quick emoji</div>
                         {#if showQuickEmojiDrawer}
@@ -340,9 +343,10 @@
                     />
                 {/if}
             </div>
+
+
             <div class="footer_options">
                 <button
-                    transition:fly|global={{ x: -10, delay: 100 }}
                     id="themeButton"
                     on:click={() => {
                         showThemesPanel.set(true);
@@ -355,14 +359,13 @@
                     />
                 </button>
                 <button
-                    transition:fly|global={{ x: 10, delay: 100 }}
                     on:click={leaveChat}
                     id="logoutButton"
                     class="button hover button-animate small btn play-sound"
                     ><i class="fa-solid fa-arrow-right-from-bracket"></i>Leave chat
                     </button
                 >
-                <div class="feedback" transition:fly|global={{ x: 10, delay: 150}}>
+                <div class="feedback">
                     <a href="mailto:itsfuad@programmer.net">
                         Provide feedback <i class="fa-solid fa-envelope"></i>
                     </a>
@@ -370,13 +373,14 @@
                         Report bugs, suggest features, or just say hi!
                     </div>
                 </div>
-                <div class="footer" transition:fly|global={{ x: 10, delay: 200}}>
+                <div class="footer">
                     <div class="location">
                         Dhaka - 1700, Bangladesh <i class="fa-solid fa-location-dot"></i>
                     </div>
                     <a href="https://www.flaticon.com/free-icons/pokemon" title="pokemon icons">Assets <i class="fa-solid fa-compass-drafting"></i></a>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -605,7 +609,7 @@
             align-items: center;
         }
 
-        .subsettingsContainer {
+        .subsectionsContainer {
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -614,12 +618,16 @@
             width: 100%;
             height: 100%;
             overflow-y: scroll;
-            .subsettings {
+            .subsections {
                 width: 100%;
-                .subtitle {
-                    font-size: 0.9rem;
-                    color: var(--secondary-dark);
-                    padding-bottom: 5px;
+            }
+            .subtitle {
+                font-size: 0.9rem;
+                color: var(--secondary-dark);
+                padding-bottom: 5px;
+
+                &.sectionHeadTitle{
+                    margin-top: 10px;
                 }
             }
         }

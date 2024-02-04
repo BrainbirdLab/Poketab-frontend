@@ -51,7 +51,7 @@
             newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
     
             if (quickEmoji){
-                newMessage = $quickEmojiEnabled ? themes[$currentTheme].quickEmoji : '';
+                newMessage = $quickEmojiEnabled ? $quickEmoji : '';
                 message.type = 'emoji';
                 message.baseType = 'text';
             } else if (isEmoji(newMessage)) {

@@ -21,6 +21,30 @@
             avatar: "squirtle",
             lastSeenMessage: null,
         },
+        "uid-3": {
+            uid: "uid-3",
+            name: "User 3",
+            avatar: "bullbasaur",
+            lastSeenMessage: null,
+        },
+        "uid-4": {
+            uid: "uid-4",
+            name: "User 4",
+            avatar: "charmander",
+            lastSeenMessage: null,
+        },
+        "uid-5": {
+            uid: "uid-5",
+            name: "User 5",
+            avatar: "eevee",
+            lastSeenMessage: null,
+        },
+        "uid-6": {
+            uid: "uid-6",
+            name: "User 6",
+            avatar: "jigglypuff",
+            lastSeenMessage: null,
+        },
     };
 
     $myId = "uid-1";
@@ -29,39 +53,6 @@
     let mounted = false;
     
     onMount(() => {
-        
-        const audio = new Audio("./sounds/audio.mp3");
-
-        audio.onloadeddata = () => {
-            //console.log("audio loaded");
-            //console.log(audio.duration);
-    
-            messageDatabase.update((msg) => {
-        
-                const m = new AudioMessageObj();
-                m.audio.src = "./sounds/audio.mp3";
-                m.sender = "uid-1";
-                m.url = "./sounds/audio.mp3";
-                m.name = "Audio 1";
-                m.classList = "self start";
-                m.sent = true;
-        
-                msg.set("msg-1", m);
-
-                const m2 = new AudioMessageObj();
-                m2.audio.src = "./sounds/audio2.mp3";
-                m2.sender = "uid-1";
-                m2.url = "./sounds/audio2.mp3";
-                m2.name = "Audio 2";
-                m2.classList = "self end";
-                m2.sent = true;
-
-                msg.set("msg-2", m2);
-    
-                return msg;
-            });
-        }
-
 
         mounted = true;
 
