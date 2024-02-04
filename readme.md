@@ -1,16 +1,14 @@
 # Poketab Messenger 
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/itsfuad/Poketab-Messenger?style=flat-square)
-![GitHub repo size](https://img.shields.io/github/repo-size/itsfuad/Poketab-Messenger)
-![GitHub contributors](https://img.shields.io/github/contributors/itsfuad/Poketab-Messenger?style=flat-square)
-![GitHub last commit](https://img.shields.io/github/last-commit/itsfuad/Poketab-Messanger?style=flat-square)
-[![DeepScan grade](https://deepscan.io/api/teams/20528/projects/23967/branches/733333/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=23967&bid=733333)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/itsfuad/Poketab-Frontend?style=flat-square)
+![GitHub repo size](https://img.shields.io/github/repo-size/itsfuad/Poketab-Frontend)
+![GitHub contributors](https://img.shields.io/github/contributors/itsfuad/Poketab-Frontend?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/itsfuad/Poketab-Frontend?style=flat-square)
+[![DeepScan grade](https://deepscan.io/api/teams/20528/projects/26417/branches/840416/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=26417&bid=840416)
 
-![GitHub](https://img.shields.io/github/license/itsfuad/Poketab-Messenger?style=flat-square)
+![GitHub](https://img.shields.io/github/license/itsfuad/Poketab-Frontend?style=flat-square)
 ![Website](https://img.shields.io/website?down_color=Red&down_message=Offline&style=flat-square&up_color=green&up_message=Online&url=https%3A%2F%2Fpoketab.vercel.app)
 
 Poketab Messenger is a temporary chat application that allows users to create and join group chats with up to 10 people. The app utilizes a unique key system to ensure privacy and security, as users can only join a chat by using a key generated and sent by the server.
-
-![Cover Image](./cover.png)
 
 ## Key Features
 - Create and join group chats with up to 10 people
