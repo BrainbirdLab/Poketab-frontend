@@ -195,7 +195,7 @@ class MessageDatabase{
      */
     reset(){
         this.#messageDatabaseArray.update(arr => {
-            arr.length = 0;
+            arr = [];
             return arr;
         })
         this.#messageIndexMap.clear();
