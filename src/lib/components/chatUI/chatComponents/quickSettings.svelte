@@ -314,7 +314,12 @@
                         id="quickEmoji"
                     />
                     <label for="quickEmoji">
-                        <div class="textContainer">Enable quick emoji</div>
+                        <div class="textContainer">
+                            Enable quick emoji
+                            <div class="moreInfo">
+                                Use send button to send a quick emoji
+                            </div>
+                        </div>
                         <span class="toggleButton" />
                     </label>
                 </div>
@@ -322,7 +327,12 @@
                     class="field-checkers btn play-sound hoverShadow"
                     id="chooseQuickEmoji">
                     <div class="wrapper">
-                        <div class="label">Change quick emoji</div>
+                        <div class="label">
+                            Change quick emoji
+                            <div class="moreInfo">
+                                Choose a quick emoji to send
+                            </div>
+                        </div>
                         {#if showQuickEmojiDrawer}
                             <i
                                 in:spin={{ duration: 200, degree: 180 }}
@@ -357,6 +367,9 @@
                     <div class="wrapper">
                         <i class="fa-solid fa-palette" />
                         Change theme
+                        <div class="moreInfo">
+                            Change the look of the chat
+                        </div>
                     </div>
                     <i class="fa-solid fa-brush"/>
                 </div>
@@ -367,6 +380,14 @@
                 <div class="subtitle sectionHeadTitle red">
                     Danger zone <i class="fa-solid fa-skull"></i>
                 </div>
+                <ul class="moreInfo">
+                    <li>
+                        Destroy chat will end the chat and delete all messages
+                    </li>
+                    <li>
+                        Leave chat will end the chat and keep the others to chat
+                    </li>
+                </ul>
                 <div class="subsection btn-grp">
                     <button
                         on:click={() => leaveChat(true)}
@@ -393,10 +414,11 @@
                     </div>
                 </div>
                 <div class="footer">
+                    &copy; {new Date().getFullYear()} - BrainBird.org
                     <div class="location">
                         Dhaka - 1700, Bangladesh <i class="fa-solid fa-location-dot"></i>
+                        <a href="https://www.flaticon.com/free-icons/pokemon" title="pokemon icons">Assets <i class="fa-solid fa-compass-drafting"></i></a>
                     </div>
-                    <a href="https://www.flaticon.com/free-icons/pokemon" title="pokemon icons">Assets <i class="fa-solid fa-compass-drafting"></i></a>
                 </div>
             </div>
 
@@ -427,7 +449,7 @@
     .footer{
         font-size: 0.7rem;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         width: 100%;
         justify-content: center;
         align-items: center;
@@ -490,11 +512,11 @@
         }
 
         #destroy{
-            background: #19394d;
-        }
-
-        #logoutButton{
             background: red;
+        }
+        
+        #logoutButton{
+            background: #19394d;
             font-size: 0.8rem;
             color: inherit;
         }
@@ -514,6 +536,21 @@
     .moreInfo {
         font-size: 0.7rem;
         color: grey;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 5px;
+
+        * {
+            color: inherit;
+            font-size: inherit;
+        }
+
+        li{
+            margin-left: 10px;
+            list-style: disc;
+        }
     }
 
     .field-checkers {

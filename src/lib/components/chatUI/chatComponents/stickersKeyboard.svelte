@@ -206,7 +206,7 @@
             max-width: clamp(300px, 100vw, 600px);
             height: clamp(300px, 40vh, 400px);
             background-color: #111d2a;
-            border-radius: 25px 25px 0 0;
+            border-radius: 10px 10px 0 0;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -219,10 +219,10 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                border-radius: 25px;
+                border-radius: 10px;
                 gap: 5px;
                 padding: 2px;
-                background: #244263;
+                background: var(--glass);
                 
                 .navBtn{
                     width: 20px;
