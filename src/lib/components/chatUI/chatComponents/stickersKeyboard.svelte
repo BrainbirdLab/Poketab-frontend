@@ -2,7 +2,7 @@
     import { fly } from "svelte/transition";
     import { showStickersPanel, selectedSticker } from "$lib/components/modalManager";
     import { myId } from "$lib/store";
-    import { StickerMessageObj, eventTriggerMessageId, messageDatabase, replyTargetId } from "$lib/messageTypes";
+    import { StickerMessageObj, eventTriggerMessageId, replyTargetId } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
     const Stickers = [
@@ -27,7 +27,6 @@
         { name: "soul", count: "25", icon: "14" },
     ];
 
-
     let stickerHeader: HTMLElement;
 
     function stickersHandler(node: HTMLElement){
@@ -36,11 +35,20 @@
             selectedSticker.set(Stickers[0].name);
         }
 
+
         const unsub = selectedSticker.subscribe(value => {
-            document.getElementById(value)?.scrollIntoView({
+
+            const elem = document.getElementById(value);
+
+            if (!elem){
+                return;
+            }
+
+            elem.scrollIntoView({
                 block: "center",
                 inline: "center",
             });
+
             localStorage.setItem("selectedSticker", value);
         });
 
@@ -103,8 +111,6 @@
     function stickersBodyHandler(node: HTMLElement){
         node.onscrollend = () => {
             const head = stickerHeader.querySelector('.selected');
-            
-            //console.log('Scroll ended. Set headers  to: ', head);
             if (head){
                 head.scrollIntoView();
             }
@@ -125,25 +131,35 @@
             threshold: 0.5
         });
 
-        node.onscroll = () => {
-            const stickerBoards = node.querySelectorAll('.stickerBoard');
-            stickerBoards.forEach(board => {
-                observer.observe(board);
-            });
-        }
+        const stickerBoards = node.querySelectorAll('.stickerBoard');
+        stickerBoards.forEach(board => {
+            observer.observe(board);
+        });
 
         return {
             destroy(){
                 node.onscrollend = null;
-                node.onscroll = null;
             }
         }
     }
 
     function moveHeads(direction: 'left' | 'right'){
-        stickerHeader.scrollBy({
-            left: direction === 'left' ? -100 : 100,
-            behavior: 'smooth'
+        //shift to next head
+        selectedSticker.update(value => {
+            const index = Stickers.findIndex(sticker => sticker.name == value);
+            if (direction == 'left'){
+                if (index == 0){
+                    return Stickers[Stickers.length - 1].name;
+                } else {
+                    return Stickers[index - 1].name;
+                }
+            } else {
+                if (index == Stickers.length - 1){
+                    return Stickers[0].name;
+                } else {
+                    return Stickers[index + 1].name;
+                }
+            }
         });
     }
 
@@ -190,7 +206,7 @@
             max-width: clamp(300px, 100vw, 600px);
             height: clamp(300px, 40vh, 400px);
             background-color: #111d2a;
-            border-radius: 10px;
+            border-radius: 25px 25px 0 0;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -202,42 +218,45 @@
                 height: max-content;
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                background: #244263;
-                border-radius: 10px;
+                justify-content: space-between;
+                border-radius: 25px;
                 gap: 5px;
-
+                padding: 2px;
+                background: #244263;
+                
                 .navBtn{
                     width: 20px;
                     height: 30px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    //background: #244263;
                     color: var(--secondary-dark) !important;
                     font-size: 20px;
-                    border-radius: 10px;
+                    border-radius: inherit;
                     cursor: pointer;
                     padding: 20px;
                     i{
                         pointer-events: none;
-                        color: var(--secondary-dark) !important;
+                        color: inherit;
                     }
                 }
 
                 .stickerHeader{
-                    width: 100%;
-                    height: 100%;
+                    //height: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: flex-start;
                     overflow-x: scroll;
                     gap: 5px;
+                    margin: 0 3px;
+                    //background: #244263;
                     img{
                         width: 35px;
                         height: 35px;
                         min-width: 35px;
                         min-height: 35px;
-                        padding: 5px;
+                        //padding: 5px;
                         object-fit: contain;
                         border-radius: 10px;
                         cursor: pointer;

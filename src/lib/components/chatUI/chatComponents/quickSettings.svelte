@@ -107,27 +107,34 @@
             if (target == node) {
                 showQuickSettingsPanel.set(false);
             } else if (target.id) {
-                if (target.id == "back") {
-                    showQuickSettingsPanel.set(false);
-                } else if (target.id == "buttonSound") {
-                    setToLocalStorage({
-                        buttonSoundEnabled: !$buttonSoundEnabled,
-                    });
-                } else if (target.id == "messageSound") {
-                    setToLocalStorage({
-                        messageSoundEnabled: !$messageSoundEnabled,
-                    });
-                } else if (target.id == "quickEmoji") {
-                    setToLocalStorage({
-                        quickEmojiEnabled: !$quickEmojiEnabled,
-                    });
-                } else if (target.id == "ctrl+enter") {
-                    setToLocalStorage({ sendMethod: SEND_METHOD.CTRL_ENTER });
-                } else if (target.id == "enter") {
-                    setToLocalStorage({ sendMethod: SEND_METHOD.ENTER });
-                } else if (target.id == "chooseQuickEmoji") {
-                    showQuickEmojiDrawer = !showQuickEmojiDrawer;
+                switch (target.id) {
+                    case "back":
+                        showQuickSettingsPanel.set(false);
+                        break;
+                    case "buttonSound":
+                        setToLocalStorage({ buttonSoundEnabled: !$buttonSoundEnabled });
+                        break;
+                    case "messageSound":
+                        setToLocalStorage({ messageSoundEnabled: !$messageSoundEnabled });
+                        break;
+                    case "quickEmoji":
+                        setToLocalStorage({ quickEmojiEnabled: !$quickEmojiEnabled });
+                        break;
+                    case "ctrl+enter":
+                        setToLocalStorage({ sendMethod: SEND_METHOD.CTRL_ENTER });
+                        break;
+                    case "enter":
+                        setToLocalStorage({ sendMethod: SEND_METHOD.ENTER });
+                        break;
+                    case "chooseQuickEmoji":
+                        showQuickEmojiDrawer = !showQuickEmojiDrawer;
+                        break;
+                    case "themeButton":
+                        showThemesPanel.set(true);
+                        showQuickSettingsPanel.set(false);
+                        break;
                 }
+
             }
         };
 
@@ -141,11 +148,11 @@
         };
     }
 
-    function leaveChat(){
-        console.log('Leaving chat...');
-        splashMessage.set('Leaving Chat');
+    function leaveChat(destroy: boolean = false){
+        console.log(destroy ? 'Destroying chat...' : 'Leaving chat...');
+        splashMessage.set(destroy ? 'Destroying chat...' : 'Leaving chat...');
         clearModals();
-        socket.emit('leaveChat', () => {
+        socket.emit('leaveChat', destroy, () => {
             console.log('Left chat');
             chatRoomStore.set({
                 Key: '',
@@ -203,7 +210,7 @@
             
             <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i>Copy chat key: {KEY}</button>
             
-            <div class="subsections">
+            <div class="subsection">
                 <div class="subtitle">
                     Peoples on this chat <i class="fa-solid fa-users"></i>
                 </div>
@@ -214,7 +221,7 @@
                 Customize chat <i class="fa-solid fa-gears"></i>
             </div>
 
-            <div class="subsections">
+            <div class="subsection">
                 <div
                     class="subtitle">
                     Sounds <i class="fa-solid fa-volume-high" />
@@ -248,7 +255,7 @@
             </div>
 
 
-            <div class="subsections">
+            <div class="subsection">
                 <div
                     class="subtitle">
                     Keyboard <i class="fa-regular fa-keyboard" />
@@ -294,7 +301,7 @@
 
 
             <!--Quick emoji-->
-            <div class="subsections">
+            <div class="subsection">
                 <div
                     class="subtitle">
                     Quick emoji <i class="fa-solid fa-face-smile-wink"></i>
@@ -342,29 +349,41 @@
                         }}
                     />
                 {/if}
+                <div
+                    id="themeButton"
+                    class="field-checkers btn play-sound hoverShadow"
+                    title="Select themes [Alt+t]"
+                    >
+                    <div class="wrapper">
+                        <i class="fa-solid fa-palette" />
+                        Change theme
+                    </div>
+                    <i class="fa-solid fa-brush"/>
+                </div>
             </div>
 
 
             <div class="footer_options">
-                <button
-                    id="themeButton"
-                    on:click={() => {
-                        showThemesPanel.set(true);
-                        showQuickSettingsPanel.set(false);
-                    }}
-                    class="button btn play-sound hover"
-                    title="Select themes [Alt+t]"
-                    ><i class="fa-solid fa-palette" />Change themeButton<i
-                        class="fa-solid fa-brush"
-                    />
-                </button>
-                <button
-                    on:click={leaveChat}
-                    id="logoutButton"
-                    class="button hover button-animate small btn play-sound"
+                <div class="subtitle sectionHeadTitle red">
+                    Danger zone <i class="fa-solid fa-skull"></i>
+                </div>
+                <div class="subsection btn-grp">
+                    <button
+                        on:click={() => leaveChat(true)}
+                        id="destroy"
+                        class="button hover button-animate small btn play-sound"
+                        title="Leave and end chat"
+                    >
+                        Destroy chat <i class="fa-solid fa-trash" />
+                    </button>
+                    <button
+                        on:click={() => leaveChat(false)}
+                        id="logoutButton"
+                        class="button hover button-animate small btn play-sound"
                     ><i class="fa-solid fa-arrow-right-from-bracket"></i>Leave chat
-                    </button
-                >
+                    </button>
+                </div>
+
                 <div class="feedback">
                     <a href="mailto:itsfuad@programmer.net">
                         Provide feedback <i class="fa-solid fa-envelope"></i>
@@ -397,6 +416,12 @@
             cursor: pointer;
             font-size: 1rem;
         }
+    }
+
+    .fa-brush{
+        font-size: 2.2rem;
+        color: var(--secondary-dark);
+        padding: 5px 10px;
     }
 
     .footer{
@@ -464,14 +489,21 @@
             width: 100%;
         }
 
-        #themeButton {
-            background: var(--secondary-dark);
+        #destroy{
+            background: #19394d;
         }
 
-        #logoutButton {
+        #logoutButton{
             background: red;
             font-size: 0.8rem;
             color: inherit;
+        }
+    }
+
+    .red{
+        color: red !important;
+        * {
+            color: red !important;
         }
     }
 
@@ -618,18 +650,29 @@
             width: 100%;
             height: 100%;
             overflow-y: scroll;
-            .subsections {
+            .subsection {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 10px;
                 width: 100%;
-            }
-            .subtitle {
-                font-size: 0.9rem;
-                color: var(--secondary-dark);
-                padding-bottom: 5px;
-
-                &.sectionHeadTitle{
-                    margin-top: 10px;
+                &.btn-grp {
+                    flex-direction: row;
                 }
             }
+        }
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+        color: var(--secondary-dark);
+        padding-bottom: 5px;
+
+        &.sectionHeadTitle{
+            width: 100%;
+            margin-top: 10px;
+            text-align: center;
         }
     }
 </style>
