@@ -4,6 +4,7 @@
     import { myId } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, replyTargetId } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { writable } from "svelte/store";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -34,7 +35,6 @@
         if (!$selectedSticker){
             selectedSticker.set(Stickers[0].name);
         }
-
 
         const unsub = selectedSticker.subscribe(value => {
 

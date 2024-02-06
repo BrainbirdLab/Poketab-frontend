@@ -3,6 +3,7 @@ import { get, writable } from "svelte/store";
 import {io} from "socket.io-client";
 import { chatRoomStore, type User } from "$lib/store";
 import { browser } from "$app/environment";
+import { ServerMessageObj, messageDatabase } from "$lib/messageTypes";
 
 //get server value from .env file
 const server = import.meta.env.VITE_SOCKET_SERVER_URL;
@@ -120,8 +121,18 @@ socket.on('connect_error', (err) => {
 socket.on('disconnect', () => {
     formNotification.set('Disconnected from server');
     socketConnected.set(false);
-
     formActionButtonDisabled.set(true);
     retryCount.set(1);
     console.log('%cDisconnected from server', 'color: red');
+
+    const message = new ServerMessageObj();
+    message.text = 'Disconnected from server';
+    message.id = crypto.randomUUID();
+    message.type = 'warn';
+
+    messageDatabase.add(message);
+});
+
+socket.on('selfDestruct', () => {
+    resetChatRoomStore('Chat destroyed by admin');
 });

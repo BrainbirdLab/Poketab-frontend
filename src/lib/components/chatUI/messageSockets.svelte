@@ -265,4 +265,5 @@
             userTypingString.set("");
         }
     });
+    
 </script>

@@ -202,6 +202,9 @@
             >
                 <i class="fa-solid fa-chevron-left" />
             </button>
+            <div class="title">
+                Chat options 
+            </div>
         </div>
 
         
@@ -210,15 +213,17 @@
             
             <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i>Copy chat key: {KEY}</button>
             
+            {#if $chatRoomStore.userList && Object.keys($chatRoomStore.userList).length > 0}
             <div class="subsection">
                 <div class="subtitle">
                     Peoples on this chat <i class="fa-solid fa-users"></i>
                 </div>
                 <UsersPanel />
             </div>
+            {/if}
 
             <div class="subtitle sectionHeadTitle">
-                Customize chat <i class="fa-solid fa-gears"></i>
+                Customize chat <i class="fa-solid fa-dice"></i>
             </div>
 
             <div class="subsection">

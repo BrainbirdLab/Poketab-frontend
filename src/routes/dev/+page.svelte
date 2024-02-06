@@ -8,7 +8,7 @@
 
     $chatRoomStore.Key = "00-000-00";
     $chatRoomStore.maxUsers = 2;
-    $chatRoomStore.userList = {
+    /*$chatRoomStore.userList = {
         "uid-1": {
             uid: "uid-1",
             name: "User 1",
@@ -46,6 +46,7 @@
             lastSeenMessage: null,
         },
     };
+    */
 
     $myId = "uid-1";
 
