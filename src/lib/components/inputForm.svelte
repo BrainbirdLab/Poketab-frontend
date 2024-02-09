@@ -120,6 +120,7 @@
 
                 chatRoomStore.update(room => {
                     room.Key = res.key;
+                    room.admin = res.userId;
                     room.maxUsers = selectedMaxUser;
                     return room;
                 });
@@ -140,7 +141,7 @@
         } else{
             console.log('Joining key: ' + $chatRoomStore.Key);
             socket.connect();
-            socket.emit('joinChat', $chatRoomStore.Key, selectedname, selectedAvatar, (res: {success: boolean, message: string, userId: string, maxUsers: number}) => {
+            socket.emit('joinChat', $chatRoomStore.Key, selectedname, selectedAvatar, (res: {success: boolean, message: string, userId: string, admin: string, maxUsers: number}) => {
                 if (!res.success){
                     console.log('Error: ' + res.message);
                     formNotification.set('Error: ' + res.message);
@@ -150,6 +151,7 @@
                 }
 
                 chatRoomStore.update(room => {
+                    room.admin = res.admin;
                     room.maxUsers = res.maxUsers;
                     return room;
                 });

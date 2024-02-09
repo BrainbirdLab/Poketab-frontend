@@ -16,6 +16,7 @@
         quickEmojiEnabled,
         SEND_METHOD,
         sendMethod,
+        splashButtonText,
         splashMessage,
     } from "$lib/store";
     import EmojiPicker from "./emojiPicker.svelte";
@@ -148,23 +149,16 @@
         };
     }
 
+    /**
+     * Leave the chat
+     * @param {boolean} destroy - If true, the chat will be destroyed
+     */
     function leaveChat(destroy: boolean = false){
         console.log(destroy ? 'Destroying chat...' : 'Leaving chat...');
-        splashMessage.set(destroy ? 'Destroying chat...' : 'Leaving chat...');
+        splashMessage.set(destroy ? 'Destroying chat... <img src="/images/run-pikachu.gif" height="30px" />' : 'Leaving chat... <img src="/images/run-pikachu.gif" height="30px" />');
         clearModals();
-        socket.emit('leaveChat', destroy, () => {
-            console.log('Left chat');
-            chatRoomStore.set({
-                Key: '',
-                userList: {},
-                maxUsers: 2,
-            });
-            myId.set('');
-            messageDatabase.reset();
-            joinedChat.set(false);
-            currentPage.set('form');
-            splashMessage.set('');
-        });
+        console.log('Left chat');
+        socket.emit('leaveChat', destroy);
     }
 
     $: KEY = $chatRoomStore.Key;
@@ -386,14 +380,17 @@
                     Danger zone <i class="fa-solid fa-skull"></i>
                 </div>
                 <ul class="moreInfo">
+                    {#if $chatRoomStore.admin == $myId}                        
                     <li>
                         Destroy chat will end the chat and delete all messages
                     </li>
+                    {/if}
                     <li>
                         Leave chat will end the chat and keep the others to chat
                     </li>
                 </ul>
                 <div class="subsection btn-grp">
+                    {#if $chatRoomStore.admin == $myId}
                     <button
                         on:click={() => leaveChat(true)}
                         id="destroy"
@@ -402,6 +399,7 @@
                     >
                         Destroy chat <i class="fa-solid fa-trash" />
                     </button>
+                    {/if}
                     <button
                         on:click={() => leaveChat(false)}
                         id="logoutButton"

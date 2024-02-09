@@ -18,7 +18,6 @@
         currentPlayingAudioMessage,
     } from "$lib/messageTypes";
     import { showToastMessage } from "$lib/components/toast";
-    import UsersPanel from "./chatComponents/usersPanel.svelte";
     import { fade } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
     import { chatRoomStore, currentTheme, myId, userTypingString, showScrollPopUp, listenScroll, quickEmoji } from "$lib/store";
@@ -219,7 +218,7 @@
         if (e.altKey === true && e.key === "3"){
             userTypingString.set('You are typing');
             console.log('typing');
-        } 
+        }
 
         if (e.altKey === true && e.key === "4"){
             userTypingString.set('');
@@ -689,7 +688,6 @@
 {#if $showReactsOnMessageModal}
     <ReactsOnMessage />
 {/if}
-
 
 <MessageSockets />
 

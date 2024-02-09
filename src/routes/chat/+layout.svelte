@@ -4,15 +4,12 @@
     import { onMount } from "svelte";
     import { socket } from "$lib/components/socket";
     import SplashScreen from "$lib/components/splashScreen.svelte";
-    import { splashMessage } from "$lib/store";
     import {goto} from "$app/navigation";
     import { page } from "$app/stores";
 
     export let data;
 
     currentTheme.set(data.theme);
-
-    splashMessage.set("Connecting to server...");
 
     let mounted = false;
 
@@ -45,6 +42,6 @@
 
 {#if mounted}    
     <slot />
-{:else}
-    <SplashScreen />
 {/if}
+
+<SplashScreen />

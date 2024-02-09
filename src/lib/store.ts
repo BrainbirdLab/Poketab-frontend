@@ -3,6 +3,7 @@ import { writable, get, type Writable } from "svelte/store";
 export const showUserInputForm = writable(true);
 export const formNotification = writable('');
 export const splashMessage = writable('');
+export const splashButtonText = writable('');
 
 export const userTypingString = writable('');
 export const currentTheme = writable('Ocean');
@@ -62,6 +63,7 @@ export type User = {
 
 type chatRoomStoreType = {
     Key: string,
+    admin: string,
     userList: { readonly [key: string]: User},
     maxUsers: number,
 };
@@ -70,6 +72,7 @@ export const myId: Writable<string> = writable('');
 
 export const chatRoomStore: Writable<chatRoomStoreType> = writable({
     Key: '',
+    admin: '',
     userList: {},
     maxUsers: 0,
 });

@@ -108,7 +108,8 @@
 
         console.log('Fetching key data');
 
-        socket.emit('fetchKeyData', $joinKey, (res: fetchResponse) => {
+        //params: key: string, ssr: boolean, callback: (res: fetchResponse) => void
+        socket.emit('fetchKeyData', $joinKey, false, (res: fetchResponse) => {
 
             joinActionText = 'Join Chat';
             //joinActionDisabled = false;
@@ -162,7 +163,7 @@
 
 <div class="inputForm" in:fly={{x: 30}}>
     <div class="formtitle">
-        Join chat <i class="fa-solid fa-people-group"></i>
+        Join chat <i class="fa-solid fa-user-group"></i>
     </div>
     <div class="formField">
         <label for="key">{LabelText} <i class="{LabelIcon}"></i></label>
@@ -213,11 +214,8 @@
         justify-content: center;
         gap: 10px;
         i{
-            font-size: 2rem;
-        }
-
-        .fa-people-group{
-            color: #ffb000;
+            font-size: 1.2rem;
+            color: var(--secondary-dark);
         }
     }
 

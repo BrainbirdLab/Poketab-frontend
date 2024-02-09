@@ -6,6 +6,7 @@
     import { socket } from "$lib/components/socket";
     import { emojis } from "$lib/utils";
     import { get } from "svelte/store";
+    import { onDestroy } from "svelte";
 
     socket.on("newMessage", (message: MessageObj, messageId: string) => {
         //console.log(message);
@@ -60,11 +61,16 @@
 
     socket.on('linkPreviewData', (messageId: string, data: {title: string, description: string, image: string, url: string}) => {
 
+        console.log('link preview data received');
+
         if (!messageDatabase.has(messageId)){
+            console.log('message not found');
             return;
         }
 
         messageDatabase.update((messages) => {
+
+            (messageDatabase.getMessage(messageId) as TextMessageObj).linkPreviewData = data;
 
             return messages;
         });
@@ -122,8 +128,6 @@
     });
 
     socket.on("server_message", (msg: { text: string; id: string }, type: string) => {
-            //console.log(msg);
-
             const message: ServerMessageObj = new ServerMessageObj();
             message.text = msg.text;
             message.id = msg.id;
@@ -264,6 +268,17 @@
         } else {
             userTypingString.set("");
         }
+    });
+
+    onDestroy(() => {
+        socket.off("newMessage");
+        socket.off("deleteMessage");
+        socket.off("location");
+        socket.off("server_message");
+        socket.off("react");
+        socket.off("updateUserList");
+        socket.off("seen");
+        socket.off("typing");
     });
     
 </script>

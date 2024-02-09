@@ -1,6 +1,7 @@
 <script lang="ts">
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import Form from "$lib/components/form.svelte";
+    import SplashScreen from "$lib/components/splashScreen.svelte";
     import { currentPage, joinedChat, currentTheme } from "$lib/store";
     import { onMount } from "svelte";
 

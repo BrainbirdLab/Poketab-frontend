@@ -1,4 +1,4 @@
-import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, splashMessage, showUserInputForm } from "$lib/store";
+import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, splashMessage, showUserInputForm, splashButtonText, myId, joinedChat, currentPage } from "$lib/store";
 import { get, writable } from "svelte/store";
 import {io} from "socket.io-client";
 import { chatRoomStore, type User } from "$lib/store";
@@ -28,20 +28,18 @@ export function reConnectSocket(){
 }
 
 function resetChatRoomStore(msg: string){
-
-    showUserInputForm.set(false);
-
-    formNotification.set(msg);
-
+    showUserInputForm.set(true);
+    splashMessage.set(msg);
+    splashButtonText.set('Ok');
+    myId.set('');
+    joinedChat.set(false);
+    messageDatabase.reset();
     chatRoomStore.set({
         Key: '',
+        admin: '',
         userList: {},
         maxUsers: 0,
     });
-
-    setTimeout(() => {
-        formNotification.set('');
-    }, 3000);
 }
 
 //if browser
@@ -119,20 +117,23 @@ socket.on('connect_error', (err) => {
 
 
 socket.on('disconnect', () => {
-    formNotification.set('Disconnected from server');
-    socketConnected.set(false);
-    formActionButtonDisabled.set(true);
-    retryCount.set(1);
-    console.log('%cDisconnected from server', 'color: red');
 
-    const message = new ServerMessageObj();
-    message.text = 'Disconnected from server';
-    message.id = crypto.randomUUID();
-    message.type = 'warn';
-
-    messageDatabase.add(message);
+    if(get(currentPage) === 'chat'){
+        const message = new ServerMessageObj();
+        message.text = 'Disconnected from server';
+        message.id = crypto.randomUUID();
+        message.type = 'warn';
+    
+        messageDatabase.add(message);
+    } else {
+        formNotification.set('Disconnected from server');
+        socketConnected.set(false);
+        formActionButtonDisabled.set(true);
+        retryCount.set(1);
+        console.log('%cDisconnected from server', 'color: red');
+    }
 });
 
-socket.on('selfDestruct', () => {
-    resetChatRoomStore('Chat destroyed by admin');
+socket.on('selfDestruct', (msg: string) => {
+    resetChatRoomStore(msg);
 });
