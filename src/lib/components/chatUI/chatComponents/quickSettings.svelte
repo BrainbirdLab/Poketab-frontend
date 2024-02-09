@@ -155,7 +155,7 @@
      */
     function leaveChat(destroy: boolean = false){
         console.log(destroy ? 'Destroying chat...' : 'Leaving chat...');
-        splashMessage.set(destroy ? 'Destroying chat... ' : 'Leaving chat... ' + '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px">');
+        splashMessage.set((destroy ? 'Destroying chat... ' : 'Leaving chat... ') + '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px">');
         clearModals();
         console.log('Left chat');
         socket.emit('leaveChat', destroy);
