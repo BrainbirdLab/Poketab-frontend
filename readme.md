@@ -1,4 +1,4 @@
-# Poketab Messenger 
+# Poketab Messenger (In development)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/itsfuad/Poketab-Frontend?style=flat-square)
 ![GitHub repo size](https://img.shields.io/github/repo-size/itsfuad/Poketab-Frontend)
 ![GitHub contributors](https://img.shields.io/github/contributors/itsfuad/Poketab-Frontend?style=flat-square)
