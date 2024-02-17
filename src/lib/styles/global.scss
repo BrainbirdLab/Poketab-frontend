@@ -14,8 +14,12 @@
     font-family: 'Com';
     color: var(--foreground-dark);
     caret-color: var(--foreground-dark);
+    scrollbar-width: none;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
 
 html{
     font-size: 16px;

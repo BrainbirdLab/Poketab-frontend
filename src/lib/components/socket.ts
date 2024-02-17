@@ -66,12 +66,13 @@ if (browser){
 }
 
 socket.on('connect', () => {
-    console.log('%cConnected to server', 'color: blue');
     splashMessage.set('');
     formActionButtonDisabled.set(false);
     retryCount.set(1);
     socketConnected.set(true);
+    console.log(socket.id);
     if (get(formNotification) == ''){
+        console.log('%cConnected to server', 'color: blue');
         return;
     }
     formNotification.set('Connected to server');
