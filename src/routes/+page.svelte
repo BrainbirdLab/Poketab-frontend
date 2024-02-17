@@ -2,7 +2,6 @@
     import { fade, fly } from "svelte/transition";
     import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
     import { onMount } from "svelte";
-    import { showToastMessage } from "domtoastmessage";
     
     export let data;
 
