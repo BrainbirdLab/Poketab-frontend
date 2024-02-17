@@ -1,14 +1,13 @@
 <script lang="ts">
     import { fade, fly, scale } from "svelte/transition";
     import { showAttachmentPickerPanel } from "$lib/components/modalManager";
-    import { showToastMessage } from "$lib/components/toast";
+    import { showToastMessage } from "domtoastmessage";
     import { socket } from "$lib/components/socket";
     import { chatRoomStore, myId } from "$lib/store";
-    import { AudioMessageObj, FileMessageObj, ImageMessageObj, MessageObj, lastMessageId, messageDatabase, selectedFiles } from "$lib/messageTypes";
+    import { AudioMessageObj, FileMessageObj, ImageMessageObj, selectedFiles } from "$lib/messageTypes";
     import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
-    import AudioMessage from "./messages/AudioMessage.svelte";
 
     let locationBtn: HTMLButtonElement;
     let fileBtn: HTMLButtonElement;

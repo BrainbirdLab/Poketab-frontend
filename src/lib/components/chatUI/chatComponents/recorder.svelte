@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { showToastMessage } from "$lib/components/toast";
+    import { showToastMessage } from "domtoastmessage";
 
 
     import { voiceMessageAudio } from "$lib/messageTypes";

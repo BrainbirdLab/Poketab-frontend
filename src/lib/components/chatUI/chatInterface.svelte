@@ -17,7 +17,7 @@
         AudioMessageObj,
         currentPlayingAudioMessage,
     } from "$lib/messageTypes";
-    import { showToastMessage } from "$lib/components/toast";
+    import { showToastMessage } from "domtoastmessage";
     import { fade } from "svelte/transition";
     import QuickSettings from "./chatComponents/quickSettings.svelte";
     import { chatRoomStore, currentTheme, myId, userTypingString, showScrollPopUp, listenScroll, quickEmoji } from "$lib/store";

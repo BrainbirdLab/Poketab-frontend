@@ -2,6 +2,7 @@
     import { fade, fly } from "svelte/transition";
     import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
     import { onMount } from "svelte";
+    import { showToastMessage } from "domtoastmessage";
     
     export let data;
 
@@ -11,6 +12,7 @@
     
     onMount(() => {
         console.log("Mounted Root +page.svelte");
+        //showToastMessage("Welcome to Poketab Messenger", 20000);
         mounted = true;
     });
 

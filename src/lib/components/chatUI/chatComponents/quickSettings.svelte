@@ -8,24 +8,20 @@
     import {
         buttonSoundEnabled,
         chatRoomStore,
-        currentPage,
-        joinedChat,
         messageSoundEnabled,
         myId,
         quickEmoji,
         quickEmojiEnabled,
         SEND_METHOD,
         sendMethod,
-        splashButtonText,
         splashMessage,
     } from "$lib/store";
     import EmojiPicker from "./emojiPicker.svelte";
     import { spin } from "$lib/utils";
     import { socket } from "$lib/components/socket";
-    import { messageDatabase } from "$lib/messageTypes";
-    import { showToastMessage } from "$lib/components/toast";
+    import { showToastMessage } from "domtoastmessage";
     import UsersPanel from "./usersPanel.svelte";
-    import { bounceOut, elasticOut } from "svelte/easing";
+    import { elasticOut } from "svelte/easing";
 
     type Settings = {
         buttonSoundEnabled: boolean;

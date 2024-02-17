@@ -1,5 +1,5 @@
 import { cubicOut } from "svelte/easing";
-import { showToastMessage } from "./components/toast";
+import { showToastMessage } from "domtoastmessage";
 
 
 export function toSentenceCase(inputString: string) {
