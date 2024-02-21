@@ -4,7 +4,6 @@
     import { myId } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, replyTargetId } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { writable } from "svelte/store";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -28,7 +27,7 @@
         { name: "soul", count: "25", icon: "14" },
     ];
 
-    let stickerHeader: HTMLElement;
+    let stickersHeader: HTMLElement;
 
     function stickersHandler(node: HTMLElement){
 
@@ -44,10 +43,12 @@
                 return;
             }
 
+            /*
             elem.scrollIntoView({
                 block: "center",
                 inline: "center",
             });
+            */
 
             localStorage.setItem("selectedSticker", value);
         });
@@ -61,7 +62,7 @@
                 return;
             }
 
-            if (target.closest('.stickerHeader')){
+            if (target.closest('.stickersHeader')){
                 //console.log('Hmm.. Choosing sticker group');
                 const groupName = target.dataset.group;
                 if (groupName){
@@ -109,12 +110,14 @@
     }
 
     function stickersBodyHandler(node: HTMLElement){
+        /*
         node.onscrollend = () => {
-            const head = stickerHeader.querySelector('.selected');
+            const head = stickersHeader.querySelector('.selected');
             if (head){
                 head.scrollIntoView();
             }
         }
+        */
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
@@ -138,7 +141,7 @@
 
         return {
             destroy(){
-                node.onscrollend = null;
+                //node.onscrollend = null;
             }
         }
     }
@@ -169,7 +172,7 @@
     <div class="stickerKeyboard">
         <div class="headers">
             <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>
-            <div class="stickerHeader" id="stickerHeader" bind:this={stickerHeader}>
+            <div class="stickersHeader" id="stickersHeader" bind:this={stickersHeader}>
                 {#each Stickers as sticker}
                     <img loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
                 {/each}
@@ -180,7 +183,7 @@
             {#each Stickers as sticker}
                 <div class="stickerBoard {sticker.name}" id="{sticker.name}">
                     {#each Array.from({ length: +sticker.count }) as _, i}
-                        <img loading="lazy" class="stickerItem" data-serial={i+1} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
+                        <img loading="eager" class="stickerItem" data-serial={i+1} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
                     {/each}
                 </div>
             {/each}
@@ -189,113 +192,90 @@
 </div>
 
 <style lang="scss">
-    .stickerKeyboardContainer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 20;
-        backdrop-filter: brightness(0.8);
+    .stickerKeyboardContainer{
         display: flex;
-        align-items: flex-end;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 20;
 
         .stickerKeyboard{
             position: absolute;
-            width: 100%;
+            bottom: 0;
             max-width: clamp(300px, 100vw, 600px);
             height: clamp(300px, 40vh, 400px);
-            background-color: #111d2a;
-            border-radius: 10px 10px 0 0;
+            background: var(--primary-dark);
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            transition: 150ms ease-in-out;
+            align-items: center;
+            justify-content: flex-start;
+
 
             .headers{
                 width: 100%;
                 height: max-content;
                 display: flex;
+                flex-direction: row;
                 align-items: center;
-                justify-content: space-between;
-                border-radius: 10px;
-                gap: 5px;
-                padding: 2px;
+                justify-content: center;
+                padding: 5px;
                 background: var(--glass);
-                
+
                 .navBtn{
-                    width: 20px;
-                    height: 30px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    //background: #244263;
-                    color: var(--secondary-dark) !important;
-                    font-size: 20px;
-                    border-radius: inherit;
-                    cursor: pointer;
-                    padding: 20px;
-                    i{
-                        pointer-events: none;
-                        color: inherit;
-                    }
+                    height: 35px;
+                    min-width: 35px;
+                    width: 35px;
                 }
 
-                .stickerHeader{
-                    //height: 100%;
+                .stickersHeader{
                     display: flex;
+                    flex-direction: row;
                     align-items: center;
                     justify-content: flex-start;
+                    gap: 2px;
                     overflow-x: scroll;
-                    gap: 5px;
-                    margin: 0 3px;
-                    //background: #244263;
-                    img{
-                        width: 35px;
-                        height: 35px;
-                        min-width: 35px;
-                        min-height: 35px;
-                        //padding: 5px;
-                        object-fit: contain;
-                        border-radius: 10px;
-                        cursor: pointer;
-                        background: none;
 
-                        &.selected{
-                            background: var(--secondary-dark) !important;
-                            &:hover{
-                                filter: brightness(0.90) !important;
-                            }
-                        }
+                    img{
+                        height: 35px;
+                        width: 35px;
+                        max-width: 35px;
+                        max-height: 35px;
+                        border-radius: 10px;
                     }
                 }
             }
 
             .stickersBody{
-                width: 100%;
+
                 height: 100%;
+                width: 100%;
+                overflow: auto;
                 display: flex;
-                flex-direction: column;
-                flex-wrap: wrap;
+                flex-direction: row;
                 align-items: flex-start;
                 justify-content: flex-start;
-                overflow-x: scroll;
                 scroll-snap-type: x mandatory;
-                gap: 5px;
-
+                
                 .stickerBoard{
+                    padding: 10px;
+                    height: 100%;
+                    width: 100%;
+                    min-width: 100%;
                     display: flex;
                     flex-direction: row;
-                    height: 100%;
-                    overflow-y: scroll;
-                    position: relative;
-                    justify-content: center;
                     flex-wrap: wrap;
                     align-items: flex-start;
-                    gap: 15px;
-                    padding: 10px;
-                    border-radius: 10px;
+                    justify-content: center;
+                    gap: 10px;
+                    overflow-y: scroll;
                     scroll-snap-align: start;
 
                     img{
@@ -304,7 +284,7 @@
                         object-fit: contain;
                         border-radius: 24px;
                         cursor: pointer;
-                        background: rgba(255, 255, 255, 0.1176470588);
+                        background: #ffffff1e;
                     }
                 }
             }

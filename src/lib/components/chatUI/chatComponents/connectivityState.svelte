@@ -75,11 +75,10 @@
         justify-content: center;
         align-items: center;
         width: 100%;
+        height: 100%;
         gap: 10px;
         position: fixed;
-        bottom: 60px;
         //shadow
-        box-shadow: 2px 2px 10px 0px rgba(0,0,0,0.75);
         
         z-index: 1000;
         
@@ -95,7 +94,9 @@
             background: var(--primary-dark);
             padding: 8px 50px;
             border-radius: 10px;
-
+            box-shadow: 2px 2px 10px 0px rgba(0,0,0,0.75);
+            position: absolute;
+            bottom: 60px;
             
             .title{
                 font-size: 0.8rem;
