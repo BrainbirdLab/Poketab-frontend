@@ -2,10 +2,8 @@
     import { fade, fly } from "svelte/transition";
     import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
     import { onMount } from "svelte";
-    
-    export let data;
 
-    const version = data.version;
+    const version = __VERSION__;
 
     let mounted = false;
     
@@ -47,7 +45,7 @@
                 "With Poketab Messenger, you can easily share files, images, and even record audio messages to bring your conversations to life.",
         },
         {
-            iconClass: "fas fa-comment",
+            iconClass: "fa-solid fa-reply",
             title: "Chat replies and reactions.",
             description:
                 "Poketab Messenger allows you to reply to any message in a chat. You can also react to any message with a variety of fun and expressive stickers and reactions.",
@@ -76,16 +74,16 @@
     </div>
     
     <div class="links">
-        <a id="login" class="button-animate btn play-sound" href="/chat"
+        <a id="login" class="button-animate button play-sound" href="/chat"
             transition:fly={{y: 10, delay: 600}}
             >Start Chat
         </a>
         <a
             id="github"
-            class="button-animate btn play-sound"
+            class="button-animate button play-sound"
             href="https://github.com/itsfuad/poketab-messenger"
             transition:fly={{y: 10, delay: 700}}
-            >View Source
+            >View Source <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
     </div>
     
@@ -243,12 +241,5 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-    }
-    a {
-        color: white;
-        cursor: pointer;
-    }
-    a:hover {
-        text-decoration: underline;
     }
 </style>

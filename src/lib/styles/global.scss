@@ -108,6 +108,8 @@ button {
     padding: 8px 10px;
     align-items: center;
     justify-content: center;
+
+    text-decoration: none;
 }
 
 .button-animate {
@@ -206,12 +208,12 @@ body{
 }
 
 .select {
-    -webkit-tap-highlight-color: initial;
-    -webkit-touch-callout: initial;
-    -webkit-user-select: initial;
-    -moz-user-select: initial;
-    -ms-user-select: initial;
-    user-select: initial;
+    -webkit-tap-highlight-color: initial !important;
+    -webkit-touch-callout: initial !important;
+    -webkit-user-select: initial !important;
+    -moz-user-select: initial !important;
+    -ms-user-select: initial !important;
+    user-select: initial !important;
 }
 
 .inputForm{
