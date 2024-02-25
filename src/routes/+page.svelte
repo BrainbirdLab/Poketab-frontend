@@ -132,17 +132,6 @@
         width: clamp(300px, 60vw, 1000px);
     }
 
-    a {
-        text-decoration: none;
-        padding: 10px;
-        border-radius: 10px;
-        transition: 300ms;
-    }
-    a:hover {
-        cursor: pointer;
-        transform: translateY(-3px);
-        box-shadow: 0 3px 5px var(--shadow);
-    }
     #login {
         background: var(--secondary-dark, #4598ff);
         color: white;

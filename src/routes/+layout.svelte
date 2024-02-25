@@ -3,9 +3,42 @@
     import "$lib/styles/global.scss";
     console.log("Mounted root +layout.svelte");
 
+    function removeAttribute(evt: MouseEvent | TouchEvent) {
+        const element = evt.target as HTMLElement;
+        element.removeAttribute("data-pressed");
+        console.log("remove data-pressed");
+    }
+
+    function handleClick(event: MouseEvent | TouchEvent) {
+
+        const target = event.target as HTMLElement;
+
+        console.log("target", target);
+
+        if (target.classList.contains('button-animate')){
+            target.setAttribute("data-pressed", "true");
+            console.log("add data-pressed");
+            //if mouse event, add listener for mouseleave
+            if (event instanceof MouseEvent) {
+                target.addEventListener("mouseleave", removeAttribute, { once: true });
+            } else {
+                //if touch event, add listener for touchend
+                target.addEventListener("touchend", removeAttribute, { once: true });
+            }
+        }
+        if (target.classList.contains('play-sound')){
+            console.log("play sound");
+            const audio = new Audio("/sounds/click.mp3");
+            audio.play();
+        }
+    }
 </script>
 
-<svelte:body on:contextmenu|preventDefault/>
+<svelte:body 
+on:contextmenu|preventDefault
+on:mousedown={handleClick}
+on:touchstart={handleClick}
+/>
 
 <div class="maincontainer">
     <slot />

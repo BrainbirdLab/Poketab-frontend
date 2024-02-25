@@ -22,6 +22,10 @@
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
+
+    //disable user drag
+    user-drag: none;
+    -webkit-user-drag: none;
 }
 
 ::-webkit-scrollbar {
@@ -104,20 +108,20 @@ button {
     display: flex;
     flex-direction: row;
     gap: 5px;
-    border-radius: 24px;
+    border-radius: 10px;
     padding: 8px 10px;
     align-items: center;
     justify-content: center;
 
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 .button-animate {
     transition: 100ms ease-in-out;
 }
 
-.button-animate.buttonPressed {
-    transform: scale(0.95);
+.button-animate[data-pressed="true"] {
+    transform: scale(0.98);
 }
 
 .clickable{
@@ -150,6 +154,17 @@ button {
 
 a {
     color: var(--secondary-dark, #4598ff);
+    text-decoration: none;
+    cursor: pointer;
+    transition: 100ms ease-in-out;
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+    &:hover{
+        text-decoration: underline;
+    }
 }
 
 button[disabled]{
