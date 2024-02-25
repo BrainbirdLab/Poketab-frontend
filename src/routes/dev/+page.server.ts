@@ -8,5 +8,5 @@ export function load(){
 
     if (!dev){
         redirect(301, "/");
-    }    
+    }
 }

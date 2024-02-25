@@ -43,12 +43,11 @@
                 return;
             }
 
-            /*
+            
             elem.scrollIntoView({
                 block: "center",
                 inline: "center",
             });
-            */
 
             localStorage.setItem("selectedSticker", value);
         });
@@ -110,14 +109,14 @@
     }
 
     function stickersBodyHandler(node: HTMLElement){
-        /*
+    
         node.onscrollend = () => {
             const head = stickersHeader.querySelector('.selected');
             if (head){
                 head.scrollIntoView();
             }
         }
-        */
+        
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
@@ -141,7 +140,7 @@
 
         return {
             destroy(){
-                //node.onscrollend = null;
+                node.onscrollend = null;
             }
         }
     }
@@ -174,7 +173,7 @@
             <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>
             <div class="stickersHeader" id="stickersHeader" bind:this={stickersHeader}>
                 {#each Stickers as sticker}
-                    <img loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
+                    <img height="35px" width="35px" loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
                 {/each}
             </div>
             <button on:click={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></button>
@@ -214,8 +213,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-
-
+            
+            border-radius: 23px 23px 0 0;
+            
             .headers{
                 width: 100%;
                 height: max-content;
@@ -224,6 +224,8 @@
                 align-items: center;
                 justify-content: center;
                 padding: 5px;
+                gap: 5px;
+                border-radius: 23px;
                 background: var(--glass);
 
                 .navBtn{
@@ -233,6 +235,11 @@
                     height: 35px;
                     min-width: 35px;
                     width: 35px;
+                    border-radius: 50%;
+                    color: var(--secondary-dark);
+                    i {
+                        color: var(--secondary-dark);
+                    }
                 }
 
                 .stickersHeader{
@@ -248,7 +255,18 @@
                         width: 35px;
                         max-width: 35px;
                         max-height: 35px;
+                        //padding: 5px;
+                        object-fit: contain;
                         border-radius: 10px;
+                        cursor: pointer;
+                        background: none;
+
+                        &.selected{
+                            background: var(--secondary-dark) !important;
+                            &:hover{
+                                filter: brightness(0.90) !important;
+                            }
+                        }
                     }
                 }
             }

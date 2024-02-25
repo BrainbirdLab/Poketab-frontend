@@ -124,7 +124,7 @@
                 $messageContainer.scrollTop += heightChanged;
             }
         } else if (heightChanged > 10 && !$showScrollPopUp){
-            console.log('%cSmooth scroll', 'color: lime;');
+            //console.log('%cSmooth scroll', 'color: lime;');
             
             listenScroll.set(false);
 
@@ -146,7 +146,7 @@
             });
 
             $messageContainer.addEventListener('scrollend', () => {
-                console.log('scroll end');
+                //console.log('scroll end');
                 listenScroll.set(true);
             }, {once: true});
         }

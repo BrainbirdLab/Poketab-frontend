@@ -1,4 +1,3 @@
-import type { User } from '$lib/store';
 import { themes } from '$lib/themes';
 import { error, type NumericRange } from '@sveltejs/kit';
 import { io } from 'socket.io-client';

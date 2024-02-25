@@ -29,10 +29,10 @@
         }
 
         if (value){
-            console.log('listening to scroll');
+            //console.log('listening to scroll');
             $messageContainer.onscroll = scrollHandler;
         } else {
-            console.log('stop listening to scroll');
+            //console.log('stop listening to scroll');
             $messageContainer.onscroll = null;
             messageScrolledPx.set(0);
         }

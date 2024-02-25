@@ -3,8 +3,6 @@
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import { onMount } from "svelte";
     import { chatRoomStore, myId } from "$lib/store";
-    import { AudioMessageObj, messageDatabase } from "$lib/messageTypes";
-
 
     $chatRoomStore.Key = "00-000-00";
     $chatRoomStore.maxUsers = 2;

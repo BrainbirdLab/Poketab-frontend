@@ -1,9 +1,8 @@
-import { MessageObj, messageDatabase, lastMessageId, messageContainer } from "$lib/messageTypes";
+import { MessageObj, messageDatabase, lastMessageId } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
 import { chatRoomStore, myId } from "$lib/store";
 import { socket } from "$lib/components/socket";
 import { badWords } from "./censoredWords";
-import { tick } from "svelte";
 
 export const showReplyToast = writable(false);
 
@@ -63,7 +62,7 @@ export function sendMessage(message: MessageObj){
 	message.sender = get(myId);
 	message.id = Math.random().toString(36);
 
-	console.log(`Id: ${message.id}`);
+	//console.log(`Id: ${message.id}`);
 
 	messageDatabase.add(message);
 
@@ -71,7 +70,7 @@ export function sendMessage(message: MessageObj){
 		
 		messageDatabase.markDelevered(message, messageId);
 
-		console.log(`New message id: ${messageId}`);
+		//console.log(`New message id: ${messageId}`);
 		
 		if (document.hasFocus()){
 			socket.emit('seen', get(myId), get(chatRoomStore).Key, get(lastMessageId));

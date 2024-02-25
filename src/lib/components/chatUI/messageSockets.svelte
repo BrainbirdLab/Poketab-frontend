@@ -5,7 +5,6 @@
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { socket } from "$lib/components/socket";
     import { emojis } from "$lib/utils";
-    import { get } from "svelte/store";
     import { onDestroy } from "svelte";
 
     socket.on("newMessage", (message: MessageObj, messageId: string) => {

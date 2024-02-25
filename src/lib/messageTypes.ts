@@ -1,5 +1,4 @@
 import { get, writable, type Updater, type Writable, type Subscriber } from "svelte/store";
-import { tick } from "svelte";
 import { chatRoomStore, myId } from "./store";
 
 export const lastMessageId = writable('');
