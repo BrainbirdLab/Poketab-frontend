@@ -3,7 +3,7 @@ import { get, writable } from "svelte/store";
 import { io } from "socket.io-client";
 import { chatRoomStore, type User } from "$lib/store";
 import { browser } from "$app/environment";
-import { ServerMessageObj, messageDatabase } from "$lib/messageTypes";
+import { messageDatabase } from "$lib/messageTypes";
 
 //get server value from .env file
 const server = import.meta.env.VITE_SOCKET_SERVER_URL;
@@ -52,9 +52,9 @@ if (browser) {
         //console.log('User list length: ' + userlen);
 
         if (userlen < 1) {
-            resetChatRoomStore('Chat no longer exists');
+            resetChatRoomStore('Chat no longer exists 😢');
         } else if (userlen >= get(chatRoomStore).maxUsers) {
-            resetChatRoomStore('Oops!! Chat is full');
+            resetChatRoomStore('Oops!! Chat is full 😐');
         } else {
             formNotification.set('');
             chatRoomStore.update((chatRoom) => {
@@ -66,7 +66,7 @@ if (browser) {
 }
 
 socket.on('connect', () => {
-    splashMessage.set('');
+    //splashMessage.set('');
     formActionButtonDisabled.set(false);
     retryCount.set(1);
     socketConnected.set(true);
@@ -85,6 +85,7 @@ socket.on('connect', () => {
 let retryCount = writable(1);
 
 formNotification.subscribe(value => {
+    console.log('formNotification: ' + value);
     if (value.includes('offline')) {
         retryCount.set(1);
         reconnectButtonEnabled.set(false);
@@ -119,22 +120,19 @@ socket.on('connect_error', (err) => {
 
 socket.on('disconnect', () => {
 
-    if (get(currentPage) === 'chat') {
-        const message = new ServerMessageObj();
-        message.text = 'Disconnected from server';
-        message.id = crypto.randomUUID();
-        message.type = 'warn';
-
-        messageDatabase.add(message);
-    } else {
+    retryCount.set(1);
+    if (get(currentPage) != 'chat') { // on the forms page
         formNotification.set('Disconnected from server');
         socketConnected.set(false);
         formActionButtonDisabled.set(true);
-        retryCount.set(1);
         console.log('%cDisconnected from server', 'color: red');
+    } else {
+        resetChatRoomStore('Disconnected from server 🙃');
     }
+    socket.connect();
 });
 
 socket.on('selfDestruct', (msg: string) => {
+    socket.disconnect();
     resetChatRoomStore(msg);
 });

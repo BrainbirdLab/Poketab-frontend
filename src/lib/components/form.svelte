@@ -12,7 +12,7 @@
     reconnectButtonEnabled.set(false);
     
     onMount(() => {
-        formNotification.set('');
+        //formNotification.set('');
         mounted = true;
         if (socket.disconnected){
             console.log('Connecting to server...');

@@ -7,9 +7,9 @@
     import {goto} from "$app/navigation";
     import { page } from "$app/stores";
 
-    export let data;
+    export let data; // Get data from load function aka +layout.server.ts
 
-    currentTheme.set(data.theme);
+    currentTheme.set(data.theme); //Set the current theme
 
     let mounted = false;
 
@@ -20,25 +20,31 @@
             goto('/chat');
         }
 
-        //on offline
-        window.addEventListener("offline", () => {
-            console.log("Offline");
-            socket.disconnect();
-            formNotification.set("You are offline");
-            formActionButtonDisabled.set(true);
-        });
-
-        //on online
-        window.addEventListener("online", () => {
-            console.log("Online");
-            formNotification.set("Back to online");
-        });
-
         mounted = true;
         console.log("Mounted chat +layout.svelte");
     });
 
 </script>
+
+<svelte:window 
+
+    on:offline={() => {
+        console.log("Offline");
+        //disconnect the socket connection
+        socket.disconnect();
+        /**
+         * The Disconnection event listener will set the formNotification to "Disconnected from server"
+         * But we want to show "You are offline" instead
+        */
+        formNotification.set("You are offline"); // So, we set it here
+        formActionButtonDisabled.set(true); //disable the form action button
+    }}
+
+    on:online={() => {
+        console.log("Online");
+        formNotification.set("Back to online"); //Set the formNotification to "Back to online"
+    }}
+/>
 
 {#if mounted}    
     <slot />
