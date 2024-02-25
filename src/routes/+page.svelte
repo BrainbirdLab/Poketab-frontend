@@ -103,7 +103,7 @@
     </div>
     
     <div class="footer">
-        <a href="mailto:support@poketab.live">support@poketab.live</a>
+        <a href="mailto:support@brainbird.org">support@brainbird.org</a>
     </div>
 </div>
 {/if}
