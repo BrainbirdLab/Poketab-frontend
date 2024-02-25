@@ -129,7 +129,7 @@
 
     .more {
         color: #ffffff95;
-        width: clamp(300px, 60vw, 1000px);
+        width: min(100%, 900px);
     }
 
     #login {
