@@ -157,7 +157,6 @@
 
 .version-info{
         font-size: 0.6rem;
-        font-family: "thin";
         color: #ffffff;
         padding: 0 5px 0 0;
         border-radius: 5px;
