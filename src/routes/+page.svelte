@@ -56,10 +56,20 @@
 {#if mounted}
 
 <div class="container">
-    <ReactiveLogo />
-    <h1 class="title" transition:fly={{x: 20}}>
-        Poketab Messenger <span class="version">{version} (Unstable)</span>
-    </h1>
+    <div class="top-hero" in:fly|global={{ y: -10, delay: 100 }}>
+        <div class="flex column center">
+            <div class="logo">
+                <ReactiveLogo />
+            </div>
+            <div class="name">
+                Poketab Messenger
+            </div>
+        </div>
+        <div class="version-info">
+            <div class="version">v.{version}</div>
+            Free and Open Source
+        </div>
+    </div>
     <div class="slogan" transition:fly={{x:-10, delay: 300}}>A Secure and User-Friendly Chatting WebApp</div>
     
     <div class="more" transition:fly={{x: 10, delay: 350}}>
@@ -110,6 +120,67 @@
 
 <style lang="scss">
 
+.top-hero{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px;
+    gap: 5px;
+
+    .logo{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .name{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 2rem;
+        font-weight: 900;
+        color: #ffd400;
+    }
+
+}
+
+.slogan{
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.version-info{
+        font-size: 0.6rem;
+        font-family: "thin";
+        color: #ffffff;
+        padding: 0 5px 0 0;
+        border-radius: 5px;
+        width: max-content;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        font-weight: normal;
+        gap: 5px;
+        background: rgba(91, 251, 91, 0.156);
+        color: rgb(170, 255, 170);
+        .version {
+            background: rgba(0, 0, 0, 0.997);
+            height: 100%;
+            padding: 5px 5px;
+            color: ghostwhite;
+            font-family: inherit;
+            border-top-left-radius: inherit;
+            border-bottom-left-radius: inherit;
+        }
+    }
+
     .container{
         display: flex;
         flex-direction: column;
@@ -122,12 +193,8 @@
         overflow: scroll;
     }
 
-    .version {
-        font-size: 0.7rem;
-        color: var(--secondary-dark, #419eff);
-    }
-
     .more {
+        font-size: 0.9rem;
         color: #ffffff95;
         width: min(100%, 900px);
     }

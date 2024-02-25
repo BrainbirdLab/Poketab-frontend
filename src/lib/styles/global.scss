@@ -3,7 +3,12 @@
 
 @font-face {
     font-family: 'Com';
-    src: url('/fonts/comic-webfont.woff2') format('woff2');
+    src: url('$lib/fonts/comic-webfont.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'thin';
+    src: url('$lib/fonts/thin.woff2') format('woff2');
 }
 
 *{
@@ -112,8 +117,11 @@ button {
     padding: 8px 10px;
     align-items: center;
     justify-content: center;
-
     text-decoration: none !important;
+
+    &:hover{
+        filter: brightness(0.90);
+    }
 }
 
 .button-animate {
