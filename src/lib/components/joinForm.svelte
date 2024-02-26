@@ -200,12 +200,12 @@
         <div class="formField">
             {#if $reconnectButtonEnabled}
                 <button
-                    class="button-animate hover btn play-sound recon"
+                    class="button-animate hover  play-sound recon"
                     on:click={reConnectSocket}>Reconnect</button
                 >
             {:else}
                 <button
-                    class="button-animate hover btn play-sound"
+                    class="button-animate hover  play-sound"
                     disabled={$formActionButtonDisabled || !$socketConnected}
                     on:click={checkKey}
                 >
@@ -218,7 +218,7 @@
         </div>
         <div class="formField create">
             <button
-                class="button-animate hover btn play-sound"
+                class="button-animate hover play-sound"
                 on:click={createChat}>Create chat</button
             >
         </div>

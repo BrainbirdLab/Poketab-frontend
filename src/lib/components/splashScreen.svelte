@@ -21,7 +21,7 @@
     <div class="container" class:bg={!$splashButtonText} out:fly={{x: 20}}>
         <div class="text">{@html $splashMessage}</div>
         {#if $splashButtonText}
-            <button class="button-animate hover btn play-sound" on:click={closeSplashScreen}>{$splashButtonText}</button>
+            <button class="button-animate hover play-sound" on:click={closeSplashScreen}>{$splashButtonText}</button>
         {/if}
     </div>
 {/if}

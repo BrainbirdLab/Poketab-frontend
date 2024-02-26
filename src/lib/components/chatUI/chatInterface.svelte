@@ -637,7 +637,7 @@
                 <li class="welcomeText">
                     <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
                     <div>Share this chat link to others to join</div>
-                    <button id="invite" class="clickable hover play-sound button" title="Click to share" on:click={invite}>
+                    <button id="invite" class="clickable hover play-sound button capsule" title="Click to share" on:click={invite}>
                         Share
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>

@@ -273,7 +273,7 @@
                                 in:fly|global={{ x: 10, delay: i * 30 }}
                             >
                                 <label
-                                    class="avatarLabel btn btn-animate"
+                                    class="avatarLabel btn-animate"
                                     for=""
                                 >
                                     <img
@@ -296,7 +296,7 @@
                                     id={avatar}
                                 />
                                 <label
-                                    class="avatarLabel btn btn-animate"
+                                    class="avatarLabel btn-animate"
                                     for={avatar}
                                 >
                                     <img
@@ -337,12 +337,12 @@
         <div class="formField">
             {#if $reconnectButtonEnabled}
                 <button
-                    class="button-animate hover btn play-sound recon"
+                    class="button-animate hover play-sound recon"
                     on:click={reConnectSocket}>Reconnect</button
                 >
             {:else}
                 <button
-                    class="button-animate hover btn play-sound"
+                    class="button-animate hover play-sound"
                     disabled={$formActionButtonDisabled || !$socketConnected}
                     on:click={requestForChat}
                 >
@@ -359,7 +359,7 @@
                 <legend>Or</legend>
                 <button
                     id="redirect"
-                    class="noSelect button-animate hover btn play-sound"
+                    class="noSelect button-animate hover play-sound"
                     on:click={redirect}>Join chat</button
                 >
             </fieldset>

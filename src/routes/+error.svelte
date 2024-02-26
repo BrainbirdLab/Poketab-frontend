@@ -19,7 +19,7 @@
             {$page.error?.message}
         </h3>
     </div>
-    <a href="/" class="btn button-animate play-sound">
+    <a href="/" class="button-animate play-sound">
         Home
     </a>
 </div>

@@ -196,7 +196,7 @@
 <!-- Microphone -->
 <div class="voiceRecorder" class:active={recorderActive} id="recorderOverlay" data-recordingstate="{recordingState}">
     <div class="container">
-        <button class="recordBtn btn button-animate small btn roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
+        <button class="recordBtn button-animate roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
             <i class="fa-solid {micIcon}" id="micIcon"></i>
         </button>
         <div class="recording">
@@ -205,7 +205,7 @@
             {/if}
             <span id="recordingTime" class="recordingTime">{time}</span>
         </div>
-        <button class="cancelBtn btn button-animate btn small play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" on:click={closeRecorder}>
+        <button class="cancelBtn button-animate play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" on:click={closeRecorder}>
             <i class="fa-solid fa-xmark"></i>
         </button>
         <div id="audiovisualizer"></div>
@@ -259,6 +259,7 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
+            padding: 5px;
             pointer-events: all;
         }
 
@@ -284,14 +285,6 @@
             .recordingTime {
                 font-size: 0.8rem;
             }
-        }
-
-        .btn {
-            margin: 5px;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         #audiovisualizer {

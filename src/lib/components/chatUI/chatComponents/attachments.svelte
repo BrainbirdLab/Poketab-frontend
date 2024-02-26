@@ -404,6 +404,8 @@
         });
     }
 
+    const ready = false;
+
 
 </script>
 
@@ -419,10 +421,11 @@
 
 {#if $showAttachmentPickerPanel}
 <div class="wrapper" use:attachmentsClickHandler transition:fly={{y: 30, duration: 150}}>
+    {#if ready}
     <div class="attachmentContainer">
         <!-- File Choose -->
         <div transition:scale={{duration: 100, start: 0.5}}
-            class="upload_file button-animate btn icon play-sound attachmentButton"
+            class="upload_file button-animate icon play-sound attachmentButton"
         >
             <button bind:this={fileBtn}>
                 <i class="fa-regular fa-file-lines" />
@@ -431,7 +434,7 @@
         </div>
         <!-- Image Choose -->
         <div transition:scale={{duration: 150}}
-            class="upload_image button-animate btn icon play-sound attachmentButton"
+            class="upload_image button-animate icon play-sound attachmentButton"
         >
             <button bind:this={imageBtn}>
                 <i class="fa-regular fa-image" />
@@ -441,7 +444,7 @@
 
         <!-- Audio Choose -->
         <div transition:scale={{duration: 200}}
-            class="upload_audio button-animate btn icon play-sound attachmentButton"
+            class="upload_audio button-animate icon play-sound attachmentButton"
         >
             <button bind:this={audioBtn}>
                 <i class="fa-solid fa-music" />
@@ -451,7 +454,7 @@
 
         <!-- Location input -->
         <div transition:scale={{duration: 250}}
-            class="location button-animate btn icon play-sound attachmentButton"
+            class="location button-animate icon play-sound attachmentButton"
         >
             <button bind:this={locationBtn}>
                 <i class="fa-solid fa-location-crosshairs" />
@@ -459,11 +462,14 @@
             <div class="text">Location</div>
         </div>
         <!-- Poll -->
-        <!--div class="poll button-animate btn play-sound" id="createPollBtn">
+        <!--div class="poll button-animate play-sound" id="createPollBtn">
             <i class="fa-solid fa-square-poll-horizontal"></i>
             <div class="text">Poll</div>
         </!div-->
     </div>
+    {:else}
+        Not ready yet
+    {/if}
 </div>
 {/if}
 

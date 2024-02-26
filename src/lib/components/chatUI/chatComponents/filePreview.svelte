@@ -56,7 +56,7 @@
     <button
         transition:fly={{x: -10, delay: 100}}
         id="cancel"
-        class="close button button-animate btn play-sound btn-with-icon"
+        class="close button button-animate play-sound btn-with-icon"
         >Cancel <i class="fa-solid fa-trash default"></i></button
     >
     <div class="items-count">
@@ -65,7 +65,7 @@
     <button 
         transition:fly={{x: 10, delay: 100}}
         id="send"
-        class="button button-animate btn btn-with-icon"
+        class="button button-animate btn-with-icon"
         >Send <i class="fa-solid fa-paper-plane default"></i></button
     >
 </div>

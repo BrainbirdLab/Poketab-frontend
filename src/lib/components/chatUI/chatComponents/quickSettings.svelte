@@ -201,7 +201,7 @@
 
         <div class="subsectionsContainer">
             
-            <button id="keyname" class="btn play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i>Copy chat key: {KEY}</button>
+            <button id="keyname" class="play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i>Copy chat key: {KEY}</button>
             
             {#if $chatRoomStore.userList && Object.keys($chatRoomStore.userList).length > 0}
             <div class="subsection">
@@ -223,7 +223,7 @@
                 </div>
                 <!-- Enable/disable button sounds -->
                 <div
-                    class="field-checkers btn play-sound hoverShadow">
+                    class="field-checkers play-sound hoverShadow">
                     <input
                         type="checkbox"
                         id="buttonSound"
@@ -236,7 +236,7 @@
                 </div>
                 <!-- Enable/disable message sounds -->
                 <div
-                    class="field-checkers btn play-sound hoverShadow">
+                    class="field-checkers play-sound hoverShadow">
                     <input
                         type="checkbox"
                         id="messageSound"
@@ -256,7 +256,7 @@
                     Keyboard <i class="fa-regular fa-keyboard" />
                 </div>
                 <div
-                    class="field-checkers keyboardMode btn play-sound hoverShadow">
+                    class="field-checkers play-sound hoverShadow">
                     <input
                         bind:group={$sendMethod}
                         type="radio"
@@ -274,7 +274,7 @@
                 </div>
 
                 <div
-                    class="field-checkers keyboardMode btn play-sound hoverShadow">
+                    class="field-checkers play-sound hoverShadow">
                     <input
                         bind:group={$sendMethod}
                         type="radio"
@@ -302,7 +302,7 @@
                     Quick emoji <i class="fa-solid fa-face-smile-wink"></i>
                 </div>
                 <div
-                    class="field-checkers btn play-sound hoverShadow">
+                    class="field-checkers play-sound hoverShadow">
                     <input
                         bind:checked={$quickEmojiEnabled}
                         type="checkbox"
@@ -319,7 +319,7 @@
                     </label>
                 </div>
                 <div
-                    class="field-checkers btn play-sound hoverShadow"
+                    class="field-checkers play-sound hoverShadow"
                     id="chooseQuickEmoji">
                     <div class="wrapper">
                         <div class="label">
@@ -356,7 +356,7 @@
                 {/if}
                 <div
                     id="themeButton"
-                    class="field-checkers btn play-sound hoverShadow"
+                    class="field-checkers play-sound hoverShadow"
                     title="Select themes [Alt+t]"
                     >
                     <div class="wrapper">
@@ -390,7 +390,7 @@
                     <button
                         on:click={() => leaveChat(true)}
                         id="destroy"
-                        class="button hover button-animate small btn play-sound"
+                        class="button hover button-animate play-sound capsule"
                         title="Leave and end chat"
                     >
                         Destroy chat <i class="fa-solid fa-trash" />
@@ -399,7 +399,7 @@
                     <button
                         on:click={() => leaveChat(false)}
                         id="logoutButton"
-                        class="button hover button-animate small btn play-sound"
+                        class="button hover button-animate play-sound capsule"
                     ><i class="fa-solid fa-arrow-right-from-bracket"></i>Leave chat
                     </button>
                 </div>
@@ -412,15 +412,7 @@
                         Report bugs, suggest features, or just say hi!
                     </div>
                 </div>
-                <div class="footer">
-                    &copy; {new Date().getFullYear()} - BrainBird.org
-                    <div class="location">
-                        Dhaka - 1700, Bangladesh <i class="fa-solid fa-location-dot"></i>
-                        <a href="https://www.flaticon.com/free-icons/pokemon" title="pokemon icons">Assets <i class="fa-solid fa-compass-drafting"></i></a>
-                    </div>
-                </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -445,26 +437,17 @@
         padding: 5px 10px;
     }
 
-    .footer{
-        font-size: 0.7rem;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        
-        i {
-            color: inherit;
-        }
-    }
-
     a{
         color: inherit;
     }
 
     .feedback{
         margin-top: 20px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         a{
             color: var(--secondary-dark);
             text-decoration: none;

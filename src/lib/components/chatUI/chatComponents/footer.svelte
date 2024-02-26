@@ -205,9 +205,9 @@
 
     
     <div class="chatInput">
-        <button on:click={() => {showStickersPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
+        <button on:click={() => {showStickersPanel.set(true)}} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
         
-        <button on:click={() => {showAttachmentPickerPanel.set(true)}} class="button-animate small btn play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
+        <button on:click={() => {showAttachmentPickerPanel.set(true)}} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">
             {#if $showReplyToast && $replyTargetId}
@@ -220,9 +220,9 @@
         </div>
         <!-- Send Button-->
         {#if $quickEmojiEnabled && newMessage.trim().length === 0 && !$voiceMessageAudio}
-            <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
+            <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
         {:else}
-            <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate btn small roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
+            <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
         {/if}
     </div>
 </div>

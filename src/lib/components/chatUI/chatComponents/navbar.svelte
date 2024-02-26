@@ -8,7 +8,7 @@
     <div class="currentlyActive"><i class="fa-solid fa-user"></i> Active: {Object.keys($chatRoomStore.userList).length}/{$chatRoomStore.maxUsers}</div>
     <div class="optionPanel">    
         {#if !$showQuickSettingsPanel}            
-        <button transition:fade={{duration: 100}} class="button-animate btn hover roundedBtn play-sound hoverShadow" title="Customize chat" on:click={()=>{showQuickSettingsPanel.set(true)}}>
+        <button transition:fade={{duration: 100}} class="button-animate hover roundedBtn play-sound hoverShadow" title="Customize chat" on:click={()=>{showQuickSettingsPanel.set(true)}}>
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
         {/if}            
