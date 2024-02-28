@@ -107,7 +107,7 @@
 		</div>
 		{#if !submitting}
 		<div class="formfield" in:fly|global={{y: 10, delay: 250}}>
-			<input on:input={()=> {passKeyLabel = 'Admin passkey'}}  placeholder="dd" type="text" bind:this={passKey} id="userid" name="passKey" />
+			<input on:input={()=> {passKeyLabel = 'Admin passkey'}}  placeholder="dd" type="password" bind:this={passKey} id="userid" name="passKey" />
 			<label for="passKey">{@html passKeyLabel}</label>
 		</div>
 		<div class="formfield" in:fly|global={{y: 10, delay: 300}}>
