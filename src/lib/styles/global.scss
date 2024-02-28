@@ -113,6 +113,7 @@ button {
     align-items: center;
     justify-content: center;
     text-decoration: none !important;
+    cursor: pointer !important;
 
     &:hover{
         filter: brightness(0.90);
@@ -136,19 +137,18 @@ button {
 }
 
 .roundedBtn {
-    width: 35px;
-    height: 35px;
-    aspect-ratio: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 25px;
-    cursor: pointer;
+    width: 35px !important;
+    height: 35px !important;
+    aspect-ratio: 1/1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 25px !important;
 }
 
 .capsule{
-    border-radius: 25px;
+    border-radius: 25px !important;
 }
 
 .hoverShadow{
