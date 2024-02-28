@@ -6,6 +6,8 @@
     import SplashScreen from "$lib/components/splashScreen.svelte";
     import {goto} from "$app/navigation";
     import { page } from "$app/stores";
+    import { showToastMessage } from "domtoastmessage";
+    import { resetChatRoomStore } from "$lib/store";
 
     export let data; // Get data from load function aka +layout.server.ts
 
@@ -22,6 +24,24 @@
 
         mounted = true;
         console.log("Mounted chat +layout.svelte");
+
+        let interval: number;
+
+        socket.on('maintainanceBreak', (message: string, time: number) => {
+            //time seconds later connection will be closed.
+            console.log('Maintainance break: ' + message);
+
+            showToastMessage(message, 3000);
+            interval = setInterval(() => {
+                if (time > 0) {
+                    showToastMessage(`Connection will be closed in ${--time} seconds`, 2000);
+                } else {
+                    socket.disconnect();
+                    resetChatRoomStore(message + '. Connection closed 😢');
+                    clearInterval(interval);
+                }
+            }, 1000);
+        });
     });
 
 </script>

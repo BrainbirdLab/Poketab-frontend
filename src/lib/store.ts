@@ -1,4 +1,5 @@
 import { writable, get, type Writable } from "svelte/store";
+import { messageDatabase } from "./messageTypes";
 
 export const showUserInputForm = writable(true);
 export const formNotification = writable('');
@@ -98,4 +99,19 @@ export function isTaken(type: 'name' | 'avatar', query: string){
         }
     }
     return false;
+}
+
+export function resetChatRoomStore(msg: string) {
+    showUserInputForm.set(true);
+    splashMessage.set(msg);
+    splashButtonText.set('Ok');
+    myId.set('');
+    joinedChat.set(false);
+    messageDatabase.reset();
+    chatRoomStore.set({
+        Key: '',
+        admin: '',
+        userList: {},
+        maxUsers: 0,
+    });
 }

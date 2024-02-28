@@ -1,10 +1,8 @@
-import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, splashMessage, showUserInputForm, splashButtonText, myId, joinedChat, currentPage } from "$lib/store";
+import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, resetChatRoomStore, currentPage } from "$lib/store";
 import { get, writable } from "svelte/store";
 import { io } from "socket.io-client";
 import { chatRoomStore, type User } from "$lib/store";
 import { browser } from "$app/environment";
-import { messageDatabase } from "$lib/messageTypes";
-import { showToastMessage } from "domtoastmessage";
 
 //get server value from .env file
 const server = import.meta.env.VITE_SOCKET_SERVER_URL;
@@ -26,21 +24,6 @@ export function reConnectSocket() {
     formNotification.set('Reconnecting...');
     reconnectButtonEnabled.set(false);
     socket.connect();
-}
-
-function resetChatRoomStore(msg: string) {
-    showUserInputForm.set(true);
-    splashMessage.set(msg);
-    splashButtonText.set('Ok');
-    myId.set('');
-    joinedChat.set(false);
-    messageDatabase.reset();
-    chatRoomStore.set({
-        Key: '',
-        admin: '',
-        userList: {},
-        maxUsers: 0,
-    });
 }
 
 //if browser
@@ -136,14 +119,4 @@ socket.on('disconnect', () => {
 socket.on('selfDestruct', (msg: string) => {
     socket.disconnect();
     resetChatRoomStore(msg);
-});
-
-socket.on('maintainanceBreak', (message: string, time: number) => {
-    //time seconds later connection will be closed.
-    console.log('Maintainance break: ' + message);
-    showToastMessage(message, 3000);
-    setTimeout(() => {
-        socket.disconnect();
-        resetChatRoomStore('Chat is closed for maintainance 😐');
-    }, time * 1000);
 });
