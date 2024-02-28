@@ -107,15 +107,15 @@
 		</div>
 		{#if !submitting}
 		<div class="formfield" in:fly|global={{y: 10, delay: 250}}>
-			<input on:input={()=> {passKeyLabel = 'Admin passkey'}}  placeholder="dd" type="password" bind:this={passKey} id="userid" name="passKey" />
+			<input on:input={()=> {passKeyLabel = 'Admin passkey'}}  placeholder="Passkey" type="password" bind:this={passKey} id="userid" name="passKey" />
 			<label for="passKey">{@html passKeyLabel}</label>
 		</div>
 		<div class="formfield" in:fly|global={{y: 10, delay: 300}}>
-			<input on:input={() => {messageLabel = 'Message'}} placeholder="99" type="text" bind:this={message} id="message" name="message" />
+			<input on:input={() => {messageLabel = 'Message'}} placeholder="Message..." type="text" bind:this={message} id="message" name="message" />
 			<label for="message">{@html messageLabel}</label>
 		</div>
         <div class="formfield" in:fly|global={{y: 10, delay: 300}}>
-			<input on:input={() => {timeLabel = 'Restart after'}} placeholder="99" type="number" bind:this={time} id="time" name="time" />
+			<input on:input={() => {timeLabel = 'Restart after'}} placeholder="10" type="number" bind:this={time} id="time" name="time" />
 			<label for="time">{@html timeLabel}</label>
 		</div>
 		<button type="submit" in:fly|global={{y: 10, delay: 350}}>Post <i class="fa-solid fa-message"></i></button>
