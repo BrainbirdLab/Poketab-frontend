@@ -43,4 +43,6 @@ To contribute to this project, follow these steps:
 ## Credits
 Lead Developer [Fuad Hasan](https://github.com/itsfuad).
 
+Backend repo: [Backend Server](https://github.com/itsfuad/Poketab-Backend)
+
 Email: itsfuad@engineer.com
