@@ -1,7 +1,12 @@
 {
+	"$schema": "https://schemastore.org/package",
 	"name": "poketab-frontend",
 	"version": "0.0.4",
 	"private": true,
+	"engines": {
+		"node": ">=14",
+		"pnpm": ">=3"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
