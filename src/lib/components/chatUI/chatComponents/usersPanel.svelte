@@ -4,6 +4,7 @@
     import { flip } from "svelte/animate";
 </script>
 
+{#if Object.entries($chatRoomStore.userList).length > 0}
 <div class="users">
     <li class="user">
         <div class="avt">
@@ -35,6 +36,7 @@
         </li>
     {/each}
 </div>
+{/if}
 
 <style lang="scss">
     .users {
