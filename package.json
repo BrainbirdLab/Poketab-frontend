@@ -1,5 +1,5 @@
 {
-	"$schema": "https://schemastore.org/package",
+	"schema": "https://schemastore.org/package",
 	"name": "poketab-frontend",
 	"version": "0.0.4",
 	"private": true,
