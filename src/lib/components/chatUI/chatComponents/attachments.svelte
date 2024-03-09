@@ -9,6 +9,7 @@
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
 
+
     let locationBtn: HTMLButtonElement;
     let fileBtn: HTMLButtonElement;
     let imageBtn: HTMLButtonElement;
@@ -20,6 +21,7 @@
     let acceptedTypes: null | 'image/png, image/jpg, image/jpeg' | 'audio/mp3, audio/wav, audio/ogg' = null;
     let sendAs: 'file' | 'image' | 'audio' = 'file';
 
+    let urlObjects: Map<string, string> = new Map();
 
     function transmitLocation() {
 
@@ -241,7 +243,7 @@
 
         //send files metadata via socket and send files via xhr separately with promise.all
         const promisses = files.map((file) => {
-            return new Promise((resolve, reject) => {
+            return new Promise( async (resolve, reject) => {
 
                 const messageId = crypto.randomUUID();
 
@@ -260,16 +262,16 @@
                     message.size = file.size;
                     message.type = file.type;
                     message.name = file.name;
+                    message.url = urlObjects.get(file.name) || URL.createObjectURL(file); // Use urlObjects if it exists, otherwise create new objectURL
                     
                     if (message instanceof ImageMessageObj) {
-                        makeThumbnailFromImage(file, 40).then((thumbnail) => {
-                            if (message instanceof ImageMessageObj) {
-                                message.thumbnail = thumbnail.url;
-                                message.width = thumbnail.width;
-                                message.height = thumbnail.height;
-                                sendMessage(message);
-                            }
-                        });
+                        const thumbnail = await makeThumbnailFromImage(file, 40);
+                        message.thumbnail = thumbnail.url;
+                        message.width = thumbnail.width;
+                        message.height = thumbnail.height;
+                        
+                        sendMessage(message);
+
                     } else {
                         sendMessage(message);
                     }
@@ -285,7 +287,7 @@
                         message.size = file.size;
                         message.name = file.name;
                         message.audio = new Audio();
-                        message.audio.src = URL.createObjectURL(file);
+                        message.audio.src = urlObjects.get(file.name) || URL.createObjectURL(file); // Use urlObjects if it exists, otherwise create new objectURL
 
                         (message as AudioMessageObj).audio.addEventListener('loadedmetadata', async () => {
                             if (message instanceof AudioMessageObj) {
@@ -316,13 +318,13 @@
             });
         });
 
-        Promise.all(promisses).then((res) => {
+        Promise.allSettled(promisses).then((res) => {
             console.log(res);
-            showToastMessage('All files sent.');
+            //showToastMessage('All files sent.');
             //socket.emit('files', res, $chatRoomStore.Key, $myId);
         }).catch((err) => {
             console.log(err);
-            showToastMessage('Unable to send files.');
+            //showToastMessage('Unable to send files.');
         });
     }
 
@@ -404,14 +406,14 @@
         });
     }
 
-    const ready = false;
+    const ready = true;
 
 
 </script>
 
 {#if $selectedFiles && $selectedFiles.length > 0}
 <div class="filePreviewContainer" use:handleClick in:fade={{duration: 100}} out:fade={{duration: 200}}>
-    <FilePreview bind:sendAs={sendAs}/>
+    <FilePreview bind:sendAs={sendAs} bind:urlObjects={urlObjects}/>
 </div>
 {/if}
 

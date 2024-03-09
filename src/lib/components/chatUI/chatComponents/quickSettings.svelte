@@ -12,10 +12,10 @@
         myId,
         quickEmoji,
         quickEmojiEnabled,
-        SEND_METHOD,
         sendMethod,
         splashMessage,
     } from "$lib/store";
+    import { SEND_METHOD } from "$lib/types";
     import EmojiPicker from "./emojiPicker.svelte";
     import { spin } from "$lib/utils";
     import { socket } from "$lib/components/socket";

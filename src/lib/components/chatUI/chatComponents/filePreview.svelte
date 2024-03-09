@@ -7,6 +7,14 @@
 
 
     export let sendAs: 'file' | 'image' | 'audio';
+    
+    export const urlObjects: Map<string, string> = new Map();
+
+    function createURLObject(file: File) {
+        const url = URL.createObjectURL(file);
+        urlObjects.set(file.name, url);
+        return url;
+    }
 
     function fileIsAcceptable(file: File): string {
         if (file.size > 10 * 1024 * 1024) {
@@ -40,7 +48,7 @@
         >
             <i class="close remove fa-solid fa-xmark"></i>
             {#if sendAs === 'image'}
-                <img src={URL.createObjectURL(file)} alt="preview" />
+                <img src={createURLObject(file)} alt="preview" />
             {:else}
             <i class="icon fa-solid {getIcon(file.type)}"></i>
             {/if}

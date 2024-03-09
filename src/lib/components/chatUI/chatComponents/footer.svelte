@@ -5,7 +5,8 @@
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
 
-    import {SEND_METHOD, quickEmojiEnabled, myId, sendMethod, chatRoomStore, currentTheme, quickEmoji} from "$lib/store";
+    import { quickEmojiEnabled, myId, sendMethod, chatRoomStore, currentTheme, quickEmoji} from "$lib/store";
+    import { SEND_METHOD } from "$lib/types";
     import { showAttachmentPickerPanel, showStickersPanel } from "$lib/components/modalManager";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";

@@ -1,5 +1,6 @@
 import { writable, get, type Writable } from "svelte/store";
-import { messageDatabase } from "./messageTypes";
+import { SEND_METHOD, type ErrorLog, type chatRoomStoreType } from "$lib/types";
+import { messageDatabase } from "$lib/messageTypes";
 
 export const showUserInputForm = writable(true);
 export const formNotification = writable('');
@@ -10,19 +11,11 @@ export const userTypingString = writable('');
 export const currentTheme = writable('Ocean');
 
 
-type ErrorLog = {
-    text: string,
-    icon: string,
-};
+
 
 export const joinError: Writable<ErrorLog> = writable({text: '', icon: ''});
 
 export const joinKey: Writable<string> = writable('');
-
-export enum SEND_METHOD {
-    ENTER = "Enter",
-    CTRL_ENTER = "Ctrl+Enter",
-}
 
 export const sendMethod: Writable<SEND_METHOD> = writable(SEND_METHOD.ENTER);
 export const buttonSoundEnabled = writable(true);
@@ -53,21 +46,6 @@ export const reactArray: Writable<{
 });
 
 //export const clientOnline = writable(false);
-
-
-export type User = {
-    uid: string,
-    name: string,
-    avatar: string,
-    lastSeenMessage?: string | null,
-}
-
-type chatRoomStoreType = {
-    Key: string,
-    admin: string,
-    userList: { readonly [key: string]: User},
-    maxUsers: number,
-};
 
 export const myId: Writable<string> = writable('');
 
