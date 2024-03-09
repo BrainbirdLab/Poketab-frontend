@@ -44,6 +44,8 @@ export class MessageObj {
     sender: string;
     replyTo: string;
     timeout: number | undefined;
+    //optional ref
+    ref?: HTMLElement | null;
     //seenBy: { [key: string]: boolean}
     //reactedBy: { [key: string]: string}
 
@@ -66,6 +68,7 @@ export class MessageObj {
         //this.reactedBy = {};
         this.seenBy = new Set();
         this.reactedBy = new Map();
+        this.ref = null;
     }
 }
 
@@ -117,14 +120,16 @@ export class FileMessageObj extends MessageObj {
     name: string;
     size: number;
     baseType: 'file' | 'image' | 'audio';
-    loaded: boolean;
+    loaded: number;
+    loadScheme?: 'upload' | 'download' | null;
     constructor() {
         super();
         this.url = '';
         this.name = '';
         this.baseType = 'file';
         this.size = 0;
-        this.loaded = false;
+        this.loaded = 0;
+        this.loadScheme = null;
     }
 }
 

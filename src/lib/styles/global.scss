@@ -58,6 +58,18 @@ img{
     -ms-user-select: none;
 }
 
+.emoji{
+    filter: saturate(0.7);
+    transition: all 100ms ease-in-out;
+    transform-origin: bottom;
+    cursor: pointer;
+
+    &:hover{
+        transform: translateY(-5px);
+        filter: saturate(1) drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+    }
+}
+
 input{
     padding: 10px;
 }

@@ -1,7 +1,8 @@
 <script lang="ts">
 
     import { MessageObj, TextMessageObj, StickerMessageObj, LocationMessageObj, messageDatabase, lastMessageId, notice, ServerMessageObj, FileMessageObj, ImageMessageObj, AudioMessageObj } from "$lib/messageTypes";
-    import { type User, chatRoomStore, userTypingString, myId, reactArray } from "$lib/store";
+    import { chatRoomStore, userTypingString, myId, reactArray } from "$lib/store";
+    import { type User } from "$lib/types";
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { socket } from "$lib/components/socket";
     import { emojis } from "$lib/utils";

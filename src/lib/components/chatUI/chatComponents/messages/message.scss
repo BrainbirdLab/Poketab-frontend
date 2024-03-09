@@ -403,6 +403,16 @@ pre{
     }
 }
 
+.progress {
+    white-space: break-spaces;
+    text-align: center;
+    min-width: 50px;
+    font-size: 0.7rem !important;
+    * {
+        font-size: 0.7rem !important;
+    }
+}
+
 ::selection{
     background: var(--glass);
 }

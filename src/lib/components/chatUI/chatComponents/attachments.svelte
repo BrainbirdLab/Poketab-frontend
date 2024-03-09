@@ -4,7 +4,7 @@
     import { showToastMessage } from "domtoastmessage";
     import { socket } from "$lib/components/socket";
     import { chatRoomStore, myId } from "$lib/store";
-    import { AudioMessageObj, FileMessageObj, ImageMessageObj, selectedFiles } from "$lib/messageTypes";
+    import { AudioMessageObj, FileMessageObj, ImageMessageObj, messageDatabase, selectedFiles } from "$lib/messageTypes";
     import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
@@ -262,6 +262,7 @@
                     message.size = file.size;
                     message.type = file.type;
                     message.name = file.name;
+                    message.loadScheme = 'upload';
                     message.url = urlObjects.get(file.name) || URL.createObjectURL(file); // Use urlObjects if it exists, otherwise create new objectURL
                     
                     if (message instanceof ImageMessageObj) {
@@ -287,14 +288,13 @@
                         message.size = file.size;
                         message.name = file.name;
                         message.audio = new Audio();
+                        message.loadScheme = 'upload';
                         message.audio.src = urlObjects.get(file.name) || URL.createObjectURL(file); // Use urlObjects if it exists, otherwise create new objectURL
 
                         (message as AudioMessageObj).audio.addEventListener('loadedmetadata', async () => {
                             if (message instanceof AudioMessageObj) {
                                 message.duration = message.audio.duration;
 
-                                console.log('Set message in database === ' + file.name);
-                                console.log(document.getElementById(message.id));
                                 sendMessage(message);
                             }
                         }, { once: true });
@@ -314,6 +314,27 @@
                         reject(xhr.responseText);
                     }
                 };
+                //progress event
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable){
+                        const percent = (e.loaded / e.total) * 100;
+                        //console.log(percent);
+                        //update message
+                        //console.log(message.ref);
+                        if (message.ref){
+                            const id = message.ref.id;
+                            messageDatabase.update(messages => {
+                                const msg = messageDatabase.getMessage(id) as FileMessageObj;
+
+                                if (msg){
+                                    msg.loaded = Math.round(percent);
+                                }
+
+                                return messages;
+                            });
+                        }
+                    }
+                }
                 xhr.send(formData);
             });
         });

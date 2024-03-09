@@ -83,17 +83,6 @@
             flex-wrap: wrap;
             height: 100%;
             overflow-y: scroll;
-
-            .emoji{
-                filter: saturate(0.7);
-                transition: all 100ms ease-in-out;
-                transform-origin: bottom;
-
-                &:hover{
-                    transform: translateY(-5px);
-                    filter: saturate(1) drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
-                }
-            }
         }
     }
 </style>

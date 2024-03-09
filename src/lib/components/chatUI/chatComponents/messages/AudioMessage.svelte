@@ -12,7 +12,7 @@
     let duration = file.duration;
 </script>
 
-<li class="message msg-item {file.classList}" id="{file.id}"> <!-- noreply notitle delevered start end self react -->
+<li class="message msg-item {file.classList}" id="{file.id}" bind:this={file.ref}> <!-- noreply notitle delevered start end self react -->
     <SeenBy seenBy={file.seenBy} id={file.id} />
     <div class="messageContainer">
         <MessageMeta senderId={file.sender} isSent={file.sent}/>
@@ -35,6 +35,19 @@
                             {/if}
 
                         </div>
+                        {#if file.loaded < 100}
+                            <div class="progress">
+                                {#if file.loadScheme == "upload"}
+                                    <i class="fa-solid fa-arrow-up"
+                                    ></i>
+                                {:else if file.loadScheme == "download"}
+                                    <i
+                                        class="fa-solid fa-arrow-down"
+                                    ></i>
+                                {/if}
+                                {file.loaded}%
+                            </div>
+                        {/if}
                         <div class="duration">
                             {#if file.audio.paused}
                                 {#if isFinite(duration)}

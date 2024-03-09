@@ -75,6 +75,7 @@ export function sendMessage(message: MessageObj){
 		if (document.hasFocus()){
 			socket.emit('seen', get(myId), get(chatRoomStore).Key, get(lastMessageId));
 		}
+
     });
 }
 

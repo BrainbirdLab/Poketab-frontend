@@ -8,7 +8,7 @@
 
     export let sendAs: 'file' | 'image' | 'audio';
     
-    export const urlObjects: Map<string, string> = new Map();
+    export let urlObjects: Map<string, string>;
 
     function createURLObject(file: File) {
         const url = URL.createObjectURL(file);
