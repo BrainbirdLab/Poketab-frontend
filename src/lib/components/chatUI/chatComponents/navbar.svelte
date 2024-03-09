@@ -30,6 +30,18 @@
         font-size: 0.9rem;
         padding: 5px;
         color: var(--foreground-dark);
+
+        &::after{
+            content: '';
+            height: 1px;
+            width: 120%;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, transparent, var(--glass), transparent);
+        }
+        
         i {
             color: inherit;
             font-size: 0.9rem;
