@@ -12,7 +12,6 @@
     import MessageReplyToast from "./messageReplyToast.svelte";
     import ScrollDownPopup from "./scrollDownPopup.svelte";
     import TypingIndicator from "./typingIndicator.svelte";
-    import { themes } from "$lib/themes";
     
     let newMessage = '';
 

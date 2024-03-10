@@ -3,7 +3,6 @@
     import {
         ImageMessageObj,
         type FileMessageObj,
-        messageScrolledPx,
     } from "$lib/messageTypes";
     import Reacts from "./messageComponents/reacts.svelte";
     import MessageTop from "./messageComponents/messageTop.svelte";
@@ -43,12 +42,15 @@
                                             {#if file.loadScheme == "upload"}
                                                 <i class="fa-solid fa-arrow-up"
                                                 ></i>
+                                                {file.sender === $myId
+                                                    ? `${file.loaded}%`
+                                                    : "Sending"}
                                             {:else if file.loadScheme == "download"}
                                                 <i
                                                     class="fa-solid fa-arrow-down"
                                                 ></i>
+                                                {file.loaded}%
                                             {/if}
-                                            {file.loaded}%
                                         </div>
                                     {/if}
                                     <div class="fileSize">
@@ -62,50 +64,52 @@
                                 alt={file.name}
                                 height={file.height}
                                 width={file.width}
-                                style={file.loaded != 100 ||
-                                file.sender === $myId
+                                style={file.sender === $myId
                                     ? ""
-                                    : "filter: blur(10px); transform: scale(1.1); transition: 500ms ease-in-out;"}
+                                    : file.loaded < 100
+                                      ? "filter: blur(10px); transform: scale(1.1); transition: 500ms ease-in-out;"
+                                      : ""}
                             />
                             {#if file.loaded < 100}
-                            <div
-                                class="imageProgressCircle"
-                                style="stroke-dasharray: {(file.loaded *
-                                    251.2) /
-                                    100}, 251.2;"
-                            >
-                                <svg
-                                    viewBox="0 0 100 100"
+                                <div
+                                    class="imageProgressCircle"
+                                    style="stroke-dasharray: {(file.loaded *
+                                        251.2) /
+                                        100}, 251.2;"
                                 >
-                                    <circle
-                                        cx="50"
-                                        cy="50"
-                                        r="45"
-                                        fill="transparent"
-                                    />
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-width="3"
-                                        stroke="#fff"
-                                        fill="none"
-                                        d="M50 10
+                                    <svg viewBox="0 0 100 100">
+                                        {#if file.loaded > 0}
+                                            <circle
+                                                cx="50"
+                                                cy="50"
+                                                r="45"
+                                                fill="transparent"
+                                            />
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-width="3"
+                                                stroke="#fff"
+                                                fill="none"
+                                                d="M50 10
                                             a 40 40 0 0 1 0 80
                                             a 40 40 0 0 1 0 -80"
-                                    >
-                                    </path>
-                                </svg>
-                                <div class="progress">
-                                    {#if file.loadScheme == "upload"}
-                                    <i class="fa-solid fa-arrow-up"
-                                    ></i>
-                                    {:else if file.loadScheme == "download"}
-                                        <i
-                                            class="fa-solid fa-arrow-down"
-                                        ></i>
-                                    {/if}
-                                    {file.loaded}%
+                                            >
+                                            </path>
+                                        {/if}
+                                    </svg>
+                                    <div class="progress">
+                                        {#if file.loadScheme == "upload"}
+                                            <i class="fa-solid fa-arrow-up"></i>
+                                            {file.sender === $myId
+                                                ? `${file.loaded}%`
+                                                : "Sending"}
+                                        {:else if file.loadScheme == "download"}
+                                            <i class="fa-solid fa-arrow-down"
+                                            ></i>
+                                            {file.loaded}%
+                                        {/if}
+                                    </div>
                                 </div>
-                            </div>
                             {/if}
                         {/if}
                     </div>
@@ -186,18 +190,17 @@
         background: rgba(0, 0, 0, 0.5);
         z-index: 12;
 
-        svg{
+        svg {
             width: 22%;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.15);
         }
 
-        .progress{
+        .progress {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
-
     }
 </style>

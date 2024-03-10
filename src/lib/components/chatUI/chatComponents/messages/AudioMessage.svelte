@@ -6,6 +6,7 @@
     import MessageMeta from "./messageComponents/messageMeta.svelte";
     import { fly } from "svelte/transition";
     import { remainingTime } from "./messageUtils";
+    import { myId } from "$lib/store";
 
     export let file: AudioMessageObj;
 
@@ -40,12 +41,13 @@
                                 {#if file.loadScheme == "upload"}
                                     <i class="fa-solid fa-arrow-up"
                                     ></i>
+                                    { file.sender === $myId ? `${file.loaded}%` : "Sending" }
                                 {:else if file.loadScheme == "download"}
                                     <i
                                         class="fa-solid fa-arrow-down"
                                     ></i>
+                                    {file.loaded}%
                                 {/if}
-                                {file.loaded}%
                             </div>
                         {/if}
                         <div class="duration">

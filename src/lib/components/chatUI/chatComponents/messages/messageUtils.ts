@@ -1,8 +1,9 @@
-import { MessageObj, messageDatabase, lastMessageId } from "$lib/messageTypes";
+import { MessageObj, messageDatabase, lastMessageId, FileMessageObj } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
 import { chatRoomStore, myId } from "$lib/store";
 import { socket } from "$lib/components/socket";
 import { badWords } from "./censoredWords";
+import { API_URL } from "$lib/components/socket";
 
 export const showReplyToast = writable(false);
 
@@ -54,7 +55,7 @@ export function remainingTime(totalTime: number, elapsedTime: number) {
 	}
 }
 
-export function sendMessage(message: MessageObj){
+export function sendMessage(message: MessageObj, file?: File){
 
 	//get(messageContainer).scrollTo({ top: get(messageContainer).scrollHeight, behavior: 'smooth' });
 	
@@ -71,6 +72,36 @@ export function sendMessage(message: MessageObj){
 		messageDatabase.markDelevered(message, messageId);
 
 		//console.log(`New message id: ${messageId}`);
+
+		if (file){
+			const formData = new FormData();
+			formData.append('file', file);
+			const xhr = new XMLHttpRequest();
+			xhr.open('POST', `${API_URL}/api/upload/${get(chatRoomStore).Key}/${get(myId)}/${message.id}`);
+
+			//progress event
+			xhr.upload.onprogress = (e) => {
+				if (e.lengthComputable){
+					const percent = (e.loaded / e.total) * 100;
+					//console.log(percent);
+					//update message
+					//console.log(message.ref);
+					if (message.ref){
+						const id = message.ref.id;
+						messageDatabase.update(messages => {
+							const msg = messageDatabase.getMessage(id) as FileMessageObj;
+
+							if (msg){
+								msg.loaded = Math.round(percent);
+							}
+
+							return messages;
+						});
+					}
+				}
+			}
+			xhr.send(formData);
+		}
 		
 		if (document.hasFocus()){
 			socket.emit('seen', get(myId), get(chatRoomStore).Key, get(lastMessageId));

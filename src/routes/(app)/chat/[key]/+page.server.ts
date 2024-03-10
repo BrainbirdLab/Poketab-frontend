@@ -8,7 +8,7 @@ type fetchResponse = socketResponse & {
   themename: string,
 }
 
-const server = import.meta.env.VITE_SOCKET_SERVER_URL;
+const server = import.meta.env.VITE_API_SERVER_URL;
 
 export async function load({ params, cookies }) {
 

@@ -1,13 +1,14 @@
 import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, resetChatRoomStore, currentPage } from "$lib/store";
 import { get, writable } from "svelte/store";
 import { io } from "socket.io-client";
-import { chatRoomStore, type User } from "$lib/store";
+import { chatRoomStore } from "$lib/store";
+import { type User } from "$lib/types";
 import { browser } from "$app/environment";
 
 //get server value from .env file
-const server = import.meta.env.VITE_SOCKET_SERVER_URL;
+export const API_URL = import.meta.env.VITE_API_SERVER_URL;
 
-export const socket = io(server);
+export const socket = io(API_URL);
 
 export type socketResponse = {
     success: boolean,
