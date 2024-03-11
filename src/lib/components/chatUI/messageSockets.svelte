@@ -160,7 +160,12 @@
                     ) as FileMessageObj;
 
                     if (msg) {
-                        msg.url = url;
+                        if (msg instanceof AudioMessageObj){
+                            msg.audio = new Audio();
+                            msg.audio.src = url;
+                        } else {
+                            msg.url = url;
+                        }
                         msg.loadScheme = "download";
                         msg.loaded = 100;
                     }

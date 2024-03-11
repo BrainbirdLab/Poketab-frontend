@@ -3,12 +3,13 @@
     import { fly } from "svelte/transition";
     import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
-    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj } from "$lib/messageTypes";
+    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj } from "$lib/messageTypes";
     import { chatRoomStore, myId, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, spin } from "$lib/utils";
     import { onMount } from "svelte";
+    import { showToastMessage } from "domtoastmessage";
 
     export let message: MessageObj;
 
@@ -19,8 +20,6 @@
     $: sender = message?.sender;
     
     $: downloadable = sender == $myId ? true : ((message as FileMessageObj).loaded == 100 ? true : false);
-
-    $: console.log((message as FileMessageObj).loaded);
 
     let selectedReact = '';
 
@@ -102,7 +101,28 @@
                     copyText(text);
 
                 } else if (e.target.classList.contains('Download')) {
-                    console.log('download');
+                    //console.log('download');
+
+                    if (message instanceof FileMessageObj){
+                        if (message instanceof AudioMessageObj){
+                            if (!message.audio.src){
+                                return;
+                            }
+                        } else {
+                            if (!message.url){
+                                return;
+                            }
+                        }
+                    }
+                    
+                    showToastMessage('Preparing download...');
+
+                    //create a link and click it to download the file
+                    const link = document.createElement('a');
+                    link.href = (message as FileMessageObj).url;
+                    link.download = (message as FileMessageObj).name;
+                    link.click();
+
                 } else if (e.target.classList.contains('Delete')) {
                     //console.log('delete');
                     if (!message){
