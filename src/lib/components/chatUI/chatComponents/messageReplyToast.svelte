@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {messageDatabase, replyTargetId, type MessageObj, TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj} from "$lib/messageTypes";
+    import {messageDatabase, replyTarget, type MessageObj, TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj} from "$lib/messageTypes";
     import {chatRoomStore, myId} from "$lib/store";
     import { slide, fly, fade, scale } from "svelte/transition";
     import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
@@ -7,12 +7,10 @@
     import { onDestroy, onMount } from "svelte";
     import { getIcon } from "$lib/utils";
 
-    $: message = messageDatabase.getMessage($replyTargetId) as MessageObj || null;
-    $: sender = message ? (message?.sender === $myId ? 'self' : $chatRoomStore.userList[message?.sender]?.name || 'Zombie') : 'Zombie';
-
+    $: sender = $replyTarget ? ($replyTarget?.sender === $myId ? 'self' : $chatRoomStore.userList[$replyTarget?.sender]?.name || 'Zombie') : 'Zombie';
 
     $: {
-        if (!message || message.baseType == 'deleted' || !$chatRoomStore.userList[message.sender]){
+        if (!$replyTarget || $replyTarget.baseType == 'deleted' || !$chatRoomStore.userList[$replyTarget.sender]){
             closeReplyToast();
         }
     }
@@ -37,11 +35,11 @@
 
     onMount(() => {
         userClosed = false;
-        console.log(message);
+        console.log($replyTarget);
     });
 
     onDestroy(() => {
-        replyTargetId.set('');
+        replyTarget.set(null);
     })
 
 </script>
@@ -57,15 +55,15 @@
                 <button out:scale|global={{duration: 50}} in:scale|global={{delay: 300, duration: 200}} class="close" on:click={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="replyData" out:fade|global={{duration: 200}} in:fly|global={{x: 10, delay: 150, duration: 300}}>
-                {#if message instanceof TextMessageObj}
-                    {getTextData(message.message)}
-                {:else if message instanceof ImageMessageObj}
-                    <img class="image" src="{message.url}" alt="{message.name}">
-                {:else if message instanceof FileMessageObj}
-                    <i class="icon fa-solid {getIcon(message.type)}"></i> 
-                    {getTextData(message.name)}
-                {:else if message instanceof StickerMessageObj}
-                    <img class="sticker" src="{message.src}" alt="sticker reply" />
+                {#if $replyTarget instanceof TextMessageObj}
+                    {getTextData($replyTarget.message)}
+                {:else if $replyTarget instanceof ImageMessageObj}
+                    <img class="image" src="{$replyTarget.url}" alt="{$replyTarget.name}">
+                {:else if $replyTarget instanceof FileMessageObj}
+                    <i class="icon fa-solid {getIcon($replyTarget.type)}"></i> 
+                    {getTextData($replyTarget.name)}
+                {:else if $replyTarget instanceof StickerMessageObj}
+                    <img class="sticker" src="{$replyTarget.src}" alt="sticker reply" />
                 {/if}
             </div>
         </div>

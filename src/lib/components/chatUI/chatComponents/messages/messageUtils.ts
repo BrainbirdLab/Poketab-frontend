@@ -1,6 +1,6 @@
 import { MessageObj, messageDatabase, lastMessageId, FileMessageObj } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
-import { chatRoomStore, myId } from "$lib/store";
+import { chatRoomStore, myId, outgoingXHRs } from "$lib/store";
 import { socket } from "$lib/components/socket";
 import { badWords } from "./censoredWords";
 import { API_URL } from "$lib/components/socket";
@@ -77,6 +77,12 @@ export function sendMessage(message: MessageObj, file?: File){
 			const formData = new FormData();
 			formData.append('file', file);
 			const xhr = new XMLHttpRequest();
+
+			outgoingXHRs.update(xhrs => {
+				xhrs.set(message.id, xhr);
+				return xhrs;
+			});
+
 			xhr.open('POST', `${API_URL}/api/upload/${get(chatRoomStore).Key}/${get(myId)}/${message.id}`);
 
 			//progress event

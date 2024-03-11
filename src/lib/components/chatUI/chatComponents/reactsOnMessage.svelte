@@ -1,13 +1,15 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
-    import { eventTriggerMessageId, messageDatabase, type MessageObj } from "$lib/messageTypes";
+    import { eventTriggerMessage, messageDatabase, type MessageObj } from "$lib/messageTypes";
     import { showReactsOnMessageModal } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
 
-    $: message = messageDatabase.getMessage($eventTriggerMessageId) as MessageObj;
+    $: message = $eventTriggerMessage;
 
     // [uid: string]: react-emoji
     $: reacts = message?.reactedBy || new Map<string, string>();
+
+    $: console.log(reacts);
 
     $: selectedReact = 'All';
 
@@ -33,7 +35,7 @@
             const target = e.target as HTMLElement;
 
             if (target == node){
-                $eventTriggerMessageId = '';
+                eventTriggerMessage.set(null);
                 selectedReact = 'All';
                 showReactsOnMessageModal.set(false);
             }
@@ -50,7 +52,7 @@
 
 <div class="wrapper" use:handleClick transition:fly|global={{y: 40, duration: 100}}>
     <div class="reactsOnMessage">
-        <div class="title">Reacts on {$chatRoomStore.userList[message?.sender]?.name || "Zombie"}'s message</div>
+        <div class="title">Reacts on {$chatRoomStore.userList[message?.sender || '']?.name || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
             {#key reactsToShow}

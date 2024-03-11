@@ -7,9 +7,9 @@
         ServerMessageObj,
         StickerMessageObj,
         messageDatabase,
-        eventTriggerMessageId,
+        eventTriggerMessage,
         lastMessageId,
-        replyTargetId,
+        replyTarget,
         LocationMessageObj,
         TextMessageObj,
         messageContainer,
@@ -278,7 +278,7 @@
                 return;
             }
 
-            eventTriggerMessageId.set(id);
+            eventTriggerMessage.set(messageObj);
             showMessageOptions.set(true);
         }
     }
@@ -333,7 +333,7 @@
             }
 
             if (target.classList.contains('reactsContainer')){
-                eventTriggerMessageId.set(message.id);
+                eventTriggerMessage.set(messageObj);
                 showReactsOnMessageModal.set(true);
                 return;
             }
@@ -571,9 +571,9 @@
                 if (target.closest(".msg") && messageDatabase.has(message.id)) {
                     touchEnded = true;
 
-                    const { classList, sent } = messageDatabase.getMessage(
-                        message.id,
-                    ) as MessageObj;
+                    const messageObj = messageDatabase.getMessage(message.id) as MessageObj;
+
+                    const { classList, sent } = messageObj;
 
                     swipeStarted = false;
 
@@ -598,7 +598,7 @@
                     
                     if (replyTrigger) {
 
-                        replyTargetId.set(message.id);
+                        replyTarget.set(messageObj);
 
                         showReplyToast.set(true);
 
@@ -628,6 +628,31 @@
 <svelte:head>
     <title>Poketab - Chat</title>
 </svelte:head>
+
+
+<ConnectivityState bind:offline={isOffline} />
+
+{#if $showQuickSettingsPanel}
+    <QuickSettings />
+{/if}
+
+<Themes />
+
+{#if $showStickersPanel}
+    <StickersKeyboard />
+{/if}
+
+<Attachments />
+
+{#if $showMessageOptions}
+    <MessageOptions/>
+{/if}
+
+{#if $showReactsOnMessageModal}
+    <ReactsOnMessage />
+{/if}
+
+<MessageSockets />
 
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
@@ -666,30 +691,6 @@
         <Footer/>
     </div>
 </div>
-
-<ConnectivityState bind:offline={isOffline} />
-
-{#if $showQuickSettingsPanel}
-    <QuickSettings />
-{/if}
-
-<Themes />
-
-{#if $showStickersPanel}
-    <StickersKeyboard />
-{/if}
-
-<Attachments />
-
-{#if $showMessageOptions}
-    <MessageOptions />
-{/if}
-
-{#if $showReactsOnMessageModal}
-    <ReactsOnMessage />
-{/if}
-
-<MessageSockets />
 
 <style lang="scss">
     .container {

@@ -3,7 +3,7 @@
     import { fly } from "svelte/transition";
     import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
-    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTargetId, TextMessageObj } from "$lib/messageTypes";
+    import { MessageObj, messageDatabase, eventTriggerMessage, replyTarget, TextMessageObj, FileMessageObj } from "$lib/messageTypes";
     import { chatRoomStore, myId, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
@@ -12,8 +12,13 @@
 
     let reactIsExpanded = false;
 
-    $: reactedEmoji = (messageDatabase.getMessage($eventTriggerMessageId) as MessageObj)?.reactedBy.get($myId) || '';
-    $: messageKind = (messageDatabase.getMessage($eventTriggerMessageId) as MessageObj)?.baseType;
+    $: reactedEmoji = $eventTriggerMessage?.reactedBy.get($myId) || '';
+    $: messageKind = $eventTriggerMessage?.baseType;
+    $: sender = $eventTriggerMessage?.sender;
+    
+    $: downloadable = sender == $myId ? true : (($eventTriggerMessage as FileMessageObj).loaded == 100 ? true : false);
+
+    $: console.log(($eventTriggerMessage as FileMessageObj).loaded);
 
     let selectedReact = '';
 
@@ -35,9 +40,12 @@
     });
 
     function getMessageOptions(){
-        const arr = [];
 
-        const sender = (messageDatabase.getMessage($eventTriggerMessageId) as MessageObj)?.sender;
+        if (!$eventTriggerMessage) {
+            return [];
+        }
+
+        const arr = [];
 
         if (sender && $chatRoomStore.userList[sender]){
             arr.push('Reply');
@@ -49,10 +57,7 @@
 
         if (messageKind == 'text'){
             arr.push('Copy');
-        } else if (messageKind == 'file' || messageKind == 'audio'){
-            arr.push('Download');
         }
-        
 
         return arr;
     }
@@ -64,10 +69,15 @@
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('emoji')) {
+
+                if (!$eventTriggerMessage){
+                    return;
+                }
+
                 selectedReact = e.target.dataset.emoji as string || '';
                 if (selectedReact && emojis.includes(selectedReact)) {
                     //send the emoji to the server via socket
-                    socket.emit('react', $eventTriggerMessageId, $chatRoomStore.Key, $myId, selectedReact);
+                    socket.emit('react', $eventTriggerMessage.id, $chatRoomStore.Key, $myId, selectedReact);
                 }
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
@@ -75,17 +85,16 @@
                 
                 if (e.target.classList.contains('Reply')) {
                     //console.log('reply');
-                    replyTargetId.set($eventTriggerMessageId);
+                    replyTarget.set($eventTriggerMessage);
                     showReplyToast.set(true);
                 } else if (e.target.classList.contains('Copy')) {
                     //console.log('copy');
-                    const msg = messageDatabase.getMessage($eventTriggerMessageId) as TextMessageObj;
 
-                    if (!msg) return;
+                    if (!($eventTriggerMessage)) return;
 
                     //make html element to put data
                     const elem = document.createElement('div');
-                    elem.innerHTML = msg.message;
+                    elem.innerHTML = ($eventTriggerMessage as TextMessageObj).message;
                     const text = elem.innerText;
                     //copy the text
                     copyText(text);
@@ -94,7 +103,10 @@
                     console.log('download');
                 } else if (e.target.classList.contains('Delete')) {
                     //console.log('delete');
-                    socket.emit('deleteMessage', $eventTriggerMessageId, $chatRoomStore.Key, $myId);
+                    if (!$eventTriggerMessage){
+                        return;
+                    }
+                    socket.emit('deleteMessage', $eventTriggerMessage.id, $chatRoomStore.Key, $myId);
                 }
 
                 reactIsExpanded = false;
@@ -106,7 +118,7 @@
             destroy(){
                 node.onclick = null;
                 selectedReact = '';
-                eventTriggerMessageId.set('');
+                $eventTriggerMessage = null;
             }
         }
     }
@@ -148,12 +160,16 @@
         </div>
     </div>
     <div class="messageOptions" transition:fly={{y: 10, duration: 200}}>
-        {#each getMessageOptions() as option, i}
-        <div in:fly|global={{y: 10, delay: ((i+1)*50)}} class="option {option}" class:delete={option == 'Delete'} title="{option}">
-            <i class="{messageOptions[option]}"></i>
-            {option}
-        </div>
+        {#key downloadable}
+        {#each [...getMessageOptions(), downloadable ? 'Download' : null] as option, i}
+        {#if option != null}
+            <div in:fly|global={{y: 10, delay: ((i+1)*50)}} class="option {option}" class:delete={option == 'Delete'} title="{option}">
+                <i class="{messageOptions[option]}"></i>
+                {option}
+            </div>
+        {/if}
         {/each}
+        {/key}
     </div>
 </div>
 

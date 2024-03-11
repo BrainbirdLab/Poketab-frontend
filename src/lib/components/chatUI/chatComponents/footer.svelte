@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { replyTargetId, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
+    import { replyTarget, eventTriggerMessage, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
@@ -69,10 +69,10 @@
             }
         }
 
-        if ($replyTargetId){
-            message.replyTo = $replyTargetId;
-            eventTriggerMessageId.set('');
-            replyTargetId.set('');
+        if ($replyTarget){
+            message.replyTo = $replyTarget.id;
+            eventTriggerMessage.set(null);
+            replyTarget.set(null);
             showReplyToast.set(false);
         }
 
@@ -210,7 +210,7 @@
         <button on:click={() => {showAttachmentPickerPanel.set(true)}} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">
-            {#if $showReplyToast && $replyTargetId}
+            {#if $showReplyToast && $replyTarget}
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">

@@ -36,6 +36,13 @@ export const reactArray = {
 };
 */
 
+export const outgoingXHRs: Writable<
+    Map<string, XMLHttpRequest>
+> = writable(new Map());
+
+export const incommingXHRs: Writable<
+    Map<string, XMLHttpRequest>
+> = writable(new Map());
 
 export const reactArray: Writable<{
     reacts: readonly string[],

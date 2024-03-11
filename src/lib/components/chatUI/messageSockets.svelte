@@ -17,6 +17,8 @@
         userTypingString,
         myId,
         reactArray,
+        incommingXHRs,
+        outgoingXHRs,
     } from "$lib/store";
     import { type User } from "$lib/types";
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
@@ -127,6 +129,11 @@
         app.get('/download/:key/:userId/:messageId', async (ctx) => {
         */
 
+        incommingXHRs.update((xhrs) => {
+            xhrs.set(messageId, xhr);
+            return xhrs;
+        })
+
         xhr.responseType = "blob";
 
         xhr.open(
@@ -147,6 +154,7 @@
                 const url = URL.createObjectURL(file);
 
                 messageDatabase.update((messages) => {
+                    
                     const msg = messageDatabase.getMessage(
                         messageId,
                     ) as FileMessageObj;
@@ -158,9 +166,7 @@
                     }
 
                     return messages;
-                });
-
-                socket.emit("fileDownloaded", messageId, $myId);
+                });                
             }
         };
 
@@ -168,7 +174,7 @@
         xhr.onprogress = (e) => {
             if (e.lengthComputable) {
                 const percent = (e.loaded / e.total) * 100;
-                console.log(percent);
+                //console.log(percent);
                 //update message
                 //console.log(message.ref);
                 if (message.ref) {
@@ -213,6 +219,17 @@
                 const sent = message.sent;
                 const id = message.id;
 
+                if ($incommingXHRs.has(id) || $outgoingXHRs.has(id)){
+                    
+                    $incommingXHRs.get(id)?.abort();
+                    $incommingXHRs.delete(id);
+
+                    $outgoingXHRs.get(id)?.abort();
+                    $outgoingXHRs.delete(id);
+
+                    console.log("aborted download/upload");
+                }
+                
                 messageDatabase.update((messages) => {
                     //change the message to "This message was deleted"
                     message = new TextMessageObj();

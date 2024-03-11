@@ -191,7 +191,7 @@
         z-index: 12;
 
         svg {
-            width: 22%;
+            width: 20%;
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.15);
         }
