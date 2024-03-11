@@ -73,6 +73,17 @@ export function sendMessage(message: MessageObj, file?: File){
 
 		//console.log(`New message id: ${messageId}`);
 
+		if (Object.keys(get(chatRoomStore).userList).length < 2 ){
+			messageDatabase.update(messages => {
+
+				(message as FileMessageObj).loaded = 100;
+
+				return messages;
+			});
+			console.log('File upload skipped');
+			return;
+		}
+
 		if (file){
 			const formData = new FormData();
 			formData.append('file', file);
@@ -89,21 +100,14 @@ export function sendMessage(message: MessageObj, file?: File){
 			xhr.upload.onprogress = (e) => {
 				if (e.lengthComputable){
 					const percent = (e.loaded / e.total) * 100;
-					//console.log(percent);
+					console.log(percent);
 					//update message
-					//console.log(message.ref);
-					if (message.ref){
-						const id = message.ref.id;
-						messageDatabase.update(messages => {
-							const msg = messageDatabase.getMessage(id) as FileMessageObj;
+					messageDatabase.update(messages => {
 
-							if (msg){
-								msg.loaded = Math.round(percent);
-							}
+						(message as FileMessageObj).loaded = Math.round(percent);
 
-							return messages;
-						});
-					}
+						return messages;
+					});
 				}
 			}
 			xhr.send(formData);

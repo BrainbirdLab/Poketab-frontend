@@ -13,7 +13,7 @@
     let duration = file.duration;
 </script>
 
-<li class="message msg-item {file.classList}" id="{file.id}" bind:this={file.ref}> <!-- noreply notitle delevered start end self react -->
+<li class="message msg-item {file.classList}" id="{file.id}"> <!-- noreply notitle delevered start end self react -->
     <SeenBy seenBy={file.seenBy} id={file.id} />
     <div class="messageContainer">
         <MessageMeta senderId={file.sender} isSent={file.sent}/>

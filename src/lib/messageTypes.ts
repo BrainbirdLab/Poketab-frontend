@@ -44,8 +44,6 @@ export class MessageObj {
     sender: string;
     replyTo: string;
     timeout: number | undefined;
-    //optional ref
-    ref?: HTMLElement | null;
     //seenBy: { [key: string]: boolean}
     //reactedBy: { [key: string]: string}
 
@@ -68,7 +66,6 @@ export class MessageObj {
         //this.reactedBy = {};
         this.seenBy = new Set();
         this.reactedBy = new Map();
-        this.ref = null;
     }
 }
 

@@ -9,7 +9,7 @@
 
 </script>
 
-<li class="message msg-item {message.classList}" id="{message.id}" bind:this={message.ref}> <!-- noreply notitle delevered start end self react -->
+<li class="message msg-item {message.classList}" id="{message.id}"> <!-- noreply notitle delevered start end self react -->
     <SeenBy seenBy={message.seenBy} id={message.id} />
     <div class="messageContainer">
         <MessageMeta senderId={message.sender} isSent={message.sent}/>

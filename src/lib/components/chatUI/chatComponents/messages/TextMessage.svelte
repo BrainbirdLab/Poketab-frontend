@@ -9,7 +9,7 @@
 
 </script>
 
-<li class="message msg-item {message.classList}" id="{message.id}" bind:this={message.ref}>
+<li class="message msg-item {message.classList}" id="{message.id}">
     <SeenBy seenBy={message.seenBy} id={message.id} />
     <div class="messageContainer" >
         <MessageMeta senderId={message.sender} isSent={message.sent}/>

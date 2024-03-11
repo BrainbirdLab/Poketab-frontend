@@ -155,20 +155,14 @@
 
                 messageDatabase.update((messages) => {
                     
-                    const msg = messageDatabase.getMessage(
-                        messageId,
-                    ) as FileMessageObj;
-
-                    if (msg) {
-                        if (msg instanceof AudioMessageObj){
-                            msg.audio = new Audio();
-                            msg.audio.src = url;
-                        } else {
-                            msg.url = url;
-                        }
-                        msg.loadScheme = "download";
-                        msg.loaded = 100;
+                    if (message instanceof AudioMessageObj){
+                        message.audio = new Audio();
+                        message.audio.src = url;
+                    } else {
+                        message.url = url;
                     }
+                    message.loadScheme = "download";
+                    message.loaded = 100;
 
                     return messages;
                 });                
@@ -181,22 +175,14 @@
                 const percent = (e.loaded / e.total) * 100;
                 //console.log(percent);
                 //update message
-                //console.log(message.ref);
-                if (message.ref) {
-                    const id = message.ref.id;
-                    messageDatabase.update((messages) => {
-                        const msg = messageDatabase.getMessage(
-                            id,
-                        ) as FileMessageObj;
 
-                        if (msg) {
-                            msg.loadScheme = "download";
-                            msg.loaded = Math.round(percent);
-                        }
+                messageDatabase.update((messages) => {
 
-                        return messages;
-                    });
-                }
+                    message.loadScheme = "download";
+                    message.loaded = Math.round(percent);
+
+                    return messages;
+                });
             }
         };
 
