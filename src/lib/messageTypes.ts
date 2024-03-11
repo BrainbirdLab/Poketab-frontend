@@ -306,7 +306,7 @@ export const messageDatabase = new MessageDatabase();
 
 
 
-export const eventTriggerMessage = writable<MessageObj | null> (null);
+export const eventTriggerMessageId = writable<string> ("");
 export const replyTarget = writable<MessageObj | null> (null);
 export const selectedFiles = writable<FileList>();
 export const currentPlayingAudioMessage = writable<AudioMessageObj | null>(null);

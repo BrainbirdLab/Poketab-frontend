@@ -2,7 +2,7 @@
     import { fly } from "svelte/transition";
     import { showStickersPanel, selectedSticker } from "$lib/components/modalManager";
     import { myId } from "$lib/store";
-    import { StickerMessageObj, eventTriggerMessage, replyTarget } from "$lib/messageTypes";
+    import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
     const Stickers = [
@@ -89,7 +89,7 @@
 
                 if ($replyTarget){
                     messageObj.replyTo = $replyTarget.id;
-                    eventTriggerMessage.set(null);
+                    eventTriggerMessageId.set(null);
                     replyTarget.set(null);
                     showReplyToast.set(false);
                 }

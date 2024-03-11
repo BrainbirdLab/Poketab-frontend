@@ -3,22 +3,24 @@
     import { fly } from "svelte/transition";
     import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
-    import { MessageObj, messageDatabase, eventTriggerMessage, replyTarget, TextMessageObj, FileMessageObj } from "$lib/messageTypes";
+    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj } from "$lib/messageTypes";
     import { chatRoomStore, myId, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, spin } from "$lib/utils";
     import { onMount } from "svelte";
 
+    export let message: MessageObj;
+
     let reactIsExpanded = false;
 
-    $: reactedEmoji = $eventTriggerMessage?.reactedBy.get($myId) || '';
-    $: messageKind = $eventTriggerMessage?.baseType;
-    $: sender = $eventTriggerMessage?.sender;
+    $: reactedEmoji = message?.reactedBy.get($myId) || '';
+    $: messageKind = message?.baseType;
+    $: sender = message?.sender;
     
-    $: downloadable = sender == $myId ? true : (($eventTriggerMessage as FileMessageObj).loaded == 100 ? true : false);
+    $: downloadable = sender == $myId ? true : ((message as FileMessageObj).loaded == 100 ? true : false);
 
-    $: console.log(($eventTriggerMessage as FileMessageObj).loaded);
+    $: console.log((message as FileMessageObj).loaded);
 
     let selectedReact = '';
 
@@ -41,7 +43,7 @@
 
     function getMessageOptions(){
 
-        if (!$eventTriggerMessage) {
+        if (!message) {
             return [];
         }
 
@@ -70,14 +72,14 @@
                 showMessageOptions.set(false);
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('emoji')) {
 
-                if (!$eventTriggerMessage){
+                if (!message){
                     return;
                 }
 
                 selectedReact = e.target.dataset.emoji as string || '';
                 if (selectedReact && emojis.includes(selectedReact)) {
                     //send the emoji to the server via socket
-                    socket.emit('react', $eventTriggerMessage.id, $chatRoomStore.Key, $myId, selectedReact);
+                    socket.emit('react', message.id, $chatRoomStore.Key, $myId, selectedReact);
                 }
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
@@ -85,16 +87,16 @@
                 
                 if (e.target.classList.contains('Reply')) {
                     //console.log('reply');
-                    replyTarget.set($eventTriggerMessage);
+                    replyTarget.set(message);
                     showReplyToast.set(true);
                 } else if (e.target.classList.contains('Copy')) {
                     //console.log('copy');
 
-                    if (!($eventTriggerMessage)) return;
+                    if (!(message)) return;
 
                     //make html element to put data
                     const elem = document.createElement('div');
-                    elem.innerHTML = ($eventTriggerMessage as TextMessageObj).message;
+                    elem.innerHTML = (message as TextMessageObj).message;
                     const text = elem.innerText;
                     //copy the text
                     copyText(text);
@@ -103,10 +105,10 @@
                     console.log('download');
                 } else if (e.target.classList.contains('Delete')) {
                     //console.log('delete');
-                    if (!$eventTriggerMessage){
+                    if (!message){
                         return;
                     }
-                    socket.emit('deleteMessage', $eventTriggerMessage.id, $chatRoomStore.Key, $myId);
+                    socket.emit('deleteMessage', message.id, $chatRoomStore.Key, $myId);
                 }
 
                 reactIsExpanded = false;
@@ -118,7 +120,7 @@
             destroy(){
                 node.onclick = null;
                 selectedReact = '';
-                $eventTriggerMessage = null;
+                $eventTriggerMessageId = "";
             }
         }
     }
@@ -224,7 +226,7 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.162);
-        z-index: 20;
+        z-index: 100;
         gap: 50px;
         display: flex;
         justify-content: flex-end;

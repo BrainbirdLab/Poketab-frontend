@@ -7,7 +7,7 @@
         ServerMessageObj,
         StickerMessageObj,
         messageDatabase,
-        eventTriggerMessage,
+        eventTriggerMessageId,
         lastMessageId,
         replyTarget,
         LocationMessageObj,
@@ -278,7 +278,7 @@
                 return;
             }
 
-            eventTriggerMessage.set(messageObj);
+            eventTriggerMessageId.set(id);
             showMessageOptions.set(true);
         }
     }
@@ -333,7 +333,7 @@
             }
 
             if (target.classList.contains('reactsContainer')){
-                eventTriggerMessage.set(messageObj);
+                eventTriggerMessageId.set(messageObj.id);
                 showReactsOnMessageModal.set(true);
                 return;
             }
@@ -644,14 +644,6 @@
 
 <Attachments />
 
-{#if $showMessageOptions}
-    <MessageOptions/>
-{/if}
-
-{#if $showReactsOnMessageModal}
-    <ReactsOnMessage />
-{/if}
-
 <MessageSockets />
 
 <div class="container">
@@ -681,6 +673,16 @@
                     {:else if message instanceof TextMessageObj && message.type === "deleted"}
                         <DeletedMessage message={message}/>
                     {/if}
+
+                    {#if message.id == $eventTriggerMessageId}
+                        {#if $showMessageOptions}
+                            <MessageOptions message={message}/>
+                        {/if}
+                        {#if $showReactsOnMessageModal}
+                            <ReactsOnMessage message={message}/>
+                        {/if}
+                    {/if}
+
                 {:else if message instanceof ServerMessageObj}
                     <ServerMessage message={message} />
                 {:else if message instanceof LocationMessageObj}

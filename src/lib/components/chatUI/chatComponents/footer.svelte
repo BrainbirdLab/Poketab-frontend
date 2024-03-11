@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { replyTarget, eventTriggerMessage, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
+    import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
@@ -71,7 +71,7 @@
 
         if ($replyTarget){
             message.replyTo = $replyTarget.id;
-            eventTriggerMessage.set(null);
+            eventTriggerMessageId.set("");
             replyTarget.set(null);
             showReplyToast.set(false);
         }
@@ -240,7 +240,7 @@
         transition: 300ms ease-in-out;
         bottom: 0px;
         padding: 0px 0px 10px 0;
-        z-index: 10;
+        z-index: 0;
     }
 
     .chatInput{

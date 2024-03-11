@@ -1,10 +1,10 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
-    import { eventTriggerMessage, messageDatabase, type MessageObj } from "$lib/messageTypes";
+    import { eventTriggerMessageId, messageDatabase, type MessageObj } from "$lib/messageTypes";
     import { showReactsOnMessageModal } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
 
-    $: message = $eventTriggerMessage;
+    export let message: MessageObj;
 
     // [uid: string]: react-emoji
     $: reacts = message?.reactedBy || new Map<string, string>();
@@ -35,7 +35,7 @@
             const target = e.target as HTMLElement;
 
             if (target == node){
-                eventTriggerMessage.set(null);
+                eventTriggerMessageId.set("");
                 selectedReact = 'All';
                 showReactsOnMessageModal.set(false);
             }
@@ -95,7 +95,7 @@
 <style lang="scss">
 
     .wrapper{
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         z-index: 50;
@@ -106,6 +106,7 @@
         height: 100%;
         width: 100%;
         gap: 10px;
+        z-index: 100;
     }
 
     .totalReactsButtons{
