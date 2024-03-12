@@ -302,6 +302,7 @@
                             !$reactArray.reacts.includes(react) &&
                             emojis.includes(react)
                         ) {
+                            // update reactArray
                             reactArray.update((val) => {
                                 val.last = react;
                                 return val;
@@ -309,6 +310,9 @@
                             localStorage.setItem("lastReact", react);
                         }
                     }
+                    //remove previous react
+                    message.reactedBy.delete(uid);
+                    //add new react. So that it appears at the end
                     message.reactedBy.set(uid, react);
                 }
             }
