@@ -3,11 +3,11 @@
     import { fly } from "svelte/transition";
     import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
-    import { MessageObj, messageDatabase, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj } from "$lib/messageTypes";
+    import { MessageObj, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj } from "$lib/messageTypes";
     import { chatRoomStore, myId, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
-    import { copyText, emojis, spin } from "$lib/utils";
+    import { copyText, emojis, playMessageSound, spin } from "$lib/utils";
     import { onMount } from "svelte";
     import { showToastMessage } from "domtoastmessage";
 
@@ -18,8 +18,7 @@
     $: reactedEmoji = message?.reactedBy.get($myId) || '';
     $: messageKind = message?.baseType;
     $: sender = message?.sender;
-    
-    $: downloadable = sender == $myId ? true : ((message as FileMessageObj).loaded == 100 ? true : false);
+    $: downloadable = (message instanceof FileMessageObj) ? (sender === $myId ? true : (message as FileMessageObj).loaded >= 100) : false;
 
     let selectedReact = '';
 
@@ -38,6 +37,7 @@
                 return reacts;
             });
         }
+        playMessageSound('reactsMenu');
     });
 
     function getMessageOptions(){

@@ -2,23 +2,7 @@
     import ReactIcon from "./reactIcon.svelte";
     import { flip } from "svelte/animate";
 
-    let reactedBy: Map<string, string> = new Map();
-
-    /*
-    let reacts: Map<string, string[]> = new Map();
-
-    $: {
-        //convert reacts to map group by react, and uid
-        reacts = new Map();
-        for (const [uid, react] of reactedBy){
-            if (reacts.has(react)) {
-                reacts.get(react)?.push(uid);
-            } else {
-                reacts.set(react, [uid]);
-            }
-        }
-    }
-    */
+    export let reactedBy: Map<string, string> = new Map();
 
     //use reactive declaration to group reacts by react and uid
     $: reacts = Array.from(reactedBy).reduce((acc, [uid, react]) => {

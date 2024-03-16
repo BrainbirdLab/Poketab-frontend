@@ -1,6 +1,7 @@
 
 <script lang="ts">
     import "$lib/styles/global.scss";
+    import { playClickSound } from "$lib/utils";
     console.log("Mounted root +layout.svelte");
 
     function removeAttribute(evt: MouseEvent | TouchEvent) {
@@ -26,10 +27,11 @@
         }
         if (target.classList.contains('play-sound')){
             //console.log("play sound");
-            const audio = new Audio("/sounds/click.mp3");
-            audio.play();
+            playClickSound();
         }
     }
+
+    
 </script>
 
 <svelte:body 

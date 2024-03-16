@@ -6,13 +6,13 @@ export const lastMessageId = writable('');
 export class ServerMessageObj {
     id: string;
     text: string;
-    type: string;
+    type: 'join' | 'leave';
     baseType: 'server';
     readonly timeStamp: number;
     constructor() {
         this.id = '';
         this.text = '';
-        this.type = '';
+        this.type = 'join';
         this.baseType = 'server';
         this.timeStamp = Date.now();
     }

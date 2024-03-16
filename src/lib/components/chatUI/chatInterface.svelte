@@ -1,7 +1,34 @@
 <script lang="ts">
+    //css
     import "$lib/components/chatUI/chatComponents/messages/message.scss";
+
+    //compoments
     import Footer from "./chatComponents/footer.svelte";
     import TextMessage from "$lib/components/chatUI/chatComponents/messages/TextMessage.svelte";
+    import QuickSettings from "./chatComponents/quickSettings.svelte";
+    import Themes from "./chatComponents/themes.svelte";
+    import StickersKeyboard from "./chatComponents/stickersKeyboard.svelte";
+    import Attachments from "./chatComponents/attachments.svelte";
+    import MessageOptions from "./chatComponents/messageOptions.svelte";
+    import StickerMessage from "$lib/components/chatUI/chatComponents/messages/StickerMessage.svelte";
+    import ServerMessage from "$lib/components/chatUI/chatComponents/messages/ServerMessage.svelte";
+    import DeletedMessage from "$lib/components/chatUI/chatComponents/messages/DeletedMessage.svelte";
+    import LocationMessage from "$lib/components/chatUI/chatComponents/messages/LocationMessage.svelte";
+    import ReactsOnMessage from "./chatComponents/reactsOnMessage.svelte";
+    import MessageSockets from "./messageSockets.svelte";
+    import FileMessage from "./chatComponents/messages/FileMessage.svelte";
+    import AudioMessage from "./chatComponents/messages/AudioMessage.svelte";
+    import NavBar from "./chatComponents/navbar.svelte";
+    import ConnectivityState from "./chatComponents/connectivityState.svelte";
+    
+    //svelte methods
+    import { fade } from "svelte/transition";
+    import { spring } from "svelte/motion";
+    import { tick, afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
+    import { type Unsubscriber } from "svelte/store";
+
+
+    //scripts
     import {
         MessageObj,
         ServerMessageObj,
@@ -17,10 +44,6 @@
         AudioMessageObj,
         currentPlayingAudioMessage,
     } from "$lib/messageTypes";
-    import { showToastMessage } from "domtoastmessage";
-    import { fade } from "svelte/transition";
-    import QuickSettings from "./chatComponents/quickSettings.svelte";
-    import { chatRoomStore, currentTheme, myId, userTypingString, showScrollPopUp, listenScroll, quickEmoji } from "$lib/store";
     import {
         activeModalsStack,
         selectedSticker,
@@ -31,28 +54,13 @@
         showStickersPanel,
         showThemesPanel,
     } from "$lib/components/modalManager";
-    import ConnectivityState from "./chatComponents/connectivityState.svelte";
-    import Themes from "./chatComponents/themes.svelte";
-    import { tick, afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
-    import StickersKeyboard from "./chatComponents/stickersKeyboard.svelte";
-    import Attachments from "./chatComponents/attachments.svelte";
-    import MessageOptions from "./chatComponents/messageOptions.svelte";
-    import StickerMessage from "$lib/components/chatUI/chatComponents/messages/StickerMessage.svelte";
-    import ServerMessage from "$lib/components/chatUI/chatComponents/messages/ServerMessage.svelte";
+    import { showToastMessage } from "domtoastmessage";
+    import { chatRoomStore, currentTheme, myId, userTypingString, showScrollPopUp, listenScroll, quickEmoji } from "$lib/store";
     import { socket } from "$lib/components/socket";
-    import { spring } from "svelte/motion";
     import { getFormattedDate, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import DeletedMessage from "$lib/components/chatUI/chatComponents/messages/DeletedMessage.svelte";
-    import LocationMessage from "$lib/components/chatUI/chatComponents/messages/LocationMessage.svelte";
-    import NavBar from "./chatComponents/navbar.svelte";
     import hljs from "highlight.js";
     import { copyText } from "$lib/utils";
-    import { type Unsubscriber } from "svelte/store";
-    import ReactsOnMessage from "./chatComponents/reactsOnMessage.svelte";
     import { themes } from "$lib/themes";
-    import MessageSockets from "./messageSockets.svelte";
-    import FileMessage from "./chatComponents/messages/FileMessage.svelte";
-    import AudioMessage from "./chatComponents/messages/AudioMessage.svelte";
 
     let isOffline = false;
 
@@ -114,8 +122,10 @@
         if (timeout){
             clearTimeout(timeout);
         }
+
+        //console.log(heightChanged);
         
-        if (heightChanged < 10){
+        if (heightChanged < 16){
             if (heightChanged > 0) { //height increase
                 $messageContainer.scrollTop += heightChanged;
                 //console.log('%cScrolled Up', 'color: orange;');
@@ -123,7 +133,7 @@
                 //console.log('%cScrolled Down', 'color: pink;');
                 $messageContainer.scrollTop += heightChanged;
             }
-        } else if (heightChanged > 10 && !$showScrollPopUp){
+        } else if (heightChanged > 16 && !$showScrollPopUp){
             //console.log('%cSmooth scroll', 'color: lime;');
             
             listenScroll.set(false);

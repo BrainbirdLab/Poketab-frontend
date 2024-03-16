@@ -3,7 +3,7 @@
     import { chatRoomStore, listenScroll, showScrollPopUp } from "$lib/store";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
-    import { toSentenceCase } from "$lib/utils";
+    import { playMessageSound, toSentenceCase } from "$lib/utils";
 
     $: {
         if ($messageScrolledPx < 200){
@@ -20,6 +20,12 @@
 
     onDestroy(() => {
         $messageContainer.onscroll = null;
+    });
+
+    const unsub = notice.subscribe((value) => {
+        if (value && $showScrollPopUp){
+            playMessageSound('notification');
+        }
     });
 
     listenScroll.subscribe((value) => {
@@ -48,6 +54,10 @@
             showScrollPopUp.set(false);
         }
     }
+
+    onDestroy(() => {
+        unsub();
+    });
 
 </script>
 

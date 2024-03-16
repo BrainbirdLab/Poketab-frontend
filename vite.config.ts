@@ -6,5 +6,5 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	define: {
 		__VERSION__: JSON.stringify(pkg.version.replace(/^v/, ''))
-	}
+	},
 });

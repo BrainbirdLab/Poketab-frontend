@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import { type TransitionConfig } from "svelte/transition";
     export let react: string;
     export let users: string[] = [];
@@ -32,10 +31,6 @@
         easing: halfQuadOut,
         };
   }
-
-    onMount(() => {
-        console.log(react + " reactIcon mounted");
-    })
 
 </script>
 

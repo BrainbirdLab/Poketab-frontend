@@ -1,5 +1,8 @@
 import { cubicOut } from "svelte/easing";
+import { get } from "svelte/store";
 import { showToastMessage } from "domtoastmessage";
+import { buttonSoundEnabled, messageSoundEnabled } from "./store";
+import { browser } from "$app/environment";
 
 
 export function toSentenceCase(inputString: string) {
@@ -79,6 +82,7 @@ function fallbackCopyTextToClipboard(text: string){
 
     try {
         document.execCommand('copy');
+        showToastMessage('Copied to clipboard (Fallback)');
     } catch (err) {
         console.error('Fallback: Oops, unable to copy', err);
         showToastMessage('Could not copy to clipboard (Fallback)');
@@ -87,6 +91,154 @@ function fallbackCopyTextToClipboard(text: string){
     document.body.removeChild(textArea);
 }
 
+/*
+//message sounds
+const incommingSound = new Audio("/sounds/incomingmessage.mp3");
+const outgoingSound = new Audio("/sounds/outgoingmessage.mp3");
+const stickerSound = new Audio("/sounds/sticker.mp3");
+const locationSound = new Audio("/sounds/location.mp3");
+
+//interaction sounds
+const typingSound = new Audio("/sounds/typing.mp3");
+const reactionSound = new Audio("/sounds/react.mp3");
+//const deleveredSound = new Audio("/sounds/delivered.mp3");
+const startRecordingSound = new Audio("/sounds/startrecording.mp3");
+const reactsShowSound = new Audio("/sounds/reacts.mp3");
+
+//join/leave sounds
+const joinSound = new Audio("/sounds/join.mp3");
+const leaveSound = new Audio("/sounds/leave.mp3");
+
+//error sounds
+const errorSound = new Audio("/sounds/error.mp3");
+
+const notificationSound = new Audio("/sounds/notification.mp3");
+*/
+
+let clickSound: HTMLAudioElement;
+let incommingSound: HTMLAudioElement;
+let outgoingSound: HTMLAudioElement;
+let stickerSound: HTMLAudioElement;
+let locationSound: HTMLAudioElement;
+let typingSound: HTMLAudioElement;
+let reactionSound: HTMLAudioElement;
+let startRecordingSound: HTMLAudioElement;
+let reactsShowSound: HTMLAudioElement;
+let joinSound: HTMLAudioElement;
+let leaveSound: HTMLAudioElement;
+let errorSound: HTMLAudioElement;
+let notificationSound: HTMLAudioElement;
+
+
+function loadAudios() {
+    clickSound = new Audio("/sounds/click.mp3");
+    incommingSound = new Audio("/sounds/incomingmessage.mp3");
+    outgoingSound = new Audio("/sounds/outgoingmessage.mp3");
+    stickerSound = new Audio("/sounds/sticker.mp3");
+    locationSound = new Audio("/sounds/location.mp3");
+    typingSound = new Audio("/sounds/typing.mp3");
+    reactionSound = new Audio("/sounds/react.mp3");
+    startRecordingSound = new Audio("/sounds/startrecording.mp3");
+    reactsShowSound = new Audio("/sounds/reactsMenu.mp3");
+    joinSound = new Audio("/sounds/join.mp3");
+    leaveSound = new Audio("/sounds/leave.mp3");
+    errorSound = new Audio("/sounds/error.mp3");
+    notificationSound = new Audio("/sounds/notification.mp3");
+}
+
+if (browser){
+    loadAudios();
+    console.log('audios loaded');
+}
+
 export function adjustMessagePosition(){
     console.log('adjustMessagePosition');
+}
+
+export async function playClickSound(){
+
+    if (!get(buttonSoundEnabled)){
+        return;
+    }
+
+    clickSound.currentTime = 0;
+    clickSound.play();
+}
+
+
+export async function playMessageSound(type: 
+      'incoming' 
+    | 'outgoing'
+    | 'sticker'
+    | 'location'
+
+    | 'typing'
+    | 'react'
+    | 'startRecording'
+    | 'reactsMenu'
+
+    | 'join'
+    | 'leave'
+
+    | 'error'
+
+    | 'notification'
+    ){
+
+    if (!get(messageSoundEnabled)){
+        return;
+    }
+
+    switch (type) {
+        case 'incoming':
+            incommingSound.currentTime = 0;
+            incommingSound.play();
+            break;
+        case 'outgoing':
+            outgoingSound.currentTime = 0;
+            outgoingSound.play();
+            break;
+        case 'sticker':
+            stickerSound.currentTime = 0;
+            stickerSound.play();
+            break;
+        case 'location':
+            locationSound.currentTime = 0;
+            locationSound.play();
+            break;
+        case 'typing':
+            typingSound.currentTime = 0;
+            typingSound.play();
+            break;
+        case 'react':
+            reactionSound.currentTime = 0;
+            reactionSound.play();
+            break;
+        case 'startRecording':
+            startRecordingSound.currentTime = 0;
+            startRecordingSound.play();
+            break;
+        case 'reactsMenu':
+            reactsShowSound.currentTime = 0;
+            reactsShowSound.play();
+            break;
+        case 'join':
+            joinSound.currentTime = 0;
+            joinSound.play();
+            break;
+        case 'leave':
+            leaveSound.currentTime = 0;
+            leaveSound.play();
+            break;
+        case 'error':
+            errorSound.currentTime = 0;
+            errorSound.play();
+            break;
+        case 'notification':
+            notificationSound.currentTime = 0;
+            notificationSound.play();
+            break;
+        default:
+            break;
+    }
 }

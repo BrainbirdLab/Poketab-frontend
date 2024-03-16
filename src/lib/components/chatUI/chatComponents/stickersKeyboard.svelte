@@ -89,7 +89,7 @@
 
                 if ($replyTarget){
                     messageObj.replyTo = $replyTarget.id;
-                    eventTriggerMessageId.set(null);
+                    eventTriggerMessageId.set('');
                     replyTarget.set(null);
                     showReplyToast.set(false);
                 }

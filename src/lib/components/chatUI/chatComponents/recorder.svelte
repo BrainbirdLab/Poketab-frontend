@@ -3,6 +3,7 @@
 
 
     import { voiceMessageAudio } from "$lib/messageTypes";
+    import { playMessageSound } from "$lib/utils";
 
     let recorderActive = false;
     let recordingState = false;
@@ -95,6 +96,7 @@
         // start recording
         navigator.mediaDevices.getUserMedia({audio: true})
         .then(mediaStream => {
+                playMessageSound('startRecording');
                 console.log('Recording started');
                 recorderActive = true;
                 recordingState = true;

@@ -4,6 +4,7 @@ import { chatRoomStore, myId, outgoingXHRs } from "$lib/store";
 import { socket } from "$lib/components/socket";
 import { badWords } from "./censoredWords";
 import { API_URL } from "$lib/components/socket";
+import { playMessageSound } from "$lib/utils";
 
 export const showReplyToast = writable(false);
 
@@ -67,20 +68,27 @@ export function sendMessage(message: MessageObj, file?: File){
 
 	messageDatabase.add(message);
 
+	
     socket.emit('newMessage', message, get(chatRoomStore).Key, (messageId: string) => {
 		
+		
 		messageDatabase.markDelevered(message, messageId);
-
+		
+		if (message.type === 'sticker'){
+			playMessageSound('sticker');
+		} else {
+			playMessageSound('outgoing');
+		}
 		//console.log(`New message id: ${messageId}`);
-
+		
 		if (Object.keys(get(chatRoomStore).userList).length < 2 ){
 			messageDatabase.update(messages => {
-
+				
 				(message as FileMessageObj).loaded = 100;
 
 				return messages;
 			});
-			console.log('File upload skipped');
+			//console.log('File upload skipped');
 			return;
 		}
 

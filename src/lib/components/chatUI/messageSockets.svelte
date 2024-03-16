@@ -23,7 +23,7 @@
     import { type User } from "$lib/types";
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { socket, API_URL } from "$lib/components/socket";
-    import { emojis } from "$lib/utils";
+    import { emojis, playMessageSound } from "$lib/utils";
     import { onDestroy } from "svelte";
 
     socket.on("newMessage", (message: MessageObj, messageId: string) => {
@@ -43,11 +43,6 @@
             message = Object.setPrototypeOf(message, ImageMessageObj.prototype);
         } else if (message.baseType === "audio") {
             message = Object.setPrototypeOf(message, AudioMessageObj.prototype);
-        } else if (message.baseType == "location") {
-            message = Object.setPrototypeOf(
-                message,
-                LocationMessageObj.prototype,
-            );
         }
 
         //The message is recieved as Object, All properties of type Map, Set are lost as they become Object.
@@ -62,7 +57,7 @@
             message.message = filterBadWords(message.message);
         } else if (message instanceof FileMessageObj) {
             console.log("File message received", message.loaded);
-            message.loadScheme = "upload"
+            message.loadScheme = "upload";
             if (message instanceof ImageMessageObj) {
                 message.url = message.thumbnail;
                 //clear the thumbnail
@@ -80,6 +75,13 @@
         console.log("new message received");
 
         console.log("Done updating message database");
+
+        //audios
+        if (message instanceof StickerMessageObj) {
+            playMessageSound("sticker");
+        } else {
+            playMessageSound("incoming");
+        }
     });
 
     socket.on(
@@ -132,7 +134,7 @@
         incommingXHRs.update((xhrs) => {
             xhrs.set(messageId, xhr);
             return xhrs;
-        })
+        });
 
         xhr.responseType = "blob";
 
@@ -145,7 +147,7 @@
         xhr.onload = function () {
             if (this.status === 200) {
                 const blob = this.response;
-                
+
                 //blob is raw file data
                 const file = new File([blob], message.name, {
                     type: message.type,
@@ -154,8 +156,7 @@
                 const url = URL.createObjectURL(file);
 
                 messageDatabase.update((messages) => {
-                    
-                    if (message instanceof AudioMessageObj){
+                    if (message instanceof AudioMessageObj) {
                         message.audio = new Audio();
                         message.audio.src = url;
                     } else {
@@ -165,7 +166,7 @@
                     message.loaded = 100;
 
                     return messages;
-                });                
+                });
             }
         };
 
@@ -177,7 +178,6 @@
                 //update message
 
                 messageDatabase.update((messages) => {
-
                     message.loadScheme = "download";
                     message.loaded = Math.round(percent);
 
@@ -210,8 +210,7 @@
                 const sent = message.sent;
                 const id = message.id;
 
-                if ($incommingXHRs.has(id) || $outgoingXHRs.has(id)){
-                    
+                if ($incommingXHRs.has(id) || $outgoingXHRs.has(id)) {
                     $incommingXHRs.get(id)?.abort();
                     $incommingXHRs.delete(id);
 
@@ -220,7 +219,7 @@
 
                     console.log("aborted download/upload");
                 }
-                
+
                 messageDatabase.update((messages) => {
                     //change the message to "This message was deleted"
                     message = new TextMessageObj();
@@ -260,17 +259,25 @@
                 uid,
             );
 
+            playMessageSound("location");
+
             messageDatabase.add(message);
         },
     );
 
     socket.on(
         "server_message",
-        (msg: { text: string; id: string }, type: string) => {
+        (msg: { text: string; id: string }, type: "join" | "leave") => {
             const message: ServerMessageObj = new ServerMessageObj();
             message.text = msg.text;
             message.id = msg.id;
             message.type = type;
+
+            if (message.type == "join") {
+                playMessageSound("join");
+            } else if (message.type == "leave") {
+                playMessageSound("leave");
+            }
 
             messageDatabase.add(message);
         },
@@ -314,6 +321,7 @@
                     message.reactedBy.delete(uid);
                     //add new react. So that it appears at the end
                     message.reactedBy.set(uid, react);
+                    playMessageSound("react");
                 }
             }
             return messages;
@@ -359,6 +367,7 @@
 
     socket.on("typing", (uid: string, event: "start" | "end") => {
         if (event == "start") {
+            playMessageSound("typing");
             userTypingSet.add(uid);
         } else {
             userTypingSet.delete(uid);
