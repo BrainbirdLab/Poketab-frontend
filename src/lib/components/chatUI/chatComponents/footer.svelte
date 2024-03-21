@@ -240,7 +240,7 @@
         transition: 300ms ease-in-out;
         bottom: 0px;
         padding: 0px 0px 10px 0;
-        z-index: 0;
+        z-index: 1;
     }
 
     .chatInput{
