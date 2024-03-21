@@ -36,8 +36,7 @@
 
 <svelte:body 
 on:contextmenu|preventDefault
-on:mousedown={handleClick}
-on:touchstart={handleClick}
+on:click={handleClick}
 />
 
 <div class="maincontainer">

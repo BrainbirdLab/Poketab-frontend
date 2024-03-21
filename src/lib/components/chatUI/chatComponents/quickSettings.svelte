@@ -472,6 +472,7 @@
         position: absolute;
         width: 100%;
         height: 100%;
+        inset: 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -592,8 +593,7 @@
                     width: 20px;
                     border-radius: 50px;
                     background: white;
-                    top: 0;
-                    left: 0;
+                    inset: 0;
                     transition: 300ms ease-in-out;
                     transform: translateX(0px);
                 }

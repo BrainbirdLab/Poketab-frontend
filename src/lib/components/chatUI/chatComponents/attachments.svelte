@@ -395,13 +395,10 @@
     }
 
     .wrapper {
-        top: 0;
-        left: 0;
-        right: 0;
-        position: fixed;
-
+        
         @include flex-column-center;
-
+        
+        inset: 0;
         z-index: 20;
         width: 100%;
         height: 100%;

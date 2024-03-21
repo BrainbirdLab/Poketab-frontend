@@ -376,8 +376,7 @@ pre{
     &::before{
         position: absolute;
         content: attr(data-lang);
-        top: 0;
-        left: 0;
+        inset: 0;
         width: max-content;
         height: max-content;
         padding: 3px 4px;

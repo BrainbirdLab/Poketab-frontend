@@ -254,7 +254,8 @@ body{
     background: var(--primary-dark, #1e394e);
     padding: 15px;
     border-radius: 10px;
-    min-width: 320px;
+    width: 320px;
+    max-width: 95%;
     transition: 100ms ease-in-out;
     position: absolute;
 
