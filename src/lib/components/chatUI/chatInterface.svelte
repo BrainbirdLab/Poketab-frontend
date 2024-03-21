@@ -288,7 +288,7 @@
                 return;
             }
 
-            eventTriggerMessageId.set(id);
+            eventTriggerMessageId.set(messageObj.id);
             showMessageOptions.set(true);
         }
     }
@@ -656,6 +656,15 @@
 
 <MessageSockets />
 
+{#if $eventTriggerMessageId}
+{#if $showMessageOptions}
+    <MessageOptions/>
+{/if}
+{#if $showReactsOnMessageModal}
+    <ReactsOnMessage/>
+{/if}
+{/if}
+
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
         <NavBar />
@@ -670,7 +679,7 @@
                     </button>
                 </li>
             </div>
-            {#each $messageDatabase as message}
+            {#each $messageDatabase as message (message)}
                 {#if message instanceof MessageObj}
                     {#if message instanceof TextMessageObj && (message.type === "text" || message.type === "emoji")}
                         <TextMessage message={message} />
@@ -682,15 +691,6 @@
                         <FileMessage file={message}/>
                     {:else if message instanceof TextMessageObj && message.type === "deleted"}
                         <DeletedMessage message={message}/>
-                    {/if}
-
-                    {#if message.id == $eventTriggerMessageId}
-                        {#if $showMessageOptions}
-                            <MessageOptions message={message}/>
-                        {/if}
-                        {#if $showReactsOnMessageModal}
-                            <ReactsOnMessage message={message}/>
-                        {/if}
                     {/if}
 
                 {:else if message instanceof ServerMessageObj}
@@ -712,6 +712,7 @@
         align-items: center;
         height: 100%;
         width: 100%;
+        inset: 0;
         position: relative;
         overflow: hidden;
     }

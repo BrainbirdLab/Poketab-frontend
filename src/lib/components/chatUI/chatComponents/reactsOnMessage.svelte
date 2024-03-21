@@ -1,13 +1,16 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
-    import { eventTriggerMessageId, messageDatabase, type MessageObj } from "$lib/messageTypes";
+    import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageTypes";
     import { showReactsOnMessageModal } from "$lib/components/modalManager";
     import { fly } from "svelte/transition";
+    import { derived } from "svelte/store";
 
-    export let message: MessageObj;
+    $: message = derived(messageDatabase, (messages) => {
+        return messages[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj;
+    });
 
     // [uid: string]: react-emoji
-    $: reacts = message?.reactedBy || new Map<string, string>();
+    $: reacts = $message?.reactedBy || new Map<string, string>();
 
     $: console.log(reacts);
 
@@ -15,7 +18,7 @@
 
     //$: reactsToShow = Object.entries(reacts).filter(([uid, react]) => selectedReact === 'All' || selectedReact === react);
     //reacts is a map, we have to filter by the value of the map, not the key
-    $: reactsToShow = Array.from(reacts.entries()).filter(([uid, react]) => selectedReact === 'All' || selectedReact === react);
+    $: reactsToShow = Array.from(reacts.entries()).filter(([_, react]) => selectedReact === 'All' || selectedReact === react);
 
     //push react - count to map
     // [react-emoji: string]: count: number
@@ -52,7 +55,7 @@
 
 <div class="wrapper" use:handleClick transition:fly|global={{y: 40, duration: 100}}>
     <div class="reactsOnMessage">
-        <div class="title">Reacts on {$chatRoomStore.userList[message?.sender || '']?.name || "Zombie"}'s message</div>
+        <div class="title">Reacts on {$chatRoomStore.userList[$message?.sender || '']?.name || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
             {#key reactsToShow}

@@ -38,6 +38,7 @@
         align-items: center;
         height: 100%;
         width: 100%;
+        inset: 0;
         background-blend-mode: soft-light;
         background-size: cover;
         background-position: center;

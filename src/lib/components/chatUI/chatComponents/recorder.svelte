@@ -261,6 +261,7 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
+            inset: 0;
             padding: 5px;
             pointer-events: all;
         }

@@ -3,21 +3,24 @@
     import { fly } from "svelte/transition";
     import {showMessageOptions} from "$lib/components/modalManager";
     import { socket } from "$lib/components/socket";
-    import { MessageObj, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj } from "$lib/messageTypes";
+    import { MessageObj, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj, messageDatabase } from "$lib/messageTypes";
     import { chatRoomStore, myId, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, playMessageSound, spin } from "$lib/utils";
     import { onMount } from "svelte";
     import { showToastMessage } from "domtoastmessage";
+    import { derived } from "svelte/store";
 
-    export let message: MessageObj;
+    $: message = derived(messageDatabase, (messages) => {
+        return messages[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj;
+    });
 
     let reactIsExpanded = false;
 
-    $: reactedEmoji = message?.reactedBy.get($myId) || '';
-    $: messageKind = message?.baseType;
-    $: sender = message?.sender;
+    $: reactedEmoji = $message?.reactedBy.get($myId) || '';
+    $: messageKind = $message?.baseType;
+    $: sender = $message?.sender;
     $: downloadable = (message instanceof FileMessageObj) ? (sender === $myId ? true : (message as FileMessageObj).loaded >= 100) : false;
 
     let selectedReact = '';
@@ -78,7 +81,7 @@
                 selectedReact = e.target.dataset.emoji as string || '';
                 if (selectedReact && emojis.includes(selectedReact)) {
                     //send the emoji to the server via socket
-                    socket.emit('react', message.id, $chatRoomStore.Key, $myId, selectedReact);
+                    socket.emit('react', $message.id, $chatRoomStore.Key, $myId, selectedReact);
                 }
                 reactIsExpanded = false;
                 showMessageOptions.set(false);
@@ -86,7 +89,7 @@
                 
                 if (e.target.classList.contains('Reply')) {
                     //console.log('reply');
-                    replyTarget.set(message);
+                    replyTarget.set($message);
                     showReplyToast.set(true);
                 } else if (e.target.classList.contains('Copy')) {
                     //console.log('copy');
@@ -95,7 +98,7 @@
 
                     //make html element to put data
                     const elem = document.createElement('div');
-                    elem.innerHTML = (message as TextMessageObj).message;
+                    elem.innerHTML = ($message as TextMessageObj).message;
                     const text = elem.innerText;
                     //copy the text
                     copyText(text);
@@ -119,8 +122,8 @@
 
                     //create a link and click it to download the file
                     const link = document.createElement('a');
-                    link.href = (message as FileMessageObj).url;
-                    link.download = (message as FileMessageObj).name;
+                    link.href = ($message as FileMessageObj).url;
+                    link.download = ($message as FileMessageObj).name;
                     link.click();
 
                 } else if (e.target.classList.contains('Delete')) {
@@ -128,7 +131,7 @@
                     if (!message){
                         return;
                     }
-                    socket.emit('deleteMessage', message.id, $chatRoomStore.Key, $myId);
+                    socket.emit('deleteMessage', $message.id, $chatRoomStore.Key, $myId);
                 }
 
                 reactIsExpanded = false;
@@ -140,7 +143,7 @@
             destroy(){
                 node.onclick = null;
                 selectedReact = '';
-                $eventTriggerMessageId = "";
+                eventTriggerMessageId.set("");
             }
         }
     }

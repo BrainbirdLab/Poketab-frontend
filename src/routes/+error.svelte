@@ -35,6 +35,7 @@
         justify-content: center;
         height: 100%;
         width: 100%;
+        inset: 0;
         background: var(--primary-dark, #0b0c10);
     }
 

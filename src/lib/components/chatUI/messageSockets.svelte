@@ -224,7 +224,7 @@
                     //change the message to "This message was deleted"
                     message = new TextMessageObj();
                     message.message = "This message was deleted";
-                    message.id = ``;
+                    message.id = "";
                     message.type = "deleted";
                     message.replyTo = "";
                     message.sender = sender;

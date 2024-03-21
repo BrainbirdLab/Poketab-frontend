@@ -35,8 +35,7 @@
         gap: 40px;
         color: var(--secondary-dark);
         position: fixed;
-        top: 0;
-        left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
         background: #17191d;

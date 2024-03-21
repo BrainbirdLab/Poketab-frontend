@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
+    import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj, messageDatabase } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
@@ -210,7 +210,7 @@
         <button on:click={() => {showAttachmentPickerPanel.set(true)}} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">
-            {#if $showReplyToast && $replyTarget}
+            {#if $showReplyToast && $replyTarget && $replyTarget.id}
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">

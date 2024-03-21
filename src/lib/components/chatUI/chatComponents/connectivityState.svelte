@@ -76,6 +76,7 @@
         align-items: center;
         width: 100%;
         height: 100%;
+        inset: 0;
         gap: 10px;
         position: fixed;
         //shadow

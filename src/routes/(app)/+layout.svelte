@@ -60,6 +60,7 @@ on:touchstart={handleClick}
         gap: 20px;
         height: 100%;
         width: 100%;
+        inset: 0;
         //overflow: scroll;
     }
 </style>
