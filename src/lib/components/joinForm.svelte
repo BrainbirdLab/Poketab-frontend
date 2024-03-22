@@ -6,16 +6,15 @@
         formNotification,
         reconnectButtonEnabled,
         socketConnected,
-        type User,
-    } from "$lib/store";
-
-    import {
         formActionButtonDisabled,
         chatRoomStore,
         showUserInputForm,
         joinError,
         joinKey,
     } from "$lib/store";
+
+    import type { User } from "$lib/types";
+
     import { onDestroy } from "svelte";
 
     function testKey(k: string) {

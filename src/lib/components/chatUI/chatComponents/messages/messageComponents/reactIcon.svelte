@@ -7,7 +7,7 @@
         return -t * (t - 1.0);
     }
 
-    function popup(node: Element, options: {
+    function popup(_: Element, options: {
         delay: number,
         duration: number,
         scale: number,

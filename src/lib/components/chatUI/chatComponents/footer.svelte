@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj, messageDatabase } from "$lib/messageTypes";
+    import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./recorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
 
-    import { quickEmojiEnabled, myId, sendMethod, chatRoomStore, currentTheme, quickEmoji} from "$lib/store";
+    import { quickEmojiEnabled, myId, sendMethod, chatRoomStore, quickEmoji} from "$lib/store";
     import { SEND_METHOD } from "$lib/types";
     import { showAttachmentPickerPanel, showStickersPanel } from "$lib/components/modalManager";
     import { onDestroy, onMount } from "svelte";
