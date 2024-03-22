@@ -2,9 +2,9 @@
     import { fade, fly, scale } from "svelte/transition";
     import { showAttachmentPickerPanel } from "$lib/components/modalManager";
     import { showToastMessage } from "domtoastmessage";
-    import { API_URL, socket } from "$lib/components/socket";
+    import { socket } from "$lib/components/socket";
     import { chatRoomStore, myId } from "$lib/store";
-    import { AudioMessageObj, FileMessageObj, ImageMessageObj, messageDatabase, selectedFiles } from "$lib/messageTypes";
+    import { AudioMessageObj, FileMessageObj, ImageMessageObj, selectedFiles } from "$lib/messageTypes";
     import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
@@ -402,6 +402,7 @@
         z-index: 20;
         width: 100%;
         height: 100%;
+        position: fixed;
         transition: 100ms ease-in-out;
         backdrop-filter: brightness(0.8);
 

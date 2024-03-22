@@ -88,7 +88,7 @@ export function sendMessage(message: MessageObj, file?: File){
 
 				return messages;
 			});
-			//console.log('File upload skipped');
+			console.log('File upload skipped');
 			return;
 		}
 
