@@ -80,14 +80,16 @@
 
 </script>
 
-
+<svelte:head>
+	<title>Admin notification panel</title>
+</svelte:head>
 
 {#if loaded}
 <div class="formWrapper">
 	<form on:submit|preventDefault={handleForm} class="form" in:fly={{y: 20, delay: 200}}>
 		<div class="title" in:fly|global={{x: -10, delay: 200}}>
             <ReactiveLogo size={70}/>
-            Admin message panel
+            Admin notification panel
 		</div>
 		{#if !submitting}
 		<div class="formfield" in:fly|global={{y: 10, delay: 250}}>
