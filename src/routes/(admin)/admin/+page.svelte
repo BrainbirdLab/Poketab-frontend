@@ -4,7 +4,7 @@
     import { fly } from "svelte/transition";
     import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
 
-	const server = import.meta.env.VITE_SOCKET_SERVER_URL
+	export let data;
 
     let loaded = false;
     let submitting = false;
@@ -49,7 +49,7 @@
 
 		try{
 			//app.post('/mbm/:adminPasskey/:message/:time'
-			fetch(`${server}/mbm/${passKey.value}/${message.value}/${time.value}`)
+			fetch(`${data.serverURL}/mbm/${passKey.value}/${message.value}/${time.value}`)
 			.then( async (res) => {
 				if (res.ok){
 					errlog = false;
@@ -86,7 +86,7 @@
 <div class="formWrapper">
 	<form on:submit|preventDefault={handleForm} class="form" in:fly={{y: 20, delay: 200}}>
 		<div class="title" in:fly|global={{x: -10, delay: 200}}>
-            <ReactiveLogo/>
+            <ReactiveLogo size={70}/>
             Admin message panel
 		</div>
 		{#if !submitting}
@@ -120,7 +120,7 @@
 <style lang="scss">
 
 	:global(body){
-		background: var(--primary);
+		background: var(--primary-dark);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -129,14 +129,6 @@
 		width: 100vw;
 		overflow: hidden;
 	}
-
-    :root{
-        --primary: #041e2f;
-        --light-dark: #0e2a47;
-        --hover-light-dark: #123050;
-        --secondary-dark: #199cf4;
-        --label-color: #5b7289;
-    }
 
 	.log{
 		font-size: 0.8rem;
@@ -175,7 +167,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 15px;
-		border: 2px solid var(--light-dark);
+		border: 2px solid var(--option-color);
 		border-radius: 10px;
 		padding: 40px 20px;
 		width: 100%;
@@ -233,14 +225,14 @@
 	input{
 		background: none;
 		border: none;
-		border-bottom: 2px solid var(--light-dark);
+		border-bottom: 2px solid var(--option-color);
 		padding: 10px;
 		outline: none;
 		width: 100%;
 		color: ghostwhite;
 		transition: 200ms ease-in-out;
 		&:hover{
-			border-bottom: 2px solid var(--hover-light-dark);
+			border-bottom: 2px solid var(--faded-accent);
 		}
 		&:focus{
 			border-bottom: 2px solid var(--secondary-dark);
@@ -248,7 +240,7 @@
 	}
 
 	button{
-		background: var(--light-dark);
+		background: var(--option-color);
 		border: none;
 		border-radius: 10px;
 		padding: 10px 15px;
