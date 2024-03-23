@@ -1,4 +1,5 @@
 <script lang="ts">
+    import "./forms.scss";
     import { avList } from "$lib/utils/validation";
     import { fly, scale } from "svelte/transition";
     import { onDestroy, onMount } from "svelte";
@@ -31,6 +32,8 @@
     let maxUserErr = "";
 
     let errAnimation = "";
+
+    let nameInput: HTMLInputElement;
 
     $: {
         if (nameErr || avatarErr || maxUserErr) {
@@ -87,14 +90,17 @@
 
         if (!selectedname) {
             nameErr = "Please enter a name";
+            nameInput.focus();
             return;
         }
 
         if (selectedname.length < 3 || selectedname.length > 15) {
             nameErr = "name must be between 3 and 15 characters";
+            nameInput.focus();
             return;
         } else if (!/^[a-zA-Z0-9_]+$/.test(selectedname)) {
             nameErr = "Invalid characters in name";
+            nameInput.focus();
             return;
         }
 
@@ -228,148 +234,250 @@
 </svelte:head>
 
 {#if mounted}
-    <div class="inputForm" in:fly={{ y: 30 }}>
-        <div class="formtitle">
-            {#if !$chatRoomStore.Key}
-                Create chat <i class="fa-solid fa-meteor"></i>
-            {:else}
-                Join chat <i class="fa-solid fa-handshake"></i>
-            {/if}
-        </div>
-        <div class="formField">
-            <label for="name"
-                >Choose your name <i class="fa-solid fa-signature"></i></label
-            >
-            {#if nameErr}
-                <div class="err {errAnimation}">
-                    {nameErr} <i class="fa-solid fa-triangle-exclamation"></i>
-                </div>
-            {/if}
-            <input
-                type="text"
-                bind:value={selectedname}
-                name="name"
-                class="hover"
-                id="name"
-                placeholder="Name"
-            />
-        </div>
-        <div class="formField">
-            <label for="avatar"
-                >Pick an avatar <i class="fa-solid fa-user-astronaut"
-                ></i></label
-            >
-            {#if avatarErr}
-                <div class="err {errAnimation}">
-                    {avatarErr} <i class="fa-solid fa-triangle-exclamation"></i>
-                </div>
-            {/if}
-            <div id="avatar" class="avatarsContainer">
-                <div class="avatars">
-                    {#each avList as avatar, i}
-                        {#if $chatRoomStore.Key && isTaken("avatar", avatar)}
-                            <div
-                                class="avatar inuse"
-                                in:fly|global={{ x: 10, delay: i * 30 }}
-                            >
-                                <label
-                                    class="avatarLabel btn-animate"
-                                    for=""
-                                >
-                                    <img
-                                        src="/images/avatars/{avatar}(custom).webp"
-                                        alt={avatar}
-                                    />
-                                </label>
-                            </div>
-                        {:else}
-                            <div
-                                class="avatar"
-                                in:scale|global={{ delay: i * 30 }}
-                            >
-                                <input
-                                    type="radio"
-                                    class="avatarInput"
-                                    bind:group={selectedAvatar}
-                                    name="avatar"
-                                    value={avatar}
-                                    id={avatar}
-                                />
-                                <label
-                                    class="avatarLabel btn-animate"
-                                    for={avatar}
-                                >
-                                    <img
-                                        loading="lazy"
-                                        src="/images/avatars/{avatar}(custom).webp"
-                                        alt={avatar}
-                                    />
-                                </label>
-                            </div>
-                        {/if}
-                    {/each}
-                </div>
-            </div>
-        </div>
-
-        {#if !$chatRoomStore.Key}
-            <div class="formField range">
-                <label for="maxUsers"
-                    >Create chat for ({selectedMaxUser}) users</label
-                >
-                {#if maxUserErr}
-                    <div class="err {errAnimation}">
-                        {maxUserErr}
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                    </div>
+    <div class="formWrapper">
+        <div class="form" in:fly={{ y: 30 }}>
+            <div class="formtitle">
+                {#if !$chatRoomStore.Key}
+                    Create chat <i class="fa-solid fa-meteor"></i>
+                {:else}
+                    Join chat <i class="fa-solid fa-handshake"></i>
                 {/if}
-                <input
-                    type="range"
-                    bind:value={selectedMaxUser}
-                    name="maxUsers"
-                    id="maxUsers"
-                    min="2"
-                    max="10"
-                />
             </div>
-        {/if}
-
-        <div class="formField">
-            {#if $reconnectButtonEnabled}
-                <button
-                    class="button-animate hover play-sound recon"
-                    on:click={reConnectSocket}>Reconnect</button
-                >
-            {:else}
-                <button
-                    class="button-animate hover play-sound"
-                    disabled={$formActionButtonDisabled || !$socketConnected}
-                    on:click={requestForChat}
-                >
-                    {actionButtonText}
-                    {#if $formActionButtonDisabled && actionButtonText.includes("Please wait")}
-                        <i class="fa-solid fa-spin fa-circle-notch"></i>
+            <div class="formfield">
+                <input
+                    type="text"
+                    bind:value={selectedname}
+                    bind:this={nameInput}
+                    on:input={() => (nameErr = "")}
+                    name="name"
+                    class="hover"
+                    id="name"
+                    placeholder="Name"
+                />
+                <label for="name" class:error={nameErr}>
+                    {#if nameErr}
+                        {nameErr}
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    {:else}
+                        Username
                     {/if}
-                </button>
-            {/if}
-        </div>
+                </label>
+            </div>
+            <div class="formfield">
+                <label for="avatar" class:error={avatarErr} class:selected={selectedAvatar}>
+                    {#if avatarErr}
+                    {avatarErr}
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    {:else}
+                        {#if selectedAvatar}
+                            Avatar selected <i class="fa-solid fa-user-astronaut"></i>
+                        {:else}
+                            Pick an avatar <i class="fa-solid fa-user-astronaut"></i>
+                        {/if}
+                    {/if}
+                </label>
+                <div id="avatar" class="avatarsContainer">
+                    <div class="avatars">
+                        {#each avList as avatar, i}
+                            {#if $chatRoomStore.Key && isTaken("avatar", avatar)}
+                                <div
+                                    class="avatar inuse"
+                                    in:fly|global={{ x: 10, delay: i * 30 }}
+                                >
+                                    <label
+                                        class="avatarLabel btn-animate"
+                                        for=""
+                                    >
+                                        <img
+                                            src="/images/avatars/{avatar}(custom).webp"
+                                            alt={avatar}
+                                        />
+                                    </label>
+                                </div>
+                            {:else}
+                                <div
+                                    class="avatar"
+                                    in:scale|global={{ delay: i * 30 }}
+                                >
+                                    <input
+                                        type="radio"
+                                        class="avatarInput"
+                                        bind:group={selectedAvatar}
+                                        name="avatar"
+                                        value={avatar}
+                                        id={avatar}
+                                        on:input={() => (avatarErr = "")}
+                                    />
+                                    <label
+                                        class="avatarLabel btn-animate"
+                                        for={avatar}
+                                    >
+                                        <img
+                                            loading="lazy"
+                                            src="/images/avatars/{avatar}(custom).webp"
+                                            alt={avatar}
+                                        />
+                                    </label>
+                                </div>
+                            {/if}
+                        {/each}
+                    </div>
+                </div>
+            </div>
 
-        <div class="redirect">
-            <fieldset>
-                <legend>Or</legend>
+            {#if !$chatRoomStore.Key}
+                <div class="formfield range">
+                    <label for="maxUsers"
+                        >Create chat for ({selectedMaxUser}) users</label
+                    >
+                    {#if maxUserErr}
+                        <div class="err {errAnimation}">
+                            {maxUserErr}
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                    {/if}
+                    <input
+                        type="range"
+                        bind:value={selectedMaxUser}
+                        name="maxUsers"
+                        id="maxUsers"
+                        min="2"
+                        max="10"
+                    />
+                </div>
+            {/if}
+
+            <div class="formfield">
+                {#if $reconnectButtonEnabled}
+                    <button
+                        class="button-animate hover play-sound recon"
+                        on:click={reConnectSocket}>Reconnect</button
+                    >
+                {:else}
+                    <button
+                        class="button-animate hover play-sound"
+                        disabled={$formActionButtonDisabled ||
+                            !$socketConnected}
+                        on:click={requestForChat}
+                    >
+                        {actionButtonText}
+                        {#if $formActionButtonDisabled && actionButtonText.includes("Please wait")}
+                            <i class="fa-solid fa-spin fa-circle-notch"></i>
+                        {/if}
+                    </button>
+                {/if}
+            </div>
+
+            <div class="redirect">
+                <span class="redir-label">Or may be you want to</span>
                 <button
                     id="redirect"
                     class="noSelect button-animate hover play-sound"
-                    on:click={redirect}>Join chat</button
+                    on:click={redirect}>Join a chat?</button
                 >
-            </fieldset>
+            </div>
         </div>
     </div>
 {/if}
 
 <style lang="scss">
-    .recon {
-        background: var(--red);
+
+    input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        padding: 10px 0;
+        width: 100%;
+    }
+
+    input[type="range"]:focus {
+        outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 5px;
+        cursor: pointer;
+        box-shadow: 0px 0px 0px #000000;
+        background: var(--faded-accent);
+        border-radius: 3px;
+        border: 0px solid #000000;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        box-shadow: 0px 0px 0px #000000;
+        height: 18px;
+        width: 18px;
+        border-radius: 25px;
+        background: var(--secondary-dark, #4598ff);
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        margin-top: -6.5px;
+    }
+
+    input[type="range"]:focus::-webkit-slider-runnable-track {
+        background: var(--faded-accent);
+    }
+
+    input[type="range"]::-moz-range-track {
+        width: 100%;
+        height: 5px;
+        cursor: pointer;
+        box-shadow: 0px 0px 0px #000000;
+        background: var(--faded-accent);
+        border-radius: 3px;
+        border: 0px solid #000000;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        box-shadow: 0px 0px 0px #000000;
+        height: 18px;
+        width: 18px;
+        border-radius: 25px;
+        background: var(--secondary-dark, #4598ff);
+        cursor: pointer;
+    }
+
+    input[type="range"]::-ms-track {
+        width: 100%;
+        height: 5px;
+        cursor: pointer;
+        background: transparent;
+        border-color: transparent;
+        color: transparent;
+    }
+
+    input[type="range"]::-ms-fill-lower {
+        background: var(--faded-accent);
+        border: 0px solid #000000;
+        border-radius: 2px;
+        box-shadow: 0px 0px 0px #000000;
+    }
+
+    input[type="range"]::-ms-fill-upper {
+        background: var(--faded-accent);
+        border: 0px solid #000000;
+        border-radius: 2px;
+        box-shadow: 0px 0px 0px #000000;
+    }
+
+    input[type="range"]::-ms-thumb {
+        margin-top: 1px;
+        box-shadow: 0px 0px 0px #000000;
+        border: 0px solid #2497e3;
+        height: 18px;
+        width: 18px;
+        border-radius: 25px;
+        background: var(--secondary-dark, #4598ff);
+        cursor: pointer;
+    }
+
+    input[type="range"]:focus::-ms-fill-lower {
+        background: var(--faded-accent);
+    }
+
+    input[type="range"]:focus::-ms-fill-upper {
+        background: var(--faded-accent);
     }
 
     .avatarsContainer {
@@ -378,7 +486,6 @@
         justify-content: center;
         align-items: center;
         margin-top: 5px;
-
         .avatars {
             display: flex;
             flex-wrap: wrap;
@@ -390,7 +497,6 @@
             align-content: flex-start;
             overflow: scroll;
             border-radius: 10px;
-
             .avatar {
                 background: #ffffff0d;
                 border-radius: 50%;
@@ -428,61 +534,14 @@
         }
     }
 
-    input[type="radio"] {
-        display: none;
+    label.selected{
+        color: var(--secondary-dark);
     }
 
-    .redirect {
-        width: 100%;
-    }
-
-    .formtitle {
+    .range {
         display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
         gap: 10px;
-
-        i {
-            font-size: 2rem;
-        }
-    }
-
-    .fa-meteor {
-        color: coral;
-    }
-
-    #redirect {
-        color: var(--secondary-dark, #4598ff);
-        text-decoration: underline;
-        cursor: pointer;
-        background: none;
-        border: none;
-        outline: none;
-        font-size: 1rem;
-        font-family: "Com";
-    }
-
-    fieldset {
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
-        border-top: 2px solid rgba(255, 255, 255, 0.0901960784);
-        display: flex;
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-
-        legend {
-            padding: 5px;
-            color: #bababa;
-            font-size: 0.7rem;
-        }
-    }
-
-    .inputForm {
-        //drop shadow
-        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+        margin-top: 20px;
     }
 </style>

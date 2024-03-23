@@ -518,7 +518,7 @@
 
     .moreInfo {
         font-size: 0.7rem;
-        color: grey;
+        color: var(--label-color);
         display: flex;
         flex-direction: column;
         align-items: flex-start;

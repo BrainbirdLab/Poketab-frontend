@@ -116,9 +116,6 @@
         <a href="https://fontawesome.com">Icons partner fontawesome <i class="fa-solid fa-font"></i> </a>
         <a href="https://www.flaticon.com/free-icons/pokemon">Assets partner flaticon<i class="fa-solid fa-compass-drafting"></i></a>
         &copy; {new Date().getFullYear()} - BrainBird.org
-        <div class="location">
-            Dhaka - 1700, Bangladesh <i class="fa-solid fa-location-dot"></i>
-        </div>
     </div>
 </div>
 {/if}

@@ -46,6 +46,8 @@ html{
     --positionForStickers: relative;
     --option-color: #1d3046;
     --shadow: #0000007a;
+    --label-color: #7e9ebb;
+    --faded-accent: color-mix(in lab, var(--secondary-dark), transparent 80%);
 }
 
 //disable image drag
@@ -76,6 +78,7 @@ input{
 
 i[class^=fa-] {
     font-size: 1rem;
+    transition: transform 200ms;
 }
 
 .fa-paper-plane, .fa-paperclip, .fa-face-laugh-wink {
@@ -103,6 +106,11 @@ button {
     outline: none;
     cursor: pointer;
     color: inherit;
+    font-size: 0.9rem;
+
+    &.blackButton:hover{
+        filter: contrast(0.9);
+    }
 }
 
 .button {
@@ -115,11 +123,14 @@ button {
     justify-content: center;
     text-decoration: none !important;
     cursor: pointer !important;
+    font-size: 0.9rem;
 
     &:hover{
         filter: brightness(0.90);
     }
 }
+
+
 
 .button-animate {
     transition: 100ms ease-in-out;
@@ -237,164 +248,6 @@ body{
     -moz-user-select: initial !important;
     -ms-user-select: initial !important;
     user-select: initial !important;
-}
-
-.inputForm{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: -webkit-max-content;
-    width: -moz-max-content;
-    width: max-content;
-    height: -webkit-max-content;
-    height: -moz-max-content;
-    height: max-content;
-    gap: 15px;
-    background: var(--primary-dark, #1e394e);
-    padding: 15px;
-    border-radius: 10px;
-    width: 320px;
-    max-width: 95%;
-    transition: 100ms ease-in-out;
-    position: absolute;
-
-    .formField{
-        width: 100%;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        :is(.range){
-            display: flex;
-            flex-direction: column;
-        }
-
-        input[type="text"], button{
-            width: 100%;
-            height: 44px;
-            border: none;
-            outline: none;
-            border-radius: 10px;
-            padding: 15px;
-            background: #ffffff0d;
-            color: white;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        button{
-            background: var(--secondary-dark, #4598ff);
-            color: white;
-            cursor: pointer;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-        }
-
-    }
-}
-
-input[type="range"] {
-    -webkit-appearance: none;
-    padding: 10px 0;
-    width: 100%;
-    background: var(--primary-dark, #1e394e);
-}
-
-input[type="range"]:focus {
-    outline: none;
-}
-
-input[type="range"]::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 5px;
-    cursor: pointer;
-    box-shadow: 0px 0px 0px #000000;
-    background: #18293b;
-    border-radius: 3px;
-    border: 0px solid #000000;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    box-shadow: 0px 0px 0px #000000;
-    height: 18px;
-    width: 18px;
-    border-radius: 25px;
-    background: var(--secondary-dark, #4598ff);
-    cursor: pointer;
-    -webkit-appearance: none;
-    margin-top: -6.5px;
-}
-
-input[type="range"]:focus::-webkit-slider-runnable-track {
-    background: #18293b;
-}
-
-input[type="range"]::-moz-range-track {
-    width: 100%;
-    height: 5px;
-    cursor: pointer;
-    box-shadow: 0px 0px 0px #000000;
-    background: #18293b;
-    border-radius: 3px;
-    border: 0px solid #000000;
-}
-
-input[type="range"]::-moz-range-thumb {
-    box-shadow: 0px 0px 0px #000000;
-    height: 18px;
-    width: 18px;
-    border-radius: 25px;
-    background: var(--secondary-dark, #4598ff);
-    cursor: pointer;
-}
-
-input[type="range"]::-ms-track {
-    width: 100%;
-    height: 5px;
-    cursor: pointer;
-    background: transparent;
-    border-color: transparent;
-    color: transparent;
-}
-
-input[type="range"]::-ms-fill-lower {
-    background: #18293b;
-    border: 0px solid #000000;
-    border-radius: 2px;
-    box-shadow: 0px 0px 0px #000000;
-}
-
-input[type="range"]::-ms-fill-upper {
-    background: #18293b;
-    border: 0px solid #000000;
-    border-radius: 2px;
-    box-shadow: 0px 0px 0px #000000;
-}
-
-input[type="range"]::-ms-thumb {
-    margin-top: 1px;
-    box-shadow: 0px 0px 0px #000000;
-    border: 0px solid #2497e3;
-    height: 18px;
-    width: 18px;
-    border-radius: 25px;
-    background: var(--secondary-dark, #4598ff);
-    cursor: pointer;
-}
-
-input[type="range"]:focus::-ms-fill-lower {
-    background: #18293b;
-}
-
-input[type="range"]:focus::-ms-fill-upper {
-    background: #18293b;
 }
 
 *:not(input, textarea) {

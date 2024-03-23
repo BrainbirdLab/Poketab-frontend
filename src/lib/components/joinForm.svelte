@@ -22,6 +22,7 @@
     }
 
     function validateKey(e: KeyboardEvent) {
+
         if (!e.ctrlKey && e.key != "v") {
             e.preventDefault();
         }
@@ -66,23 +67,12 @@
         }
     }
 
-    let errAnimation = "";
     let LabelText = "Enter key";
     let LabelIcon = "fa-solid fa-key";
 
-    $: {
-        if ($joinError.text) {
-            errAnimation = "shake";
-            //console.log('Shaking');
-            setTimeout(() => {
-                errAnimation = "";
-            }, 100);
-        } else {
-            errAnimation = "";
-        }
-    }
-
     let joinActionText = "Join Chat";
+
+    let joinInput: HTMLInputElement;
 
     type fetchResponse = {
         success: boolean;
@@ -102,6 +92,7 @@
             console.log("Key is empty");
             $joinError.text = "Key is required";
             $joinError.icon = "fa-solid fa-triangle-exclamation";
+            joinInput.focus();
             return;
         } else {
             $joinError.text = "";
@@ -111,6 +102,7 @@
             console.log("Invalid key", $joinKey);
             $joinError.text = "Invalid key";
             $joinError.icon = "fa-solid fa-triangle-exclamation";
+            joinInput.focus();
             return;
         } else {
             $joinError.text = "";
@@ -176,27 +168,32 @@
     <title>Poketab - Join</title>
 </svelte:head>
 
-<div class="inputForm" in:fly={{ x: 30 }}>
-    <div class="formtitle">
-        Join chat <i class="fa-solid fa-user-group"></i>
-    </div>
-    <div class="formField">
-        <label for="key">{LabelText} <i class={LabelIcon}></i></label>
-        <div class="err {errAnimation}">
-            {$joinError.text} <i class={$joinError.icon}></i>
+<div class="formWrapper">
+    <div class="form" in:fly={{ x: 30 }}>
+        <div class="formtitle">
+            Join chat <i class="fa-solid fa-user-group"></i>
         </div>
-        <input
+        <div class="formfield margin">
+            <input
             on:paste={parseKey}
             on:keydown={validateKey}
+            on:input={() => { joinError.set({ text: "", icon: "" }); }}
             id="key"
             type="text"
             bind:value={$joinKey}
+            bind:this={joinInput}
             name="key"
             placeholder="xx-xxx-xx"
-        />
-    </div>
-    <div class="formFieldContainer">
-        <div class="formField">
+            />
+            <label for="key" class:error={$joinError.text}>
+                {#if $joinError.text}
+                    {$joinError.text} <i class={$joinError.icon}></i>
+                {:else}
+                    {LabelText} <i class={LabelIcon}></i>
+                {/if}
+            </label>
+        </div>
+        <div class="formfield">
             {#if $reconnectButtonEnabled}
                 <button
                     class="button-animate hover  play-sound recon"
@@ -215,18 +212,21 @@
                 </button>
             {/if}
         </div>
-        <div class="formField create">
+        <div class="redirect">
+            <span class="redir-label">Or may be you want to</span>
             <button
-                class="button-animate hover play-sound"
-                on:click={createChat}>Create chat</button
+                id="redirect"
+                class="noSelect button-animate hover play-sound"
+                on:click={createChat}>Create a chat?</button
             >
         </div>
     </div>
 </div>
 
 <style lang="scss">
-    .recon {
-        background: var(--red);
+
+    .margin{
+        margin: 20px 0;
     }
 
     .formFieldContainer {
@@ -234,10 +234,6 @@
         flex-direction: row;
         gap: 10px;
         width: 100%;
-    }
-
-    label {
-        color: var(--foreground-dark);
     }
 
     .formtitle {
@@ -255,9 +251,5 @@
     .inputForm {
         //drop shadow
         box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
-    }
-
-    .create button {
-        background: black;
     }
 </style>

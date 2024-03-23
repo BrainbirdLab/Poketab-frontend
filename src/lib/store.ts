@@ -71,7 +71,7 @@ export const currentPage = writable('form');
 
 
 export function isTaken(type: 'name' | 'avatar', query: string){
-    let i = 0;
+
     const obj = get(chatRoomStore).userList;
     for (const key in obj) {
         //console.log(i++);

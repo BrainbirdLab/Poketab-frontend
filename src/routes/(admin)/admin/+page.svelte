@@ -12,7 +12,7 @@
     let logText = "";
     let passKeyLabel = "Admin passkey";
     let messageLabel = "Message";
-	let timeLabel = "Restart after";
+	let timeLabel = "Restart after (Sec)";
     let passKey: HTMLInputElement;
     let message: HTMLInputElement;
     let time: HTMLInputElement;
@@ -42,22 +42,6 @@
             time.focus();
             return;
         }
-        
-		/*
-        socket.emit("serverRestartMessage", {
-            passKey: passKey.value,
-            message: message.value,
-            time: time.value
-        }, (success: boolean) => {
-            if (success){
-                logText = "Message sent successfully.";
-            } else {
-                logText = "Failed to send message.";
-                errlog = true;
-            }
-            submitting = false;
-        });
-		*/
 
 		submitting = true;
 		errlog = false;
@@ -115,7 +99,7 @@
 			<label for="message">{@html messageLabel}</label>
 		</div>
         <div class="formfield" in:fly|global={{y: 10, delay: 300}}>
-			<input on:input={() => {timeLabel = 'Restart after'}} placeholder="10" type="number" bind:this={time} id="time" name="time" />
+			<input on:input={() => {timeLabel = 'Restart after (Sec)'}} placeholder="10" type="number" bind:this={time} id="time" name="time" />
 			<label for="time">{@html timeLabel}</label>
 		</div>
 		<button type="submit" in:fly|global={{y: 10, delay: 350}}>Post <i class="fa-solid fa-message"></i></button>
@@ -150,13 +134,13 @@
         --primary: #041e2f;
         --light-dark: #0e2a47;
         --hover-light-dark: #123050;
-        --accent: #19f47c;
+        --secondary-dark: #199cf4;
         --label-color: #5b7289;
     }
 
 	.log{
 		font-size: 0.8rem;
-		color: var(--accent);
+		color: var(--secondary-dark);
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -231,7 +215,7 @@
 		input:focus + label{
 			transform: translateY(-20px);
 			font-size: 0.6rem;
-			color: var(--accent);
+			color: var(--secondary-dark);
 		}
 
 		input::placeholder{
@@ -242,7 +226,7 @@
 			transform: translateY(-20px);
 			font-size: 0.6rem;
 			opacity: 1;
-			color: var(--accent);
+			color: var(--secondary-dark);
 		}
 	}
 
@@ -259,7 +243,7 @@
 			border-bottom: 2px solid var(--hover-light-dark);
 		}
 		&:focus{
-			border-bottom: 2px solid var(--accent);
+			border-bottom: 2px solid var(--secondary-dark);
 		}
 	}
 

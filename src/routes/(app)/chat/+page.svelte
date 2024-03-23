@@ -1,4 +1,9 @@
 <script lang="ts">
+
+    //compoments
+    import Footer from "$lib/components/chatUI/chatComponents/footer.svelte";
+    import NavBar from "$lib/components/chatUI/chatComponents/navbar.svelte";
+    import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import Form from "$lib/components/form.svelte";
     import { currentPage, joinedChat, currentTheme } from "$lib/store";
@@ -22,7 +27,11 @@
 {#if mounted}
 <div class="content">
     {#if $currentPage == "chat" && $joinedChat}
-        <ChatInterface />
+        <ChatInterface>
+            <NavBar/>
+            <Messages />
+            <Footer/>
+        </ChatInterface>
     {:else}
         <Form />
     {/if}
