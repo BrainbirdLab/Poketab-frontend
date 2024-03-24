@@ -248,6 +248,7 @@
                     type="text"
                     bind:value={selectedname}
                     bind:this={nameInput}
+                    autocomplete="off"
                     on:input={() => (nameErr = "")}
                     name="name"
                     class="hover"
@@ -269,11 +270,7 @@
                     {avatarErr}
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     {:else}
-                        {#if selectedAvatar}
-                            Avatar selected <i class="fa-solid fa-user-astronaut"></i>
-                        {:else}
-                            Pick an avatar <i class="fa-solid fa-user-astronaut"></i>
-                        {/if}
+                        Avatar <i class="fa-solid fa-user-astronaut"></i>
                     {/if}
                 </label>
                 <div id="avatar" class="avatarsContainer">
@@ -398,7 +395,7 @@
         height: 5px;
         cursor: pointer;
         box-shadow: 0px 0px 0px #000000;
-        background: var(--faded-accent);
+        background: var(--dark-color);
         border-radius: 3px;
         border: 0px solid #000000;
     }
@@ -416,7 +413,7 @@
     }
 
     input[type="range"]:focus::-webkit-slider-runnable-track {
-        background: var(--faded-accent);
+        filter: brightness(0.95);
     }
 
     input[type="range"]::-moz-range-track {
@@ -424,7 +421,7 @@
         height: 5px;
         cursor: pointer;
         box-shadow: 0px 0px 0px #000000;
-        background: var(--faded-accent);
+        background: var(--dark-color);
         border-radius: 3px;
         border: 0px solid #000000;
     }
@@ -448,14 +445,14 @@
     }
 
     input[type="range"]::-ms-fill-lower {
-        background: var(--faded-accent);
+        background: var(--dark-color);
         border: 0px solid #000000;
         border-radius: 2px;
         box-shadow: 0px 0px 0px #000000;
     }
 
     input[type="range"]::-ms-fill-upper {
-        background: var(--faded-accent);
+        background: var(--dark-color);
         border: 0px solid #000000;
         border-radius: 2px;
         box-shadow: 0px 0px 0px #000000;
@@ -473,11 +470,11 @@
     }
 
     input[type="range"]:focus::-ms-fill-lower {
-        background: var(--faded-accent);
+        filter: brightness(0.95);
     }
 
     input[type="range"]:focus::-ms-fill-upper {
-        background: var(--faded-accent);
+        filter: brightness(0.95);
     }
 
     .avatarsContainer {

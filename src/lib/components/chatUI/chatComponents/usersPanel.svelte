@@ -60,7 +60,7 @@
 
         .avt {
             position: relative;
-            background: var(--option-color);
+            background: var(--dark-color);
             border-radius: 50%;
 
             img {

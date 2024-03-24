@@ -360,7 +360,6 @@
                     title="Select themes [Alt+t]"
                     >
                     <div class="wrapper">
-                        <i class="fa-solid fa-palette" />
                         Change theme
                         <div class="moreInfo">
                             Change the look of the chat
@@ -518,7 +517,7 @@
 
     .moreInfo {
         font-size: 0.7rem;
-        color: var(--label-color);
+        color: var(--light-grey-color);
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -644,14 +643,14 @@
         width: 400px;
         max-width: 85vw;
         position: relative;
-        //filter: drop-shadow(2px 4px 6px var(--shadow));
+        //filter: drop-shadow(2px 4px 6px var(--shadow-color));
         font-size: 0.7rem;
         transition: 0.1s ease-in-out;
 
         .top {
             width: 100%;
             padding: 0 0 5px;
-            //border-bottom: 2px solid var(--option-color);
+            //border-bottom: 2px solid var(--dark-color);
             color: white;
             font-size: 0.9rem;
             display: flex;

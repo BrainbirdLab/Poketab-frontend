@@ -73,7 +73,7 @@
                 console.log('Audio ended');
                 micIcon = 'fa-play';
                 time = timeToPrintable(audioDuration);
-                document.documentElement.style.setProperty('--recordedAudioPlaybackProgress', `0%`);
+                document.documentElement.style.setProperty('--recordedAudioPlaybackProgress', "0%");
                 $voiceMessageAudio.ontimeupdate = null;
             };
         } else {
@@ -191,6 +191,9 @@
         recorderActive = false;
         micIcon = 'fa-microphone';
         playState = false;
+        if (document){
+            document.documentElement.style.setProperty('--recordedAudioPlaybackProgress', "0%");
+        }
     }
 
 </script>
@@ -281,7 +284,7 @@
                 justify-content: center;
                 .recordIcon {
                     font-size: 0.6rem !important;
-                    color: var(--red);
+                    color: var(--red-color);
                     animation: blink 0.5s infinite alternate;
                 }
             }

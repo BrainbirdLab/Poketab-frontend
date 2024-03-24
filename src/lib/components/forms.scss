@@ -8,7 +8,7 @@
     gap: 3px;
 
     &.error{
-        color: orangered;
+        color: var(--red-color);
     }
 
 }
@@ -68,16 +68,16 @@
         position: relative;
         font-size: 0.8rem;
         width: 100%;
-        color: var(--label-color);
+        color: var(--light-grey-color);
 
         &.error{
-            color: var(--red) !important;
+            color: var(--red-color) !important;
         }
     }
     
     input[type="text"] + label{
         position: absolute;
-        color: var(--label-color);
+        color: var(--light-grey-color);
         pointer-events: none;
         transition: 200ms;
     }
@@ -85,12 +85,6 @@
     input[type="text"]:focus + label{
         transform: translateY(-20px);
         color: var(--secondary-dark);
-        //font-size: 0.6rem;
-        /*
-        i {
-            font-size: 0.6rem !important;
-        }
-        */
     }
 
     input[type="text"]::placeholder{
@@ -133,10 +127,10 @@ input{
 }
 
 input[type="text"]{
-    border-bottom: 2px solid var(--option-color);
+    border-bottom: 2px solid var(--dark-color);
     transition: 200ms ease-in-out;
     &:hover{
-        border-bottom: 2px solid var(--faded-accent);
+        border-bottom: 2px solid var(--dark-color-hover);
     }
     &:focus{
         border-bottom: 2px solid var(--secondary-dark);
@@ -148,7 +142,7 @@ input[type="radio"]{
 }
 
 .recon {
-    background: var(--red);
+    background: var(--red-color) !important;
 }
 
 .blackButton:hover{
@@ -157,7 +151,7 @@ input[type="radio"]{
 
 .redir-label{
     font-size: 0.7rem;
-    color: var(--label-color);
+    color: var(--light-grey-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -169,7 +163,7 @@ input[type="radio"]{
         display: block;
         width: 40px;
         height: 2px;
-        background: var(--glass);
+        background: var(--glass-color);
     }
 }
 

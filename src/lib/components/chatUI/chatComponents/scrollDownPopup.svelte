@@ -105,10 +105,10 @@
         min-width: 2.5rem;
         min-height: 2.5rem;
         background: var(--primary-dark);
-        filter: drop-shadow(2px 4px 5px var(--shadow)) brightness(1);
+        filter: drop-shadow(2px 4px 5px var(--shadow-color)) brightness(1);
         
         &:hover{
-            filter: drop-shadow(2px 4px 5px var(--shadow)) brightness(0.90);
+            filter: drop-shadow(2px 4px 5px var(--shadow-color)) brightness(0.90);
         }
         
         @include flex;

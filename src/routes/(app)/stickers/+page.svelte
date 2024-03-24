@@ -140,7 +140,7 @@ const css = `
             align-items: center;
             justify-content: center;
             padding: 5px;
-            background: var(--glass);
+            background: var(--glass-color);
         }
 
         .stickerKeyboardContainer .stickerKeyboard .headers .navBtn {

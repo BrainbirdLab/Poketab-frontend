@@ -152,7 +152,7 @@
                     pointer-events: none;
                 }
                 &:hover{
-                    background: var(--glass);
+                    background: var(--glass-color);
                 }
             }
 
@@ -179,7 +179,7 @@
         height: 350px;
         max-width: 98vw;
         border-radius: 15px;
-        filter: drop-shadow(2px 4px 6px var(--shadow));
+        filter: drop-shadow(2px 4px 6px var(--shadow-color));
 
         .title{
             color: var(--secondary-dark);

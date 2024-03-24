@@ -145,7 +145,7 @@
                 justify-content: center;
                 gap: 5px;
                 width: 100%;
-                background: var(--glass);
+                background: var(--glass-color);
                 padding: 10px;
                 border-radius: 10px;
                 font-size: 0.8rem;
@@ -195,7 +195,7 @@
                 border-radius: inherit;
                 object-fit: contain;
                 height: inherit;
-                //background: var(--glass);
+                //background: var(--glass-color);
             }
 
             .close {
@@ -234,7 +234,7 @@
         border-radius: 50px;
         transition: 100ms ease-in-out;
         z-index: 1;
-        filter: drop-shadow(0 4px 5px var(--shadow));
+        filter: drop-shadow(0 4px 5px var(--shadow-color));
         * {
             font-size: inherit !important;
         }

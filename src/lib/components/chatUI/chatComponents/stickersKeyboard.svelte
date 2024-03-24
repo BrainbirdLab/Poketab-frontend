@@ -225,7 +225,7 @@
                 padding: 5px;
                 gap: 5px;
                 border-radius: 23px;
-                background: var(--glass);
+                background: var(--glass-color);
 
                 .navBtn{
                     display: flex;

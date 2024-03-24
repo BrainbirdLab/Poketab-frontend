@@ -39,7 +39,7 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(90deg, transparent, var(--glass), transparent);
+            background: linear-gradient(90deg, transparent, var(--glass-color), transparent);
         }
         
         i {

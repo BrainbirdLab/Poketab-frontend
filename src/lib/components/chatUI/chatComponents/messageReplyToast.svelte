@@ -84,7 +84,7 @@
         width: 100%;
         max-width: 98vw;
         gap: 10px;
-        //filter: drop-shadow(0 4px 5px var(--shadow));
+        //filter: drop-shadow(0 4px 5px var(--shadow-color));
         position: relative;
         
         .wrapper{
@@ -101,7 +101,7 @@
             padding: 10px;
             gap: 5px;
             border-radius: inherit;
-            background: var(--glass);
+            background: var(--glass-color);
             width: 100%;
 
             .top{

@@ -28,7 +28,7 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            background: var(--glass);
+            background: var(--glass-color);
             border-radius: 50%;
             position: absolute;
             padding: 5px;
@@ -308,7 +308,7 @@
 
         &[data-mtype="image"]{
             .data{
-                background: var(--glass);
+                background: var(--glass-color);
 
                 &:hover{
                     filter: brightness(1.1) contrast(0.9);
@@ -414,7 +414,7 @@ pre{
 }
 
 ::selection{
-    background: var(--glass);
+    background: var(--glass-color);
 }
 
 .line-row{
@@ -427,7 +427,7 @@ pre{
     line-height: 0.85rem;
     padding: 0 5px;
     margin-right: 2px;
-    border-right: 1px solid var(--glass);
+    border-right: 1px solid var(--glass-color);
     counter-reset: codeLine;
 
     span {

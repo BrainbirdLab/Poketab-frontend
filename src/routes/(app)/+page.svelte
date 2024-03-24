@@ -59,7 +59,7 @@
     <div class="top-hero" in:fly|global={{ y: -10, delay: 100 }}>
         <div class="flex column center">
             <div class="logo">
-                <ReactiveLogo />
+                <ReactiveLogo size={80}/>
             </div>
             <div class="name">
                 Poketab Messenger
@@ -113,9 +113,13 @@
     </div>
     
     <div class="footer">
-        <a href="https://fontawesome.com">Icons partner fontawesome <i class="fa-solid fa-font"></i> </a>
-        <a href="https://www.flaticon.com/free-icons/pokemon">Assets partner flaticon<i class="fa-solid fa-compass-drafting"></i></a>
-        &copy; {new Date().getFullYear()} - BrainBird.org
+        <div class="assets">
+            <a href="https://fontawesome.com"> <i class="fa-solid fa-font"></i> Fontawesome</a>
+            <a href="https://www.flaticon.com/free-icons/pokemon"><i class="fa-solid fa-compass-drafting"></i> Flaticon</a>
+        </div>
+        <div class="copyrights">
+            &copy; {new Date().getFullYear()} - BrainBird.org
+        </div>
     </div>
 </div>
 {/if}
@@ -242,7 +246,7 @@
         align-items: flex-start;
         justify-content: center;
         background: #22283bba;
-        box-shadow: 0 3px 5px var(--shadow);
+        box-shadow: 0 3px 5px var(--shadow-color);
         backdrop-filter: blur(2px);
         padding: 35px;
         border-radius: 10px;
@@ -300,6 +304,14 @@
         justify-content: center;
         align-items: center;
         gap: 10px;
+
+        .assets{
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
         
         i {
             color: inherit;

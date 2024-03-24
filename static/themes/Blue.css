@@ -1,7 +1,5 @@
 :root {
     --secondary-dark: hsl(213, 98%, 57%);
-    --focus-dark: #19283880;
-    --option-color: #213142;
     --msg-get: hsl(213, 40%, 57%);
     --msg-get-reply: hsl(213, 88%, 27%);
     --msg-send: hsl(213, 98%, 57%);

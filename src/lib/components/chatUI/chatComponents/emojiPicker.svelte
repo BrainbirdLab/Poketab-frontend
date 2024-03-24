@@ -56,7 +56,7 @@
         text-align: center;
         font-size: 1.2rem;
         color: var(--secondary-dark);
-        border-bottom: 2px solid var(--glass);
+        border-bottom: 2px solid var(--glass-color);
         i{
             pointer-events: none;
         }

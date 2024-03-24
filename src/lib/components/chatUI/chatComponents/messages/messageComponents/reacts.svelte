@@ -40,7 +40,7 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        background: var(--option-color);
+        background: var(--dark-color);
         border-radius: 18px;
         width: max-content;
         margin-top: -10px;

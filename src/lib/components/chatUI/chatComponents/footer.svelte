@@ -282,7 +282,7 @@
             position: relative;
             overflow: hidden;
             width: 100%;
-            background: var(--glass);
+            background: var(--glass-color);
             border-radius: 24px;
             
             .textbox-wrapper {

@@ -12,8 +12,8 @@
     box-sizing: border-box;
     -ms-overflow-style: none;
     font-family: 'Com';
-    color: var(--foreground-dark);
-    caret-color: var(--foreground-dark);
+    color: var(--text-color);
+    caret-color: var(--text-color);
     user-select: none;
     scrollbar-width: none;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -36,17 +36,19 @@ html{
 }
 
 :root{
-    --red: #e8534f;
+    --red-color: #e8534f;
     --primary-dark: #111d2a;
-    --foreground-dark: #e1eeff;
-    --glass: #ffffff17;
+    --text-color: ghostwhite;
+    --glass-color: #ffffff17;
+    --shadow-color: #0000007a;
+    --light-grey-color: #7e9ebb;
+    --dark-color: #1e3a4b;
+    --dark-color-hover: #2f4e5c;
+
+
     --app-height: 100vh;
     --amplitude: 0px;
     --positionForStickers: relative;
-    --option-color: #1d3046;
-    --shadow: #0000007a;
-    --label-color: #7e9ebb;
-    --faded-accent: color-mix(in lab, var(--secondary-dark), transparent 80%);
 }
 
 //disable image drag
@@ -198,7 +200,7 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  border: 2px solid var(--faded-accent);
+  border: 2px solid var(--dark-color);
   -webkit-text-fill-color: rgb(255, 255, 255);
   box-shadow: 0 0 0px 1000px var(--primary-dark) inset !important;
   -webkit-transition: background-color 5000s ease-in-out 0s;

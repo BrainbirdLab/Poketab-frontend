@@ -86,7 +86,7 @@
 
 {#if loaded}
 <div class="formWrapper">
-	<form on:submit|preventDefault={handleForm} class="form" in:fly={{y: 20, delay: 200}}>
+	<div class="form" in:fly={{y: 20, delay: 200}}>
 		<div class="title" in:fly|global={{x: -10, delay: 200}}>
             <ReactiveLogo size={70}/>
             Admin notification panel
@@ -104,7 +104,7 @@
 			<input on:input={() => {timeLabel = 'Restart after (Sec)'}} placeholder="10" type="number" bind:this={time} id="time" name="time" />
 			<label for="time">{@html timeLabel}</label>
 		</div>
-		<button type="submit" in:fly|global={{y: 10, delay: 350}}>Post <i class="fa-solid fa-message"></i></button>
+		<button on:click={handleForm} in:fly|global={{y: 10, delay: 350}}>Post <i class="fa-solid fa-message"></i></button>
 		{/if}
 		{#if logText}
 		<div class="log" class:submitting={submitting} class:error={errlog}>
@@ -114,7 +114,7 @@
 			{/if}
 		</div>
 		{/if}
-	</form>
+	</div>
 </div>
 {/if}
 
@@ -169,7 +169,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 15px;
-		border: 2px solid var(--option-color);
+		border: 2px solid var(--dark-color);
 		border-radius: 10px;
 		padding: 40px 20px;
 		width: 100%;
@@ -203,7 +203,7 @@
 			pointer-events: none;
 			width: 100%;
 			font-size: 0.8rem;
-			color: var(--label-color);
+			color: var(--light-grey-color);
 		}
 
 		input:focus + label{
@@ -227,14 +227,14 @@
 	input{
 		background: none;
 		border: none;
-		border-bottom: 2px solid var(--option-color);
+		border-bottom: 2px solid var(--dark-color);
 		padding: 10px;
 		outline: none;
 		width: 100%;
 		color: ghostwhite;
 		transition: 200ms ease-in-out;
 		&:hover{
-			border-bottom: 2px solid var(--faded-accent);
+			border-bottom: 2px solid var(--dark-color-hover);
 		}
 		&:focus{
 			border-bottom: 2px solid var(--secondary-dark);
@@ -242,7 +242,7 @@
 	}
 
 	button{
-		background: var(--option-color);
+		background: var(--dark-color);
 		border: none;
 		border-radius: 10px;
 		padding: 10px 15px;
