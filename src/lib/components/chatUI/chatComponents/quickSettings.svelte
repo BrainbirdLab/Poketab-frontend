@@ -499,7 +499,6 @@
         
         #logoutButton{
             background: #19394d;
-            font-size: 0.8rem;
             color: inherit;
         }
     }
@@ -645,7 +644,8 @@
         position: relative;
         //filter: drop-shadow(2px 4px 6px var(--shadow-color));
         font-size: 0.7rem;
-        transition: 0.1s ease-in-out;
+        transition: 100ms ease-in-out;
+        filter: drop-shadow(2px 4px 6px var(--shadow-color));
 
         .top {
             width: 100%;

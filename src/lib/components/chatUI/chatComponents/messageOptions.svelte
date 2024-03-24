@@ -153,7 +153,7 @@
 <!-- option menu for message right click -->
 <!-- This menu contains reacts, message copy, download, delete and reply options -->
 <div class="optionsContainer" use:clickHandler>
-    <div class="reactionsChooser" transition:fly={{y: -10, duration: 200}}>
+    <div class="reactionsChooser" transition:fly|global={{y: -10, duration: 200}}>
         {#if reactIsExpanded}
             <EmojiPicker selectedEmoji={selectedReact} exclude={[...$reactArray.last, ...$reactArray.reacts]} onClose={()=>{
                 reactIsExpanded = false;
@@ -184,7 +184,7 @@
             {/if}
         </div>
     </div>
-    <div class="messageOptions" transition:fly={{y: 10, duration: 200}}>
+    <div class="messageOptions" transition:fly|global={{y: 10, duration: 200}}>
         {#key downloadable}
         {#each [...getMessageOptions(), downloadable ? 'Download' : null] as option, i}
         {#if option != null}
@@ -213,7 +213,7 @@
         transition: all 100ms ease-in-out;
         filter: drop-shadow(2px 2px 5px var(--shadow-color));
         border-radius: 15px 15px 0 0;
-        background: var(--dark-color);
+        background: var(--primary-dark);
 
         .option{
             display: flex;
@@ -233,7 +233,7 @@
             }
 
             &.delete i{
-                color: var(--red);
+                color: var(--red-color);
             }
 
             > * {
@@ -264,7 +264,7 @@
             transition: all 100ms ease-in-out;
             filter: drop-shadow(2px 2px 5px var(--shadow-color));
             max-width: min(300px, 95vw);
-            background: var(--dark-color);
+            background: var(--primary-dark);
             border-radius: 23px;
             padding: 5px;
         }
