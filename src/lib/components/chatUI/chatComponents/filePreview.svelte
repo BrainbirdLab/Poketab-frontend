@@ -245,7 +245,7 @@
         }
 
         #cancel {
-            color: var(--red);
+            color: var(--red-color);
         }
 
         #send{
