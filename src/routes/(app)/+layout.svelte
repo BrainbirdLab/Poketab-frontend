@@ -1,7 +1,6 @@
 <script lang="ts">
     import "$lib/styles/global.scss";
     import { playClickSound } from "$lib/utils";
-    import { navigating } from "$app/stores";
     import NavigationIndicator from "$lib/components/NavigationIndicator.svelte";
     console.log("Mounted root +layout.svelte");
 
