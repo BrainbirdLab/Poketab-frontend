@@ -65,13 +65,13 @@
             .headingText{
                 font-size: 1.5rem;
                 font-weight: bold;
-                color: var(--foreground-dark);
+                color: var(--text-color);
             }
 
         }
         .subHeadingText{
             font-size: 0.8rem;
-            color: var(--foreground-dark);
+            color: var(--text-color);
             opacity: 0.5;
         }
     }

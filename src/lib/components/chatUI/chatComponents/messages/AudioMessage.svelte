@@ -120,7 +120,7 @@
 
         .duration{
             font-size: 0.6rem;
-            background: var(--foreground-dark);
+            background: var(--text-color);
             border-radius: 10px;
             padding: 2px 5px;
             min-width: 40px;

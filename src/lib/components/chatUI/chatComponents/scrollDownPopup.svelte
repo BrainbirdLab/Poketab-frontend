@@ -92,7 +92,7 @@
     }
 
     .popup{
-        color: var(--foreground-dark);
+        color: var(--text-color);
         cursor: pointer;;
         font-size: 0.8rem;
         position: absolute;

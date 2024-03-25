@@ -43,7 +43,7 @@
             animate:flip={{duration: 600}}
             in:fly={{y: 10, delay: 50 * (i + 1)}}
             out:fly={{x: -10, duration: 300}}
-            class="file_preview file-item"
+            class="file_preview"
             data-id={i}
         >
             <i class="close remove fa-solid fa-xmark"></i>
@@ -116,12 +116,55 @@
             padding: 10px;
             border-radius: 15px;
             width: 260px;
-            background: #ffffff21;
-            backdrop-filter: blur(1px);
-            border: 3px solid var(--secondary-dark);
+            border: 3px solid var(--dark-color);
             align-items: center;
             justify-content: center;
             gap: 10px;
+            position: relative;
+            min-width: 170px;
+            max-width: 75vw;
+            max-height: 80vh;
+            height: auto;
+            background: var(--primary-dark);
+            mix-blend-mode: screen;
+            backdrop-filter: brightness(0.3);
+
+            &:not(:has(img)){
+                min-height: 170px;
+            }
+
+            img {
+                max-width: inherit;
+                max-height: inherit;
+                min-height: inherit;
+                max-width: inherit;
+                width: 100%;
+                height: 100%;
+                border-radius: inherit;
+                object-fit: contain;
+                height: inherit;
+                //background: var(--glass-color);
+            }
+
+            .close {
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                width: 25px;
+                height: 25px;
+                background: red;
+                color: white !important;
+                font-size: 1rem;
+
+                &:hover {
+                    filter: brightness(0.9);
+                }
+            }
 
             &:has(.error-msg:not(:empty)) {
                 border: 3px solid rgb(255, 30, 30);
@@ -169,54 +212,7 @@
         }
 
         .file-item {
-            position: relative;
-            position: relative;
-            min-width: 170px;
-            max-width: 75vw;
-            max-height: 80vh;
-            height: auto;
-            border-radius: 10px;
-            background: var(--focus-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
 
-            &:not(:has(img)){
-                min-height: 170px;
-            }
-
-            img {
-                max-width: inherit;
-                max-height: inherit;
-                min-height: inherit;
-                max-width: inherit;
-                width: 100%;
-                height: 100%;
-                border-radius: inherit;
-                object-fit: contain;
-                height: inherit;
-                //background: var(--glass-color);
-            }
-
-            .close {
-                position: absolute;
-                top: -10px;
-                right: -10px;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-                width: 25px;
-                height: 25px;
-                background: red;
-                color: white !important;
-                font-size: 1rem;
-
-                &:hover {
-                    filter: brightness(0.9);
-                }
-            }
         }
     }
 

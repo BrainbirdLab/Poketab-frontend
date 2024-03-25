@@ -54,7 +54,7 @@
     .notification{
         position: fixed;
         z-index: 100;
-        color: var(--foreground-dark);
+        color: var(--text-color);
         font-size: 0.8rem;
         background: orangered;
         width: 100%;

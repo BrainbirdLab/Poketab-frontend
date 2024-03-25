@@ -599,7 +599,7 @@
             gap: 2px;
             overflow-y: scroll;
             overflow-x: hidden;
-            color: var(--foreground-dark);
+            color: var(--text-color);
             scrollbar-width: none;
             list-style: none;
             z-index: 1;

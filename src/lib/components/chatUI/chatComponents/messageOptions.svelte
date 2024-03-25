@@ -226,7 +226,7 @@
             transition: all 100ms ease-in-out;
             cursor: pointer;
             font-size: 0.7rem;
-            color: var(--foreground-dark);
+            color: var(--text-color);
 
             i{
                 color: var(--secondary-dark);

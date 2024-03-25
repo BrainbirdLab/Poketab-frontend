@@ -29,7 +29,7 @@
         z-index: 15;
         font-size: 0.9rem;
         padding: 5px;
-        color: var(--foreground-dark);
+        color: var(--text-color);
 
         &::after{
             content: '';
@@ -45,7 +45,7 @@
         i {
             color: inherit;
             font-size: 0.9rem;
-            color: var(--foreground-dark);
+            color: var(--text-color);
         }
         .currentlyActive {
             display: flex;
