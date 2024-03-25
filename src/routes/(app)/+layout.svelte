@@ -2,6 +2,7 @@
     import "$lib/styles/global.scss";
     import { playClickSound } from "$lib/utils";
     import { navigating } from "$app/stores";
+    import NavigationIndicator from "$lib/components/NavigationIndicator.svelte";
     console.log("Mounted root +layout.svelte");
 
     function removeAttribute(evt: MouseEvent | TouchEvent) {
@@ -37,41 +38,13 @@
 
 <svelte:body on:contextmenu|preventDefault on:click={handleClick} />
 
-{#if !!$navigating}
-    <div class="navigationIndicator"></div>
-{/if}
+<NavigationIndicator />
 
 <div class="maincontainer">
     <slot />
 </div>
 
 <style lang="scss">
-    .navigationIndicator {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 3px;
-        background: var(--secondary-dark);
-        animation: navigate 5s;
-        z-index: 100;
-    }
-
-    @keyframes navigate {
-        /* fast width from 0 to 50% in 1s */
-        0% {
-            width: 0;
-        }
-        25% {
-            width: 50%;
-        }
-        /* slow width from 50% to 100% in 5s */
-        90% {
-            width: 95%;
-        }
-        100% {
-            width: 95%;
-        }
-    }
 
     .maincontainer {
         background: rgba(0, 0, 0, 0.6117647059) var(--pattern);
