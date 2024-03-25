@@ -292,7 +292,7 @@ class MessageDatabase{
         return this.#messageIndexMap.has(id);
     }
 
-    length(){
+    get length(){
         //return this.#messageDatabaseArray.length;
         return get(this.#messageDatabaseArray).length;
     }
