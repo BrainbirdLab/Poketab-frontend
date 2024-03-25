@@ -210,10 +210,6 @@
             text-align: center;
             width: 100%;
         }
-
-        .file-item {
-
-        }
     }
 
     .filePreviewOptions {

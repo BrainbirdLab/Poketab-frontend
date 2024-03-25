@@ -29,13 +29,6 @@ export const formActionButtonDisabled = writable(true);
 export const showScrollPopUp = writable(false);
 export const listenScroll = writable(true);
 
-/*
-export const reactArray = {
-    reacts: ['💙', '😆', '😠', '😢', '😮', '🙂'] as readonly string[],
-    last: '🌻'
-};
-*/
-
 export const outgoingXHRs: Writable<
     Map<string, XMLHttpRequest>
 > = writable(new Map());
