@@ -178,10 +178,10 @@
             on:paste={parseKey}
             on:keydown={validateKey}
             on:input={() => { joinError.set({ text: "", icon: "" }); }}
-            id="key"
-            type="text"
             bind:value={$joinKey}
             bind:this={joinInput}
+            id="key"
+            type="text"
             name="key"
             placeholder="xx-xxx-xx"
             />

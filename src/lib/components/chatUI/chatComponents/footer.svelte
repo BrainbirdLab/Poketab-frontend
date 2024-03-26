@@ -215,7 +215,7 @@
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">
-                <div style:opacity={recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "enter" : "send"}"></div>
+                <div style:opacity={recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "enter" : "send"}"></div>
                 <Recorder bind:this={recorder} bind:isActive={recorderIsActive}/>
             </div>
         </div>

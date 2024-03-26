@@ -246,10 +246,10 @@
             <div class="formfield">
                 <input
                     type="text"
+                    on:input={() => (nameErr = "")}
                     bind:value={selectedname}
                     bind:this={nameInput}
                     autocomplete="off"
-                    on:input={() => (nameErr = "")}
                     name="name"
                     class="hover"
                     id="name"
@@ -299,11 +299,11 @@
                                     <input
                                         type="radio"
                                         class="avatarInput"
+                                        on:input={() => (avatarErr = "")}
                                         bind:group={selectedAvatar}
                                         name="avatar"
                                         value={avatar}
                                         id={avatar}
-                                        on:input={() => (avatarErr = "")}
                                     />
                                     <label
                                         class="avatarLabel btn-animate"

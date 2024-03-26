@@ -24,32 +24,6 @@
         { name: "soul", count: "25", icon: "14" },
     ];
 
-    /**
-     *     
-<div class="stickerKeyboardContainer" transition:fly|global={{y: 40, duration: 100}} use:stickersHandler>
-    <div class="stickerKeyboard">
-        <div class="headers">
-            <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>
-            <div class="stickersHeader" id="stickersHeader" bind:this={stickersHeader}>
-                {#each Stickers as sticker}
-                    <img loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
-                {/each}
-            </div>
-            <button on:click={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></button>
-        </div>
-        <div class="stickersBody" id="stickersBody" use:stickersBodyHandler>
-            {#each Stickers as sticker}
-                <div class="stickerBoard {sticker.name}" id="{sticker.name}">
-                    {#each Array.from({ length: +sticker.count }) as _, i}
-                        <img loading="eager" class="stickerItem" data-serial={i+1} src="/stickers/{sticker.name}/static/{i + 1}-mini.webp" alt="{sticker.name}">
-                    {/each}
-                </div>
-            {/each}
-        </div>
-    </div>
-</div>
-*/
-
 onMount(() => {
 
     //add css
