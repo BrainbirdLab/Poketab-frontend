@@ -203,7 +203,7 @@
 			pointer-events: none;
 			width: 100%;
 			font-size: 0.8rem;
-			color: var(--light-grey-color);
+			color: var(--blue-grey-color);
 		}
 
 		input:focus + label{

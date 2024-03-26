@@ -1,7 +1,7 @@
 <script lang="ts">
     import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import Recorder from "./recorder.svelte";
+    import Recorder from "./voiceRecorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/components/socket";
 
@@ -16,6 +16,7 @@
     let newMessage = '';
 
     let recorder: Recorder;
+    let recorderIsActive = false;
 
     const codeParser = new TextParser();
     
@@ -214,8 +215,8 @@
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">
-                <div on:paste={updateTextareaHeight} bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="send"></div>
-                <Recorder bind:this={recorder}/>
+                <div style:opacity={recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} bind:this={inputbox} id="textbox" bind:innerText={newMessage} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "enter" : "send"}"></div>
+                <Recorder bind:this={recorder} bind:isActive={recorderIsActive}/>
             </div>
         </div>
         <!-- Send Button-->
@@ -307,12 +308,12 @@
                     max-height: 8rem;
                     line-height: 1.4rem;
                     font-size: 0.8rem;
-                    transition: height 150ms ease-in-out;
+                    transition: height 150ms ease-in-out, opacity 150ms ease-in-out;
                     text-align: left;
 
                     &::before {
                         content: attr(data-placeholder);
-                        color: rgba(255, 255, 255, 0.3529411765);
+                        color: var(--transparent-white-color);
                         font-size: 0.9rem;
                         position: absolute;
                         opacity: 1;

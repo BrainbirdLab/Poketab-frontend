@@ -228,7 +228,7 @@
         z-index: 1;
         filter: drop-shadow(0 4px 5px var(--shadow-color));
         .items-count{
-            color: var(--light-grey-color);
+            color: var(--blue-grey-color);
         }
         * {
             font-size: inherit !important;

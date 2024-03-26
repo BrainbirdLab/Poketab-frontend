@@ -5,7 +5,8 @@
     import { voiceMessageAudio } from "$lib/messageTypes";
     import { playMessageSound } from "$lib/utils";
 
-    let recorderActive = false;
+    export let isActive = false;
+    
     let recordingState = false;
     let playState = false;
 
@@ -98,7 +99,7 @@
         .then(mediaStream => {
                 playMessageSound('startRecording');
                 console.log('Recording started');
-                recorderActive = true;
+                isActive = true;
                 recordingState = true;
                 playState = false;
                 micIcon = 'fa-stop';
@@ -151,7 +152,7 @@
         // console.log('Record button clicked');
         // this plays role to show the recorder, start recording, stop recording, play and pause the recorded audio
         // if the recorder is not active, it will be activated
-        if (!recorderActive){
+        if (!isActive){
             startRecording();
         } else {
             if (playState){
@@ -188,7 +189,7 @@
         if (timer){
             clearInterval(timer);
         }
-        recorderActive = false;
+        isActive = false;
         micIcon = 'fa-microphone';
         playState = false;
         if (document){
@@ -199,7 +200,7 @@
 </script>
 
 <!-- Microphone -->
-<div class="voiceRecorder" class:active={recorderActive} id="recorderOverlay" data-recordingstate="{recordingState}">
+<div class="voiceRecorder" class:active={isActive} id="recorderOverlay" data-recordingstate="{recordingState}">
     <div class="container">
         <button class="recordBtn button-animate roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
             <i class="fa-solid {micIcon}" id="micIcon"></i>
@@ -238,14 +239,14 @@
         visibility: visible;
         &.active {
             width: 100%;
-            background: var(--primary-dark);
+            //background: var(--primary-dark);
 
             .recording{
                 opacity: 1;
             }
 
             #audiovisualizer {
-                background: rgba(255, 255, 255, 0.0509803922);
+                background: rgba(255, 255, 255, 0.05);
             }
         }
 
@@ -254,7 +255,7 @@
             content: "";
             height: 100%;
             width: var(--recordedAudioPlaybackProgress, 0);
-            background: rgba(0, 0, 0, 0.1490196078);
+            background: rgba(0, 0, 0, 0.15);
             z-index: -1;
         }
 

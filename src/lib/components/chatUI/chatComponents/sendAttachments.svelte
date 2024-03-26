@@ -446,7 +446,7 @@
 
                 .text {
                     font-size: 0.7rem;
-                    color: var(--light-grey-color);
+                    color: var(--blue-grey-color);
                 }
             }
         }

@@ -482,14 +482,17 @@
 
         //console.log(heightChanged);
 
-        if (heightChanged < 16){
+        if (Math.abs(heightChanged) < 16){
             if (heightChanged > 0) { //height increase
                 $messageContainer.scrollTop += heightChanged;
                 //console.log('%cScrolled Up', 'color: orange;');
-            } else if (heightChanged < 0 && scrolledToBottomPx > 0){
-                //console.log('%cScrolled Down', 'color: pink;');
+            }
+            /*
+            else if (heightChanged < 0 && scrolledToBottomPx > 0){ //height decrease
+                console.log('%cScrolled Down', 'color: pink;');
                 $messageContainer.scrollTop += heightChanged;
             }
+            */
         } else if (heightChanged > 16 && !$showScrollPopUp){
             //console.log('%cSmooth scroll', 'color: lime;');
             
