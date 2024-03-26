@@ -599,6 +599,12 @@
         }
     }
 
+    #themeButton{
+        * {
+            pointer-events: none;
+        }
+    }
+
     #chooseQuickEmojiButton {
         color: var(--secondary-dark);
         background: transparent;

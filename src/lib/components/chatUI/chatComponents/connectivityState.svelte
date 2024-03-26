@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import {fly} from "svelte/transition";
     import {socket} from "$lib/components/socket";
 
@@ -7,53 +6,50 @@
     let icon = '';
     export let offline = false;
     
-    onMount(()=>{
+    let retry = 1;
 
-        let retry = 1;
+    socket.on('connect', ()=>{
+        //console.log('Connected - conectivityState.svelte');
+        retry = 1;
 
-        //on offline
-        window.addEventListener('offline', () => {
-            //console.log('Offline - conectivityState.svelte');
-            title = 'You are offline';
-            offline = true;
-            icon = 'fa-circle-exclamation';
-            retry = 1;
-            socket.disconnect();
-        });
+        if (title == ''){
+            return;
+        }
 
-        socket.on('connect', ()=>{
-            //console.log('Connected - conectivityState.svelte');
-            retry = 1;
-
-            if (title == ''){
-                return;
-            }
-
-            title = 'Connected';
-            icon = 'fa-wifi';
-            setTimeout(() => {
-                title = '';
-            }, 2000);
-        });
-
-        socket.on('connection_error', () => {
-            //console.log('Connection error - conectivityState.svelte');
-            title = 'Could not connect. Retrying... ' + retry++;
-            icon = 'fa-circle-exclamation';
-        });
-
-        //on online
-        window.addEventListener('online', () => {
-            //console.log('Back to Online - conectivityState.svelte');
-            title = 'Back to online';
-            offline = false;
-            icon = 'fa-wifi';
-            retry = 1;
-            socket.connect();
-        });
+        title = 'Connected';
+        icon = 'fa-wifi';
+        setTimeout(() => {
+            title = '';
+        }, 2000);
     });
 
+    socket.on('connection_error', () => {
+        //console.log('Connection error - conectivityState.svelte');
+        title = 'Could not connect. Retrying... ' + retry++;
+        icon = 'fa-circle-exclamation';
+    });
+
+    function handleOffline(){
+        //console.log('Offline - conectivityState.svelte');
+        title = 'You are offline';
+        offline = true;
+        icon = 'fa-circle-exclamation';
+        retry = 1;
+        socket.disconnect();
+    }
+
+    function handleOnline(){
+        //console.log('Back to Online - conectivityState.svelte');
+        title = 'Back to online';
+        offline = false;
+        icon = 'fa-wifi';
+        retry = 1;
+        socket.connect();
+    }
+
 </script>
+
+<svelte:window  on:online={handleOnline} on:offline={handleOffline}/>
 
 {#if title}    
 <div class="container" transition:fly={{y: 20, duration: 100}}>

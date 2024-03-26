@@ -3,13 +3,13 @@
     import "$lib/components/chatUI/chatComponents/messages/message.scss";
     
     //compoments
-    import QuickSettings from "$lib/components/chatUI/chatComponents/quickSettings.svelte";
-    import Themes from "$lib/components/chatUI/chatComponents/themes.svelte";
+    import QuickSettings from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
+    import Themes from "$lib/components/chatUI/chatComponents/themesModal.svelte";
     import StickersKeyboard from "$lib/components/chatUI/chatComponents/stickersKeyboard.svelte";
-    import Attachments from "$lib/components/chatUI/chatComponents/attachments.svelte";
+    import Attachments from "$lib/components/chatUI/chatComponents/sendAttachments.svelte";
     import MessageOptions from "$lib/components/chatUI/chatComponents/messageOptions.svelte";
 
-    import ReactsOnMessage from "$lib/components/chatUI/chatComponents/reactsOnMessage.svelte";
+    import ReactsOnMessage from "$lib/components/chatUI/chatComponents/reactsOnMessageModal.svelte";
     import ConnectivityState from "$lib/components/chatUI/chatComponents/connectivityState.svelte";
     
     import MessageSockets from "./messageSockets.svelte";

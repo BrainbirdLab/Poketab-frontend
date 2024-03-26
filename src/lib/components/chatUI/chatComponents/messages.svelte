@@ -1,3 +1,7 @@
+<script context="module" lang="ts">
+    let currentPlayingAudioMessage: AudioMessageObj | null = null;
+</script>
+
 <script lang="ts">
     import TextMessage from "$lib/components/chatUI/chatComponents/messages/TextMessage.svelte";
     import StickerMessage from "$lib/components/chatUI/chatComponents/messages/StickerMessage.svelte";
@@ -24,7 +28,6 @@
         messageContainer,
         FileMessageObj,
         AudioMessageObj,
-        currentPlayingAudioMessage,
     } from "$lib/messageTypes";
     import {
         selectedSticker,
@@ -127,20 +130,19 @@
             if (messageObj instanceof AudioMessageObj && target.closest('.data')){
                 
                 if (target.classList.contains('control')){
-                    
-                    
+
                     //console.log(messageObj.audio.paused ? 'Playing...' : 'Paused');
                     
                     if (messageObj.audio.paused){
                         //stop all other audios
-                        if ($currentPlayingAudioMessage && $currentPlayingAudioMessage.audio.src !== messageObj.audio.src){
-                            $currentPlayingAudioMessage.audio.pause();
-                            $currentPlayingAudioMessage.audio.currentTime = 0;
-                            $currentPlayingAudioMessage.audio.ontimeupdate = null;
-                            $currentPlayingAudioMessage.audio.onended = null;
+                        if (currentPlayingAudioMessage && currentPlayingAudioMessage.audio.src !== messageObj.audio.src){
+                            currentPlayingAudioMessage.audio.pause();
+                            currentPlayingAudioMessage.audio.currentTime = 0;
+                            currentPlayingAudioMessage.audio.ontimeupdate = null;
+                            currentPlayingAudioMessage.audio.onended = null;
                         }
 
-                        currentPlayingAudioMessage.set(messageObj);
+                        currentPlayingAudioMessage = messageObj;
 
                         messageObj.audio.play().catch((err) => {
                             console.log(err);
@@ -158,7 +160,7 @@
                             messageObj.audio.currentTime = 0;
                             messageObj.audio.onended = null;
                             messageObj.audio.ontimeupdate = null;
-                            currentPlayingAudioMessage.set(null);
+                            currentPlayingAudioMessage = null;
                             messageDatabase.update((messages) => {
                                 return messages;
                             });
@@ -571,6 +573,7 @@
     </div>
     {#each $messageDatabase as message (message)}
         {#if message instanceof MessageObj}
+            
             {#if message instanceof TextMessageObj && (message.type === "text" || message.type === "emoji")}
                 <TextMessage message={message} />
             {:else if message instanceof StickerMessageObj}
@@ -592,7 +595,7 @@
 </ul>
 
 <style lang="scss">
-            #messages {
+        #messages {
             position: relative;
             display: flex;
             flex-direction: column;

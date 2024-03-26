@@ -47,7 +47,7 @@
 
     .maincontainer {
         background: rgba(0, 0, 0, 0.6117647059) var(--pattern);
-        transition: background 1s 200ms;
+        transition: background 500ms;
         background-blend-mode: soft-light;
         background-size: cover;
         background-position: center;

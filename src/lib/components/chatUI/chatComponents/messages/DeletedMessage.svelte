@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { TextMessageObj } from "$lib/messageTypes";
-    import MessageTop from "./messageComponents/messageTop.svelte";
-    import SeenBy from "./messageComponents/seenBy.svelte";
-    import MessageMeta from "./messageComponents/messageMeta.svelte";
+    import MessageTop from "./messageMetaComponents/messageTop.svelte";
+    import SeenBy from "./messageMetaComponents/seenBy.svelte";
+    import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
 
     export let message: TextMessageObj;
 

@@ -227,6 +227,9 @@
         transition: 100ms ease-in-out;
         z-index: 1;
         filter: drop-shadow(0 4px 5px var(--shadow-color));
+        .items-count{
+            color: var(--light-grey-color);
+        }
         * {
             font-size: inherit !important;
         }

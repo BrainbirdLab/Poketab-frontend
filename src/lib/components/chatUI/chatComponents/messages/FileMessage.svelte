@@ -4,10 +4,10 @@
         ImageMessageObj,
         type FileMessageObj,
     } from "$lib/messageTypes";
-    import Reacts from "./messageComponents/reacts.svelte";
-    import MessageTop from "./messageComponents/messageTop.svelte";
-    import SeenBy from "./messageComponents/seenBy.svelte";
-    import MessageMeta from "./messageComponents/messageMeta.svelte";
+    import Reacts from "./messageMetaComponents/reactsGroup.svelte";
+    import MessageTop from "./messageMetaComponents/messageTop.svelte";
+    import SeenBy from "./messageMetaComponents/seenBy.svelte";
+    import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
     import { getIcon } from "$lib/utils";
     import { myId } from "$lib/store";
 
