@@ -1,52 +1,27 @@
-<script lang="ts">
-    import { fly } from "svelte/transition";
-    import {
-    clearModals,
-        showQuickSettingsPanel,
-        showThemesPanel,
-    } from "$lib/components/modalManager";
-    import {
-        buttonSoundEnabled,
-        chatRoomStore,
-        messageSoundEnabled,
-        myId,
-        quickEmoji,
-        quickEmojiEnabled,
-        sendMethod,
-        splashMessage,
-    } from "$lib/store";
-    import { SEND_METHOD } from "$lib/types";
-    import EmojiPicker from "./emojiPicker.svelte";
-    import { spin } from "$lib/utils";
-    import { socket } from "$lib/components/socket";
-    import { showToastMessage } from "domtoastmessage";
-    import UsersPanel from "./usersPanel.svelte";
-    import { elasticOut } from "svelte/easing";
+<script context="module" lang="ts">
 
-    type Settings = {
-        buttonSoundEnabled: boolean;
-        messageSoundEnabled: boolean;
-        quickEmojiEnabled: boolean;
-        sendMethod: SEND_METHOD;
-    };
+type Settings = {
+    buttonSoundEnabled: boolean;
+    messageSoundEnabled: boolean;
+    quickEmojiEnabled: boolean;
+    sendMethod: SEND_METHOD;
+};
 
-    const defaultSettings = {
-        buttonSoundEnabled: true,
-        messageSoundEnabled: true,
-        quickEmojiEnabled: true,
-        sendMethod: SEND_METHOD.ENTER,
-    };
+const defaultSettings = {
+    buttonSoundEnabled: true,
+    messageSoundEnabled: true,
+    quickEmojiEnabled: true,
+    sendMethod: SEND_METHOD.ENTER,
+};
 
-    let showQuickEmojiDrawer = false;
+function setDefaultChatSettings() {
+    sendMethod.set(defaultSettings.sendMethod);
+    buttonSoundEnabled.set(defaultSettings.buttonSoundEnabled);
+    messageSoundEnabled.set(defaultSettings.messageSoundEnabled);
+    quickEmojiEnabled.set(defaultSettings.quickEmojiEnabled);
+}
 
-    function setDefaultChatSettings() {
-        sendMethod.set(defaultSettings.sendMethod);
-        buttonSoundEnabled.set(defaultSettings.buttonSoundEnabled);
-        messageSoundEnabled.set(defaultSettings.messageSoundEnabled);
-        quickEmojiEnabled.set(defaultSettings.quickEmojiEnabled);
-    }
-
-    function loadChatSettings() {
+export function loadChatSettings() {
         //console.log("Loading settings");
         const settingsStr = localStorage.getItem("settings") || "{}";
         try {
@@ -82,6 +57,34 @@
             setDefaultChatSettings();
         }
     }
+</script>
+
+<script lang="ts">
+    import { fly } from "svelte/transition";
+    import {
+    clearModals,
+        showQuickSettingsPanel,
+        showThemesPanel,
+    } from "$lib/components/modalManager";
+    import {
+        buttonSoundEnabled,
+        chatRoomStore,
+        messageSoundEnabled,
+        myId,
+        quickEmoji,
+        quickEmojiEnabled,
+        sendMethod,
+        splashMessage,
+    } from "$lib/store";
+    import { SEND_METHOD } from "$lib/types";
+    import EmojiPicker from "./emojiPicker.svelte";
+    import { spin } from "$lib/utils";
+    import { socket } from "$lib/components/socket";
+    import { showToastMessage } from "domtoastmessage";
+    import UsersPanel from "./usersPanel.svelte";
+    import { elasticOut } from "svelte/easing";
+
+    let showQuickEmojiDrawer = false;
 
     loadChatSettings();
 

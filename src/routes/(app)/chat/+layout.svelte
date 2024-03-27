@@ -8,6 +8,7 @@
     import { page } from "$app/stores";
     import { showToastMessage } from "domtoastmessage";
     import { resetChatRoomStore } from "$lib/store";
+    import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
 
     export let data; // Get data from load function aka +layout.server.ts
 
@@ -16,6 +17,8 @@
     let mounted = false;
 
     onMount(() => {
+
+        loadChatSettings();
 
         if ($page.route.id !== '/chat'){
             console.log("Redirecting to /chat");

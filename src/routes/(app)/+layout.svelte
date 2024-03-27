@@ -2,7 +2,8 @@
     import "$lib/styles/global.scss";
     import { playClickSound } from "$lib/utils";
     import NavigationIndicator from "$lib/components/NavigationIndicator.svelte";
-    import { currentTheme } from "$lib/store";
+    import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
+    import { onMount } from "svelte";
     console.log("Mounted root +layout.svelte");
 
     function removeAttribute(evt: MouseEvent | TouchEvent) {
@@ -34,6 +35,11 @@
             playClickSound();
         }
     }
+
+    onMount(() => {
+        loadChatSettings();
+    });
+
 </script>
 
 <svelte:body on:contextmenu|preventDefault on:click={handleClick} />

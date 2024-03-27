@@ -165,29 +165,15 @@ export async function playClickSound(){
     clickSound.play();
 }
 
+type MessageSoundType = 'incoming' | 'outgoing' | 'sticker' | 'location' | 'typing' | 'react' | 'startRecording' | 'reactsMenu' | 'join' | 'leave' | 'error' | 'notification';
 
-export async function playMessageSound(type: 
-      'incoming' 
-    | 'outgoing'
-    | 'sticker'
-    | 'location'
+export async function playMessageSound(type: MessageSoundType){
 
-    | 'typing'
-    | 'react'
-    | 'startRecording'
-    | 'reactsMenu'
-
-    | 'join'
-    | 'leave'
-
-    | 'error'
-
-    | 'notification'
-    ){
 
     if (!get(messageSoundEnabled)){
         return;
     }
+
 
     switch (type) {
         case 'incoming':
