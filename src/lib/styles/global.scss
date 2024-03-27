@@ -226,21 +226,19 @@ input[type=number]::-webkit-inner-spin-button {
     justify-content: center;
 }
 
-html, body{
-    height: 100%;
-}
 
 body{
     color: ghostwhite;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    width: 100vw;
-    overflow: hidden;
-    overscroll-behavior-y: none;
     font-family: 'Com';
+}
+
+html, body{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    overscroll-behavior-y: none;
+    align-items: flex-start;
+    justify-content: center;
 }
 
 .select {
