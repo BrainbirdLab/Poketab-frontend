@@ -2,6 +2,7 @@
     import "$lib/styles/global.scss";
     import { playClickSound } from "$lib/utils";
     import NavigationIndicator from "$lib/components/NavigationIndicator.svelte";
+    import { currentTheme } from "$lib/store";
     console.log("Mounted root +layout.svelte");
 
     function removeAttribute(evt: MouseEvent | TouchEvent) {

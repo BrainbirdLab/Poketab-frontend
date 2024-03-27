@@ -2,7 +2,7 @@
     import "$lib/styles/atom.css";
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import { onMount } from "svelte";
-    import { chatRoomStore, myId } from "$lib/store";
+    import { chatRoomStore, currentPage, formActionButtonDisabled, joinedChat, myId, splashMessage } from "$lib/store";
 
     $chatRoomStore.Key = "00-000-00";
     $chatRoomStore.maxUsers = 2;
@@ -50,6 +50,10 @@
 
     
     let mounted = false;
+    joinedChat.set(true);
+    currentPage.set("chat");
+    splashMessage.set("");
+    formActionButtonDisabled.set(false);
     
     onMount(() => {
 

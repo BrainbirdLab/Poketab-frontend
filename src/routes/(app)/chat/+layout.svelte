@@ -66,6 +66,10 @@
     }}
 />
 
+<svelte:head>
+    <link rel="stylesheet" href="/themes/{$currentTheme}.css">
+</svelte:head>
+
 {#if mounted}    
     <slot />
 {/if}

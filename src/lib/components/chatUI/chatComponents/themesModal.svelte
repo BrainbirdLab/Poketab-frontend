@@ -65,7 +65,7 @@
 
 .themePicker {
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;

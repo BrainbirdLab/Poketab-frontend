@@ -3,6 +3,10 @@
     import "$lib/components/chatUI/chatComponents/messages/message.scss";
     
     //compoments
+    import NavBar from "$lib/components/chatUI/chatComponents/navbar.svelte";
+    import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
+    import Footer from "$lib/components/chatUI/chatComponents/footer.svelte";
+
     import QuickSettings from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
     import Themes from "$lib/components/chatUI/chatComponents/themesModal.svelte";
     import StickersKeyboard from "$lib/components/chatUI/chatComponents/stickersKeyboard.svelte";
@@ -132,7 +136,9 @@
 
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
-        <slot/>
+        <NavBar/>
+        <Messages />
+        <Footer/>
     </div>
 </div>
 
@@ -161,8 +167,6 @@
         transition: filter 100ms;
         position: relative;
         align-items: center;
-        height: var(--app-height);
-        max-height: 100vh;
         background-blend-mode: soft-light;
         background-size: cover;
         background-position: center;

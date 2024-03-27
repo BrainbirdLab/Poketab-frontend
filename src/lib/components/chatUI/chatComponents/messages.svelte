@@ -608,6 +608,7 @@
             color: var(--text-color);
             scrollbar-width: none;
             list-style: none;
+            flex-grow: 1;
             z-index: 1;
             margin-bottom: 20px;
             width: 100%;
@@ -617,7 +618,9 @@
                 place-content: center;
                 opacity: 1;
                 visibility: visible;
-                min-height: calc(80vh + 25px);
+                //margin: auto 0;
+                min-height: calc(90% + 25px);
+
                 transition: 500ms;
                 .welcomeText {
                     display: flex;
