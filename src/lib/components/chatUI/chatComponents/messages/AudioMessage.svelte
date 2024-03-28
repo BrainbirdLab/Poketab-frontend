@@ -83,6 +83,7 @@
         flex-direction: row;
         padding: 5px 10px;
         min-width: 220px;
+        width: 100%;
         height: 34px;
         position: relative;
 

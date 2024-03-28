@@ -261,6 +261,12 @@
     }
 }
 
+
+.data{
+    width: max-content;
+    max-width: 100%;
+}
+
 //!Main Message Element
 .messageMain{
     display: flex;
@@ -286,8 +292,7 @@
         &[data-mtype="text"] .data{
             white-space: pre-wrap;
             display: block;
-            padding: 8px 10px;
-            min-width: 34px;
+            padding: 8px 15px;
             a{
                 color: inherit;
                 word-break: break-all;
@@ -322,11 +327,6 @@
             }
         }
     }
-}
-
-.data{
-    width: max-content;
-    max-width: 100%;
 }
 
 .messageReply + .messageMain{
