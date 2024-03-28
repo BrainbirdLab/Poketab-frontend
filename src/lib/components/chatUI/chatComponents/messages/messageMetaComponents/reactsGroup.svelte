@@ -45,7 +45,7 @@
         width: max-content;
         margin-top: -10px;
         margin-bottom: 1px;
-        z-index: 1;
+        z-index: 2;
         //transition: 200ms ease-in-out;
         cursor: pointer;
 
