@@ -62,7 +62,7 @@
 </script>
 
 {#if $showScrollPopUp}
-    <button class="popup" tabindex="-1" transition:fly={{y: 20, duration: 200}} on:click={()=>{
+    <button class="popup back-blur" tabindex="-1" transition:fly={{y: 20, duration: 200}} on:click={()=>{
         $messageContainer.scrollTo({top: $messageContainer.scrollHeight, behavior: "smooth"});
     }}>
     {#if $notice && $messageScrolledPx > 200}
@@ -104,7 +104,7 @@
         padding: 10px;
         min-width: 2.5rem;
         min-height: 2.5rem;
-        background: var(--primary-dark);
+        background: var(--modal-color);
         filter: drop-shadow(2px 4px 5px var(--shadow-color)) brightness(1);
         
         &:hover{

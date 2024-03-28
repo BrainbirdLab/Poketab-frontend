@@ -235,7 +235,7 @@
 
 {#if mounted}
     <div class="formWrapper">
-        <div class="form" in:fly={{ y: 30 }}>
+        <div class="form back-blur" in:fly={{ y: 30 }}>
             <div class="formtitle">
                 {#if !$chatRoomStore.Key}
                     Create chat <i class="fa-solid fa-meteor"></i>

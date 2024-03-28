@@ -37,17 +37,22 @@ html{
 
 :root{
     --red-color: #e8534f;
-    --primary-dark: #111d2a;
+    --primary-dark-color: #111d2a;
+    --modal-color: #111d2a61;
     --text-color: #d7dde3;
     --glass-color: #ffffff17;
     --shadow-color: #0000007a;
     --blue-grey-color: #7e9ebb;
     --transparent-white-color: #ffffff66;
-    --dark-color: #1e3a4b;
-    --dark-color-hover: #2f4e5c;
+    --dark-color: #26485e;
+    --dark-color-hover: #3f6476;
 
     --amplitude: 0px;
     --positionForStickers: relative;
+}
+
+.back-blur{
+    backdrop-filter: blur(20px);
 }
 
 //disable image drag
@@ -201,7 +206,7 @@ select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
   border: 2px solid var(--dark-color);
   -webkit-text-fill-color: rgb(255, 255, 255);
-  box-shadow: 0 0 0px 1000px var(--primary-dark) inset !important;
+  box-shadow: 0 0 0px 1000px var(--modal-color) inset !important;
   -webkit-transition: background-color 5000s ease-in-out 0s;
   transition: background-color 5000s ease-in-out 0s;
 }

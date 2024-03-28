@@ -183,7 +183,7 @@ export function loadChatSettings() {
 </script>
 
 <div class="settingsWrapper" use:handleClick>
-    <div class="settings" 
+    <div class="settings back-blur" 
         in:fly={{ x: 40, duration: 400, easing: elasticOut, opacity: 1 }}
         out:fly={{ x: 40, duration: 100}}
     >
@@ -646,7 +646,7 @@ export function loadChatSettings() {
         align-items: flex-start;
         padding: 10px 10px 0 10px;
         gap: 10px;
-        background: var(--primary-dark);
+        background: var(--modal-color);
         height: 100%;
         width: 400px;
         max-width: 85vw;

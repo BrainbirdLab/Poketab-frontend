@@ -43,7 +43,7 @@
             animate:flip={{duration: 600}}
             in:fly={{y: 10, delay: 50 * (i + 1)}}
             out:fly={{x: -10, duration: 300}}
-            class="file_preview"
+            class="file_preview back-blur"
             data-id={i}
         >
             <i class="close remove fa-solid fa-xmark"></i>
@@ -60,7 +60,7 @@
         </div>
     {/each}
 </div>
-<div class="filePreviewOptions" transition:fly={{y: 10}}>
+<div class="filePreviewOptions back-blur" transition:fly={{y: 10}}>
     <button
         transition:fly={{x: -10, delay: 100}}
         id="cancel"
@@ -125,7 +125,7 @@
             max-width: 75vw;
             max-height: 80vh;
             height: auto;
-            background: var(--primary-dark);
+            background: var(--modal-color);
             mix-blend-mode: screen;
             backdrop-filter: brightness(0.3);
 
@@ -221,7 +221,7 @@
         width: 100%;
         font-size: 0.9rem;
         max-width: 500px;
-        background: var(--primary-dark);
+        background: var(--modal-color);
         width: 80%;
         border-radius: 50px;
         transition: 100ms ease-in-out;

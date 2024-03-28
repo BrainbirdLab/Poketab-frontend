@@ -54,7 +54,7 @@
 </script>
 
 <div class="wrapper" use:handleClick transition:fly|global={{y: 40, duration: 100}}>
-    <div class="reactsOnMessage">
+    <div class="reactsOnMessage back-blur">
         <div class="title">Reacts on {$chatRoomStore.userList[$message?.sender || '']?.name || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
@@ -173,7 +173,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        background: var(--primary-dark);
+        background: var(--modal-color);
         padding: 15px 10px 10px 10px;
         width: 300px;
         height: 350px;

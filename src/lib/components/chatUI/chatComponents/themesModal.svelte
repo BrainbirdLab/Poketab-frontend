@@ -51,7 +51,7 @@
 
 {#if $showThemesPanel}
 <div class="themePicker" use:handleThemes>
-    <ul class="themeList" transition:fly={{y: 20, duration: 100}}>
+    <ul class="themeList back-blur" transition:fly={{y: 20, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
         <li transition:fly|global={{y: 20, delay: 20 * (i + 1)}} class="theme hoverShadow clickable playable" id="{themename}">
             <img class="themeIcon" class:selected={$currentTheme == themename} src="/images/backgrounds/{themename}_icon.webp" alt="{themename} Thumbnail" /><span>{themename}</span>
@@ -83,7 +83,7 @@
         width: min(85vw, 315px);
         gap: 10px;
         padding: 20px;
-        background: var(--primary-dark);
+        background: var(--modal-color);
         border-radius: 10px;
 
         .theme {

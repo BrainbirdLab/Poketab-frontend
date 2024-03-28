@@ -99,7 +99,7 @@ const css = `
             bottom: 0;
             max-width: clamp(300px, 100vw, 600px);
             height: clamp(300px, 40vh, 400px);
-            background: var(--primary-dark);
+            background: var(--modal-color);
             display: flex;
             flex-direction: column;
             align-items: center;

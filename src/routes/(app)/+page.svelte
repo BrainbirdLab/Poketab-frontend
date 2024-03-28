@@ -100,7 +100,7 @@
     <div class="titleText" in:fly={{x: 10, delay: 800}}>What does it offer?</div>
     <div class="feature" in:fade|global={{delay: 1000}}>
         {#each featureItemsData as feature}
-            <div class="feature-item" >
+            <div class="feature-item back-blur" >
                 <i class={feature.iconClass} />
                 <div class="feature-item-title">
                     {feature.title}
@@ -245,9 +245,8 @@
         gap: 30px;
         align-items: flex-start;
         justify-content: center;
-        background: #22283bba;
+        background: var(--modal-color);
         box-shadow: 0 3px 5px var(--shadow-color);
-        backdrop-filter: blur(2px);
         padding: 35px;
         border-radius: 10px;
         position: relative;

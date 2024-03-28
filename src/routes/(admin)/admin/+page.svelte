@@ -86,7 +86,7 @@
 
 {#if loaded}
 <div class="formWrapper">
-	<div class="form" in:fly={{y: 20, delay: 200}}>
+	<div class="form back-blur" in:fly={{y: 20, delay: 200}}>
 		<div class="title" in:fly|global={{x: -10, delay: 200}}>
             <ReactiveLogo size={70}/>
             Admin notification panel
@@ -122,7 +122,7 @@
 <style lang="scss">
 
 	:global(body){
-		background: var(--primary-dark);
+		background: var(--primary-dark-color);
 		display: flex;
 		flex-direction: column;
 		align-items: center;

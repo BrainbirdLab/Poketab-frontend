@@ -169,7 +169,7 @@
 </svelte:head>
 
 <div class="formWrapper">
-    <div class="form" in:fly={{ x: 30 }}>
+    <div class="form back-blur" in:fly={{ x: 30 }}>
         <div class="formtitle">
             Join chat <i class="fa-solid fa-user-group"></i>
         </div>

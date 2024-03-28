@@ -53,7 +53,7 @@
 
 {#if title}    
 <div class="container" transition:fly={{y: 20, duration: 100}}>
-    <div class="content">
+    <div class="content back-blur">
         <div class="title">
             <i class="icon fa-solid {icon}"></i>
             {title}
@@ -88,7 +88,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: var(--primary-dark);
+            background: var(--modal-color);
             padding: 8px 50px;
             border-radius: 10px;
             box-shadow: 2px 2px 10px 0px rgba(0,0,0,0.75);

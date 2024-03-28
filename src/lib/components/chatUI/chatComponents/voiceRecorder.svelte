@@ -239,7 +239,7 @@
         visibility: visible;
         &.active {
             width: 100%;
-            //background: var(--primary-dark);
+            //background: var(--modal-color);
 
             .recording{
                 opacity: 1;
