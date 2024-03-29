@@ -105,12 +105,10 @@ export function loadChatSettings() {
             const target = e.target as HTMLElement;
 
             if (target == node) {
-                //showQuickSettingsPanel.set(false);
                 history.back();
             } else if (target.id) {
                 switch (target.id) {
                     case "back":
-                        //showQuickSettingsPanel.set(false);
                         history.back();
                         break;
                     case "buttonSound":
@@ -132,8 +130,6 @@ export function loadChatSettings() {
                         showQuickEmojiDrawer = !showQuickEmojiDrawer;
                         break;
                     case "themeButton":
-                        //showThemesPanel.set(true);
-                        //showQuickSettingsPanel.set(false);
                         addState("themes", { showThemesPanel: true });
                         break;
                 }
