@@ -1,9 +1,6 @@
 <script lang="ts">
 
     //compoments
-    import Footer from "$lib/components/chatUI/chatComponents/footer.svelte";
-    import NavBar from "$lib/components/chatUI/chatComponents/navbar.svelte";
-    import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import Form from "$lib/components/form.svelte";
     import { currentPage, joinedChat } from "$lib/store";

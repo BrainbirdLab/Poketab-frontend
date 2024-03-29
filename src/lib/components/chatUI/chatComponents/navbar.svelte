@@ -1,14 +1,23 @@
 <script lang="ts">
+    import { pushState } from "$app/navigation";
+    import { page } from "$app/stores";
     import { chatRoomStore } from "$lib/store";
-    import { showQuickSettingsPanel } from "$lib/components/modalManager";
+    //import { showQuickSettingsPanel } from "$lib/components/modalManager";
     import { fade, fly } from "svelte/transition";
 </script>
 
 <div class="navbar" transition:fly={{y: -50}}>
     <div class="currentlyActive"><i class="fa-solid fa-user"></i> Active: {Object.keys($chatRoomStore.userList).length}/{$chatRoomStore.maxUsers}</div>
     <div class="optionPanel">    
-        {#if !$showQuickSettingsPanel}            
-        <button transition:fade={{duration: 100}} class="button-animate hover roundedBtn play-sound hoverShadow" title="Customize chat" on:click={()=>{showQuickSettingsPanel.set(true)}}>
+        {#if !$page.state.showQuickSettingsPanel}            
+        <button transition:fade={{duration: 100}} class="button-animate hover roundedBtn play-sound hoverShadow" title="Customize chat" 
+            on:click={()=>{
+                //showQuickSettingsPanel.set(true)
+                //pushState('/quickSettings', { showQuickSettingsPanel: true });
+                //current path + /quickSettings
+                pushState('/quickSettings', { showQuickSettingsPanel: true });
+            }}
+        >
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
         {/if}            

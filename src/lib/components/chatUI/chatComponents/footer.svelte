@@ -7,11 +7,12 @@
 
     import { quickEmojiEnabled, myId, sendMethod, chatRoomStore, quickEmoji} from "$lib/store";
     import { SEND_METHOD } from "$lib/types";
-    import { showAttachmentPickerPanel, showStickersPanel } from "$lib/components/modalManager";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";
     import ScrollDownPopup from "./scrollDownPopup.svelte";
     import TypingIndicator from "./typingIndicator.svelte";
+    import { pushState } from "$app/navigation";
+    import { selectedSticker } from "$lib/components/modalManager";
     
     let newMessage = '';
 
@@ -206,9 +207,15 @@
 
     
     <div class="chatInput">
-        <button on:click={() => {showStickersPanel.set(true)}} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
+        <button on:click={() => {
+                //showStickersPanel.set(true)
+                pushState('/stickers/'+$selectedSticker, { showStickersPanel: true })
+            }} 
+            class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
         
-        <button on:click={() => {showAttachmentPickerPanel.set(true)}} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
+        <button on:click={() => {
+            pushState('/attachments', { showAttachmentPickerPanel: true })
+        }} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">
             {#if $showReplyToast && $replyTarget && $replyTarget.id}

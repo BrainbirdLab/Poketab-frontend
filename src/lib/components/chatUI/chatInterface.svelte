@@ -28,35 +28,45 @@
         lastMessageId,
     } from "$lib/messageTypes";
     import {
-        activeModalsStack,
-        showAttachmentPickerPanel,
+        //activeModalsStack,
+        //showAttachmentPickerPanel,
         showMessageOptions,
-        showQuickSettingsPanel,
+        //showQuickSettingsPanel,
         showReactsOnMessageModal,
-        showStickersPanel,
-        showThemesPanel,
+        //showStickersPanel,
+        //showThemesPanel,
     } from "$lib/components/modalManager";
     import { chatRoomStore, currentTheme, myId, userTypingString, quickEmoji } from "$lib/store";
     import { socket } from "$lib/components/socket";
     import { themes } from "$lib/themes";
+    import { page } from "$app/stores";
+    import { pushState } from "$app/navigation";
 
     let isOffline = false;
 
     const keyBindingHandler = (e: KeyboardEvent) => {
+
         //console.log(e.key);
         if (e.key === "Escape") {
+            /*
             if (activeModalsStack.length > 0) {
                 activeModalsStack[activeModalsStack.length - 1].set(false);
             }
+            */
+           console.log(history.length);
+           history.back();
         }
-
+        
         if (e.key === "s" && e.altKey) {
-            showQuickSettingsPanel.update((value) => !value);
+            //showQuickSettingsPanel.update((value) => !value);
+            pushState('/quickSettings', { showQuickSettingsPanel: true });
         }
-
+        
         if (e.key === "t" && e.altKey) {
-            showThemesPanel.update((value) => !value);
+            //showThemesPanel.update((value) => !value);
+            pushState('/themes', { showThemesPanel: true });
         }
+        /*
 
         if (e.key === "i" && e.altKey) {
             showStickersPanel.update((value) => !value);
@@ -75,6 +85,8 @@
             userTypingString.set('');
             console.log('typing end');
         }
+
+        */
     };
 
     onMount(() => {
@@ -111,13 +123,13 @@
 
 <ConnectivityState bind:offline={isOffline} />
 
-{#if $showQuickSettingsPanel}
+{#if $page.state.showQuickSettingsPanel}
     <QuickSettings />
 {/if}
 
 <Themes />
 
-{#if $showStickersPanel}
+{#if $page.state.showStickersPanel}
     <StickersKeyboard />
 {/if}
 

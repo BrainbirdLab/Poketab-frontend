@@ -33,7 +33,7 @@
         selectedSticker,
         showMessageOptions,
         showReactsOnMessageModal,
-        showStickersPanel,
+        //showStickersPanel,
     } from "$lib/components/modalManager";
     import { showToastMessage } from "domtoastmessage";
     import { chatRoomStore, listenScroll, showScrollPopUp } from "$lib/store";
@@ -43,6 +43,7 @@
 
     import hljs from "highlight.js";
     import type { Unsubscriber } from "svelte/store";
+    import { pushState } from "$app/navigation";
 
 
     function handleRightClick(e: MouseEvent) {
@@ -200,7 +201,8 @@
 
                 const stickerGroup = (messageObj as StickerMessageObj).groupName;
                 selectedSticker.set(stickerGroup);
-                showStickersPanel.set(true);
+                //showStickersPanel.set(true);
+                pushState('/stickers/'+stickerGroup, { showStickersPanel: true });
                 return;
             }
             //if message is a reply, scroll to the replied message

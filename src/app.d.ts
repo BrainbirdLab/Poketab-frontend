@@ -6,6 +6,12 @@ declare global {
 		// interface Locals {}
 		// interface PageData {}
 		// interface Platform {}
+		interface PageState {
+			showQuickSettingsPanel?: boolean;
+			showThemesPanel?: boolean;
+			showStickersPanel?: boolean;
+			showAttachmentPickerPanel?: boolean;
+		}
 	}
 	const __VERSION__: string;
 }

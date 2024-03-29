@@ -1,6 +1,5 @@
 <script lang="ts">
     import { fade, fly, scale } from "svelte/transition";
-    import { showAttachmentPickerPanel } from "$lib/components/modalManager";
     import { showToastMessage } from "domtoastmessage";
     import { socket } from "$lib/components/socket";
     import { chatRoomStore, myId } from "$lib/store";
@@ -8,6 +7,7 @@
     import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
+    import { page } from "$app/stores";
 
 
     let locationBtn: HTMLButtonElement;
@@ -87,7 +87,8 @@
                     }
                     filePicker.click();
                 }
-                showAttachmentPickerPanel.set(false);
+                //showAttachmentPickerPanel.set(false);
+                history.back();
             }
         };
 
@@ -302,7 +303,7 @@
     <input multiple bind:files={$selectedFiles} type="file" bind:this={filePicker} accept="{acceptedTypes}"/>
 {/if}
 
-{#if $showAttachmentPickerPanel}
+{#if $page.state.showAttachmentPickerPanel}
 <div class="wrapper" use:attachmentsClickHandler transition:fly={{y: 30, duration: 150}}>
     {#if ready}
     <div class="attachmentContainer back-blur">

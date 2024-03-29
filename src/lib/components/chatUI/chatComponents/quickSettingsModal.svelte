@@ -63,8 +63,8 @@ export function loadChatSettings() {
     import { fly } from "svelte/transition";
     import {
     clearModals,
-        showQuickSettingsPanel,
-        showThemesPanel,
+        //showQuickSettingsPanel,
+        //showThemesPanel,
     } from "$lib/components/modalManager";
     import {
         buttonSoundEnabled,
@@ -83,6 +83,7 @@ export function loadChatSettings() {
     import { showToastMessage } from "domtoastmessage";
     import UsersPanel from "./usersPanel.svelte";
     import { elasticOut } from "svelte/easing";
+    import { replaceState } from "$app/navigation";
 
     let showQuickEmojiDrawer = false;
 
@@ -105,11 +106,13 @@ export function loadChatSettings() {
             const target = e.target as HTMLElement;
 
             if (target == node) {
-                showQuickSettingsPanel.set(false);
+                //showQuickSettingsPanel.set(false);
+                history.back();
             } else if (target.id) {
                 switch (target.id) {
                     case "back":
-                        showQuickSettingsPanel.set(false);
+                        //showQuickSettingsPanel.set(false);
+                        history.back();
                         break;
                     case "buttonSound":
                         setToLocalStorage({ buttonSoundEnabled: !$buttonSoundEnabled });
@@ -130,8 +133,9 @@ export function loadChatSettings() {
                         showQuickEmojiDrawer = !showQuickEmojiDrawer;
                         break;
                     case "themeButton":
-                        showThemesPanel.set(true);
-                        showQuickSettingsPanel.set(false);
+                        //showThemesPanel.set(true);
+                        //showQuickSettingsPanel.set(false);
+                        replaceState('/themes', { showThemesPanel: true });
                         break;
                 }
 

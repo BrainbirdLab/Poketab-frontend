@@ -1,6 +1,9 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { showStickersPanel, selectedSticker } from "$lib/components/modalManager";
+    import { 
+        //showStickersPanel, 
+        selectedSticker 
+    } from "$lib/components/modalManager";
     import { myId } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
@@ -57,7 +60,8 @@
             const target = e.target as HTMLElement;
 
             if (target == node){
-                showStickersPanel.set(false);
+                //showStickersPanel.set(false);
+                history.back();
                 return;
             }
 
@@ -96,7 +100,8 @@
 
                 sendMessage(messageObj);
 
-                showStickersPanel.set(false);
+                //showStickersPanel.set(false);
+                history.back();
             }
         }
 

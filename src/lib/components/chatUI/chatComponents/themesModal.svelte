@@ -2,10 +2,10 @@
 
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
-    import { showThemesPanel } from "$lib/components/modalManager";
     import { showToastMessage } from "domtoastmessage";
     import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
+    import { page } from "$app/stores";
 
     function handleThemes(node: HTMLElement){
 
@@ -36,7 +36,8 @@
                 });
 			}
 
-            showThemesPanel.set(false);
+            //showThemesPanel.set(false);
+            history.back();
         }
 
         node.onclick = method;
@@ -49,7 +50,7 @@
     }
 </script>
 
-{#if $showThemesPanel}
+{#if $page.state.showThemesPanel}
 <div class="themePicker" use:handleThemes>
     <ul class="themeList back-blur" transition:fly={{y: 20, duration: 100}}>
         {#each Object.keys(themes) as themename, i}

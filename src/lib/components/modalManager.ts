@@ -4,6 +4,7 @@ console.log('Modal Manager Running');
 
 export let activeModalsStack: Writable<boolean>[] = [];
 
+/*
 export const showQuickSettingsPanel = writable(false); //Has shortcut key 's'
 showQuickSettingsPanel.subscribe(value => {
     if (value){
@@ -13,7 +14,8 @@ showQuickSettingsPanel.subscribe(value => {
         activeModalsStack = activeModalsStack.filter(modal => modal !== showQuickSettingsPanel);
     }
 });
-
+*/
+/*
 export const showThemesPanel = writable(false); //Has shortcut key 't'
 showThemesPanel.subscribe(value => {
     if (value){
@@ -23,7 +25,9 @@ showThemesPanel.subscribe(value => {
         activeModalsStack = activeModalsStack.filter(modal => modal !== showThemesPanel);
     }
 });
+*/
 
+/*
 export const showStickersPanel = writable(false); //Has shortcut key 'i'
 showStickersPanel.subscribe(value => {
     if (value){
@@ -33,9 +37,11 @@ showStickersPanel.subscribe(value => {
         activeModalsStack = activeModalsStack.filter(modal => modal !== showStickersPanel);
     }
 });
+*/
 
 export const selectedSticker = writable('');
 
+/*
 export const showAttachmentPickerPanel = writable(false); //Has shortcut key 'a'
 showAttachmentPickerPanel.subscribe(value => {
     if (value){
@@ -45,6 +51,7 @@ showAttachmentPickerPanel.subscribe(value => {
         activeModalsStack = activeModalsStack.filter(modal => modal !== showAttachmentPickerPanel);
     }
 });
+*/
 
 export const showImageViewerPanel = writable(false);
 showImageViewerPanel.subscribe(value => {
