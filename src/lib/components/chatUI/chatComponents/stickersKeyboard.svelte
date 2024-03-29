@@ -1,12 +1,14 @@
+<script context="module" lang="ts">
+    import { writable } from "svelte/store";
+    export const selectedSticker = writable('');
+</script>
+
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { 
-        //showStickersPanel, 
-        selectedSticker 
-    } from "$lib/components/modalManager";
     import { myId } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { page } from "$app/stores";
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },

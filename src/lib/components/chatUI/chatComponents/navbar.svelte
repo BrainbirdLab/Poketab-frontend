@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { pushState } from "$app/navigation";
     import { page } from "$app/stores";
     import { chatRoomStore } from "$lib/store";
     //import { showQuickSettingsPanel } from "$lib/components/modalManager";
     import { fade, fly } from "svelte/transition";
+    import { addState } from "../stateManager.svelte";
 </script>
 
 <div class="navbar" transition:fly={{y: -50}}>
@@ -15,7 +15,8 @@
                 //showQuickSettingsPanel.set(true)
                 //pushState('/quickSettings', { showQuickSettingsPanel: true });
                 //current path + /quickSettings
-                pushState('/quickSettings', { showQuickSettingsPanel: true });
+                //pushState('/quickSettings', { showQuickSettingsPanel: true });
+                addState('/quickSettings', { showQuickSettingsPanel: true });
             }}
         >
             <i class="fa-solid fa-ellipsis-vertical"></i>

@@ -30,7 +30,6 @@
         AudioMessageObj,
     } from "$lib/messageTypes";
     import {
-        selectedSticker,
         showMessageOptions,
         showReactsOnMessageModal,
         //showStickersPanel,
@@ -43,7 +42,8 @@
 
     import hljs from "highlight.js";
     import type { Unsubscriber } from "svelte/store";
-    import { pushState } from "$app/navigation";
+    import { selectedSticker } from "./stickersKeyboard.svelte";
+    import { addState } from "../stateManager.svelte";
 
 
     function handleRightClick(e: MouseEvent) {
@@ -200,9 +200,11 @@
             if (target.classList.contains("msg") && messageObj.baseType == "sticker") {
 
                 const stickerGroup = (messageObj as StickerMessageObj).groupName;
+                //selectedSticker.set(stickerGroup);
                 selectedSticker.set(stickerGroup);
                 //showStickersPanel.set(true);
-                pushState('/stickers/'+stickerGroup, { showStickersPanel: true });
+                //pushState('/stickers/'+stickerGroup, { showStickersPanel: true });
+                addState('/stickers/' + stickerGroup, { showStickersPanel: true });
                 return;
             }
             //if message is a reply, scroll to the replied message

@@ -5,7 +5,6 @@
     import { showToastMessage } from "domtoastmessage";
     import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
-    import { page } from "$app/stores";
 
     function handleThemes(node: HTMLElement){
 
@@ -17,6 +16,11 @@
 
             if (e.target !== node) {
                 const targetElement = e.target as HTMLElement;
+
+                if (!targetElement.classList.contains("theme")){
+                    return;
+                }
+
                 const theme = toSentenceCase(targetElement.id);
 				//make a request to the server to update the cookie
                 fetch(`/theme/${theme}`, {
@@ -38,6 +42,7 @@
 
             //showThemesPanel.set(false);
             history.back();
+            console.log("Theme picker closed");
         }
 
         node.onclick = method;
@@ -45,13 +50,13 @@
         return {
             destroy(){
                 node.onclick = null;
+                console.log("Destroyed theme picker");
             }
         }
     }
 </script>
 
-{#if $page.state.showThemesPanel}
-<div class="themePicker" use:handleThemes>
+<div data-sveltekit-preload-data="false" class="themePicker" use:handleThemes>
     <ul class="themeList back-blur" transition:fly={{y: 20, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
         <li transition:fly|global={{y: 20, delay: 20 * (i + 1)}} class="theme hoverShadow clickable playable" id="{themename}">
@@ -60,7 +65,6 @@
         {/each}
     </ul>
 </div>
-{/if}
 
 <style lang="scss">
 

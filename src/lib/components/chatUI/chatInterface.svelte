@@ -1,7 +1,7 @@
 <script lang="ts">
     //css
     import "$lib/components/chatUI/chatComponents/messages/message.scss";
-    
+
     //compoments
     import NavBar from "$lib/components/chatUI/chatComponents/navbar.svelte";
     import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
@@ -15,18 +15,16 @@
 
     import ReactsOnMessage from "$lib/components/chatUI/chatComponents/reactsOnMessageModal.svelte";
     import ConnectivityState from "$lib/components/chatUI/chatComponents/connectivityState.svelte";
-    
+
+    import { addState } from "./stateManager.svelte";
+
     import MessageSockets from "./messageSockets.svelte";
 
     //svelte methods
-    import {  onDestroy, onMount } from "svelte";
-
+    import { onDestroy, onMount } from "svelte";
 
     //scripts
-    import {
-        eventTriggerMessageId,
-        lastMessageId,
-    } from "$lib/messageTypes";
+    import { eventTriggerMessageId, lastMessageId } from "$lib/messageTypes";
     import {
         //activeModalsStack,
         //showAttachmentPickerPanel,
@@ -36,61 +34,74 @@
         //showStickersPanel,
         //showThemesPanel,
     } from "$lib/components/modalManager";
-    import { chatRoomStore, currentTheme, myId, userTypingString, quickEmoji } from "$lib/store";
+    import { chatRoomStore, currentTheme, myId, quickEmoji } from "$lib/store";
     import { socket } from "$lib/components/socket";
     import { themes } from "$lib/themes";
     import { page } from "$app/stores";
-    import { pushState } from "$app/navigation";
+    import { showToastMessage } from "domtoastmessage";
 
     let isOffline = false;
 
-    const keyBindingHandler = (e: KeyboardEvent) => {
+    let pressedOnce = false;
+    let pressedOnceTimer: number;
 
-        //console.log(e.key);
-        if (e.key === "Escape") {
-            /*
-            if (activeModalsStack.length > 0) {
-                activeModalsStack[activeModalsStack.length - 1].set(false);
+    function exitChat(e?: Event) {
+
+        //console.log(e);
+
+        const isDefault = Object.values($page.state).some(
+            (value) => value === true,
+        );
+
+        //console.log(isDefault, "Escape");
+
+        if (isDefault) {
+            history.back();
+        } else {
+            if (pressedOnce) {
+                history.back();
+            } else {
+                showToastMessage("Go again to exit");
+
+                if (e) {
+                    console.log("Going forward");
+                    history.forward();
+                }
+
+                pressedOnce = true;
+                clearTimeout(pressedOnceTimer);
+                pressedOnceTimer = setTimeout(() => {
+                    pressedOnce = false;
+                }, 2000);
             }
-            */
-           console.log(history.length);
-           history.back();
         }
-        
+    }
+
+    const keyBindingHandler = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+            exitChat();
+        }
+
         if (e.key === "s" && e.altKey) {
-            //showQuickSettingsPanel.update((value) => !value);
-            pushState('/quickSettings', { showQuickSettingsPanel: true });
+            addState("/quickSettings", { showQuickSettingsPanel: true });
         }
-        
+
         if (e.key === "t" && e.altKey) {
-            //showThemesPanel.update((value) => !value);
-            pushState('/themes', { showThemesPanel: true });
+            addState("/themes", { showThemesPanel: true });
         }
-        /*
 
         if (e.key === "i" && e.altKey) {
-            showStickersPanel.update((value) => !value);
+            addState("/stickers", {
+                showStickersPanel: true,
+            });
         }
 
         if (e.key === "a" && e.altKey) {
-            showAttachmentPickerPanel.update((value) => !value);
+            addState("/attachments", { showAttachmentPickerPanel: true });
         }
-
-        if (e.altKey === true && e.key === "3"){
-            userTypingString.set('You are typing');
-            console.log('typing');
-        }
-
-        if (e.altKey === true && e.key === "4"){
-            userTypingString.set('');
-            console.log('typing end');
-        }
-
-        */
     };
 
     onMount(() => {
-
         //$messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
         quickEmoji.set(themes[$currentTheme].quickEmoji);
 
@@ -113,13 +124,13 @@
         window.onfocus = null;
         window.onresize = null;
     });
-
 </script>
 
 <svelte:head>
     <title>Poketab - Chat</title>
 </svelte:head>
 
+<!--svelte:window on:popstate|preventDefault={exitChat} /-->
 
 <ConnectivityState bind:offline={isOffline} />
 
@@ -127,7 +138,9 @@
     <QuickSettings />
 {/if}
 
-<Themes />
+{#if $page.state.showThemesPanel}
+    <Themes />
+{/if}
 
 {#if $page.state.showStickersPanel}
     <StickersKeyboard />
@@ -138,19 +151,19 @@
 <MessageSockets />
 
 {#if $eventTriggerMessageId}
-{#if $showMessageOptions}
-    <MessageOptions/>
-{/if}
-{#if $showReactsOnMessageModal}
-    <ReactsOnMessage/>
-{/if}
+    {#if $showMessageOptions}
+        <MessageOptions />
+    {/if}
+    {#if $showReactsOnMessageModal}
+        <ReactsOnMessage />
+    {/if}
 {/if}
 
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
-        <NavBar/>
+        <NavBar />
         <Messages />
-        <Footer/>
+        <Footer />
     </div>
 </div>
 

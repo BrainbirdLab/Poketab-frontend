@@ -84,7 +84,7 @@
     </div>
     
     <div class="links">
-        <a id="login" class="button-animate button play-sound" href="/chat"
+        <a data-sveltekit-replacestate id="login" class="button-animate button play-sound" href="/chat"
             transition:fly={{y: 10, delay: 600}}
             >Start Chat
         </a>

@@ -95,7 +95,7 @@
         }
 
         if (selectedname.length < 3 || selectedname.length > 15) {
-            nameErr = "name must be between 3 and 15 characters";
+            nameErr = "Name must be between 3 and 15 characters";
             nameInput.focus();
             return;
         } else if (!/^[a-zA-Z0-9_]+$/.test(selectedname)) {
