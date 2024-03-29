@@ -5,52 +5,6 @@ console.log('Modal Manager Running');
 
 export let activeModalsStack: Writable<boolean>[] = [];
 
-/*
-export const showQuickSettingsPanel = writable(false); //Has shortcut key 's'
-showQuickSettingsPanel.subscribe(value => {
-    if (value){
-        activeModalsStack.push(showQuickSettingsPanel);
-    } else {
-        //remove it from the stack array
-        activeModalsStack = activeModalsStack.filter(modal => modal !== showQuickSettingsPanel);
-    }
-});
-*/
-/*
-export const showThemesPanel = writable(false); //Has shortcut key 't'
-showThemesPanel.subscribe(value => {
-    if (value){
-        activeModalsStack.push(showThemesPanel);
-    } else {
-        //remove it from the stack array
-        activeModalsStack = activeModalsStack.filter(modal => modal !== showThemesPanel);
-    }
-});
-*/
-
-/*
-export const showStickersPanel = writable(false); //Has shortcut key 'i'
-showStickersPanel.subscribe(value => {
-    if (value){
-        activeModalsStack.push(showStickersPanel);
-    } else {
-        //remove it from the stack array
-        activeModalsStack = activeModalsStack.filter(modal => modal !== showStickersPanel);
-    }
-});
-*/
-
-/*
-export const showAttachmentPickerPanel = writable(false); //Has shortcut key 'a'
-showAttachmentPickerPanel.subscribe(value => {
-    if (value){
-        activeModalsStack.push(showAttachmentPickerPanel);
-    } else {
-        //remove it from the stack array
-        activeModalsStack = activeModalsStack.filter(modal => modal !== showAttachmentPickerPanel);
-    }
-});
-*/
 
 export const showImageViewerPanel = writable(false);
 showImageViewerPanel.subscribe(value => {

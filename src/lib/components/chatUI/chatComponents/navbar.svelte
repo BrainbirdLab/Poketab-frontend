@@ -12,10 +12,6 @@
         {#if !$page.state.showQuickSettingsPanel}            
         <button transition:fade={{duration: 100}} class="button-animate hover roundedBtn play-sound hoverShadow" title="Customize chat" 
             on:click={()=>{
-                //showQuickSettingsPanel.set(true)
-                //pushState('/quickSettings', { showQuickSettingsPanel: true });
-                //current path + /quickSettings
-                //pushState('/quickSettings', { showQuickSettingsPanel: true });
                 addState("quickSettings", { showQuickSettingsPanel: true });
             }}
         >

@@ -105,12 +105,10 @@ export function loadChatSettings() {
             const target = e.target as HTMLElement;
 
             if (target == node) {
-                //showQuickSettingsPanel.set(false);
                 history.back();
             } else if (target.id) {
                 switch (target.id) {
                     case "back":
-                        //showQuickSettingsPanel.set(false);
                         history.back();
                         break;
                     case "buttonSound":
@@ -132,8 +130,6 @@ export function loadChatSettings() {
                         showQuickEmojiDrawer = !showQuickEmojiDrawer;
                         break;
                     case "themeButton":
-                        //showThemesPanel.set(true);
-                        //showQuickSettingsPanel.set(false);
                         addState("themes", { showThemesPanel: true });
                         break;
                 }
@@ -151,10 +147,6 @@ export function loadChatSettings() {
         };
     }
 
-    /**
-     * Leave the chat
-     * @param {boolean} destroy - If true, the chat will be destroyed
-     */
     function leaveChat(destroy: boolean = false){
         console.log(destroy ? 'Destroying chat...' : 'Leaving chat...');
         splashMessage.set((destroy ? 'Destroying chat... ' : 'Leaving chat... ') + '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px">');
