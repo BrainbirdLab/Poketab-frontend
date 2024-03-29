@@ -204,7 +204,7 @@
                 selectedSticker.set(stickerGroup);
                 //showStickersPanel.set(true);
                 //pushState('/stickers/'+stickerGroup, { showStickersPanel: true });
-                addState('/stickers/' + stickerGroup, { showStickersPanel: true });
+                addState("stickers", { showStickersPanel: true });
                 return;
             }
             //if message is a reply, scroll to the replied message

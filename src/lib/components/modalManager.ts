@@ -1,4 +1,5 @@
-import { writable, type Writable } from 'svelte/store';
+import { page } from '$app/stores';
+import { get, writable, type Writable } from 'svelte/store';
 
 console.log('Modal Manager Running');
 
@@ -92,12 +93,3 @@ showReactsOnMessageModal.subscribe(value => {
         activeModalsStack = activeModalsStack.filter(modal => modal !== showReactsOnMessageModal);
     }
 });
-
-
-//clear all modals from stack and set all modals to false
-export function clearModals(){
-    activeModalsStack.forEach(modal => {
-        modal.set(false);
-    });
-    activeModalsStack.length = 0;
-}

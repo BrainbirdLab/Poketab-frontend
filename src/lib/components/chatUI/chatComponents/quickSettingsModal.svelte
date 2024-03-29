@@ -62,7 +62,6 @@ export function loadChatSettings() {
 <script lang="ts">
     import { fly } from "svelte/transition";
     import {
-    clearModals,
         //showQuickSettingsPanel,
         //showThemesPanel,
     } from "$lib/components/modalManager";
@@ -83,11 +82,16 @@ export function loadChatSettings() {
     import { showToastMessage } from "domtoastmessage";
     import UsersPanel from "./usersPanel.svelte";
     import { elasticOut } from "svelte/easing";
-    import { replaceState } from "$app/navigation";
+    import { addState, clearModals } from "../stateManager.svelte";
+    import { page } from "$app/stores";
 
     let showQuickEmojiDrawer = false;
 
     loadChatSettings();
+
+    page.subscribe((value) => {
+        console.log('Page state:', value.state);
+    });
 
     function setToLocalStorage(updatedSettings: Partial<Settings>) {
         const currentSettingsStr = localStorage.getItem("settings") || "{}";
@@ -135,7 +139,7 @@ export function loadChatSettings() {
                     case "themeButton":
                         //showThemesPanel.set(true);
                         //showQuickSettingsPanel.set(false);
-                        replaceState('/themes', { showThemesPanel: true });
+                        addState("themes", { showThemesPanel: true });
                         break;
                 }
 

@@ -83,21 +83,21 @@
         }
 
         if (e.key === "s" && e.altKey) {
-            addState("/quickSettings", { showQuickSettingsPanel: true });
+            addState("quickSettings", { showQuickSettingsPanel: true });
         }
 
         if (e.key === "t" && e.altKey) {
-            addState("/themes", { showThemesPanel: true });
+            addState("themes", { showThemesPanel: true });
         }
 
         if (e.key === "i" && e.altKey) {
-            addState("/stickers", {
+            addState("stickers", {
                 showStickersPanel: true,
             });
         }
 
         if (e.key === "a" && e.altKey) {
-            addState("/attachments", { showAttachmentPickerPanel: true });
+            addState("attachments", { showAttachmentPickerPanel: true });
         }
     };
 

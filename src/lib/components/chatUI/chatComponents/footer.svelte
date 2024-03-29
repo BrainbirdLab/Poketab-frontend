@@ -209,13 +209,13 @@
         <button on:click={() => {
                 //showStickersPanel.set(true)
                 //pushState('/stickers/'+$selectedSticker, { showStickersPanel: true })
-                addState('/stickers', { showStickersPanel: true });
+                addState("stickers", { showStickersPanel: true });
             }} 
             class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
         
         <button on:click={() => {
             //pushState('/attachments', { showAttachmentPickerPanel: true });
-            addState('/attachments', { showAttachmentPickerPanel: true });
+            addState("attachments", { showAttachmentPickerPanel: true });
         }} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">

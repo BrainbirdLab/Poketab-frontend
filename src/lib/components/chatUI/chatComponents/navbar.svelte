@@ -16,7 +16,7 @@
                 //pushState('/quickSettings', { showQuickSettingsPanel: true });
                 //current path + /quickSettings
                 //pushState('/quickSettings', { showQuickSettingsPanel: true });
-                addState('/quickSettings', { showQuickSettingsPanel: true });
+                addState("quickSettings", { showQuickSettingsPanel: true });
             }}
         >
             <i class="fa-solid fa-ellipsis-vertical"></i>
