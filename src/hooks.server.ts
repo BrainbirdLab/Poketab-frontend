@@ -1,4 +1,4 @@
-import { themes } from "$lib/themes";
+import { themes } from "$lib/components/chatUI/chatComponents/themesModal.svelte";
 import type { Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {

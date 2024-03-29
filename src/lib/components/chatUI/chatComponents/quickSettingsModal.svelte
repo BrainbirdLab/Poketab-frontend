@@ -83,15 +83,10 @@ export function loadChatSettings() {
     import UsersPanel from "./usersPanel.svelte";
     import { elasticOut } from "svelte/easing";
     import { addState, clearModals } from "../stateManager.svelte";
-    import { page } from "$app/stores";
 
     let showQuickEmojiDrawer = false;
 
     loadChatSettings();
-
-    page.subscribe((value) => {
-        console.log('Page state:', value.state);
-    });
 
     function setToLocalStorage(updatedSettings: Partial<Settings>) {
         const currentSettingsStr = localStorage.getItem("settings") || "{}";

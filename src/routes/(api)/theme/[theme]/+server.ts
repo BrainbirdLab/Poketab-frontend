@@ -1,4 +1,4 @@
-import { themes } from '$lib/themes.js';
+import { themes } from "$lib/components/chatUI/chatComponents/themesModal.svelte";
 
 export async function PUT({params, cookies}){
     

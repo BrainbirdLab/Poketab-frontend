@@ -1,14 +1,45 @@
+<script context="module" lang="ts">
+    type ThemeAccent = {
+        [key: string]: {
+            quickEmoji: string;
+        };
+    };
+
+//theme colors and backgrounds
+export const themes: ThemeAccent = {
+    'Blue': {
+        quickEmoji: '🥶',
+    },
+    'Ocean': {
+        quickEmoji: '🐳',
+    },
+    'Cyberpunk': {
+        quickEmoji: '👾',
+    },
+    'Geometry': {
+        quickEmoji: '🔥',
+    },
+    'Blackboard': {
+        quickEmoji: '👽',
+    },
+    'Forest': {
+        quickEmoji: '🍃',
+    }
+};
+</script>
+
 <script lang="ts">
 
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showToastMessage } from "domtoastmessage";
-    import { themes } from "$lib/themes";
     import { currentTheme, quickEmoji } from "$lib/store";
 
     function handleThemes(node: HTMLElement){
 
         const method = (e: Event) => {
+
+            console.log('click');
 
             if (e.target == null){
                 return;
@@ -54,9 +85,10 @@
             }
         }
     }
+
 </script>
 
-<div data-sveltekit-preload-data="false" class="themePicker" use:handleThemes>
+<div class="themePicker" use:handleThemes>
     <ul class="themeList back-blur" transition:fly={{y: 20, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
         <li transition:fly|global={{y: 20, delay: 20 * (i + 1)}} class="theme hoverShadow clickable playable" id="{themename}">

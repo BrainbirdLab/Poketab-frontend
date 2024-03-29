@@ -1,4 +1,4 @@
-import { themes } from '$lib/themes';
+import { themes } from "$lib/components/chatUI/chatComponents/themesModal.svelte";
 import { error, type NumericRange } from '@sveltejs/kit';
 import { io } from 'socket.io-client';
 import type { socketResponse } from '$lib/components/socket.js';

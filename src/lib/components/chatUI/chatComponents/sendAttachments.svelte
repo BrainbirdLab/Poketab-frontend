@@ -303,7 +303,7 @@
     <input multiple bind:files={$selectedFiles} type="file" bind:this={filePicker} accept="{acceptedTypes}"/>
 {/if}
 
-{#if $page.state.showAttachmentPickerPanel}
+{#if $page.state.showAttachmentPickerPanel === true}
 <div class="wrapper" use:attachmentsClickHandler transition:fly={{y: 30, duration: 150}}>
     {#if ready}
     <div class="attachmentContainer back-blur">

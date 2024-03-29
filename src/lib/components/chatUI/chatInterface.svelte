@@ -7,11 +7,11 @@
     import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
     import Footer from "$lib/components/chatUI/chatComponents/footer.svelte";
 
-    import QuickSettings from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
-    import Themes from "$lib/components/chatUI/chatComponents/themesModal.svelte";
-    import StickersKeyboard from "$lib/components/chatUI/chatComponents/stickersKeyboard.svelte";
-    import Attachments from "$lib/components/chatUI/chatComponents/sendAttachments.svelte";
-    import MessageOptions from "$lib/components/chatUI/chatComponents/messageOptions.svelte";
+    import QuickSettingsModal from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
+    import ThemesModal , { themes } from "$lib/components/chatUI/chatComponents/themesModal.svelte";
+    import StickersKeyboardModal from "$lib/components/chatUI/chatComponents/stickersKeyboard.svelte";
+    import AttachmentsModal from "$lib/components/chatUI/chatComponents/sendAttachments.svelte";
+    import MessageOptionsModal from "$lib/components/chatUI/chatComponents/messageOptions.svelte";
 
     import ReactsOnMessage from "$lib/components/chatUI/chatComponents/reactsOnMessageModal.svelte";
     import ConnectivityState from "$lib/components/chatUI/chatComponents/connectivityState.svelte";
@@ -36,7 +36,6 @@
     } from "$lib/components/modalManager";
     import { chatRoomStore, currentTheme, myId, quickEmoji } from "$lib/store";
     import { socket } from "$lib/components/socket";
-    import { themes } from "$lib/themes";
     import { page } from "$app/stores";
     import { showToastMessage } from "domtoastmessage";
 
@@ -44,6 +43,10 @@
 
     let pressedOnce = false;
     let pressedOnceTimer: number;
+
+    const unsub = page.subscribe((value) => {
+        console.log('Page state:', value.state);
+    });
 
     function exitChat(e?: Event) {
 
@@ -120,9 +123,16 @@
     });
 
     onDestroy(() => {
-        document.onkeydown = null;
-        window.onfocus = null;
-        window.onresize = null;
+        if (document){
+            document.onkeydown = null;
+        }
+        if (window){
+            window.onfocus = null;
+            window.onresize = null;
+        }
+        if (unsub) {
+            unsub();
+        }
     });
 </script>
 
@@ -134,25 +144,25 @@
 
 <ConnectivityState bind:offline={isOffline} />
 
-{#if $page.state.showQuickSettingsPanel}
-    <QuickSettings />
+{#if $page.state.showQuickSettingsPanel === true}
+    <QuickSettingsModal />
 {/if}
 
-{#if $page.state.showThemesPanel}
-    <Themes />
+{#if $page.state.showThemesPanel === true}
+    <ThemesModal />
 {/if}
 
-{#if $page.state.showStickersPanel}
-    <StickersKeyboard />
+{#if $page.state.showStickersPanel === true}
+    <StickersKeyboardModal />
 {/if}
 
-<Attachments />
+<AttachmentsModal />
 
 <MessageSockets />
 
 {#if $eventTriggerMessageId}
     {#if $showMessageOptions}
-        <MessageOptions />
+        <MessageOptionsModal />
     {/if}
     {#if $showReactsOnMessageModal}
         <ReactsOnMessage />

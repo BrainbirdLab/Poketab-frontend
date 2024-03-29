@@ -67,7 +67,7 @@
         z-index: 0;
 
         &:not(.image, .sticker){
-            padding: 8px 8px 25px 8px;
+            padding: 8px 8px 15px 8px;
         }
 
         &.text::before{
