@@ -34,10 +34,11 @@ export const themes: ThemeAccent = {
     import { fly } from "svelte/transition";
     import { showToastMessage } from "domtoastmessage";
     import { currentTheme, quickEmoji } from "$lib/store";
+    import { page } from "$app/stores";
 
     function handleThemes(node: HTMLElement){
 
-        const method = (e: Event) => {
+        node.onclick = (e: Event) => {
 
             console.log('click');
 
@@ -76,8 +77,6 @@ export const themes: ThemeAccent = {
             console.log("Theme picker closed");
         }
 
-        node.onclick = method;
-
         return {
             destroy(){
                 node.onclick = null;
@@ -88,6 +87,7 @@ export const themes: ThemeAccent = {
 
 </script>
 
+{#if $page.state.showThemesPanel === true}
 <div class="themePicker" use:handleThemes>
     <ul class="themeList back-blur" transition:fly={{y: 20, duration: 100}}>
         {#each Object.keys(themes) as themename, i}
@@ -97,6 +97,7 @@ export const themes: ThemeAccent = {
         {/each}
     </ul>
 </div>
+{/if}
 
 <style lang="scss">
 

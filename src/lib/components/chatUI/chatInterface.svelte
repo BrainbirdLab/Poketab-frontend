@@ -148,9 +148,7 @@
     <QuickSettingsModal />
 {/if}
 
-{#if $page.state.showThemesPanel === true}
-    <ThemesModal />
-{/if}
+<ThemesModal />
 
 {#if $page.state.showStickersPanel === true}
     <StickersKeyboardModal />
