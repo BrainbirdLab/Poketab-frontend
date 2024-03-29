@@ -50,13 +50,9 @@
 
     function exitChat(e?: Event) {
 
-        //console.log(e);
-
         const isDefault = Object.values($page.state).some(
             (value) => value === true,
         );
-
-        //console.log(isDefault, "Escape");
 
         if (isDefault) {
             history.back();
@@ -139,8 +135,6 @@
 <svelte:head>
     <title>Poketab - Chat</title>
 </svelte:head>
-
-<!--svelte:window on:popstate|preventDefault={exitChat} /-->
 
 <ConnectivityState bind:offline={isOffline} />
 

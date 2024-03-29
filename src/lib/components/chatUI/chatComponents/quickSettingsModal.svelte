@@ -147,10 +147,6 @@ export function loadChatSettings() {
         };
     }
 
-    /**
-     * Leave the chat
-     * @param {boolean} destroy - If true, the chat will be destroyed
-     */
     function leaveChat(destroy: boolean = false){
         console.log(destroy ? 'Destroying chat...' : 'Leaving chat...');
         splashMessage.set((destroy ? 'Destroying chat... ' : 'Leaving chat... ') + '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px">');
