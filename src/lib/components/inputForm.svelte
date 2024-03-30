@@ -168,7 +168,6 @@
 
                     console.log("Created key: " + $chatRoomStore.Key);
 
-                    //chatSocketConnected.set(true);
                     joinedChat.set(true);
                     currentPage.set("chat");
                     splashMessage.set("");
@@ -211,7 +210,6 @@
 
                     console.log("Joined key: " + $chatRoomStore.Key);
 
-                    //chatSocketConnected.set(true);
                     joinedChat.set(true);
                     currentPage.set("chat");
                     splashMessage.set("");
