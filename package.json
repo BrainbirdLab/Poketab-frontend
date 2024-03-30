@@ -4,7 +4,6 @@
 	"version": "0.0.4.aplha",
 	"private": true,
 	"engines": {
-		"node": ">=14",
 		"pnpm": ">=3"
 	},
 	"scripts": {
