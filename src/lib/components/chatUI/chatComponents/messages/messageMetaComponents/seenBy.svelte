@@ -9,7 +9,7 @@
 <div class="seenBy">
     {#each seenBy as uid}
         {#if $chatRoomStore.userList[uid]?.lastSeenMessage == id}
-            <img alt="seen" data-uid="{uid}" src="/images/avatars/{$chatRoomStore.userList[uid].avatar}(custom)-mini.webp" />
+            <img alt="seen" data-uid="{uid}" src="/images/pokemons/{$chatRoomStore.userList[uid].pokemon}(custom)-mini.webp" />
         {/if}
     {/each}
     <!-- if more than 3 seen, show +n more -->

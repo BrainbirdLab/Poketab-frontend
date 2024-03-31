@@ -35,7 +35,7 @@
                 message.audio.src = message.url;
                 message.type = 'audio/mpeg';
                 message.duration = recorder.getDuration();
-                message.name = `${$chatRoomStore.userList[$myId].name}'s voice message`;
+                message.name = `${$chatRoomStore.userList[$myId].pokemon}'s voice message`;
             }
 
             recorder.closeRecorder();

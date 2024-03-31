@@ -1,4 +1,3 @@
-import { page } from '$app/stores';
 import { writable, type Writable } from 'svelte/store';
 
 console.log('Modal Manager Running');

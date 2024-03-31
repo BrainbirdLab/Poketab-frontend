@@ -1,34 +1,31 @@
 export const avList = [
-	'mankey',
-	'meowth',
-	'mew',
-	'squirtle',
-	'squirtle2',
-	'charmander',
-	'charmander2',
-	'psyduck',
-	'caterpie',
-	'eevee',
-	'haunter',
-	'mewtwo',
-	'jigglypuff',
-	'pichu',
-	'pidgey',
-	'pikachu',
-	'dratini',
-	'raichu',
-	'zubat',
-	'articuno',
-	'bellsprout',
-	'blastoise',
-	'bulbasaur2',
-	'bullbasaur',
-	'charizard',
-	'rattata',
-	'rayquaza',
-	'snorlax',
-	'ivysaur',
-	'palkia',
+	'Mankey', 
+	'Meowth', 
+	'Mew', 
+	'Squirtle', 
+	'Charmander', 
+	'Psyduck', 
+	'Caterpie', 
+	'Eevee', 
+	'Haunter', 
+	'Mewtwo', 
+	'Jigglypuff', 
+	'Pichu', 
+	'Pidgey', 
+	'Pikachu', 
+	'Dratini', 
+	'Raichu', 
+	'Zubat', 
+	'Articuno', 
+	'Bellsprout', 
+	'Blastoise', 
+	'Bulbasaur', 
+	'Charizard', 
+	'Rattata', 
+	'Rayquaza', 
+	'Snorlax', 
+	'Ivysaur', 
+	'Palkia'
 ];
 
 
@@ -41,8 +38,8 @@ export function validateUserName(username: string){
 	return ( isRealString(username) && name_format.test(username) && username.trim().length > 0);
 }
 
-export function validateAvatar(avatar: string){
-	return avList.includes(avatar);
+export function validatepokemon(pokemon: string){
+	return avList.includes(pokemon);
 }
 
 export function validateKey(key: string){
@@ -50,6 +47,6 @@ export function validateKey(key: string){
 	return keyformat.test(key);
 }
 
-export function validateAll(username: string, key: string, avatar: string){
-	return (validateUserName(username) && validateKey(key) && validateAvatar(avatar));
+export function validateAll(username: string, key: string, pokemon: string){
+	return (validateUserName(username) && validateKey(key) && validatepokemon(pokemon));
 }

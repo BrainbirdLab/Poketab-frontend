@@ -13,7 +13,7 @@
     <div class="sent"><i class="fa-regular fa-paper-plane"></i></div>
 {/if}
 {#if senderId != $myId}
-    <div class="avatar">
-        <img src="/images/avatars/{$chatRoomStore.userList[senderId]?.avatar || 'rip'}(custom).webp" width="30px" height="30px" alt="avatar">
+    <div class="pokemon">
+        <img src="/images/pokemons/{$chatRoomStore.userList[senderId]?.pokemon || 'rip'}(custom).webp" width="30px" height="30px" alt="pokemon">
     </div>
 {/if}
