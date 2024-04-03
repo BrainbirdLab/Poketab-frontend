@@ -303,6 +303,7 @@
         justify-content: center;
         align-items: center;
         gap: 10px;
+        margin-top: auto;
 
         .assets{
             display: flex;
