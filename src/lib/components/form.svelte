@@ -47,9 +47,8 @@
         justify-content: center;
         align-items: center;
         gap: 10px;
-        position: fixed;
-        top: 20px;
-        left: 0;
+        padding-top: 35px;
+        margin-bottom: auto;
         width: 100%;
 
         img{

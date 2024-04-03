@@ -11,8 +11,8 @@
 
     $: replyMessage = $messageDatabase[index] as MessageObj;
 
-    $: title = replyTo ? (`${senderId === $myId ? "You" : $chatRoomStore.userList[senderId]?.name || 'A Zombie'} replied to ${replyMessage?.sender === senderId ? "self" : $chatRoomStore.userList[replyMessage?.sender]?.name || 'a Zombie'}`) 
-                : (senderId === $myId ? 'You' : $chatRoomStore.userList[senderId]?.name || 'A Zombie');
+    $: title = replyTo ? (`${senderId === $myId ? "You" : $chatRoomStore.userList[senderId]?.pokemon || 'A Zombie'} replied to ${replyMessage?.sender === senderId ? "self" : $chatRoomStore.userList[replyMessage?.sender]?.pokemon || 'a Zombie'}`) 
+                : (senderId === $myId ? 'You' : $chatRoomStore.userList[senderId]?.pokemon || 'A Zombie');
 
 </script>
 

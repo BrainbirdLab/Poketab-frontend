@@ -59,6 +59,7 @@
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        background-attachment: fixed;
         color: white;
         display: flex;
         flex-direction: column;
@@ -66,6 +67,7 @@
         justify-content: flex-start;
         text-align: justify;
         gap: 20px;
+        min-height: 100%;
         height: 100%;
         width: 100%;
         inset: 0;

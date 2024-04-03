@@ -23,20 +23,16 @@
         splashMessage,
     } from "$lib/store";
 
-    let selectedname = "";
-    let selectedAvatar = "";
+    let selectedpokemon = "";
     let selectedMaxUser = 2;
 
-    let nameErr = "";
-    let avatarErr = "";
+    let pokemonErr = "";
     let maxUserErr = "";
 
     let errAnimation = "";
 
-    let nameInput: HTMLInputElement;
-
     $: {
-        if (nameErr || avatarErr || maxUserErr) {
+        if (pokemonErr || maxUserErr) {
             errAnimation = "shake";
             setTimeout(() => {
                 errAnimation = "";
@@ -74,8 +70,7 @@
     });
 
     onDestroy(() => {
-        nameErr = "";
-        avatarErr = "";
+        pokemonErr = "";
         maxUserErr = "";
     });
 
@@ -84,28 +79,11 @@
 
         console.log("Requesting for chat");
 
-        nameErr = "";
-        avatarErr = "";
+        pokemonErr = "";
         maxUserErr = "";
 
-        if (!selectedname) {
-            nameErr = "Please enter a name";
-            nameInput.focus();
-            return;
-        }
-
-        if (selectedname.length < 3 || selectedname.length > 15) {
-            nameErr = "Name must be between 3 and 15 characters";
-            nameInput.focus();
-            return;
-        } else if (!/^[a-zA-Z0-9_]+$/.test(selectedname)) {
-            nameErr = "Invalid characters in name";
-            nameInput.focus();
-            return;
-        }
-
-        if (!selectedAvatar) {
-            avatarErr = "Please select an avatar";
+        if (!selectedpokemon) {
+            pokemonErr = "Please choose a pokemon";
             return;
         }
 
@@ -117,13 +95,8 @@
             return;
         }
 
-        if (isTaken("name", selectedname)) {
-            nameErr = "Name is already in use";
-            return;
-        }
-
-        if (isTaken("avatar", selectedAvatar)) {
-            avatarErr = "Avatar is already in use";
+        if (isTaken(selectedpokemon)) {
+            pokemonErr = "Pokemon is already in use";
             return;
         }
 
@@ -137,11 +110,10 @@
 
         if (!$chatRoomStore.Key) {
             console.log("Creating chat...");
-            //console.log(`name: ${get(selfInfoStore).name}, Avatar: ${get(selfInfoStore).avatar}, Max user: ${get(chatRoomStore).maxUsers}`);
+            //console.log(`pokemon: ${get(selfInfoStore).pokemon}, Max user: ${get(chatRoomStore).maxUsers}`);
             socket.emit(
                 "createChat",
-                selectedname,
-                selectedAvatar,
+                selectedpokemon,
                 selectedMaxUser,
                 (res: {
                     success: boolean;
@@ -171,8 +143,7 @@
                     joinedChat.set(true);
                     currentPage.set("chat");
                     splashMessage.set("");
-                    selectedname = "";
-                    selectedAvatar = "";
+                    selectedpokemon = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.set(false);
                 },
@@ -183,8 +154,7 @@
             socket.emit(
                 "joinChat",
                 $chatRoomStore.Key,
-                selectedname,
-                selectedAvatar,
+                selectedpokemon,
                 (res: {
                     success: boolean;
                     message: string;
@@ -213,8 +183,7 @@
                     joinedChat.set(true);
                     currentPage.set("chat");
                     splashMessage.set("");
-                    selectedname = "";
-                    selectedAvatar = "";
+                    selectedpokemon = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.set(false);
                 },
@@ -242,75 +211,54 @@
                 {/if}
             </div>
             <div class="formfield">
-                <input
-                    type="text"
-                    on:input={() => (nameErr = "")}
-                    bind:value={selectedname}
-                    bind:this={nameInput}
-                    autocomplete="off"
-                    name="name"
-                    class="hover"
-                    id="name"
-                    placeholder="Name"
-                />
-                <label for="name" class:error={nameErr}>
-                    {#if nameErr}
-                        {nameErr}
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                    {:else}
-                        Username
-                    {/if}
-                </label>
-            </div>
-            <div class="formfield">
-                <label for="avatar" class:error={avatarErr} class:selected={selectedAvatar}>
-                    {#if avatarErr}
-                    {avatarErr}
+                <label for="pokemon" class:error={pokemonErr} class:selected={selectedpokemon}>
+                    {#if pokemonErr}
+                    {pokemonErr}
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     {:else}
-                        Avatar <i class="fa-solid fa-user-astronaut"></i>
+                        Pick your pokemon <i class="fa-solid fa-user-astronaut"></i>
                     {/if}
                 </label>
-                <div id="avatar" class="avatarsContainer">
-                    <div class="avatars">
-                        {#each avList as avatar, i}
-                            {#if $chatRoomStore.Key && isTaken("avatar", avatar)}
+                <div id="pokemon" class="pokemonsContainer">
+                    <div class="pokemons">
+                        {#each avList as pokemon, i}
+                            {#if $chatRoomStore.Key && isTaken(pokemon)}
                                 <div
-                                    class="avatar inuse"
+                                    class="pokemon inuse"
                                     in:fly|global={{ x: 10, delay: i * 30 }}
                                 >
                                     <label
-                                        class="avatarLabel btn-animate"
+                                        class="pokemonLabel btn-animate"
                                         for=""
                                     >
                                         <img
-                                            src="/images/avatars/{avatar}(custom).webp"
-                                            alt={avatar}
+                                            src="/images/pokemons/{pokemon}(custom).webp"
+                                            alt={pokemon}
                                         />
                                     </label>
                                 </div>
                             {:else}
                                 <div
-                                    class="avatar"
+                                    class="pokemon"
                                     in:scale|global={{ delay: i * 30 }}
                                 >
                                     <input
                                         type="radio"
-                                        class="avatarInput"
-                                        on:input={() => (avatarErr = "")}
-                                        bind:group={selectedAvatar}
-                                        name="avatar"
-                                        value={avatar}
-                                        id={avatar}
+                                        class="pokemonInput"
+                                        on:input={() => (pokemonErr = "")}
+                                        bind:group={selectedpokemon}
+                                        name="pokemon"
+                                        value={pokemon}
+                                        id={pokemon}
                                     />
                                     <label
-                                        class="avatarLabel btn-animate"
-                                        for={avatar}
+                                        class="pokemonLabel btn-animate"
+                                        for={pokemon}
                                     >
                                         <img
                                             loading="lazy"
-                                            src="/images/avatars/{avatar}(custom).webp"
-                                            alt={avatar}
+                                            src="/images/pokemons/{pokemon}(custom).webp"
+                                            alt={pokemon}
                                         />
                                     </label>
                                 </div>
@@ -475,13 +423,13 @@
         filter: brightness(0.95);
     }
 
-    .avatarsContainer {
+    .pokemonsContainer {
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         margin-top: 5px;
-        .avatars {
+        .pokemons {
             display: flex;
             flex-wrap: wrap;
             height: 138px !important;
@@ -492,10 +440,10 @@
             align-content: flex-start;
             overflow: scroll;
             border-radius: 10px;
-            .avatar {
+            .pokemon {
                 background: #ffffff0d;
                 border-radius: 50%;
-                .avatarLabel {
+                .pokemonLabel {
                     display: block;
                     width: 40px;
                     height: 40px;
@@ -510,19 +458,19 @@
 
                 &.inuse {
                     filter: brightness(0);
-                    .avatarLabel {
+                    .pokemonLabel {
                         cursor: not-allowed;
                     }
                 }
 
                 &:not(.inuse):hover {
-                    .avatarLabel {
+                    .pokemonLabel {
                         filter: saturate(100%);
                     }
                 }
             }
 
-            .avatarInput:checked + .avatarLabel {
+            .pokemonInput:checked + .pokemonLabel {
                 filter: saturate(100%);
                 animation: bubble 500ms forwards;
             }

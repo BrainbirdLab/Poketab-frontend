@@ -9,7 +9,7 @@
 <a class="mapContainer" id={location.id} href={`https://maps.google.com/maps?q=${location.lat},${location.lon}`} target="_blank">
     <div class="title">
         <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
-        <div class="text">{$chatRoomStore.userList[location.uid].name}'s Location</div>
+        <div class="text">{$chatRoomStore.userList[location.uid]?.pokemon}'s Location</div>
     </div>
 </a>
 

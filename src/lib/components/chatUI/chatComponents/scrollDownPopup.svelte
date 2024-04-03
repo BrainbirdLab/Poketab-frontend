@@ -67,7 +67,7 @@
     }}>
     {#if $notice && $messageScrolledPx > 200}
         <div class="content">
-            <img src="/images/avatars/{$chatRoomStore.userList[$notice.sender].avatar}(custom).webp" alt="avatar">
+            <img src="/images/pokemons/{$chatRoomStore.userList[$notice.sender].pokemon}(custom).webp" alt="pokemon">
             {#if $notice instanceof TextMessageObj}
                 {$notice.message}
             {:else if $notice instanceof StickerMessageObj}

@@ -18,7 +18,7 @@
 </script>
 
 {#if mounted}
-<div class="content">
+<div class="chat-content">
     {#if $currentPage == "chat" && $joinedChat}
         <ChatInterface />
     {:else}
@@ -29,17 +29,15 @@
 
 
 <style>
-    .content{
+    .chat-content{
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: safe center;
         align-items: center;
         height: 100%;
         width: 100%;
+        gap: 20px;
         inset: 0;
-        background-blend-mode: soft-light;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        overflow: scroll;
     }
 </style>

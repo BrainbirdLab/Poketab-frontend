@@ -386,7 +386,7 @@
                         `${
                             $chatRoomStore.userList[
                                 userIdArray.at(-1) as string
-                            ]?.name
+                            ]?.pokemon
                         } is typing`,
                     );
                     break;
@@ -395,11 +395,11 @@
                         `${
                             $chatRoomStore.userList[
                                 userIdArray.at(-1) as string
-                            ]?.name
+                            ]?.pokemon
                         } and ${
                             $chatRoomStore.userList[
                                 userIdArray.at(-2) as string
-                            ]?.name
+                            ]?.pokemon
                         } are typing`,
                     );
                     break;
@@ -408,11 +408,11 @@
                         `${
                             $chatRoomStore.userList[
                                 userIdArray.at(-1) as string
-                            ]?.name
+                            ]?.pokemon
                         }, ${
                             $chatRoomStore.userList[
                                 userIdArray.at(-2) as string
-                            ]?.name
+                            ]?.pokemon
                         } and 1 other are typing`,
                     );
                     break;
@@ -421,11 +421,11 @@
                         `${
                             $chatRoomStore.userList[
                                 userIdArray.at(-1) as string
-                            ]?.name
+                            ]?.pokemon
                         }, ${
                             $chatRoomStore.userList[
                                 userIdArray.at(-2) as string
-                            ]?.name
+                            ]?.pokemon
                         } and ${userTypingSet.size - 2} others are typing`,
                     );
                     break;
