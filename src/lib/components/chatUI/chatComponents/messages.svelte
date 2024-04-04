@@ -623,7 +623,7 @@
                 opacity: 1;
                 visibility: visible;
                 //margin: auto 0;
-                min-height: calc(90% + 25px);
+                min-height: 500px;
 
                 transition: 500ms;
                 .welcomeText {
@@ -641,7 +641,7 @@
                     border-radius: 15px;
                     #invite {
                         background: var(--secondary-dark);
-                        color: var(--foreground-light);
+                        color: var(--text-color);
                     }
                 }
             }
