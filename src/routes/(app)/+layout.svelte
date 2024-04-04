@@ -70,6 +70,7 @@
         min-height: 100%;
         height: 100%;
         width: 100%;
+        position: relative;
         inset: 0;
         //overflow: scroll;
     }
