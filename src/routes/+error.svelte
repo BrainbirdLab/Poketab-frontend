@@ -3,7 +3,6 @@
     import "$lib/styles/global.scss";
 </script>
 
-
 <svelte:head>
     <link rel="icon" href="/images/error.png" />
     <title>
@@ -25,9 +24,7 @@
     </a>
 </div>
 
-
 <style>
-
     .container {
         display: flex;
         flex-direction: column;
