@@ -37,6 +37,7 @@
         height: 100%;
         width: 100%;
         gap: 20px;
+        position: relative;
         inset: 0;
         overflow: scroll;
     }

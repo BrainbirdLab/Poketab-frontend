@@ -641,7 +641,7 @@
                     border-radius: 15px;
                     #invite {
                         background: var(--secondary-dark);
-                        color: var(--foreground-light);
+                        color: var(--text-color);
                     }
                 }
             }
