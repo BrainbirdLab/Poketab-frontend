@@ -14,8 +14,6 @@ export const emojis = ['😀', '😁', '😂', '🤣', '😃', '😄', '😅', '
 //custom animation for svelte:spin
 export function spin(node: HTMLElement, { delay = 0, duration = 400, degree = 360, easing = cubicOut }: { delay?: number, duration?: number, degree?: number, easing?: (t: number) => number } = {}) {
 
-    //start from -degree to 0
-
     return {
         delay,
         duration,
@@ -40,11 +38,7 @@ const iconMap: {[key: string]: string} = {
 }
 
 export function getIcon(type: string){
-    //file.type is like 'application/pdf', 'application/zip', 'application/msword', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'text/csv'
-    //so check if it includes 'pdf', 'zip', 'word', 'excel', 'powerpoint', 'csv'
-    //then return the corresponding icon
-    //use regex to find the match word that we will use for indexing the iconMap
-    //build the regex from the iconMap keys
+
     const regex = new RegExp(Object.keys(iconMap).join('|'), 'i');
     const match = type.match(regex);
 
@@ -90,30 +84,6 @@ function fallbackCopyTextToClipboard(text: string){
 
     document.body.removeChild(textArea);
 }
-
-/*
-//message sounds
-const incommingSound = new Audio("/sounds/incomingmessage.mp3");
-const outgoingSound = new Audio("/sounds/outgoingmessage.mp3");
-const stickerSound = new Audio("/sounds/sticker.mp3");
-const locationSound = new Audio("/sounds/location.mp3");
-
-//interaction sounds
-const typingSound = new Audio("/sounds/typing.mp3");
-const reactionSound = new Audio("/sounds/react.mp3");
-//const deleveredSound = new Audio("/sounds/delivered.mp3");
-const startRecordingSound = new Audio("/sounds/startrecording.mp3");
-const reactsShowSound = new Audio("/sounds/reacts.mp3");
-
-//join/leave sounds
-const joinSound = new Audio("/sounds/join.mp3");
-const leaveSound = new Audio("/sounds/leave.mp3");
-
-//error sounds
-const errorSound = new Audio("/sounds/error.mp3");
-
-const notificationSound = new Audio("/sounds/notification.mp3");
-*/
 
 let clickSound: HTMLAudioElement;
 let incommingSound: HTMLAudioElement;
@@ -173,7 +143,6 @@ export async function playMessageSound(type: MessageSoundType){
     if (!get(messageSoundEnabled)){
         return;
     }
-
 
     switch (type) {
         case 'incoming':
