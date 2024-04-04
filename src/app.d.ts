@@ -6,6 +6,7 @@ declare global {
 		// interface Locals {}
 		// interface PageData {}
 		// interface Platform {}
+		// Variables for the modals
 		interface PageState {
 			showQuickSettingsPanel?: boolean;
 			showThemesPanel?: boolean;
