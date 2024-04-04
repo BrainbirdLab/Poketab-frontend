@@ -12,7 +12,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     return await resolve(event, {
         transformPageChunk: ({html}) => {
-            return html.replace('<%theme%>', theme);
+            return html.replace('<%_theme_%>', theme);
         }
     });
 };
