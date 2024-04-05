@@ -1,6 +1,6 @@
 import { cubicOut } from "svelte/easing";
 import { get } from "svelte/store";
-import { showToastMessage } from "domtoastmessage";
+import { showToastMessage } from "@itsfuad/domtoastmessage";
 import { buttonSoundEnabled, messageSoundEnabled } from "./store";
 import { browser } from "$app/environment";
 

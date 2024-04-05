@@ -9,7 +9,7 @@
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, playMessageSound, spin } from "$lib/utils";
     import { onMount } from "svelte";
-    import { showToastMessage } from "domtoastmessage";
+    import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { derived } from "svelte/store";
 
     $: message = derived(messageDatabase, (messages) => {

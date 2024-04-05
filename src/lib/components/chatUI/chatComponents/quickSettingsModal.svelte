@@ -79,7 +79,7 @@ export function loadChatSettings() {
     import EmojiPicker from "./emojiPicker.svelte";
     import { spin } from "$lib/utils";
     import { socket } from "$lib/components/socket";
-    import { showToastMessage } from "domtoastmessage";
+    import { showToastMessage } from "@itsfuad/domtoastmessage";
     import UsersPanel from "./usersPanel.svelte";
     import { elasticOut } from "svelte/easing";
     import { addState, clearModals } from "../stateManager.svelte";

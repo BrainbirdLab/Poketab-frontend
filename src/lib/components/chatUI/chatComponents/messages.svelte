@@ -34,7 +34,7 @@
         showReactsOnMessageModal,
         //showStickersPanel,
     } from "$lib/components/modalManager";
-    import { showToastMessage } from "domtoastmessage";
+    import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { chatRoomStore, listenScroll, showScrollPopUp } from "$lib/store";
     import { getFormattedDate, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { copyText } from "$lib/utils";

@@ -32,7 +32,7 @@ export const themes: ThemeAccent = {
 
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
-    import { showToastMessage } from "domtoastmessage";
+    import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { currentTheme, quickEmoji } from "$lib/store";
     import { page } from "$app/stores";
 

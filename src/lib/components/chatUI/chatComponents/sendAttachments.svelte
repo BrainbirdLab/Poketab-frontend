@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade, fly, scale } from "svelte/transition";
-    import { showToastMessage } from "domtoastmessage";
+    import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { socket } from "$lib/components/socket";
     import { chatRoomStore, myId } from "$lib/store";
     import { AudioMessageObj, FileMessageObj, ImageMessageObj, selectedFiles } from "$lib/messageTypes";
