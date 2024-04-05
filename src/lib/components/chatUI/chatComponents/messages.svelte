@@ -623,7 +623,7 @@
                 opacity: 1;
                 visibility: visible;
                 //margin: auto 0;
-                min-height: 500px;
+                min-height: max(80vh, 500px);
 
                 transition: 500ms;
                 .welcomeText {
