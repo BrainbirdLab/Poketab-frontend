@@ -121,7 +121,7 @@ export const themes: ThemeAccent = {
         gap: 10px;
         padding: 20px;
         background: var(--modal-color);
-        filter: drop-shadow(0 4px 5px var(--shadow-color));
+        box-shadow: 0 5px 35px var(--shadow-color);
         border-radius: 10px;
 
         .theme {

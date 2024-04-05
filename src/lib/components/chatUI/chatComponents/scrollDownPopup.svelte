@@ -105,10 +105,11 @@
         min-width: 2.5rem;
         min-height: 2.5rem;
         background: var(--modal-color);
-        filter: drop-shadow(2px 4px 5px var(--shadow-color)) brightness(1);
+        filter: brightness(1);
+        box-shadow: 0 5px 35px var(--shadow-color);
         
         &:hover{
-            filter: drop-shadow(2px 4px 5px var(--shadow-color)) brightness(0.90);
+            filter: brightness(0.90);
         }
         
         @include flex;

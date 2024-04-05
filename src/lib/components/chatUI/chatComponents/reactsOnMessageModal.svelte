@@ -179,7 +179,7 @@
         height: 350px;
         max-width: 98vw;
         border-radius: 15px;
-        filter: drop-shadow(2px 4px 6px var(--shadow-color));
+        box-shadow: 0 5px 35px var(--shadow-color);
 
         .title{
             color: var(--secondary-dark);

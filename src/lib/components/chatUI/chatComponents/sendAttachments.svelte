@@ -417,7 +417,7 @@
             @include flex-row-center;
             width: max-content;
             background: var(--modal-color);
-            filter: drop-shadow(0 4px 5px var(--shadow-color));
+            box-shadow: 0 5px 35px var(--shadow-color);
             z-index: 20;
             transform-origin: bottom;
             transition: 200ms;

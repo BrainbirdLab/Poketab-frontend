@@ -211,7 +211,7 @@
         width: 400px;
         max-width: 100%;
         transition: all 100ms ease-in-out;
-        filter: drop-shadow(2px 2px 5px var(--shadow-color));
+        box-shadow: 0 5px 35px var(--shadow-color);
         border-radius: 15px 15px 0 0;
         background: var(--modal-color);
 
@@ -262,7 +262,7 @@
             align-items: center;
             gap: 5px;
             transition: all 100ms ease-in-out;
-            filter: drop-shadow(2px 2px 5px var(--shadow-color));
+            box-shadow: 0 5px 35px var(--shadow-color);
             max-width: min(300px, 95vw);
             background: var(--modal-color);
             border-radius: 23px;

@@ -226,7 +226,7 @@
         border-radius: 50px;
         transition: 100ms ease-in-out;
         z-index: 1;
-        filter: drop-shadow(0 4px 5px var(--shadow-color));
+        box-shadow: 0 5px 35px var(--shadow-color);
         .items-count{
             color: var(--blue-grey-color);
         }

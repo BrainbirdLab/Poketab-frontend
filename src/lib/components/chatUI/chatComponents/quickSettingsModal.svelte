@@ -646,10 +646,9 @@ export function loadChatSettings() {
         width: 400px;
         max-width: 85vw;
         position: relative;
-        //filter: drop-shadow(2px 4px 6px var(--shadow-color));
         font-size: 0.7rem;
         transition: 100ms ease-in-out;
-        filter: drop-shadow(2px 4px 6px var(--shadow-color));
+        box-shadow: 0 5px 35px var(--shadow-color);
 
         .top {
             width: 100%;

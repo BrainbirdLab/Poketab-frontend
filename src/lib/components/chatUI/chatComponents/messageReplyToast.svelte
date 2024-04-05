@@ -84,7 +84,7 @@
         width: 100%;
         max-width: 98vw;
         gap: 10px;
-        //filter: drop-shadow(0 4px 5px var(--shadow-color));
+        box-shadow: 0 5px 35px var(--shadow-color);
         position: relative;
         
         .wrapper{
