@@ -648,7 +648,7 @@ export function loadChatSettings() {
         position: relative;
         font-size: 0.7rem;
         transition: 100ms ease-in-out;
-        box-shadow: 0 5px 35px var(--shadow-color);
+        box-shadow: 10px 10px 35px var(--shadow-color);
 
         .top {
             width: 100%;

@@ -106,7 +106,7 @@
         min-height: 2.5rem;
         background: var(--modal-color);
         filter: brightness(1);
-        box-shadow: 0 5px 35px var(--shadow-color);
+        box-shadow: 10px 10px 35px var(--shadow-color);
         
         &:hover{
             filter: brightness(0.90);
