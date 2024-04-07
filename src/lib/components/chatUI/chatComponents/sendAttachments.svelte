@@ -223,7 +223,13 @@
                     sendFiles();
                 }
             } else if (target.tagName === "I" && target.classList.contains("remove")){
-                const id = target.parentElement?.dataset.id;
+                console.log('Remove button clicked');
+                const elem = target.closest('.file_preview') as HTMLElement;
+                console.log(elem);
+                if (!elem){
+                    return;
+                }
+                const id = elem.dataset.id;
                 if (id == null){
                     return;
                 }

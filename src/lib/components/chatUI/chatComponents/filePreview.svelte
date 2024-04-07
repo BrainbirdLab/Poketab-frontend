@@ -18,18 +18,18 @@
 
     function fileIsAcceptable(file: File): string {
         if (file.size > 10 * 1024 * 1024) {
-           return 'File size must be less than 10 Mb';
+           return 'Should be < 10 Mb';
         }
 
         if (sendAs == 'audio') {
             const supportedAudioFormats = ['audio/mp3', 'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/x-m4a'];
             if (!supportedAudioFormats.includes(file.type)) {
-                return 'Audio format not supported. Try as file.';
+                return 'Cannot send as audio';
             }
         } else if (sendAs == 'image') {
             const supportedImageFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!supportedImageFormats.includes(file.type)) {
-                return 'Image format not supported. Try as file.';
+                return 'Cannot send as image';
             }
         }
         return '';
@@ -46,16 +46,24 @@
             class="file_preview back-blur"
             data-id={i}
         >
-            <i class="close remove fa-solid fa-xmark"></i>
             {#if sendAs === 'image'}
                 <img src={createURLObject(file)} alt="preview" />
             {:else}
             <i class="icon fa-solid {getIcon(file.type)}"></i>
             {/if}
             <div class="meta">
-                <div class="name">{file.name}</div>
-                <div class="size">{getSize(file.size)}</div>
-                <div class="error-msg">{fileIsAcceptable(file)}</div>
+                <div class="info">
+                    <div class="name">{file.name}</div>
+                    <div class="size" class:error={fileIsAcceptable(file)}>
+                        
+                        {#if fileIsAcceptable(file)}
+                            {getSize(file.size)} - {fileIsAcceptable(file)}
+                        {:else}
+                            {getSize(file.size)}
+                        {/if}
+                    </div>
+                </div>
+                <i class="close remove fa-solid fa-trash"></i>
             </div>
         </div>
     {/each}
@@ -113,16 +121,15 @@
             display: flex;
             flex-direction: column;
             font-size: 1rem;
-            padding: 10px;
+            aspect-ratio: 4/3;
             border-radius: 15px;
-            width: 260px;
+            width: 300px;
             border: 3px solid var(--dark-color);
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            //gap: 10px;
             position: relative;
-            min-width: 170px;
-            max-width: 75vw;
+            min-width: 150px;
             max-height: 80vh;
             height: auto;
             background: var(--modal-color);
@@ -140,30 +147,10 @@
                 max-width: inherit;
                 width: 100%;
                 height: 100%;
-                border-radius: inherit;
+                border-radius: 12px 12px 0 0;
                 object-fit: contain;
                 height: inherit;
                 //background: var(--glass-color);
-            }
-
-            .close {
-                position: absolute;
-                top: -10px;
-                right: -10px;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-                width: 25px;
-                height: 25px;
-                background: red;
-                color: white !important;
-                font-size: 1rem;
-
-                &:hover {
-                    filter: brightness(0.9);
-                }
             }
 
             &:has(.error-msg:not(:empty)) {
@@ -172,7 +159,7 @@
 
             .icon {
                 font-size: 4rem;
-                padding: 15px;
+                //padding: 15px;
                 color: #ffffff9c;
                 width: 100px;
                 height: 100px;
@@ -180,35 +167,59 @@
                 align-items: center;
                 justify-content: center;
                 border-radius: 50%;
+                margin: auto 0;
             }
             .meta {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                justify-content: center;
+                display: grid;
+                grid-template-columns: 1fr 0.3fr;
                 gap: 5px;
                 width: 100%;
                 background: var(--glass-color);
-                padding: 10px;
-                border-radius: 10px;
+                border-radius: 0 0 10px 10px;
                 font-size: 0.8rem;
-                white-space: nowrap;
                 position: relative;
-                .name,
-                .size {
-                    overflow: hidden;
+                .info{
                     width: 100%;
-                    text-overflow: ellipsis;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                    white-space: nowrap;
+                    padding: 10px;
+                    overflow: hidden;
+                    .name,
+                    .size {
+                        overflow: hidden;
+                        width: 100%;
+                        text-overflow: ellipsis;
+                    }
+                    .size{
+                        color: var(--secondary-dark);
+                        &.error{
+                            color: orangered;
+                        }
+                    }
+                }
+
+                .close {
+                    //border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    width: 100%;
+                    height: 100%;
+                    min-width: 64px;
+                    border-top-right-radius: inherit;
+                    border-bottom-right-radius: 12px;
+                    background: rgba(255, 0, 0, 0.622);
+                    color: rgb(255, 255, 255) !important;
+                    font-size: 1rem;
+
+                    &:hover {
+                        filter: brightness(0.9);
+                    }
                 }
             }
-        }
-        .error-msg{
-            font-size: 0.7rem;
-            color: rgb(255, 30, 30);
-            position: absolute;
-            top: -20px;
-            text-align: center;
-            width: 100%;
         }
     }
 
