@@ -73,7 +73,7 @@
                 return;
             }
 
-            if (target === node || target === fileBtn || target === imageBtn || target === audioBtn){
+            if (target === node || target === fileBtn || target === imageBtn || target === audioBtn || target === locationBtn){
                 if (target !== node){
                     showFilePicker = true;
                     await tick();
