@@ -3,8 +3,24 @@
     import { playClickSound } from "$lib/utils";
     import NavigationIndicator from "$lib/components/NavigationIndicator.svelte";
     import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
+    import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { onMount } from "svelte";
     console.log("Mounted root +layout.svelte");
+
+    async function detectSWUpdate(){
+        const registration = await navigator.serviceWorker.ready;
+
+        registration.addEventListener("updatefound", () => {
+            const newWorker = registration.installing;
+            newWorker?.addEventListener("statechange", () => {
+                if (newWorker.state === "installed") {
+                    newWorker.postMessage({ type: "SKIP_WAITING" });
+                    console.log("New update available");
+                    showToastMessage("App updated");
+                }
+            });
+        });
+    }
 
     function removeAttribute(evt: MouseEvent | TouchEvent) {
         const element = evt.target as HTMLElement;
@@ -38,6 +54,7 @@
 
     onMount(() => {
         loadChatSettings();
+        detectSWUpdate();
     });
 
 </script>
