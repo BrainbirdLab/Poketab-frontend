@@ -504,19 +504,25 @@
 
             //if the message is image, wait for it to load
             const lastMessage = $messageContainer.lastElementChild as HTMLElement;
-            if (messageDatabase.has(lastMessage.id) && lastMessage.querySelector('img')){
+            if (messageDatabase.has(lastMessage.id)){
 
-                await new Promise((resolve) => {
-                    const img = lastMessage.querySelector('img') as HTMLImageElement;
-                    img.addEventListener('load', () => {
-                        resolve(null);
-                    }, {once: true});
-                });
+                const lastMessageObj = messageDatabase.getMessage(lastMessage.id) as MessageObj;
+
+                if (lastMessageObj instanceof FileMessageObj && lastMessageObj.baseType === 'image'){
+                    await new Promise((resolve) => {
+                        const img = lastMessage.querySelector('img') as HTMLImageElement;
+                        img.addEventListener('load', () => {
+                            resolve(null);
+                        }, {once: true});
+                    });
+                }
+
             }
             
             $messageContainer.scrollTo({
                 top: $messageContainer.scrollHeight,
                 behavior: "smooth",
+                
             });
 
             $messageContainer.addEventListener('scrollend', () => {
@@ -623,7 +629,7 @@
                 opacity: 1;
                 visibility: visible;
                 //margin: auto 0;
-                min-height: max(80vh, 500px);
+                min-height: max(85vh, 500px);
 
                 transition: 500ms;
                 .welcomeText {

@@ -81,18 +81,20 @@ export function sendMessage(message: MessageObj, file?: File){
 		}
 		//console.log(`New message id: ${messageId}`);
 		
-		if (Object.keys(get(chatRoomStore).userList).length < 2 ){
-			messageDatabase.update(messages => {
-				
-				(message as FileMessageObj).loaded = 100;
-
-				return messages;
-			});
-			console.log('File upload skipped');
-			return;
-		}
-
+		
 		if (file){
+
+			if (Object.keys(get(chatRoomStore).userList).length < 2 ){
+				messageDatabase.update(messages => {
+					
+					(message as FileMessageObj).loaded = 100;
+	
+					return messages;
+				});
+				console.log('File upload skipped');
+				return;
+			}
+			
 			const formData = new FormData();
 			formData.append('file', file);
 			const xhr = new XMLHttpRequest();
