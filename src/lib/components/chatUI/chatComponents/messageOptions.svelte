@@ -21,7 +21,9 @@
     $: reactedEmoji = $message?.reactedBy.get($myId) || '';
     $: messageKind = $message?.baseType;
     $: sender = $message?.sender;
-    $: downloadable = (message instanceof FileMessageObj) ? (sender === $myId ? true : (message as FileMessageObj).loaded >= 100) : false;
+    $: downloadable = ($message instanceof FileMessageObj) ? (sender === $myId ? true : ($message as FileMessageObj).loaded >= 100) : false;
+
+    $: optionsArray = [...getMessageOptions(), downloadable ? 'Download' : null];
 
     let selectedReact = '';
 
@@ -51,7 +53,7 @@
 
         const arr = [];
 
-        if (sender && $chatRoomStore.userList[sender]){
+        if (sender && $chatRoomStore.userList[sender] && $message.sent){
             arr.push('Reply');
             //if the sender is me, add delete option
             if (sender == $myId){
@@ -185,8 +187,8 @@
         </div>
     </div>
     <div class="messageOptions back-blur" transition:fly|global={{y: 10, duration: 200}}>
-        {#key downloadable}
-        {#each [...getMessageOptions(), downloadable ? 'Download' : null] as option, i}
+        {#key optionsArray}
+        {#each optionsArray as option, i (option) }
         {#if option != null}
             <div in:fly|global={{y: 10, delay: ((i+1)*50)}} class="option {option}" class:delete={option == 'Delete'} title="{option}">
                 <i class="{messageOptions[option]}"></i>
