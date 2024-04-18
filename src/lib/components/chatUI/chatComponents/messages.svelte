@@ -478,17 +478,7 @@
             clearTimeout(timeout);
         }
 
-        if (Math.abs(heightChanged) < 16){
-            if (heightChanged > 0) { //height increase
-                $messageContainer.scrollTop += heightChanged;
-                //console.log('%cScrolled Up', 'color: orange;');
-            }
-            /*
-            else if (heightChanged < 0 && scrolledToBottomPx > 0){ //height decrease
-                $messageContainer.scrollTop += heightChanged;
-            }
-            */
-        } else if (heightChanged > 16 && !$showScrollPopUp){
+        if (heightChanged > 16 && !$showScrollPopUp){
             
             listenScroll.set(false);
 
@@ -564,14 +554,14 @@
 
 <ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={$messageContainer}>
     <div class="welcome_wrapper" in:fade>
-        <li class="welcomeText">
+        <div class="welcomeText">
             <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
             <div>Share this chat link to others to join</div>
             <button id="invite" class="clickable hover play-sound button capsule" title="Click to share" on:click={invite}>
                 Share
                 <i class="fa-solid fa-share-nodes"></i>
             </button>
-        </li>
+        </div>
     </div>
     {#each $messageDatabase as message (message)}
         {#if message instanceof MessageObj}
@@ -610,6 +600,7 @@
             flex-grow: 1;
             z-index: 1;
             margin-bottom: 20px;
+            scroll-snap-type: y proximity;
             width: 100%;
 
             .welcome_wrapper {

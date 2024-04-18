@@ -4,9 +4,9 @@
 </script>
 
 
-<div class="msg-item serverMessage" id="{message.id}" data-type="{message.type}">
+<li class="msg-item serverMessage" id="{message.id}" data-type="{message.type}">
     {message.text}
-</div>
+</li>
 
 
 <style lang="scss">
