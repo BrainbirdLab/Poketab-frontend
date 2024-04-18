@@ -8,7 +8,6 @@
     let mounted = false;
     
     onMount(() => {
-        console.log("Mounted Root +page.svelte");
         //showToastMessage("Welcome to Poketab Messenger", 20000);
         mounted = true;
     });

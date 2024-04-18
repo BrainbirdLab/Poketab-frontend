@@ -40,8 +40,6 @@ export const themes: ThemeAccent = {
 
         node.onclick = (e: Event) => {
 
-            console.log('click');
-
             if (e.target == null){
                 return;
             }
@@ -74,13 +72,11 @@ export const themes: ThemeAccent = {
 
             //showThemesPanel.set(false);
             history.back();
-            console.log("Theme picker closed");
         }
 
         return {
             destroy(){
                 node.onclick = null;
-                console.log("Destroyed theme picker");
             }
         }
     }

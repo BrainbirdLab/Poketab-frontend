@@ -90,11 +90,9 @@
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('option')) {
                 
                 if (e.target.classList.contains('Reply')) {
-                    //console.log('reply');
                     replyTarget.set($message);
                     showReplyToast.set(true);
                 } else if (e.target.classList.contains('Copy')) {
-                    //console.log('copy');
 
                     if (!(message)) return;
 
@@ -106,7 +104,6 @@
                     copyText(text);
 
                 } else if (e.target.classList.contains('Download')) {
-                    //console.log('download');
 
                     if (message instanceof FileMessageObj){
                         if (message instanceof AudioMessageObj){
@@ -129,7 +126,6 @@
                     link.click();
 
                 } else if (e.target.classList.contains('Delete')) {
-                    //console.log('delete');
                     if (!message){
                         return;
                     }

@@ -56,10 +56,7 @@
     formActionButtonDisabled.set(false);
     
     onMount(() => {
-
         mounted = true;
-
-        console.log("Mounted root +page.svelte");
     });
 
 </script>

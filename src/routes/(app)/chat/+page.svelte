@@ -9,10 +9,7 @@
     let mounted = false;
 
     onMount(() => {
-
         mounted = true;
-
-        console.log("Mounted root +page.svelte");
     });
     
 </script>

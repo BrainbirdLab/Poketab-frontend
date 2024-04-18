@@ -5,7 +5,6 @@
     import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { onMount } from "svelte";
-    console.log("Mounted root +layout.svelte");
 
     async function detectSWUpdate(){
         const registration = await navigator.serviceWorker.ready;
@@ -15,7 +14,6 @@
             newWorker?.addEventListener("statechange", () => {
                 if (newWorker.state === "installed") {
                     newWorker.postMessage({ type: "SKIP_WAITING" });
-                    console.log("New update available");
                     showToastMessage("App updated");
                 }
             });
@@ -25,7 +23,6 @@
     function removeAttribute(evt: MouseEvent | TouchEvent) {
         const element = evt.target as HTMLElement;
         element.removeAttribute("data-pressed");
-        //console.log("remove data-pressed");
     }
 
     function handleClick(event: MouseEvent | TouchEvent) {
@@ -33,7 +30,6 @@
 
         if (target.classList.contains("button-animate")) {
             target.setAttribute("data-pressed", "true");
-            //console.log("add data-pressed");
             //if mouse event, add listener for mouseleave
             if (event instanceof MouseEvent) {
                 target.addEventListener("mouseleave", removeAttribute, {
@@ -47,7 +43,6 @@
             }
         }
         if (target.classList.contains("play-sound")) {
-            //console.log("play sound");
             playClickSound();
         }
     }

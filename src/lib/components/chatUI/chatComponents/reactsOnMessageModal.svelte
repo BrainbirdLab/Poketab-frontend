@@ -12,8 +12,6 @@
     // [uid: string]: react-emoji
     $: reacts = $message?.reactedBy || new Map<string, string>();
 
-    $: console.log(reacts);
-
     $: selectedReact = 'All';
 
     //$: reactsToShow = Object.entries(reacts).filter(([uid, react]) => selectedReact === 'All' || selectedReact === react);

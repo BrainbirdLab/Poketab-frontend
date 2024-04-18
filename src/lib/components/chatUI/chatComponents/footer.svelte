@@ -26,7 +26,6 @@
         let message: MessageObj;
 
         if ($voiceMessageAudio){
-            console.log('Sending voice message');
 
             message = new AudioMessageObj();
 

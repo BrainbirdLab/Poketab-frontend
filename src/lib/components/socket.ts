@@ -20,7 +20,6 @@ export type socketResponse = {
 }
 
 export function reConnectSocket() {
-    console.log('%cReconnecting server', 'color: lime');
     retryCount.set(1);
     formNotification.set('Reconnecting...');
     reconnectButtonEnabled.set(false);
@@ -30,11 +29,8 @@ export function reConnectSocket() {
 //if browser
 if (browser) {
     socket.on('updateUserListWR', (users: { [key: string]: User }) => {
-        //console.log('Updating user list - WR');
 
         const userlen = Object.keys(users).length;
-
-        //console.log('User list length: ' + userlen);
 
         if (userlen < 1) {
             resetChatRoomStore('Chat no longer exists 😢');
@@ -55,7 +51,6 @@ socket.on('connect', () => {
     formActionButtonDisabled.set(false);
     retryCount.set(1);
     socketConnected.set(true);
-    console.log(socket.id);
     if (get(formNotification) == '') {
         console.log('%cConnected to server', 'color: blue');
         return;
@@ -70,7 +65,6 @@ socket.on('connect', () => {
 let retryCount = writable(1);
 
 formNotification.subscribe(value => {
-    console.log('formNotification: ' + value);
     if (value.includes('offline')) {
         retryCount.set(1);
         reconnectButtonEnabled.set(false);

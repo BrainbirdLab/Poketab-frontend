@@ -35,10 +35,8 @@
         }
 
         if (value){
-            //console.log('listening to scroll');
             $messageContainer.onscroll = scrollHandler;
         } else {
-            //console.log('stop listening to scroll');
             $messageContainer.onscroll = null;
             messageScrolledPx.set(0);
         }
@@ -46,7 +44,6 @@
 
     function scrollHandler(){
         //if scrolled up more than 200px
-        //console.log('scrolling...');
         messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
         if ( $messageScrolledPx > 200) {
             showScrollPopUp.set(true);

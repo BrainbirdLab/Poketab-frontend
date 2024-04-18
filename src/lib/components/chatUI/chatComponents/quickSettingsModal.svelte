@@ -22,11 +22,9 @@ function setDefaultChatSettings() {
 }
 
 export function loadChatSettings() {
-        //console.log("Loading settings");
         const settingsStr = localStorage.getItem("settings") || "{}";
         try {
             const parsedSettings: Partial<Settings> = JSON.parse(settingsStr);
-            //console.log(parsedSettings);
 
             if (
                 typeof parsedSettings.buttonSoundEnabled != "boolean" ||
@@ -49,7 +47,6 @@ export function loadChatSettings() {
                 }
             }
         } catch (error) {
-            console.log("Error parsing settings:", error);
             // Store the default settings
             localStorage.setItem("settings", JSON.stringify(defaultSettings));
             console.log("Default settings stored");
@@ -148,10 +145,8 @@ export function loadChatSettings() {
     }
 
     function leaveChat(destroy: boolean = false){
-        console.log(destroy ? 'Destroying chat...' : 'Leaving chat...');
         splashMessage.set((destroy ? 'Destroying chat... ' : 'Leaving chat... ') + '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px">');
         clearModals();
-        console.log('Left chat');
         socket.emit('leaveChat', destroy);
     }
 
@@ -170,7 +165,6 @@ export function loadChatSettings() {
             }, 1000);
         })
         .catch(err => {
-            console.log(err);
             showToastMessage('Failed to copy');
         });
     }

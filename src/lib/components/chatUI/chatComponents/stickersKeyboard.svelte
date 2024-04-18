@@ -67,7 +67,6 @@
             }
 
             if (target.closest('.stickersHeader')){
-                //console.log('Hmm.. Choosing sticker group');
                 const groupName = target.dataset.group;
                 if (groupName){
                     selectedSticker.set(groupName);
@@ -130,7 +129,6 @@
                     const groupName = entry.target.id;
                     if (groupName){
                         selectedSticker.set(groupName);
-                        //console.log('Group changed to : ', groupName);
                     }
                 }
             });

@@ -71,7 +71,6 @@
                 if (!$voiceMessageAudio){
                     return;
                 }
-                console.log('Audio ended');
                 micIcon = 'fa-play';
                 time = timeToPrintable(audioDuration);
                 document.documentElement.style.setProperty('--recordedAudioPlaybackProgress', "0%");
@@ -79,6 +78,7 @@
             };
         } else {
             console.log('Audio is not available');
+            showToastMessage('Audio data not loaded yet');
         }
     }
 
@@ -89,6 +89,7 @@
             $voiceMessageAudio.pause();
         } else {
             console.log('Audio is not available');
+            showToastMessage('Audio data not loaded yet');
         }
     }
 
@@ -98,7 +99,6 @@
         navigator.mediaDevices.getUserMedia({audio: true})
         .then(mediaStream => {
                 playMessageSound('startRecording');
-                console.log('Recording started');
                 isActive = true;
                 recordingState = true;
                 playState = false;
@@ -114,7 +114,6 @@
                 };
 
                 audioRecorder.onstop = () => {
-                    console.log('Recording stopped');
 
                     const audioBlob = new Blob(audioChunks, {type: 'audio/mp3'});
                     audioUrl = URL.createObjectURL(audioBlob);
@@ -149,7 +148,6 @@
     }
 
     function recordButtonHandler(){
-        // console.log('Record button clicked');
         // this plays role to show the recorder, start recording, stop recording, play and pause the recorded audio
         // if the recorder is not active, it will be activated
         if (!isActive){

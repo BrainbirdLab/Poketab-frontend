@@ -44,10 +44,6 @@
     let pressedOnce = false;
     let pressedOnceTimer: number;
 
-    const unsub = page.subscribe((value) => {
-        console.log('Page state:', value.state);
-    });
-
     function exitChat(e?: Event) {
 
         const isDefault = Object.values($page.state).some(
@@ -63,7 +59,6 @@
                 showToastMessage("Go again to exit");
 
                 if (e) {
-                    console.log("Going forward");
                     history.forward();
                 }
 
@@ -108,13 +103,11 @@
 
         window.onfocus = () => {
             if (!$lastMessageId) {
-                //console.log('No last seen message');
                 return;
             }
 
             socket.emit("seen", $myId, $chatRoomStore.Key, $lastMessageId);
         };
-        console.log("Mounted chatInterface.svelte");
     });
 
     onDestroy(() => {
@@ -124,9 +117,6 @@
         if (window){
             window.onfocus = null;
             window.onresize = null;
-        }
-        if (unsub) {
-            unsub();
         }
     });
 </script>

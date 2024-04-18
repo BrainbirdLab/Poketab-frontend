@@ -29,8 +29,6 @@
             showToastMessage('Geolocation is not supported by this browser.');
         }
 
-        console.log("Transmitting location...");
-
         //try to get location with high accuracy and timeout of 5 seconds.
         let timeout = setTimeout(() => {
             showToastMessage('Unable to get location.');
@@ -39,7 +37,6 @@
         navigator.geolocation.getCurrentPosition((position) => {
             clearTimeout(timeout);
             const {latitude, longitude} = position.coords;
-            console.log(`${latitude}°N, ${longitude}°E`);
             socket.emit('location', {latitude, longitude}, $chatRoomStore.Key, $myId);
         }, (error) => {
             clearTimeout(timeout);
@@ -56,8 +53,6 @@
         const clickHandler = async (e: Event) => {
 
             const target = e.target as HTMLElement;
-
-            //console.log(target);
             
             if (target === fileBtn){
                 acceptedTypes = null;
@@ -78,7 +73,6 @@
                     showFilePicker = true;
                     await tick();
                     filePicker.onchange = (e) => {
-                        //console.log('filePicker change event');
                         if ($selectedFiles.length > 10){
                             showToastMessage('You can only send 10 files at a time.');
                             clearInput();
@@ -133,7 +127,6 @@
     }
 
     function sendFiles() {
-        //console.log('sendFiles event');
 
         //copy files to variable
         const files = [...$selectedFiles];
@@ -202,17 +195,14 @@
 
         Promise.allSettled(promisses).then((res) => {
             console.log(res);
-            //showToastMessage('All files sent.');
-            //socket.emit('files', res, $chatRoomStore.Key, $myId);
         }).catch((err) => {
             console.log(err);
-            //showToastMessage('Unable to send files.');
+            showToastMessage('Unable to send files.');
         });
     }
 
     function handleClick(node: HTMLElement){
 
-        //console.log(sendAs);
 
         node.onclick = (e: Event) => {
             const target = e.target as HTMLElement;
@@ -223,9 +213,7 @@
                     sendFiles();
                 }
             } else if (target.tagName === "I" && target.classList.contains("remove")){
-                console.log('Remove button clicked');
                 const elem = target.closest('.file_preview') as HTMLElement;
-                console.log(elem);
                 if (!elem){
                     return;
                 }

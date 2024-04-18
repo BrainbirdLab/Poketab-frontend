@@ -77,8 +77,6 @@
     function requestForChat(evt: Event) {
         evt.preventDefault();
 
-        console.log("Requesting for chat");
-
         pokemonErr = "";
         maxUserErr = "";
 
@@ -100,17 +98,12 @@
             return;
         }
 
-        console.log("%cValidation Passed", "color: green");
-
-        console.log("Connecting to chat...");
-
         //initChatActionDisabled = true;
         formActionButtonDisabled.set(true);
         actionButtonText = "Please wait ";
 
         if (!$chatRoomStore.Key) {
-            console.log("Creating chat...");
-            //console.log(`pokemon: ${get(selfInfoStore).pokemon}, Max user: ${get(chatRoomStore).maxUsers}`);
+
             socket.emit(
                 "createChat",
                 selectedpokemon,
@@ -137,8 +130,6 @@
                     });
 
                     myId.set(res.userId);
-
-                    console.log("Created key: " + $chatRoomStore.Key);
 
                     joinedChat.set(true);
                     currentPage.set("chat");
@@ -177,8 +168,6 @@
                     });
 
                     myId.set(res.userId);
-
-                    console.log("Joined key: " + $chatRoomStore.Key);
 
                     joinedChat.set(true);
                     currentPage.set("chat");

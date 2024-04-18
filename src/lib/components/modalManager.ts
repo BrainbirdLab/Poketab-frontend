@@ -1,7 +1,5 @@
 import { writable, type Writable } from 'svelte/store';
 
-console.log('Modal Manager Running');
-
 export let activeModalsStack: Writable<boolean>[] = [];
 
 

@@ -19,7 +19,6 @@
         } else if (value.includes('online')){
             connected = 'online';
             if (socket.disconnected){
-                console.log('Connecting to server...');
                 socket.connect();
                 setTimeout(() => {
                     if ($formNotification.toLocaleLowerCase().includes('connected')){

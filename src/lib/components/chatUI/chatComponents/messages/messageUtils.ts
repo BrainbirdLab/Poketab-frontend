@@ -58,13 +58,9 @@ export function remainingTime(totalTime: number, elapsedTime: number) {
 
 export function sendMessage(message: MessageObj, file?: File){
 
-	//get(messageContainer).scrollTo({ top: get(messageContainer).scrollHeight, behavior: 'smooth' });
-	
-
 	message.sender = get(myId);
 	message.id = Math.random().toString(36);
 
-	//console.log(`Id: ${message.id}`);
 
 	messageDatabase.add(message);
 
@@ -79,7 +75,6 @@ export function sendMessage(message: MessageObj, file?: File){
 		} else {
 			playMessageSound('outgoing');
 		}
-		//console.log(`New message id: ${messageId}`);
 		
 		
 		if (file){
@@ -91,7 +86,6 @@ export function sendMessage(message: MessageObj, file?: File){
 	
 					return messages;
 				});
-				console.log('File upload skipped');
 				return;
 			}
 			
@@ -110,7 +104,6 @@ export function sendMessage(message: MessageObj, file?: File){
 			xhr.upload.onprogress = (e) => {
 				if (e.lengthComputable){
 					const percent = (e.loaded / e.total) * 100;
-					console.log(percent);
 					//update message
 					messageDatabase.update(messages => {
 
@@ -270,12 +263,9 @@ export class TextParser {
 	parseCode(text: string) {
 		const regex = /```(\w*)([^`]+?)```/gs;
 		return text.replace(regex, (match, lang: string, code: string) => {
-			//console.log(`Language found: ${lang} lang=='' ${lang == ''} lang==undefined ${lang == undefined} isSupportedLanguage ${this.isSupportedLanguage(lang)}`);
 			if (lang == '' || lang == undefined || !this.isSupportedLanguage(lang)) {
-				//console.log(`Unsupported language: ${lang}`);
 				lang = 'txt';
 			}
-			console.log(`Language found: ${lang}`);
 			lang = `class="language-${lang} line-numbers" data-lang="${lang}"`;
 			return `<pre ${lang}><div class="copy-btn" title="Copy to clipboard" data-action="Copy"></div><span class="line-row">${code.trim().split('\n').map(() => `<span class="line-number"></span>`).join('')}</span><code>${formatCode(code)}</code></pre>`;
 		});
@@ -293,7 +283,6 @@ export class TextParser {
   
 	// Function to parse links
 	parseLink(text: string) {
-		//console.log(`Parsing links: ${text}`);
 		return text.replace(this.linkRegex, '<a href=\'$&\' rel=\'noopener noreferrer\' target=\'_blank\'>$&</a>');
 	}
 }

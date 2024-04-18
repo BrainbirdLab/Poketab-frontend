@@ -9,7 +9,7 @@
     let retry = 1;
 
     socket.on('connect', ()=>{
-        //console.log('Connected - conectivityState.svelte');
+
         retry = 1;
 
         if (title == ''){
@@ -24,13 +24,12 @@
     });
 
     socket.on('connection_error', () => {
-        //console.log('Connection error - conectivityState.svelte');
+
         title = 'Could not connect. Retrying... ' + retry++;
         icon = 'fa-circle-exclamation';
     });
 
     function handleOffline(){
-        //console.log('Offline - conectivityState.svelte');
         title = 'You are offline';
         offline = true;
         icon = 'fa-circle-exclamation';
@@ -39,7 +38,6 @@
     }
 
     function handleOnline(){
-        //console.log('Back to Online - conectivityState.svelte');
         title = 'Back to online';
         offline = false;
         icon = 'fa-wifi';

@@ -40,7 +40,6 @@
 
     onMount(() => {
         userClosed = false;
-        console.log($message);
     });
 
     onDestroy(() => {

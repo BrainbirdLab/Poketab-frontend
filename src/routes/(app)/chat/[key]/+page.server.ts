@@ -55,17 +55,12 @@ export async function load({ params, cookies }) {
     });
     
     socket.emit('fetchKeyData', key, true, (res: socketResponse) => {
-      console.log('Key data fetched');
       resolve({...res, key, themename});
     });
   });
 
-  
-  console.log(`Searching for key ${key}`);
   // Wait for the fetchDataPromise to resolve
   const res = await fetchDataPromise;
-
-  console.log(res.statusCode);
 
   // If the server is down, return an error
   if (res.statusCode === 500 || res.statusCode === 400) {

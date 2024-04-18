@@ -27,7 +27,6 @@
     import { onDestroy } from "svelte";
 
     socket.on("newMessage", (message: MessageObj, messageId: string) => {
-        //console.log(message);
 
         if (message.baseType == "text" || message.baseType == "deleted") {
             message = Object.setPrototypeOf(message, TextMessageObj.prototype);
@@ -56,7 +55,6 @@
         if (message instanceof TextMessageObj) {
             message.message = filterBadWords(message.message);
         } else if (message instanceof FileMessageObj) {
-            console.log("File message received", message.loaded);
             message.loadScheme = "upload";
             if (message instanceof ImageMessageObj) {
                 message.url = message.thumbnail;
@@ -72,9 +70,6 @@
         messageDatabase.add(message);
         lastMessageId.set(messageId);
         notice.set(message);
-        console.log("new message received");
-
-        console.log("Done updating message database");
 
         //audios
         if (message instanceof StickerMessageObj) {
@@ -95,10 +90,8 @@
                 url: string;
             },
         ) => {
-            console.log("link preview data received");
 
             if (!messageDatabase.has(messageId)) {
-                console.log("message not found");
                 return;
             }
 
@@ -113,7 +106,6 @@
     );
 
     socket.on("fileDownload", (messageId: string, sender: string) => {
-        console.log("file link received");
         if (!$chatRoomStore.userList[sender]) {
             return;
         }
@@ -174,7 +166,6 @@
         xhr.onprogress = (e) => {
             if (e.lengthComputable) {
                 const percent = (e.loaded / e.total) * 100;
-                //console.log(percent);
                 //update message
 
                 messageDatabase.update((messages) => {
@@ -191,7 +182,6 @@
 
     socket.on("deleteMessage", (messageId: string, uid: string) => {
         try {
-            console.log("delete req received");
 
             if (
                 !messageDatabase.has(messageId) ||
@@ -217,7 +207,6 @@
                     $outgoingXHRs.get(id)?.abort();
                     $outgoingXHRs.delete(id);
 
-                    console.log("aborted download/upload");
                 }
 
                 messageDatabase.update((messages) => {
@@ -291,7 +280,6 @@
             !$chatRoomStore.userList[uid] ||
             !messageDatabase.has(messageId)
         ) {
-            //console.log("invalid seen");
             return;
         }
 
@@ -343,7 +331,6 @@
             !$chatRoomStore.userList[uid] ||
             !messageDatabase.has(messageId)
         ) {
-            //console.log("invalid seen");
             return;
         }
 

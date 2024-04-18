@@ -21,18 +21,15 @@
         loadChatSettings();
 
         if ($page.route.id !== '/chat'){
-            console.log("Redirecting to /chat");
             goto('/chat');
         }
 
         mounted = true;
-        console.log("Mounted chat +layout.svelte");
 
         let interval: number;
 
         socket.on('maintainanceBreak', (message: string, time: number) => {
             //time seconds later connection will be closed.
-            console.log('Maintainance break: ' + message);
 
             showToastMessage(message, 3000);
             interval = setInterval(() => {

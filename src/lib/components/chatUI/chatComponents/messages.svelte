@@ -132,7 +132,6 @@
                 
                 if (target.classList.contains('control')){
 
-                    //console.log(messageObj.audio.paused ? 'Playing...' : 'Paused');
                     
                     if (messageObj.audio.paused){
                         //stop all other audios
@@ -188,7 +187,6 @@
                     //get the calculated time and seek to it
                     const duration = messageObj.audio.duration;
                     const time = (evt.offsetX / audioContainer.offsetWidth) * duration;
-                    //console.log(time);
                     messageObj.audio.currentTime = time;
                     //seekAudioMessage(audio, time);
 				}
@@ -293,7 +291,6 @@
                 const message = target.closest(".message") as HTMLElement;
 
                 if (target.closest(".msg") && messageDatabase.has(message.id) && (messageDatabase.getMessage(message.id) as MessageObj).baseType != 'deleted') {
-                    //console.log(xDiff);
 
                     xDiff = xStart - evt.touches[0].clientX / 3;
                     yDiff = yStart - evt.touches[0].clientY / 3;
@@ -311,7 +308,6 @@
 
                     //if horizontal
                     if (horizontalSwipe) {
-                        //console.log('horizontal');
                         const replyIcon = message.querySelector(".replyIcon") as HTMLElement;
 
                         const { classList, sent } = messageDatabase.getMessage(message.id) as MessageObj;
@@ -472,8 +468,6 @@
 
     async function updateUI(){
 
-        //console.log('updateUI');
-
         await tick();
 
         if (!$messageContainer){
@@ -484,8 +478,6 @@
             clearTimeout(timeout);
         }
 
-        //console.log(heightChanged);
-
         if (Math.abs(heightChanged) < 16){
             if (heightChanged > 0) { //height increase
                 $messageContainer.scrollTop += heightChanged;
@@ -493,12 +485,10 @@
             }
             /*
             else if (heightChanged < 0 && scrolledToBottomPx > 0){ //height decrease
-                console.log('%cScrolled Down', 'color: pink;');
                 $messageContainer.scrollTop += heightChanged;
             }
             */
         } else if (heightChanged > 16 && !$showScrollPopUp){
-            //console.log('%cSmooth scroll', 'color: lime;');
             
             listenScroll.set(false);
 
@@ -526,7 +516,6 @@
             });
 
             $messageContainer.addEventListener('scrollend', () => {
-                //console.log('scroll end');
                 listenScroll.set(true);
             }, {once: true});
         }

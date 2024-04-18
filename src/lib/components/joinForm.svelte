@@ -47,7 +47,6 @@
     }
 
     function parseKey(e: ClipboardEvent) {
-        //console.log('Parsing $joinKey');
         e.preventDefault();
         //convert abcedfg to ab-cde-fg
         let value = e.clipboardData?.getData("text/plain");
@@ -84,12 +83,10 @@
     };
 
     function checkKey() {
-        console.log("Checking key");
 
         $joinError.text = "";
 
         if (!$joinKey) {
-            console.log("Key is empty");
             $joinError.text = "Key is required";
             $joinError.icon = "fa-solid fa-triangle-exclamation";
             joinInput.focus();
@@ -99,7 +96,6 @@
         }
 
         if (!testKey($joinKey)) {
-            console.log("Invalid key", $joinKey);
             $joinError.text = "Invalid key";
             $joinError.icon = "fa-solid fa-triangle-exclamation";
             joinInput.focus();
@@ -113,7 +109,6 @@
 
         $joinError.icon = "";
 
-        console.log("Fetching key data");
 
         //params: key: string, ssr: boolean, callback: (res: fetchResponse) => void
         socket
@@ -123,7 +118,6 @@
                 formActionButtonDisabled.set(false);
 
                 if (!res.success) {
-                    console.log(res.message);
 
                     if (res.statusCode >= 500) {
                         formNotification.set("Error: " + res.message);
@@ -134,8 +128,6 @@
                     $joinError.icon = res.icon;
                     return;
                 }
-
-                console.log("Key data fetched");
 
                 chatRoomStore.update((room) => {
                     room.Key = $joinKey;
