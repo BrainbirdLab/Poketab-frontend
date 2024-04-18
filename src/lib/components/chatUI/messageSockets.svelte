@@ -367,8 +367,13 @@
 
     socket.on("typing", (uid: string, event: "start" | "end") => {
         if (event == "start") {
-            playMessageSound("typing");
-            userTypingSet.add(uid);
+            //playMessageSound("typing");
+
+            if (!userTypingSet.has(uid)){
+                userTypingSet.add(uid);
+                playMessageSound("typing");
+            }
+
         } else {
             userTypingSet.delete(uid);
         }

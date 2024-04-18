@@ -49,6 +49,32 @@ export function getIcon(type: string){
     }
 }
 
+export function setIntersection<T>(setA: Set<T>, setB: Set<T>) {
+    let _intersection = new Set<T>();
+    for (let elem of setB) {
+        if (setA.has(elem)) {
+            _intersection.add(elem);
+        }
+    }
+    return _intersection;
+}
+
+export function setDifference<T>(setA: Set<T>, setB: Set<T>) {
+    let _difference = new Set<T>(setA);
+    for (let elem of setB) {
+        _difference.delete(elem);
+    }
+    return _difference;
+}
+
+export function setUnion<T>(setA: Set<T>, setB: Set<T>) {
+    let _union = new Set<T>(setA);
+    for (let elem of setB) {
+        _union.add(elem);
+    }
+    return _union;
+}
+
 export async function copyText(text: string){
     if (!text) return;
 
