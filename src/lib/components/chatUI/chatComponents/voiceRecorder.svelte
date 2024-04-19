@@ -34,6 +34,15 @@
     function timeToPrintable(time: number){
         let minutes = Math.floor(time / 60);
         let seconds = Math.floor(time % 60);
+
+        if (minutes < 0){
+            minutes = 0;
+        }
+
+        if (seconds < 0){
+            seconds = 0;
+        }
+
         return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
     }
 
