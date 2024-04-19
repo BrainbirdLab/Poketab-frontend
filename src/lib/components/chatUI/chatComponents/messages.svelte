@@ -478,7 +478,20 @@
             clearTimeout(timeout);
         }
 
-        if (heightChanged > 16 && !$showScrollPopUp){
+        //console.log(`Height changed: ${heightChanged}px | Scrolled to bottom: ${scrolledToBottomPx}px | Scroll height: ${$messageContainer.scrollHeight}`);
+
+        if (Math.abs(heightChanged) < 16){
+            if (heightChanged > 0) { //height increase
+                $messageContainer.scrollTop += heightChanged;
+                console.log('%cScrolled Up - react add', 'color: green;');
+            }
+            
+            else if (heightChanged < 0 && scrolledToBottomPx > 0){ //height decrease
+                $messageContainer.scrollTop += heightChanged;
+                console.log('%cScrolled Down - react remove', 'color: orange;');
+            }
+            
+        } else if (heightChanged > 16 && !$showScrollPopUp){
             
             listenScroll.set(false);
 
@@ -564,6 +577,7 @@
         </div>
     </div>
     {#each $messageDatabase as message (message)}
+
         {#if message instanceof MessageObj}
             
             {#if message instanceof TextMessageObj && (message.type === "text" || message.type === "emoji")}
@@ -600,7 +614,7 @@
             flex-grow: 1;
             z-index: 1;
             margin-bottom: 20px;
-            scroll-snap-type: y proximity;
+            //scroll-snap-type: y proximity;
             width: 100%;
 
             .welcome_wrapper {
