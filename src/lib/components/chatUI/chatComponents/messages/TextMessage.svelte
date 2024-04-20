@@ -4,12 +4,13 @@
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
+    import { fly } from "svelte/transition";
 
     export let message: TextMessageObj;
 
 </script>
 
-<li class="message msg-item {message.classList}" id="{message.id}">
+<li class="message msg-item {message.classList}" id="{message.id}" in:fly|global={{y: 20}}>
     <SeenBy seenBy={message.seenBy} id={message.id} />
     <div class="messageContainer" >
         <MessageMeta senderId={message.sender} isSent={message.sent}/>

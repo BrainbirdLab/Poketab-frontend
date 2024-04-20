@@ -480,6 +480,7 @@
 
         //console.log(`Height changed: ${heightChanged}px | Scrolled to bottom: ${scrolledToBottomPx}px | Scroll height: ${$messageContainer.scrollHeight}`);
 
+        /*
         if (Math.abs(heightChanged) < 16){
             if (heightChanged > 0) { //height increase
                 $messageContainer.scrollTop += heightChanged;
@@ -491,7 +492,7 @@
                 console.log('%cScrolled Down - react remove', 'color: orange;');
             }
             
-        } else if (heightChanged > 16 && !$showScrollPopUp){
+        } else */ if (heightChanged > 16 && !$showScrollPopUp){
             
             listenScroll.set(false);
 
@@ -512,11 +513,12 @@
 
             }
             
+            /*
             $messageContainer.scrollTo({
                 top: $messageContainer.scrollHeight,
                 behavior: "smooth",
-                
             });
+            */
 
             $messageContainer.addEventListener('scrollend', () => {
                 listenScroll.set(true);
@@ -566,17 +568,7 @@
 </script>
 
 <ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={$messageContainer}>
-    <div class="welcome_wrapper" in:fade>
-        <div class="welcomeText">
-            <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
-            <div>Share this chat link to others to join</div>
-            <button id="invite" class="clickable hover play-sound button capsule" title="Click to share" on:click={invite}>
-                Share
-                <i class="fa-solid fa-share-nodes"></i>
-            </button>
-        </div>
-    </div>
-    {#each $messageDatabase as message (message)}
+    {#each $messageDatabase.toReversed() as message (message)}
 
         {#if message instanceof MessageObj}
             
@@ -598,13 +590,23 @@
             <LocationMessage location={message}/>
         {/if}
     {/each}
+    <div class="welcome_wrapper" in:fade>
+        <div class="welcomeText">
+            <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
+            <div>Share this chat link to others to join</div>
+            <button id="invite" class="clickable hover play-sound button capsule" title="Click to share" on:click={invite}>
+                Share
+                <i class="fa-solid fa-share-nodes"></i>
+            </button>
+        </div>
+    </div>
 </ul>
 
 <style lang="scss">
         #messages {
             position: relative;
             display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse;
             gap: 2px;
             overflow-y: scroll;
             overflow-x: hidden;
