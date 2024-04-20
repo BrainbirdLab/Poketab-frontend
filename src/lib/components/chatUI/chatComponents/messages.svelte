@@ -478,17 +478,17 @@
             clearTimeout(timeout);
         }
 
-        //console.log(`Height changed: ${heightChanged}px | Scrolled to bottom: ${scrolledToBottomPx}px | Scroll height: ${$messageContainer.scrollHeight}`);
+        console.log(`Height changed: ${heightChanged}px | Scrolled to bottom: ${scrolledToBottomPx}px | Scroll height: ${$messageContainer.scrollHeight}`);
 
         if (Math.abs(heightChanged) < 16){
             if (heightChanged > 0) { //height increase, means the messages under has gone down by around 16px so we need to scroll up that much.
                 $messageContainer.scrollTop += heightChanged;
-                //console.log('%cScrolled Up - react add', 'color: green;');
+                console.log('%cScrolled Up - react add', 'color: green;');
             }
             
-            else if (heightChanged < 0 && (scrolledToBottomPx > 0 || scrolledToBottomPx > 2)){ //height decrease, means the messages under has gone up by around 16px so we need to scroll down that much.
+            else if (heightChanged < 0 && (scrolledToBottomPx > 0)){ //height decrease, means the messages under has gone up by around 16px so we need to scroll down that much.
                 $messageContainer.scrollTop += heightChanged;
-                //console.log('%cScrolled Down - react remove', 'color: orange;');
+                console.log('%cScrolled Down - react remove', 'color: orange;');
             }
             
         } else if (heightChanged > 16 && !$showScrollPopUp){
