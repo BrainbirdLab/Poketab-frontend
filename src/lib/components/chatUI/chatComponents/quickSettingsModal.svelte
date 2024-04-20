@@ -369,11 +369,11 @@ export function loadChatSettings() {
                 <ul class="moreInfo">
                     {#if $chatRoomStore.admin == $myId}                        
                     <li>
-                        Destroy chat will end the chat and delete all messages
+                        Destroy chat will end the chat session for all
                     </li>
                     {/if}
                     <li>
-                        Leave chat will end the chat and keep the others to chat
+                        Leave chat will end the chat session for you
                     </li>
                 </ul>
                 <div class="subsection btn-grp">
