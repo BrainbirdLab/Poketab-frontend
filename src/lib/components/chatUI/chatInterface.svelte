@@ -4,7 +4,6 @@
 
     //compoments
     import NavBar from "$lib/components/chatUI/chatComponents/navbar.svelte";
-    import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
     import Footer from "$lib/components/chatUI/chatComponents/footer.svelte";
 
     import QuickSettingsModal from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
@@ -153,7 +152,7 @@
 <div class="container">
     <div class="chatBox" class:offl={isOffline}>
         <NavBar />
-        <Messages />
+            <slot name="messages" />
         <Footer />
     </div>
 </div>

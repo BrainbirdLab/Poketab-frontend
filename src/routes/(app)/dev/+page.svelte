@@ -1,6 +1,7 @@
 <script lang="ts">
     import "$lib/styles/atom.css";
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
+    import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
     import { onMount } from "svelte";
     import { chatRoomStore, currentPage, formActionButtonDisabled, joinedChat, myId, splashMessage } from "$lib/store";
 
@@ -63,7 +64,9 @@
 
 {#if mounted}
 <div class="content">
-    <ChatInterface />
+    <ChatInterface>
+        <Messages slot="messages"/>
+    </ChatInterface>
 </div>
 {/if}
 
