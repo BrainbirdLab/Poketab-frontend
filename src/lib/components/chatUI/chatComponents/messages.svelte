@@ -482,9 +482,6 @@
             clearTimeout(timeout);
         }
 
-        console.log(`Height changed: ${heightChanged}px | Scrolled to bottom: ${scrolledToBottomPx}px | Scroll height: ${$messageContainer.scrollHeight}`);
-        console.log(`Scroll changed: ${scrollChanged}px`);
-
         if (Math.abs(heightChanged) < 16){
             if (heightChanged > 0) { //height increase, means the messages under has gone down by around 16px so we need to scroll up that much.
                 $messageContainer.scrollTop += heightChanged;
@@ -506,15 +503,17 @@
 
                 const lastMessageObj = messageDatabase.getMessage(lastMessage.id) as MessageObj;
 
-                if (lastMessageObj instanceof FileMessageObj && lastMessageObj.baseType === 'image'){
-                    await new Promise((resolve) => {
-                        const img = lastMessage.querySelector('img') as HTMLImageElement;
-                        img.addEventListener('load', () => {
-                            resolve(null);
-                        }, {once: true});
-                    });
+                if (lastMessageObj.type != "sticker"){
+                    const img = lastMessage.querySelector('img') as HTMLImageElement;
+    
+                    if (img &&!img.complete){
+                        await new Promise((resolve) => {
+                            img.addEventListener('load', () => {
+                                resolve(null);
+                            }, {once: true});
+                        });
+                    }
                 }
-
             }
             
             $messageContainer.scrollTo({
