@@ -19,6 +19,10 @@ export type socketResponse = {
     maxUsers: number,
 }
 
+/**
+* Attempts to reconnect the WebSocket connection.
+* Resets the retry count, sets a 'Reconnecting...' notification, disables the reconnect button, and calls `socket.connect()` to initiate the reconnection.
+*/
 export function reConnectSocket() {
     retryCount.set(1);
     formNotification.set('Reconnecting...');
@@ -65,6 +69,7 @@ socket.on('connect', () => {
 let retryCount = writable(1);
 
 formNotification.subscribe(value => {
+    console.log(value);
     if (value.includes('offline')) {
         retryCount.set(1);
         reconnectButtonEnabled.set(false);
@@ -94,21 +99,22 @@ socket.on('connect_error', (err) => {
         formNotification.set('Could not connect to server. Retrying... ' + get(retryCount) + '/3');
         retryCount.update(n => n + 1);
     }
+    console.log('%cRetrying...', 'color: red');
+    //socket.connect();
 });
 
 
 socket.on('disconnect', () => {
 
     retryCount.set(1);
-    if (get(currentPage) != 'chat') { // on the forms page
-        formNotification.set('Disconnected from server');
-        socketConnected.set(false);
-        formActionButtonDisabled.set(true);
-        console.log('%cDisconnected from server', 'color: red');
-    } else {
+    if (get(currentPage) == 'chat') { // on the forms page
         resetChatRoomStore('Disconnected from server 🙃');
     }
-    socket.connect();
+    formNotification.set('Disconnected from server');
+    formActionButtonDisabled.set(true);
+    reconnectButtonEnabled.set(false);
+    socketConnected.set(false);
+    console.log('%cDisconnected from server', 'color: red');
 });
 
 socket.on('selfDestruct', (msg: string) => {

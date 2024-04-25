@@ -283,7 +283,7 @@
                 {#if $reconnectButtonEnabled}
                     <button
                         class="button-animate hover play-sound recon"
-                        on:click={reConnectSocket}>Reconnect</button
+                        on:click={() => {reConnectSocket()}}>Reconnect</button
                     >
                 {:else}
                     <button
