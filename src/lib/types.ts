@@ -10,7 +10,7 @@ export type ErrorLog = {
 
 export type User = {
     uid: string,
-    pokemon: string,
+    avatar: string,
     lastSeenMessage?: string | null,
 }
 

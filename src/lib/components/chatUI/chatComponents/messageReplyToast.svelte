@@ -12,7 +12,7 @@
         return messages[messageDatabase.getIndex($replyTarget?.id || "")] as MessageObj;
     });
 
-    $: sender = $replyTarget ? ($message.sender === $myId ? 'self' : $chatRoomStore.userList[$message.sender]?.pokemon || 'Zombie') : 'Zombie';
+    $: sender = $replyTarget ? ($message.sender === $myId ? 'self' : $chatRoomStore.userList[$message.sender]?.avatar || 'Zombie') : 'Zombie';
 
     $: {
         if (!$message || $message.type == 'deleted' || !$chatRoomStore.userList[$message.sender]){

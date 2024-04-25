@@ -53,15 +53,15 @@
 
 <div class="wrapper" use:handleClick transition:fly|global={{y: 40, duration: 100}}>
     <div class="reactsOnMessage back-blur">
-        <div class="title">Reacts on {$chatRoomStore.userList[$message?.sender || '']?.pokemon || "Zombie"}'s message</div>
+        <div class="title">Reacts on {$chatRoomStore.userList[$message?.sender || '']?.avatar || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
             {#key reactsToShow}
             {#each reactsToShow as [uid, react], i}
                 <div class="user">
                     <div class="userInfo" in:fly|global={{x: -5, delay: 50 * (i + 1)}}>
-                        <img src="/images/pokemons/{$chatRoomStore.userList[uid]?.pokemon || "rip"}(custom).png" alt="user"/>
-                        <span>{$chatRoomStore.userList[uid]?.pokemon || "Zombie"}</span>
+                        <img src="/images/avatars/{$chatRoomStore.userList[uid]?.avatar || "Rip"}(custom).png" alt="user"/>
+                        <span>{$chatRoomStore.userList[uid]?.avatar || "Zombie"}</span>
                     </div>
                     <span class="react-emoji" in:fly|global={{x: 5, delay: 50 * (i + 1)}}>{react}</span>
                 </div>

@@ -63,12 +63,12 @@ export const joinedChat = writable(false);
 export const currentPage = writable('form');
 
 
-export function isTaken(pokemon: string){
+export function isTaken(avatar: string){
 
     const obj = get(chatRoomStore).userList;
 
     for (const key in obj) {
-        if (obj[key].pokemon === pokemon) {
+        if (obj[key].avatar === avatar) {
             return true;
         }
     }

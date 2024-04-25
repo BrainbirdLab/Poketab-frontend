@@ -11,37 +11,37 @@
         "uid-1": {
             uid: "uid-1",
             name: "User 1",
-            pokemon: "pikachu",
+            avatar: "pikachu",
             lastSeenMessage: null,
         },
         "uid-2": {
             uid: "uid-2",
             name: "User 2",
-            pokemon: "squirtle",
+            avatar: "squirtle",
             lastSeenMessage: null,
         },
         "uid-3": {
             uid: "uid-3",
             name: "User 3",
-            pokemon: "bullbasaur",
+            avatar: "bullbasaur",
             lastSeenMessage: null,
         },
         "uid-4": {
             uid: "uid-4",
             name: "User 4",
-            pokemon: "charmander",
+            avatar: "charmander",
             lastSeenMessage: null,
         },
         "uid-5": {
             uid: "uid-5",
             name: "User 5",
-            pokemon: "eevee",
+            avatar: "eevee",
             lastSeenMessage: null,
         },
         "uid-6": {
             uid: "uid-6",
             name: "User 6",
-            pokemon: "jigglypuff",
+            avatar: "jigglypuff",
             lastSeenMessage: null,
         },
     };

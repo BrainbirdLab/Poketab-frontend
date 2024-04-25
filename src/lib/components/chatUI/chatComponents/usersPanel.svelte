@@ -9,14 +9,14 @@
     <li class="user">
         <div class="avt">
             <img
-                src="/images/pokemons/{$chatRoomStore.userList[$myId]
-                    .pokemon}(custom).webp"
+                src="/images/avatars/{$chatRoomStore.userList[$myId]
+                    .avatar}(custom).webp"
                 height="30"
                 width="30"
-                alt="Profile-pokemon"
+                alt="Profile-avatar"
             />
         </div>
-        <span>{$chatRoomStore.userList[$myId].pokemon} (You)</span>
+        <span>{$chatRoomStore.userList[$myId].avatar} (You)</span>
     </li>
     {#each Object.entries($chatRoomStore.userList).filter(([id, _]) => id !== $myId) as [id, User], i (id)}
         <li
@@ -26,13 +26,13 @@
         >
             <div class="avt">
                 <img
-                    src="/images/pokemons/{User.pokemon}(custom).webp"
+                    src="/images/avatars/{User.avatar}(custom).webp"
                     height="30"
                     width="30"
-                    alt="Profile-pokemon"
+                    alt="Profile-avatar"
                 />
             </div>
-            <span>{User.pokemon}</span>
+            <span>{User.avatar}</span>
         </li>
     {/each}
 </div>

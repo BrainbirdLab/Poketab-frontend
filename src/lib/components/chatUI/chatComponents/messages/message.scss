@@ -73,7 +73,7 @@
             color: var(--text-color);
         }
     }
-    .pokemon{
+    .avatar{
         height: 30px;
         width: 30px;
         border-radius: 50%;
@@ -120,7 +120,7 @@
     }
 }
 
-.start .pokemon{
+.start .avatar{
     visibility: hidden;
 }
 
@@ -176,7 +176,7 @@
             border-bottom-left-radius: 18px;
         }
     }
-    .pokemon{
+    .avatar{
         visibility: visible;
     }
 }
@@ -243,7 +243,7 @@
                 border-bottom-right-radius: 18px;
             }
         }
-        .pokemon{
+        .avatar{
             visibility: visible;
         }
     }

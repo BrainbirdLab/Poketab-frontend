@@ -4,7 +4,7 @@
 	"version": "0.1.5.aplha",
 	"private": true,
 	"engines": {
-		"pnpm": ">=3"
+		"pnpm": ">=8"
 	},
 	"scripts": {
 		"dev": "vite dev",

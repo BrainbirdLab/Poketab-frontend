@@ -114,7 +114,7 @@
     <div class="footer">
         <div class="assets">
             <a href="https://fontawesome.com"> <i class="fa-solid fa-font"></i> Fontawesome</a>
-            <a href="https://www.flaticon.com/free-icons/pokemon"><i class="fa-solid fa-compass-drafting"></i> Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/avatar"><i class="fa-solid fa-compass-drafting"></i> Flaticon</a>
         </div>
         <div class="copyrights">
             &copy; {new Date().getFullYear()} - BrainBird.org

@@ -32,5 +32,9 @@
         color: tomato;
     }
 
+    :not(.serverMessage) + .serverMessage {
+        margin-top: 15px;
+    }
+
 
 </style>

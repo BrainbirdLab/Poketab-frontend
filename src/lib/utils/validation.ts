@@ -38,8 +38,8 @@ export function validateUserName(username: string){
 	return ( isRealString(username) && name_format.test(username) && username.trim().length > 0);
 }
 
-export function validatepokemon(pokemon: string){
-	return avList.includes(pokemon);
+export function validateavatar(avatar: string){
+	return avList.includes(avatar);
 }
 
 export function validateKey(key: string){
@@ -47,6 +47,6 @@ export function validateKey(key: string){
 	return keyformat.test(key);
 }
 
-export function validateAll(username: string, key: string, pokemon: string){
-	return (validateUserName(username) && validateKey(key) && validatepokemon(pokemon));
+export function validateAll(username: string, key: string, avatar: string){
+	return (validateUserName(username) && validateKey(key) && validateavatar(avatar));
 }
