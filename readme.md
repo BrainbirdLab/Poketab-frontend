@@ -1,5 +1,5 @@
 # Poketab Messenger (In development)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/itsfuad/BrainbirdLab/Poketab-frontend?style=flat-square)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/BrainbirdLab/Poketab-frontend?style=flat-square)
 ![GitHub repo size](https://img.shields.io/github/repo-size/BrainbirdLab/Poketab-frontend)
 ![GitHub contributors](https://img.shields.io/github/contributors/BrainbirdLab/Poketab-frontend?style=flat-square)
 ![GitHub last commit](https://img.shields.io/github/last-commit/BrainbirdLab/Poketab-frontend?style=flat-square)
