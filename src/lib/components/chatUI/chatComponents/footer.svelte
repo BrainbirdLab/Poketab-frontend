@@ -3,7 +3,7 @@
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./voiceRecorder.svelte";
     import { fly } from "svelte/transition";
-    import { socket } from "$lib/components/socket";
+    import { socket } from "$lib/socket";
 
     import { quickEmojiEnabled, myId, sendMethod, chatRoomStore, quickEmoji} from "$lib/store";
     import { SEND_METHOD } from "$lib/types";

@@ -1,8 +1,8 @@
 
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import {showMessageOptions} from "$lib/components/modalManager";
-    import { socket } from "$lib/components/socket";
+    import {showMessageOptions} from "$lib/modalManager";
+    import { socket } from "$lib/socket";
     import { MessageObj, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj, messageDatabase } from "$lib/messageTypes";
     import { chatRoomStore, myId, reactArray } from "$lib/store";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";

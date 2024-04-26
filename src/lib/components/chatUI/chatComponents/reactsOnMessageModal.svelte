@@ -1,7 +1,7 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
     import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageTypes";
-    import { showReactsOnMessageModal } from "$lib/components/modalManager";
+    import { showReactsOnMessageModal } from "$lib/modalManager";
     import { fly } from "svelte/transition";
     import { derived } from "svelte/store";
 

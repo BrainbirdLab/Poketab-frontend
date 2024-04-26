@@ -61,7 +61,7 @@ export function loadChatSettings() {
     import {
         //showQuickSettingsPanel,
         //showThemesPanel,
-    } from "$lib/components/modalManager";
+    } from "$lib/modalManager";
     import {
         buttonSoundEnabled,
         chatRoomStore,
@@ -75,7 +75,7 @@ export function loadChatSettings() {
     import { SEND_METHOD } from "$lib/types";
     import EmojiPicker from "./emojiPicker.svelte";
     import { spin } from "$lib/utils";
-    import { socket } from "$lib/components/socket";
+    import { socket } from "$lib/socket";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import UsersPanel from "./usersPanel.svelte";
     import { elasticOut } from "svelte/easing";

@@ -7,7 +7,7 @@
     import Footer from "$lib/components/chatUI/chatComponents/footer.svelte";
 
     import QuickSettingsModal from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
-    import ThemesModal , { themes } from "$lib/components/chatUI/chatComponents/themesModal.svelte";
+    import ThemesModal from "$lib/components/chatUI/chatComponents/themesModal.svelte";
     import StickersKeyboardModal from "$lib/components/chatUI/chatComponents/stickersKeyboard.svelte";
     import AttachmentsModal from "$lib/components/chatUI/chatComponents/sendAttachments.svelte";
     import MessageOptionsModal from "$lib/components/chatUI/chatComponents/messageOptions.svelte";
@@ -24,6 +24,7 @@
 
     //scripts
     import { eventTriggerMessageId, lastMessageId } from "$lib/messageTypes";
+    import { themes } from "$lib/themeTypes";
     import {
         //activeModalsStack,
         //showAttachmentPickerPanel,
@@ -32,9 +33,9 @@
         showReactsOnMessageModal,
         //showStickersPanel,
         //showThemesPanel,
-    } from "$lib/components/modalManager";
+    } from "$lib/modalManager";
     import { chatRoomStore, currentTheme, myId, quickEmoji } from "$lib/store";
-    import { socket } from "$lib/components/socket";
+    import { socket } from "$lib/socket";
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
 

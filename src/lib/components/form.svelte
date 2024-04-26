@@ -4,7 +4,7 @@
     import {reconnectButtonEnabled, showUserInputForm} from "$lib/store";
     import Notification from "./notification.svelte";
     import { onMount } from "svelte";
-    import { socket } from "$lib/components/socket";
+    import { socket } from "$lib/socket";
     import { fly, scale } from "svelte/transition";
 
     let mounted = false;

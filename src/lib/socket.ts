@@ -69,7 +69,6 @@ socket.on('connect', () => {
 let retryCount = writable(1);
 
 formNotification.subscribe(value => {
-    console.log(value);
     if (value.includes('offline')) {
         retryCount.set(1);
         reconnectButtonEnabled.set(false);
@@ -86,7 +85,7 @@ socket.on('connect_error', (err) => {
     socketConnected.set(false);
 
     if (get(formNotification) == 'Disconnected from server') {
-        formNotification.set('Reconnecting...');
+        formNotification.set('Connecting...');
     } else {
         if (get(retryCount) >= 3) {
             formNotification.set('Could not connect to server.');
@@ -104,13 +103,12 @@ socket.on('connect_error', (err) => {
 });
 
 
-socket.on('disconnect', () => {
-
+socket.on('disconnect', (_: string) => {
     retryCount.set(1);
     if (get(currentPage) == 'chat') { // on the forms page
         resetChatRoomStore('Disconnected from server 🙃');
     }
-    formNotification.set('Disconnected from server');
+    formNotification.set('');
     formActionButtonDisabled.set(true);
     reconnectButtonEnabled.set(false);
     socketConnected.set(false);

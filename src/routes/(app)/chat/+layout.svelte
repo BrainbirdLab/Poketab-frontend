@@ -2,7 +2,7 @@
     import "$lib/styles/atom.css";
     import { formNotification, formActionButtonDisabled, currentTheme } from "$lib/store";
     import { onMount } from "svelte";
-    import { socket } from "$lib/components/socket";
+    import { socket } from "$lib/socket.js";
     import SplashScreen from "$lib/components/splashScreen.svelte";
     import {goto} from "$app/navigation";
     import { page } from "$app/stores";

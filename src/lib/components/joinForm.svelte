@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
 
-    import { socket, reConnectSocket } from "$lib/components/socket";
+    import { socket, reConnectSocket } from "$lib/socket";
     import {
         formNotification,
         reconnectButtonEnabled,

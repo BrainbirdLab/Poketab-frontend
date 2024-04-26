@@ -22,7 +22,7 @@
     } from "$lib/store";
     import { type User } from "$lib/types";
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { socket, API_URL } from "$lib/components/socket";
+    import { socket, API_URL } from "$lib/socket";
     import { emojis, playMessageSound } from "$lib/utils";
     import { onDestroy } from "svelte";
 

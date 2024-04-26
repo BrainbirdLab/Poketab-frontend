@@ -8,7 +8,7 @@
         socket,
         reConnectSocket,
         type socketResponse,
-    } from "$lib/components/socket";
+    } from "$lib/socket";
     import {
         formActionButtonDisabled,
         reconnectButtonEnabled,

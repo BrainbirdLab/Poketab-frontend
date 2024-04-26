@@ -1,35 +1,5 @@
-<script context="module" lang="ts">
-    type ThemeAccent = {
-        [key: string]: {
-            quickEmoji: string;
-        };
-    };
-
-//theme colors and backgrounds
-export const themes: ThemeAccent = {
-    'Blue': {
-        quickEmoji: '🥶',
-    },
-    'Ocean': {
-        quickEmoji: '🐳',
-    },
-    'Cyberpunk': {
-        quickEmoji: '👾',
-    },
-    'Geometry': {
-        quickEmoji: '🔥',
-    },
-    'Blackboard': {
-        quickEmoji: '👽',
-    },
-    'Forest': {
-        quickEmoji: '🍃',
-    }
-};
-</script>
-
 <script lang="ts">
-
+    import { themes } from "$lib/themeTypes";
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showToastMessage } from "@itsfuad/domtoastmessage";

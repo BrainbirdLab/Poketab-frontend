@@ -1,7 +1,7 @@
-import { themes } from "$lib/components/chatUI/chatComponents/themesModal.svelte";
+import { themes } from "$lib/themeTypes";
 import { error, type NumericRange } from '@sveltejs/kit';
 import { io } from 'socket.io-client';
-import type { socketResponse } from '$lib/components/socket.js';
+import type { socketResponse } from '$lib/socket';
 
 type fetchResponse = socketResponse & {
   key: string,
@@ -44,7 +44,7 @@ export async function load({ params, cookies }) {
       socket.disconnect();
       resolve({
         success: false,
-        message: 'Server is down',
+        message: 'Connection could not be established',
         statusCode: 500,
         icon: '❌',
         users: {},

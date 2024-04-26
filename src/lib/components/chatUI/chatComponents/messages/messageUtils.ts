@@ -1,9 +1,9 @@
 import { MessageObj, messageDatabase, lastMessageId, FileMessageObj } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
 import { chatRoomStore, myId, outgoingXHRs } from "$lib/store";
-import { socket } from "$lib/components/socket";
+import { socket } from "$lib/socket";
 import { badWords } from "./censoredWords";
-import { API_URL } from "$lib/components/socket";
+import { API_URL } from "$lib/socket";
 import { playMessageSound } from "$lib/utils";
 
 export const showReplyToast = writable(false);
