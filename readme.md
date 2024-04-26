@@ -1,9 +1,9 @@
 # Poketab Messenger (In development)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/itsfuad/Poketab-Frontend?style=flat-square)
-![GitHub repo size](https://img.shields.io/github/repo-size/itsfuad/Poketab-Frontend)
-![GitHub contributors](https://img.shields.io/github/contributors/itsfuad/Poketab-Frontend?style=flat-square)
-![GitHub last commit](https://img.shields.io/github/last-commit/itsfuad/Poketab-Frontend?style=flat-square)
-[![DeepScan grade](https://deepscan.io/api/teams/20528/projects/26417/branches/840416/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=26417&bid=840416)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/itsfuad/BrainbirdLab/Poketab-frontend?style=flat-square)
+![GitHub repo size](https://img.shields.io/github/repo-size/BrainbirdLab/Poketab-frontend)
+![GitHub contributors](https://img.shields.io/github/contributors/BrainbirdLab/Poketab-frontend?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/BrainbirdLab/Poketab-frontend?style=flat-square)
+[![DeepScan grade](https://deepscan.io/api/teams/20528/projects/27059/branches/864831/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=27059&bid=864831)
 
 ![Website](https://img.shields.io/website?down_color=Red&down_message=Offline&style=flat-square&up_color=green&up_message=Online&url=https%3A%2F%2Fpoketab.vercel.app)
 
