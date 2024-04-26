@@ -5,7 +5,6 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/itsfuad/Poketab-Frontend?style=flat-square)
 [![DeepScan grade](https://deepscan.io/api/teams/20528/projects/26417/branches/840416/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=20528&pid=26417&bid=840416)
 
-![GitHub](https://img.shields.io/github/license/itsfuad/Poketab-Frontend?style=flat-square)
 ![Website](https://img.shields.io/website?down_color=Red&down_message=Offline&style=flat-square&up_color=green&up_message=Online&url=https%3A%2F%2Fpoketab.vercel.app)
 
 Poketab Messenger is a temporary chat application that allows users to create and join group chats with up to 10 people. The app utilizes a unique key system to ensure privacy and security, as users can only join a chat by using a key generated and sent by the server.
@@ -43,6 +42,6 @@ To contribute to this project, follow these steps:
 ## Credits
 Lead Developer [Fuad Hasan](https://github.com/itsfuad).
 
-Backend repo: [Backend Server](https://github.com/itsfuad/Poketab-Backend)
+Backend repo: [Backend Server](https://github.com/BrainbirdLab/Poketab-API)
 
 Email: itsfuad@engineer.com

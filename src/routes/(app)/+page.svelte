@@ -90,7 +90,7 @@
         <a
             id="github"
             class="button-animate button play-sound"
-            href="https://github.com/itsfuad/poketab-messenger"
+            href="https://github.com/BrainbirdLab/Poketab-frontend"
             transition:fly={{y: 10, delay: 700}}
             >View Source <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
