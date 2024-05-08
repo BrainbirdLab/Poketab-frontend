@@ -25,6 +25,7 @@
         element.removeAttribute("data-pressed");
     }
 
+
     function handleClick(event: MouseEvent | TouchEvent) {
         const target = event.target as HTMLElement;
 
