@@ -362,7 +362,7 @@ export function loadChatSettings() {
             </div>
 
 
-            <div class="footer_options">
+            <div class="subsection danger-zone">
                 <div class="subtitle sectionHeadTitle red">
                     Danger zone <i class="fa-solid fa-skull"></i>
                 </div>
@@ -376,7 +376,7 @@ export function loadChatSettings() {
                         Leave chat will end the chat session for you
                     </li>
                 </ul>
-                <div class="subsection btn-grp">
+                <div class="btn-grp">
                     {#if $chatRoomStore.admin == $myId}
                     <button
                         on:click={() => leaveChat(true)}
@@ -472,27 +472,30 @@ export function loadChatSettings() {
         z-index: 100;
     }
 
-    .footer_options {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        padding: 10px;
-        gap: 10px;
-        align-items: flex-start;
-        justify-content: space-between;
-
-        button{
+    .danger-zone{
+        .btn-grp{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-        }
 
-        #destroy{
-            background: red;
+            & > button {
+                min-width: fit-content;
+                flex: 1;
+            }
         }
-        
-        #logoutButton{
-            background: #19394d;
-            color: inherit;
-        }
+    }
+
+    #destroy{
+        background: red;
+    }
+    
+    #logoutButton{
+        background: #19394d;
+        color: inherit;
     }
 
     .red{
@@ -507,6 +510,7 @@ export function loadChatSettings() {
     }
 
     .moreInfo {
+
         font-size: 0.7rem;
         color: var(--blue-grey-color);
         display: flex;
@@ -521,7 +525,7 @@ export function loadChatSettings() {
         }
 
         li{
-            margin-left: 10px;
+            margin-left: 25px;
             list-style: disc;
         }
     }
