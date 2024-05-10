@@ -287,11 +287,11 @@ export function loadChatSettings() {
             </div>
 
 
-            <!--Quick emoji-->
+            <!--Themes and emoji-->
             <div class="subsection">
                 <div
                     class="subtitle">
-                    Quick emoji <i class="fa-solid fa-face-smile-wink"></i>
+                    Themes & emoji <i class="fa-solid fa-palette"></i>
                 </div>
                 <div
                     class="field-checkers play-sound hoverShadow">
