@@ -28,8 +28,10 @@
         messageContainer,
         FileMessageObj,
         AudioMessageObj,
+        ImageMessageObj,
     } from "$lib/messageTypes";
     import {
+    showFilePreviewPanel,
         showMessageOptions,
         showReactsOnMessageModal,
         //showStickersPanel,
@@ -192,6 +194,9 @@
 				}
 
                 return;
+            } else if (messageObj instanceof ImageMessageObj && target.closest('img')){
+                console.log('image message');
+                addState('view', { viewImage: messageObj.url });
             }
 
             //if message is a sticker, show the sticker panel of that group

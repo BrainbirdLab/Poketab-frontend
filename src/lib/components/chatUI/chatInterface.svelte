@@ -38,6 +38,7 @@
     import { socket } from "$lib/socket";
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
+    import Lightbox from "./chatComponents/lightbox.svelte";
 
     let isOffline = false;
 
@@ -126,6 +127,10 @@
 </svelte:head>
 
 <ConnectivityState bind:offline={isOffline} />
+
+{#if $page.state.viewImage != null}
+    <Lightbox />
+{/if}
 
 {#if $page.state.showQuickSettingsPanel === true}
     <QuickSettingsModal />

@@ -123,6 +123,7 @@
 
                 // Applying Deltas to Scale and Translate transformations
                 this.applyScale = function (dscale, x, y) {
+                    console.log(dscale, x, y);
                     const newTrans = this.getTransformMatrix();
                     const width = ele.width ? ele.width : ele.offsetWidth;
                     const height = ele.height ? ele.height : ele.offsetHeight;
@@ -130,6 +131,7 @@
                     const tranY = y - (height / 2);
                     dscale = (this.liner ? dscale : dscale * (newTrans.scale)); // scale either liner or non-liner 
                     newTrans.scale += dscale;
+                    console.log(newTrans.scale);
                     const maxOrMinScale = (newTrans.scale <= this.minScale || newTrans.scale >= this.maxScale);
                     if (newTrans.scale < this.minScale)
                         newTrans.scale = this.minScale;
@@ -238,6 +240,7 @@
 
                 this.getScrollDirection = function (e) {
                     const delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                    console.log(delta);
                     if (delta < 0) {
                         self.applyScale(-self.increment, e.offsetX, e.offsetY);
                     }
