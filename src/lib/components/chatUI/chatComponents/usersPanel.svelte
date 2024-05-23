@@ -65,8 +65,8 @@
 
             img {
                 display: block;
-                height: 30px;
-                width: 30px;
+                height: 35px;
+                width: 35px;
                 aspect-ratio: 1/1;
             }
         }

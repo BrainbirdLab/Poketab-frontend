@@ -433,7 +433,7 @@ export function loadChatSettings() {
     }
 
     .feedback{
-        margin-top: 20px;
+        padding: 10px 0 10px;
         width: 100%;
         display: flex;
         flex-direction: column;

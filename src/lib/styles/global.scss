@@ -155,6 +155,8 @@ button {
 .roundedBtn {
     width: 35px !important;
     height: 35px !important;
+    min-width: 35px !important;
+    min-height: 35px !important;
     aspect-ratio: 1/1 !important;
     display: flex !important;
     flex-direction: column !important;
