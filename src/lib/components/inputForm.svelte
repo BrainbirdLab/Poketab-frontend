@@ -15,7 +15,6 @@
         showUserInputForm,
         chatRoomStore,
         myId,
-        socketConnected,
         joinedChat,
         isTaken,
         currentPage,
@@ -289,7 +288,7 @@
                     <button
                         class="button-animate hover play-sound"
                         disabled={$formActionButtonDisabled ||
-                            !$socketConnected}
+                            !socket.connected}
                         on:click={requestForChat}
                     >
                         {actionButtonText}

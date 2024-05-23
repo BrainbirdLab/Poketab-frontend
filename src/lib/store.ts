@@ -56,8 +56,6 @@ export const chatRoomStore: Writable<chatRoomStoreType> = writable({
     maxUsers: 0,
 });
 
-export const socketConnected = writable(false);
-
 export const joinedChat = writable(false);
 
 export const currentPage = writable('form');

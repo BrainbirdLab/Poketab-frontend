@@ -56,14 +56,12 @@ export function remainingTime(totalTime: number, elapsedTime: number) {
 	}
 }
 
-export function sendMessage(message: MessageObj, file?: File){
+export async function sendMessage(message: MessageObj, file?: File){
 
 	message.sender = get(myId);
 	message.id = Math.random().toString(36);
 
-
 	messageDatabase.add(message);
-
 	
     socket.emit('newMessage', message, get(chatRoomStore).Key, (messageId: string) => {
 		

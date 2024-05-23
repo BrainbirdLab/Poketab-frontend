@@ -1,12 +1,14 @@
-import { reconnectButtonEnabled, socketConnected, formNotification, formActionButtonDisabled, resetChatRoomStore, currentPage } from "$lib/store";
+import { reconnectButtonEnabled, formNotification, formActionButtonDisabled, resetChatRoomStore, currentPage } from "$lib/store";
 import { get, writable } from "svelte/store";
 import { io } from "socket.io-client";
 import { chatRoomStore } from "$lib/store";
 import { type User } from "$lib/types";
 import { browser } from "$app/environment";
 
+import { PUBLIC_API_SERVER_URL } from "$env/static/public";
+
 //get server value from .env file
-export const API_URL = import.meta.env.VITE_API_SERVER_URL;
+export const API_URL = PUBLIC_API_SERVER_URL;
 
 export const socket = io(API_URL);
 
@@ -54,7 +56,6 @@ socket.on('connect', () => {
     //splashMessage.set('');
     formActionButtonDisabled.set(false);
     retryCount.set(1);
-    socketConnected.set(true);
     if (get(formNotification) == '') {
         console.log('%cConnected to server', 'color: blue');
         return;
@@ -82,7 +83,6 @@ formNotification.subscribe(value => {
 
 socket.on('connect_error', (err) => {
     console.log('%cConnection error - Socket.ts', 'color: red');
-    socketConnected.set(false);
 
     if (get(formNotification) == 'Disconnected from server') {
         formNotification.set('Connecting...');
@@ -111,7 +111,6 @@ socket.on('disconnect', (_: string) => {
     formNotification.set('');
     formActionButtonDisabled.set(true);
     reconnectButtonEnabled.set(false);
-    socketConnected.set(false);
     console.log('%cDisconnected from server', 'color: red');
 });
 

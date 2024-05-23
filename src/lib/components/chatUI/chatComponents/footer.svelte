@@ -20,7 +20,7 @@
 
     const codeParser = new TextParser();
     
-    function insertMessage(quickEmoji = false){
+    async function insertMessage(quickEmoji = false){
 
 
         let message: MessageObj;
@@ -76,7 +76,7 @@
             showReplyToast.set(false);
         }
 
-        sendMessage(message);
+        await sendMessage(message);
 
         endTypingStatus();
 

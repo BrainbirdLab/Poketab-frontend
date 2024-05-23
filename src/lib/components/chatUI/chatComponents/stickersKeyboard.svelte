@@ -56,7 +56,7 @@
             localStorage.setItem("selectedSticker", value);
         });
 
-        node.onclick = (e: Event) => {
+        node.onclick = async (e: Event) => {
 
             const target = e.target as HTMLElement;
 
@@ -98,7 +98,7 @@
                     showReplyToast.set(false);
                 }
 
-                sendMessage(messageObj);
+                await sendMessage(messageObj);
 
                 //showStickersPanel.set(false);
                 history.back();

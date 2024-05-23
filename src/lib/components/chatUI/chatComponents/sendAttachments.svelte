@@ -161,10 +161,10 @@
                         message.width = thumbnail.width;
                         message.height = thumbnail.height;
                         
-                        sendMessage(message, file);
+                        await sendMessage(message, file);
 
                     } else {
-                        sendMessage(message, file);
+                        await sendMessage(message, file);
                     }
 
                 } else {
@@ -184,7 +184,7 @@
                             if (message instanceof AudioMessageObj) {
                                 message.duration = message.audio.duration;
 
-                                sendMessage(message, file);
+                                await sendMessage(message, file);
                             }
                         }, { once: true });
                         

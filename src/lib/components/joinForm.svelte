@@ -5,7 +5,6 @@
     import {
         formNotification,
         reconnectButtonEnabled,
-        socketConnected,
         formActionButtonDisabled,
         chatRoomStore,
         showUserInputForm,
@@ -15,7 +14,7 @@
 
     import type { User } from "$lib/types";
 
-    import { onDestroy } from "svelte";
+    import { onDestroy, onMount } from "svelte";
 
     function testKey(k: string) {
         return /^[a-zA-Z0-9]{2}-[a-zA-Z0-9]{3}-[a-zA-Z0-9]{2}$/.test(k);
@@ -151,8 +150,15 @@
         showUserInputForm.set(true);
     }
 
+    onMount(() => {
+        if (socket.connected && $formActionButtonDisabled){
+            formActionButtonDisabled.set(false);
+        }
+    });
+
     onDestroy(() => {
         joinError.set({ text: "", icon: "" });
+        joinKey.set("");
     });
 </script>
 
@@ -194,7 +200,7 @@
             {:else}
                 <button
                     class="button-animate hover  play-sound"
-                    disabled={$formActionButtonDisabled || !$socketConnected}
+                    disabled={$formActionButtonDisabled || !socket.connected}
                     on:click={checkKey}
                 >
                     {joinActionText}

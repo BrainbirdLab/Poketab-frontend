@@ -2,13 +2,14 @@ import { themes } from "$lib/themeTypes";
 import { error, type NumericRange } from '@sveltejs/kit';
 import { io } from 'socket.io-client';
 import type { socketResponse } from '$lib/socket';
+import { PUBLIC_API_SERVER_URL } from "$env/static/public"
 
 type fetchResponse = socketResponse & {
   key: string,
   themename: string,
 }
 
-const server = import.meta.env.VITE_API_SERVER_URL;
+const server = PUBLIC_API_SERVER_URL;
 
 export async function load({ params, cookies }) {
 

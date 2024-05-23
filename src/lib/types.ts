@@ -12,6 +12,7 @@ export type User = {
     uid: string,
     avatar: string,
     lastSeenMessage?: string | null,
+    PublicKey: CryptoKey,
 }
 
 export type chatRoomStoreType = {
