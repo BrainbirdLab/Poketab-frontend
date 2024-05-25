@@ -36,9 +36,15 @@
                 target.addEventListener("mouseleave", removeAttribute, {
                     once: true,
                 });
+                target.addEventListener("mouseup", removeAttribute, {
+                    once: true,
+                });
             } else {
                 //if touch event, add listener for touchend
                 target.addEventListener("touchend", removeAttribute, {
+                    once: true,
+                });
+                target.addEventListener("touchcancel", removeAttribute, {
                     once: true,
                 });
             }

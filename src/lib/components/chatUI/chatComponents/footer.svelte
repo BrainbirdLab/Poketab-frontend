@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from "$app/stores";
     import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./voiceRecorder.svelte";
@@ -193,18 +194,17 @@
         observer.disconnect();
     });
 
-
+    $: inputOff = $page.state.showStickersPanel || $page.state.showAttachmentPickerPanel;
 
 </script>
 
-<div class="footer" transition:fly={{y: 30}} bind:this={footer}>
+<div class="footer" transition:fly={{y: 30}} bind:this={footer} >
 
     <ScrollDownPopup/>
     
     <TypingIndicator />
 
-    
-    <div class="chatInput">
+    <div class="chatInput" class:hide={inputOff == true}>
         <button on:click={() => {
                 //showStickersPanel.set(true)
                 //pushState('/stickers/'+$selectedSticker, { showStickersPanel: true })
@@ -260,6 +260,14 @@
         padding: 0 3px;
         gap: 2px;
         width: 100%;
+        transition: 200ms ease-in-out;
+
+
+        &.hide {
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(70%);
+        }
 
         #send {
             border: none;

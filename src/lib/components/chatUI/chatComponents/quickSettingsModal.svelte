@@ -478,6 +478,8 @@ export function loadChatSettings() {
         flex-direction: column;
         justify-content: center;
         align-items: flex-end;
+        transition: 200ms;
+        backdrop-filter: brightness(0.5);
         //background: #aaa;
         z-index: 100;
     }

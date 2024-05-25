@@ -403,7 +403,7 @@
 
         .attachmentContainer {
             position: absolute;
-            bottom: 80px;
+            bottom: 40px;
             padding: 20px;
             border-radius: 10px;
             display: flex;
