@@ -222,7 +222,12 @@ export function loadChatSettings() {
                         bind:checked={$buttonSoundEnabled}
                     />
                     <label for="buttonSound">
-                        <div class="textContainer">Click Sound</div>
+                        <div class="textContainer">
+                            Click Sound
+                            <div class="moreInfo">
+                                Buttons and UI elements sound
+                            </div>
+                        </div>
                         <span class="toggleButton" />
                     </label>
                 </div>
@@ -235,7 +240,12 @@ export function loadChatSettings() {
                         bind:checked={$messageSoundEnabled}
                     />
                     <label for="messageSound">
-                        <div class="textContainer">Message sound</div>
+                        <div class="textContainer">
+                            Message sound
+                            <div class="moreInfo">
+                                Message action sound (send, recieve, reacts)
+                            </div>
+                        </div>
                         <span class="toggleButton" />
                     </label>
                 </div>
