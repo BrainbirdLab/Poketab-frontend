@@ -23,7 +23,6 @@
     
     async function insertMessage(quickEmoji = false){
 
-
         let message: MessageObj;
 
         if ($voiceMessageAudio){
@@ -80,10 +79,6 @@
         await sendMessage(message);
 
         endTypingStatus();
-
-        setTimeout(() => {
-            inputbox.focus();
-        }, 100);
     }
 
     //if text contains only whitespace characters then return true
@@ -163,7 +158,16 @@
 
     let lastHeight = 0;
 
+    let maxWindowHeight: number;
+    let softKeyboardActive = false;
+
     onMount(() => {
+
+        maxWindowHeight = window.visualViewport?.height || 0;
+
+        window.onresize = () => {
+            softKeyboardActive = (window.visualViewport?.height || 0) < maxWindowHeight;
+        };
 
         //on height change
         observer = new ResizeObserver(entries => {
@@ -185,6 +189,12 @@
                 }
             }
         });
+
+        inputbox.onblur = () => {
+            if (softKeyboardActive) {
+                inputbox.focus();
+            }
+        };
 
         observer.observe(footer);
     });

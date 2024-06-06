@@ -97,7 +97,6 @@ function fallbackCopyTextToClipboard(text: string){
     textArea.value = text;
     textArea.style.position="fixed";
     document.body.appendChild(textArea);
-    textArea.focus();
     textArea.select();
 
     try {

@@ -13,7 +13,10 @@ declare global {
 			showThemesPanel?: boolean;
 			showStickersPanel?: boolean;
 			showAttachmentPickerPanel?: boolean;
-			viewImage?: string;
+			viewImage?: {
+				src: string,
+				id: string
+			}
 		}
 	}
 	const __VERSION__: string;

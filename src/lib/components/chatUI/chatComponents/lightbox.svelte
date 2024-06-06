@@ -23,6 +23,7 @@
 </script>
 
 <div class="lightbox">
+    {#if $page.state.viewImage?.id}
     <button class="close hoverShadow" on:click={closeLightbox}>
         <!-- back arrow -->
         <i class="fa-solid fa-arrow-left"></i>
@@ -31,7 +32,10 @@
         <i class="fa-solid fa-download"></i>
     </button>
     <!-- use the img as image element -->
-    <img bind:this={image} src={$page.state.viewImage} alt="Could not load" class="main-image"/>
+    <img bind:this={image} src={$page.state.viewImage?.src} data-ref-id="{$page.state.viewImage?.id}" alt="Could not load" class="main-image"/>
+    {:else}
+        No longer available
+    {/if}
 </div>
 
 <style lang="scss">

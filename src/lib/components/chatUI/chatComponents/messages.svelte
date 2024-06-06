@@ -196,7 +196,7 @@
                 return;
             } else if (messageObj instanceof ImageMessageObj && target.closest('img')){
                 console.log('image message');
-                addState('view', { viewImage: messageObj.url });
+                addState('view', { viewImage: { src: messageObj.url, id: messageObj.id} });
             }
 
             //if message is a sticker, show the sticker panel of that group

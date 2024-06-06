@@ -117,7 +117,6 @@
         }
         if (window){
             window.onfocus = null;
-            window.onresize = null;
         }
     });
 </script>
