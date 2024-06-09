@@ -5,8 +5,10 @@
     import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { onMount } from "svelte";
+    import { deviceType } from "$lib/store";
 
     async function detectSWUpdate(){
+        if (!("serviceWorker" in navigator)) return;
         const registration = await navigator.serviceWorker.ready;
 
         registration.addEventListener("updatefound", () => {
@@ -23,6 +25,12 @@
     function removeAttribute(evt: MouseEvent | TouchEvent) {
         const element = evt.target as HTMLElement;
         element.removeAttribute("data-pressed");
+    }
+
+    function detectDeviceType() {
+        //detect if mobile or desktop
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        deviceType.set(isMobile ? "mobile" : "desktop");
     }
 
 

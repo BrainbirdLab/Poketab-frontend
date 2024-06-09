@@ -32,9 +32,12 @@
         color: tomato;
     }
 
-    :not(.serverMessage) + .serverMessage {
-        margin-top: 15px;
+    .serverMessage[data-type="debug"]{
+        color: #ffeb38;
     }
 
+    :global(:not(.serverMessage) + .serverMessage) {
+        margin-top: 15px;
+    }
 
 </style>

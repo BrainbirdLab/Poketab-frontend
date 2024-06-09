@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
 
+import { get } from "svelte/store";
+
 type Settings = {
     buttonSoundEnabled: boolean;
     messageSoundEnabled: boolean;
@@ -11,7 +13,7 @@ const defaultSettings = {
     buttonSoundEnabled: true,
     messageSoundEnabled: true,
     quickEmojiEnabled: true,
-    sendMethod: SEND_METHOD.ENTER,
+    sendMethod: get(deviceType) == "mobile" ? SEND_METHOD.CTRL_ENTER : SEND_METHOD.ENTER,
 };
 
 function setDefaultChatSettings() {
@@ -65,6 +67,7 @@ export function loadChatSettings() {
     import {
         buttonSoundEnabled,
         chatRoomStore,
+        deviceType,
         messageSoundEnabled,
         myId,
         quickEmoji,

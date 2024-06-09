@@ -4,6 +4,7 @@
     //import { showQuickSettingsPanel } from "$lib/components/modalManager";
     import { fade, fly } from "svelte/transition";
     import { addState } from "../stateManager.svelte";
+
 </script>
 
 <div class="navbar" transition:fly={{y: -50}}>
@@ -28,9 +29,8 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        //position: absolute;
         position: relative;
-        top: 0;
+        //top: 0;
         width: 100%;
         z-index: 15;
         font-size: 0.9rem;

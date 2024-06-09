@@ -9,7 +9,7 @@
     import QuickSettingsModal from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
     import ThemesModal from "$lib/components/chatUI/chatComponents/themesModal.svelte";
     import StickersKeyboardModal from "$lib/components/chatUI/chatComponents/stickersKeyboard.svelte";
-    import AttachmentsModal from "$lib/components/chatUI/chatComponents/sendAttachments.svelte";
+    import AttachmentsModal from "$lib/components/chatUI/chatComponents/attachments.svelte";
     import MessageOptionsModal from "$lib/components/chatUI/chatComponents/messageOptions.svelte";
 
     import ReactsOnMessage from "$lib/components/chatUI/chatComponents/reactsOnMessageModal.svelte";

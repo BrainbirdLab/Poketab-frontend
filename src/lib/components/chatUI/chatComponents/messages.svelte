@@ -29,6 +29,7 @@
         FileMessageObj,
         AudioMessageObj,
         ImageMessageObj,
+        messageScrolledPx,
     } from "$lib/messageTypes";
     import {
     showFilePreviewPanel,
@@ -382,7 +383,7 @@
                     replyIcon.dataset.swipeStart = "false";
                     
                     //use spring animation to translate back to 0
-                    const x = spring(xDiff, { stiffness: 0.5, damping: 0.5 });
+                    const x = spring(xDiff, { stiffness: 0.3, damping: 0.5 });
                     unsub = x.subscribe((value) => {
                         message.style.transform = `translateX(${value}px)`;
                     });
@@ -460,6 +461,7 @@
         $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
 
         scrolledToBottomPx = Math.floor($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.offsetHeight);
+        
         heightChanged = $messageContainer.scrollHeight - lastHeight;
         scrollChanged = $messageContainer.scrollTop - lastScrollPosition;
     });

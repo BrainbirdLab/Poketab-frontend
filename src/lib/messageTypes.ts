@@ -6,7 +6,7 @@ export const lastMessageId = writable('');
 export class ServerMessageObj {
     id: string;
     text: string;
-    type: 'join' | 'leave';
+    type: 'join' | 'leave' | 'debug';
     baseType: 'server';
     readonly timeStamp: number;
     constructor() {

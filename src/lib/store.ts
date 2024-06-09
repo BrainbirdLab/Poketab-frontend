@@ -30,6 +30,8 @@ export const formActionButtonDisabled = writable(true);
 export const showScrollPopUp = writable(false);
 export const listenScroll = writable(true);
 
+export const deviceType: Writable<'desktop' | 'mobile'> = writable('desktop');
+
 export const outgoingXHRs: Writable<
     Map<string, XMLHttpRequest>
 > = writable(new Map());

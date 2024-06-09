@@ -53,37 +53,42 @@
         const clickHandler = async (e: Event) => {
 
             const target = e.target as HTMLElement;
-            
-            if (target === fileBtn){
-                acceptedTypes = null;
-                sendAs = 'file';
-            } else if (target === imageBtn){
-                acceptedTypes = 'image/png, image/jpg, image/jpeg';
-                sendAs = 'image';
-            } else if (target === audioBtn){
-                acceptedTypes = 'audio/mp3, audio/wav, audio/ogg';
-                sendAs = 'audio';
-            } else if (target === locationBtn){
-                transmitLocation();
-                return;
-            }
 
-            if (target === node || target === fileBtn || target === imageBtn || target === audioBtn || target === locationBtn){
-                if (target !== node){
-                    showFilePicker = true;
-                    await tick();
-                    filePicker.onchange = (e) => {
-                        if ($selectedFiles.length > 10){
-                            showToastMessage('You can only send 10 files at a time.');
-                            clearInput();
-                            return;
-                        }
-                    }
-                    filePicker.click();
+            try{
+                if (target === fileBtn){
+                    acceptedTypes = null;
+                    sendAs = 'file';
+                } else if (target === imageBtn){
+                    acceptedTypes = 'image/png, image/jpg, image/jpeg';
+                    sendAs = 'image';
+                } else if (target === audioBtn){
+                    acceptedTypes = 'audio/mp3, audio/wav, audio/ogg';
+                    sendAs = 'audio';
+                } else if (target === locationBtn){
+                    transmitLocation();
+                    return;
                 }
-                //showAttachmentPickerPanel.set(false);
+    
+                if (target === node || target === fileBtn || target === imageBtn || target === audioBtn || target === locationBtn){
+                    if (target !== node){
+                        showFilePicker = true;
+                        await tick();
+                        filePicker.onchange = (e) => {
+                            if ($selectedFiles.length > 10){
+                                showToastMessage('You can only send 10 files at a time.');
+                                clearInput();
+                                return;
+                            }
+                        }
+                        filePicker.click();
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
                 history.back();
             }
+            
         };
 
         node.onclick = clickHandler;

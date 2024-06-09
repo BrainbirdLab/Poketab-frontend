@@ -13,6 +13,7 @@
     import ScrollDownPopup from "./scrollDownPopup.svelte";
     import TypingIndicator from "./typingIndicator.svelte";
     import { addState } from "../stateManager.svelte";
+    import { debugPrint } from "$lib/utils/debug";
     
     let newMessage = '';
 
@@ -161,13 +162,15 @@
     let maxWindowHeight: number;
     let softKeyboardActive = false;
 
+    function keyboardActivationWatcher(){
+        softKeyboardActive = (window.visualViewport?.height || 0) < maxWindowHeight;
+    }
+
     onMount(() => {
 
         maxWindowHeight = window.visualViewport?.height || 0;
 
-        window.onresize = () => {
-            softKeyboardActive = (window.visualViewport?.height || 0) < maxWindowHeight;
-        };
+        window.addEventListener('resize', keyboardActivationWatcher);
 
         //on height change
         observer = new ResizeObserver(entries => {
@@ -202,6 +205,7 @@
     onDestroy(() => {
         unsub();
         observer.disconnect();
+        window.removeEventListener('resize', keyboardActivationWatcher);
     });
 
     $: inputOff = $page.state.showStickersPanel || $page.state.showAttachmentPickerPanel;
@@ -223,7 +227,6 @@
             class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
         
         <button on:click={() => {
-            //pushState('/attachments', { showAttachmentPickerPanel: true });
             addState("attachments", { showAttachmentPickerPanel: true });
         }} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
@@ -232,7 +235,7 @@
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">
-                <div style:opacity={recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "enter" : "send"}"></div>
+                <div style:opacity={recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
                 <Recorder bind:this={recorder} bind:isActive={recorderIsActive}/>
             </div>
         </div>
@@ -248,16 +251,15 @@
 <style lang="scss">
 
     .footer {
-        position: relative;
+
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-end;
         width: 100%;
-        padding: inherit;
         transition: 300ms ease-in-out;
         bottom: 0px;
-        padding: 0px 0px 10px 0;
+        padding-bottom: 10px;
         z-index: 1;
     }
 
