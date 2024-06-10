@@ -449,6 +449,8 @@
 
         $messageContainer.style.height = 'auto';
         lastScrollPosition = $messageContainer.scrollTop;
+
+        console.log('before update', lastScrollPosition, $messageContainer.scrollTop, $messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.offsetHeight);
     });
 
 
@@ -464,6 +466,8 @@
         
         heightChanged = $messageContainer.scrollHeight - lastHeight;
         scrollChanged = $messageContainer.scrollTop - lastScrollPosition;
+
+        console.log('after update', lastScrollPosition, $messageContainer.scrollTop, $messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.offsetHeight);
     });
 
     onMount(() => {

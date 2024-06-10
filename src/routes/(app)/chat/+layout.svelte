@@ -71,7 +71,25 @@
 </svelte:head>
 
 {#if mounted}    
+<div class="chat-content">
     <slot />
+</div>
+{:else}
+    <SplashScreen />
 {/if}
 
-<SplashScreen />
+
+<style>
+    .chat-content{
+        display: flex;
+        flex-direction: column;
+        justify-content: safe center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        gap: 20px;
+        position: relative;
+        inset: 0;
+        overflow: scroll;
+    }
+</style>

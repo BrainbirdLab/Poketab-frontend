@@ -154,39 +154,29 @@
     {/if}
 {/if}
 
-<div class="container">
-    <div class="chatBox" class:offl={isOffline}>
-        <NavBar />
-            <slot name="messages" />
-        <Footer />
-    </div>
+<div class="chatBox" class:offl={isOffline}>
+    <NavBar />
+    <slot name="messages" />
+    <Footer />
 </div>
 
 <style lang="scss">
-    .container {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        width: 100%;
-        inset: 0;
-        position: relative;
-        overflow: hidden;
-    }
-
     .chatBox {
+
+        inset: 0;
+        overflow: hidden;
+
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         width: 100%;
         min-width: 240px;
         max-width: 100vw;
-        position: relative;
         height: 100%;
         transition: filter 100ms;
         position: relative;
         align-items: center;
+
         background-blend-mode: soft-light;
         background-size: cover;
         background-position: center;
