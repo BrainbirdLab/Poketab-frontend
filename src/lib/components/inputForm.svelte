@@ -21,6 +21,7 @@
         formNotification,
         splashMessage,
     } from "$lib/store";
+    import AppLogo from "./appLogo.svelte";
 
     let selectedavatar = "";
     let selectedMaxUser = 2;
@@ -192,11 +193,7 @@
     <div class="formWrapper">
         <div class="form back-blur" in:fly={{ y: 30 }}>
             <div class="formtitle">
-                {#if !$chatRoomStore.Key}
-                    Create chat <i class="fa-solid fa-meteor"></i>
-                {:else}
-                    Join chat <i class="fa-solid fa-handshake"></i>
-                {/if}
+                <AppLogo title={ !$chatRoomStore.Key ? {text: 'Create chat', icon: "fa-solid fa-meteor"} : {text: 'Join chat', icon: "fa-solid fa-handshake"}}/>
             </div>
             <div class="formfield">
                 <label for="avatar" class:error={avatarErr} class:selected={selectedavatar}>

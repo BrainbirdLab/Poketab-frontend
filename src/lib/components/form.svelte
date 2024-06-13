@@ -24,54 +24,8 @@
 
 <Notification />
 
-{#if mounted}
-<div class="titleBar" transition:fly={{y:-20}}>
-    <img src="/images/pikachu-mini.png" alt="Logo" transition:scale>
-    <div class="text">
-        <div class="headingText">Poketab Messenger</div>
-        <div class="subHeadingText" transition:fly={{x: -10, delay: 300}}>The cutest realtime chat app ever.</div>
-    </div>
-</div>
-{/if}
-
 {#if $showUserInputForm}
     <InputForm />
 {:else}
     <JoinForm/>
 {/if}
-
-<style lang="scss">
-    .titleBar{
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        padding-top: 35px;
-        margin-bottom: auto;
-        width: 100%;
-
-        img{
-            width: 50px;
-            height: 50px;
-        }
-
-        .text{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            .headingText{
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: var(--text-color);
-            }
-
-        }
-        .subHeadingText{
-            font-size: 0.8rem;
-            color: var(--text-color);
-            opacity: 0.5;
-        }
-    }
-</style>

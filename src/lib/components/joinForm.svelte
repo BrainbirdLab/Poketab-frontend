@@ -15,6 +15,7 @@
     import type { User } from "$lib/types";
 
     import { onDestroy, onMount } from "svelte";
+    import AppLogo from "./appLogo.svelte";
 
     function testKey(k: string) {
         return /^[a-zA-Z0-9]{2}-[a-zA-Z0-9]{3}-[a-zA-Z0-9]{2}$/.test(k);
@@ -169,7 +170,7 @@
 <div class="formWrapper">
     <div class="form back-blur" in:fly={{ x: 30 }}>
         <div class="formtitle">
-            Join chat <i class="fa-solid fa-user-group"></i>
+            <AppLogo title={{text: 'Join chat', icon: "fa-solid fa-user-group"}}/>
         </div>
         <div class="formfield margin">
             <input
