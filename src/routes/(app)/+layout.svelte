@@ -96,7 +96,7 @@
         min-height: 100%;
         height: 100%;
         width: 100%;
-        position: relative;
+        position: fixed;
         inset: 0;
     }
 </style>

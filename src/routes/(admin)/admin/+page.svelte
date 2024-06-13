@@ -88,7 +88,7 @@
 <div class="formWrapper">
 	<div class="form back-blur" in:fly={{y: 20, delay: 200}}>
 		<div class="title" in:fly|global={{x: -10, delay: 200}}>
-            <ReactiveLogo size={70}/>
+            <ReactiveLogo size={50}/>
             Admin notification panel
 		</div>
 		{#if !submitting}

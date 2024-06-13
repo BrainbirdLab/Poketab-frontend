@@ -1,8 +1,8 @@
 <script lang="ts">
-    import InputForm from "./inputForm.svelte";
-    import JoinForm from "./joinForm.svelte";
+    import InputForm from "./formComponents/inputForm.svelte";
+    import JoinForm from "./formComponents/joinForm.svelte";
     import {reconnectButtonEnabled, showUserInputForm} from "$lib/store";
-    import Notification from "./notification.svelte";
+    import Notification from "./formComponents/notification.svelte";
     import { onMount } from "svelte";
     import { socket } from "$lib/socket";
     import { fly, scale } from "svelte/transition";
