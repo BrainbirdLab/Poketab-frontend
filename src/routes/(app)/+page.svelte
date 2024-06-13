@@ -200,6 +200,7 @@
 
     .more {
         font-size: 0.9rem;
+        text-align: justify;
         color: #ffffff95;
         width: min(100%, 900px);
     }
@@ -229,6 +230,7 @@
 
     .feature {
         font-size: 0.8rem;
+        text-align: justify;
         display: flex;
         flex-direction: row;
         max-width: 100%;

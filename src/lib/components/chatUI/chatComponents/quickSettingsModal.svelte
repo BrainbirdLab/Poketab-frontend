@@ -532,6 +532,7 @@ export function loadChatSettings() {
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
+        text-align: left;
         gap: 5px;
 
         * {

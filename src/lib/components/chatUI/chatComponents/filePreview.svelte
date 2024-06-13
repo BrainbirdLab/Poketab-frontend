@@ -238,11 +238,13 @@
         transition: 100ms ease-in-out;
         z-index: 1;
         box-shadow: 10px 10px 35px var(--shadow-color);
-        .items-count{
-            color: var(--blue-grey-color);
-        }
         * {
             font-size: inherit !important;
+        }
+        .items-count{
+            color: var(--blue-grey-color);
+            text-align: center;
+            font-size: 0.75rem !important;
         }
         i {
             padding: 0;

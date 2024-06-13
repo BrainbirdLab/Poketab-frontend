@@ -172,7 +172,9 @@
         <div class="formtitle">
             <AppLogo title={{text: 'Join chat', icon: "fa-solid fa-user-group"}}/>
         </div>
-        <div class="formfield margin">
+        <div class="formfield margin"
+        in:fly={{y: 5, delay: 150}}
+        >
             <input
             on:paste={parseKey}
             on:keydown={validateKey}
@@ -241,10 +243,6 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        i {
-            font-size: 1.2rem;
-            color: var(--secondary-dark);
-        }
     }
 
     .inputForm {

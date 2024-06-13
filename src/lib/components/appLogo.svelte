@@ -8,7 +8,7 @@
     <img src="/images/pikachu-mini.png" alt="Logo" in:scale>
     <div class="text">
         <div class="headingText" in:fly={{x: 20}}>Poketab | {title.text} <i class="{title.icon}"></i></div>
-        <div class="subHeadingText" in:fly={{y: 5, delay: 200}}>The cutest realtime chat app ever.</div>
+        <div class="subHeadingText" in:fly={{y: 5, delay: 130}}>The cutest realtime chat app ever.</div>
     </div>
 </div>
 
@@ -37,7 +37,6 @@
                 font-weight: bold;
                 color: var(--text-color);
             }
-
         }
         .subHeadingText{
             font-size: 0.6rem;

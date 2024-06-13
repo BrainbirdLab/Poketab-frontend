@@ -113,6 +113,7 @@
 
                 .title{
                     color: var(--secondary-dark);
+                    font-size: 0.8rem;
                     display: flex;
                     flex-direction: row;
                     align-items: center;

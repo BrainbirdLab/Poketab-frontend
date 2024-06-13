@@ -311,6 +311,7 @@
             a{
                 color: inherit;
                 word-break: break-all;
+                text-decoration: underline;
                 &::after{
                     content: '\f08e';
                     font-family: 'FontAwesome';

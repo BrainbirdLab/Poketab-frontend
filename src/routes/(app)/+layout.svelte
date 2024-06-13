@@ -92,7 +92,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        text-align: justify;
         gap: 20px;
         min-height: 100%;
         height: 100%;
