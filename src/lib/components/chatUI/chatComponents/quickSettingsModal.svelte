@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 
-import { get } from "svelte/store";
+import { get, type Unsubscriber } from "svelte/store";
 
 type Settings = {
     buttonSoundEnabled: boolean;
@@ -83,6 +83,7 @@ export function loadChatSettings() {
     import UsersPanel from "./usersPanel.svelte";
     import { elasticOut } from "svelte/easing";
     import { addState, clearModals } from "../stateManager.svelte";
+    import { onDestroy, onMount } from "svelte";
 
     let showQuickEmojiDrawer = false;
 
@@ -171,6 +172,18 @@ export function loadChatSettings() {
             showToastMessage('Failed to copy');
         });
     }
+
+    let quickEmojiSub: Unsubscriber;
+
+    onMount(() => {
+        quickEmojiSub = quickEmoji.subscribe(value => {
+            localStorage.setItem('quickEmoji', value);
+        });
+    });
+
+    onDestroy(() => {
+        quickEmojiSub();
+    });
 
 </script>
 

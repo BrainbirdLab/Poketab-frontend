@@ -74,9 +74,9 @@
 <div class="chat-content">
     <slot />
 </div>
-{:else}
-    <SplashScreen />
 {/if}
+
+<SplashScreen />
 
 
 <style>

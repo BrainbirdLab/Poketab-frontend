@@ -5,7 +5,9 @@
 </script>
 
 <div class="titleBar">
-    <img src="/images/pikachu-mini.png" alt="Logo" in:scale>
+    <a href="/">
+        <img src="/images/pikachu-mini.png" alt="Logo" in:scale>
+    </a>
     <div class="text">
         <div class="headingText" in:fly={{x: 20}}>Poketab | {title.text} <i class="{title.icon}"></i></div>
         <div class="subHeadingText" in:fly={{y: 5, delay: 130}}>The cutest realtime chat app ever.</div>
