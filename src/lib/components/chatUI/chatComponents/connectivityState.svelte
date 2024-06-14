@@ -1,6 +1,6 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
-    import {socket} from "$lib/socket";
+    import { socket } from "$lib/socket";
 
     let title = '';
     let icon = '';

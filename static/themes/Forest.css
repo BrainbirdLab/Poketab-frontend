@@ -1,8 +1,0 @@
-:root {
-    --secondary-dark: hsl(162, 60%, 42%);
-    --msg-get: hsl(162, 18%, 41%);
-    --msg-get-reply: hsl(162, 32%, 27%);
-    --msg-send: hsl(162, 60%, 42%);
-    --msg-send-reply: hsl(162, 14%, 27%);
-    --pattern: url('/images/backgrounds/Forest_w.webp');
-}

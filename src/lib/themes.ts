@@ -8,23 +8,23 @@ type ThemeAccent = {
 
 //theme colors and backgrounds
 export const themes: ThemeAccent = {
-    'Blue': {
-        quickEmoji: '🥶',
+    'Sea': {
+        quickEmoji: '🫧',
     },
     'Ocean': {
         quickEmoji: '🐳',
     },
-    'Cyberpunk': {
+    'Gengar': {
         quickEmoji: '👾',
     },
-    'Geometry': {
-        quickEmoji: '🔥',
+    'Caterpie': {
+        quickEmoji: '🐛',
     },
-    'Blackboard': {
+    'Dark': {
         quickEmoji: '👽',
     },
-    'Forest': {
-        quickEmoji: '🍃',
+    'River': {
+        quickEmoji: '🍂',
     }
 };
 

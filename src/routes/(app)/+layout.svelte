@@ -1,11 +1,13 @@
 <script lang="ts">
+
     import "$lib/styles/global.scss";
+
+    import { onMount } from "svelte";
     import { playClickSound } from "$lib/utils";
     import NavigationIndicator from "$lib/components/NavigationIndicator.svelte";
-    import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
-    import { onMount } from "svelte";
     import { deviceType } from "$lib/store";
+    import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
 
     async function detectSWUpdate(){
         if (!("serviceWorker" in navigator)) return;
@@ -65,6 +67,7 @@
     onMount(() => {
         loadChatSettings();
         detectSWUpdate();
+        detectDeviceType();
     });
 
 </script>
@@ -80,7 +83,7 @@
 <style lang="scss">
 
     .maincontainer {
-        background: rgba(0, 0, 0, 0.6117647059) var(--pattern);
+        background: rgba(0, 0, 0, var(--fade)) var(--pattern);
         transition: background 500ms;
         background-blend-mode: soft-light;
         background-size: cover;

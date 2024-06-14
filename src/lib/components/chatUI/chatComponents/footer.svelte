@@ -13,8 +13,7 @@
     import ScrollDownPopup from "./scrollDownPopup.svelte";
     import TypingIndicator from "./typingIndicator.svelte";
     import { addState } from "../stateManager.svelte";
-    import { debugPrint } from "$lib/utils/debug";
-    
+
     let newMessage = '';
 
     let recorder: Recorder;
@@ -311,6 +310,7 @@
             overflow: hidden;
             width: 100%;
             background: var(--glass-color);
+            backdrop-filter: blur(5px);
             border-radius: 24px;
             
             .textbox-wrapper {

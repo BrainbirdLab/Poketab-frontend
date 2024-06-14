@@ -1,0 +1,9 @@
+:root {
+    --secondary-dark: hsl(216, 37%, 44%);
+    --msg-get: hsl(216deg 34.3% 18.91%);
+    --msg-get-reply: hsl(216deg 20.73% 13.09%);
+    --msg-send: hsl(216, 37%, 44%);
+    --msg-send-reply: hsl(216deg 40.36% 28.6%);
+    --pattern: url('/images/backgrounds/Dark_w.webp');
+    --fade: 0.1;
+}

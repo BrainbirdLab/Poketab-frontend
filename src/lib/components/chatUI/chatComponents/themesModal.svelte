@@ -5,6 +5,7 @@
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { page } from "$app/stores";
     import { setToLocalStorage } from "./quickSettingsModal.svelte";
+    import { quickEmoji } from "$lib/store";
 
     function validateTheme(
         theme: string,
@@ -20,8 +21,8 @@
                     currentTheme.set(theme);
                     setToLocalStorage({
                         currentTheme: theme,
-                        quickEmoji: themes[theme].quickEmoji,
                     });
+                    quickEmoji.set(themes[theme].quickEmoji);
                 } else {
                     showToastMessage(`Could not apply ${theme} theme`);
                 }

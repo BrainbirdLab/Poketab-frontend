@@ -1,0 +1,9 @@
+:root {
+    --secondary-dark: hsl(162, 60%, 42%);
+    --msg-get: hsl(162deg 21.51% 30.79%);
+    --msg-get-reply: hsl(162deg 42.9% 19.87%);
+    --msg-send: hsl(162, 60%, 42%);
+    --msg-send-reply: hsl(162deg 55.78% 20.25%);
+    --pattern: url('/images/backgrounds/River_w.webp');
+    --fade: 0.7;
+}

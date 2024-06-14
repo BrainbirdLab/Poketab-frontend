@@ -1,7 +1,7 @@
 <script lang="ts">
     import "$lib/styles/atom.css";
     import { formNotification, formActionButtonDisabled } from "$lib/store";
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import { socket } from "$lib/socket.js";
     import SplashScreen from "$lib/components/splashScreen.svelte";
     import {goto} from "$app/navigation";
@@ -10,6 +10,7 @@
     import { resetChatRoomStore } from "$lib/store";
     import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
     import { currentTheme } from "$lib/themes";
+    import type { Unsubscriber } from "svelte/store";
 
     export let data; // Get data from load function aka +layout.server.ts
 
@@ -17,9 +18,19 @@
 
     let mounted = false;
 
+    let unsubscriber: Unsubscriber;
+
     onMount(() => {
 
         loadChatSettings();
+
+        unsubscriber = currentTheme.subscribe((val) => {
+            const elem = document.getElementById('themesheet');
+            if (!elem) {
+                return;
+            }
+            elem.setAttribute('href', `/themes/${val}.css`);
+        });
 
         if ($page.route.id !== '/chat'){
             goto('/chat');
@@ -45,6 +56,10 @@
         });
     });
 
+    onDestroy(() => {
+        unsubscriber();
+    });
+
 </script>
 
 <svelte:window 
@@ -66,10 +81,6 @@
         formNotification.set("Back to online"); //Set the formNotification to "Back to online"
     }}
 />
-
-<svelte:head>
-    <link rel="stylesheet" href="/themes/{$currentTheme}.css">
-</svelte:head>
 
 {#if mounted}    
 <div class="chat-content">

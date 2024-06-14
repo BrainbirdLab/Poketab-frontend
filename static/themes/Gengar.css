@@ -1,0 +1,10 @@
+:root {
+    --secondary-dark: hsl(233, 100%, 71%);
+    --msg-get: hsl(233, 40%, 57%);
+    --msg-get-reply: hsl(233, 64%, 30%);
+    --msg-send: hsl(233, 100%, 71%);
+    --msg-send-reply: hsl(233, 24%, 32%);
+    --pattern: url('/images/backgrounds/Gengar_w.webp');
+    --fade: 0.6;
+}
+  

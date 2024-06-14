@@ -1,0 +1,10 @@
+:root {
+    --secondary-dark: #9fbb4e;
+    --msg-get: hsl(73.47deg 20.59% 24.38%);
+    --msg-get-reply: hsl(40.2deg 57.35% 15.87%);
+    --msg-send: hsl(40.5deg 50.08% 38.86%);
+    --msg-send-reply: hsl(72.97deg 38.23% 24.9%);
+    --pattern: url('/images/backgrounds/Caterpie_w.webp');
+    --fade: 0.6;
+}
+  

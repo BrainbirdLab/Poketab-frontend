@@ -15,7 +15,7 @@
         urlObjects.set(file.name, url);
         return url;
     }
-
+    console.log('wooop!');
     function fileIsAcceptable(file: File): string {
         if (file.size > 10 * 1024 * 1024) {
            return 'Should be < 10 Mb';

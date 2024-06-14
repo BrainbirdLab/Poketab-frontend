@@ -1,0 +1,9 @@
+:root {
+    --secondary-dark: hsl(200, 55%, 47%);
+    --msg-get: hsl(214deg 40.34% 20.56%);
+    --msg-get-reply: hsl(213deg 42.21% 16.46%);
+    --msg-send: hsl(200deg 62.81% 34.06%);
+    --msg-send-reply: hsl(214deg 39.64% 23.82%);
+    --pattern: url('/images/backgrounds/Sea_w.png');
+    --fade: 0.6;
+}

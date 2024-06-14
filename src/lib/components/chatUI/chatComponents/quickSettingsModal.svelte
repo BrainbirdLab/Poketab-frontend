@@ -1,47 +1,62 @@
 <script context="module" lang="ts">
+    import { get } from "svelte/store";
 
-import { get, type Unsubscriber } from "svelte/store";
-
-type Settings = {
-    buttonSoundEnabled:     boolean;
-    messageSoundEnabled:    boolean;
-    quickEmojiEnabled:      boolean;
-    quickEmoji:             string;
-    selectedStickersGroup:  string;
-    currentTheme:           string;
-    sendMethod:             SEND_METHOD;
-};
-
-const defaultSettings = {
-    buttonSoundEnabled: true,
-    messageSoundEnabled: true,
-    quickEmojiEnabled: true,
-    sendMethod: get(deviceType) == "mobile" ? SEND_METHOD.CTRL_ENTER : SEND_METHOD.ENTER,
-};
-
-function setChatSettings(parsedSettings: Partial<Settings>) {
-    buttonSoundEnabled.set(parsedSettings.buttonSoundEnabled ?? defaultSettings.buttonSoundEnabled);
-    messageSoundEnabled.set(parsedSettings.messageSoundEnabled ?? defaultSettings.messageSoundEnabled);
-    quickEmojiEnabled.set(parsedSettings.quickEmojiEnabled ?? defaultSettings.quickEmojiEnabled);
-    quickEmoji.set(parsedSettings.quickEmoji ?? themes[DEFAULT_THEME].quickEmoji);
-    selectedStickerGroup.set(parsedSettings.selectedStickersGroup ?? DEFAULT_STICKER_GROUP);
-    currentTheme.set(parsedSettings.currentTheme ?? DEFAULT_THEME);
-    sendMethod.set(parsedSettings.sendMethod ?? defaultSettings.sendMethod);
-}
-
-export function setToLocalStorage(updatedSettings: Partial<Settings>) {
-    const currentSettingsStr = localStorage.getItem("settings") || "{}";
-    const currentSettings: Settings = JSON.parse(currentSettingsStr);
-
-    const newSettings: Settings = {
-        ...currentSettings,
-        ...updatedSettings,
+    type Settings = {
+        buttonSoundEnabled: boolean;
+        messageSoundEnabled: boolean;
+        quickEmojiEnabled: boolean;
+        quickEmoji: string;
+        selectedStickersGroup: string;
+        currentTheme: string;
+        sendMethod: SEND_METHOD;
     };
 
-    localStorage.setItem("settings", JSON.stringify(newSettings));
-}
+    const defaultSettings = {
+        buttonSoundEnabled: true,
+        messageSoundEnabled: true,
+        quickEmojiEnabled: true,
+        sendMethod:
+            get(deviceType) == "mobile"
+                ? SEND_METHOD.CTRL_ENTER
+                : SEND_METHOD.ENTER,
+    };
 
-export function loadChatSettings() {
+    function setChatSettings(parsedSettings: Partial<Settings>) {
+        buttonSoundEnabled.set(
+            parsedSettings.buttonSoundEnabled ??
+                defaultSettings.buttonSoundEnabled,
+        );
+        messageSoundEnabled.set(
+            parsedSettings.messageSoundEnabled ??
+                defaultSettings.messageSoundEnabled,
+        );
+        quickEmojiEnabled.set(
+            parsedSettings.quickEmojiEnabled ??
+                defaultSettings.quickEmojiEnabled,
+        );
+        quickEmoji.set(
+            parsedSettings.quickEmoji ?? themes[DEFAULT_THEME].quickEmoji,
+        );
+        selectedStickerGroup.set(
+            parsedSettings.selectedStickersGroup ?? DEFAULT_STICKER_GROUP,
+        );
+        currentTheme.set(parsedSettings.currentTheme ?? DEFAULT_THEME);
+        sendMethod.set(parsedSettings.sendMethod ?? defaultSettings.sendMethod);
+    }
+
+    export function setToLocalStorage(updatedSettings: Partial<Settings>) {
+        const currentSettingsStr = localStorage.getItem("settings") || "{}";
+        const currentSettings: Settings = JSON.parse(currentSettingsStr);
+
+        const newSettings: Settings = {
+            ...currentSettings,
+            ...updatedSettings,
+        };
+
+        localStorage.setItem("settings", JSON.stringify(newSettings));
+    }
+
+    export function loadChatSettings() {
         const settingsStr = localStorage.getItem("settings") || "{}";
         try {
             const parsedSettings: Partial<Settings> = JSON.parse(settingsStr);
@@ -63,23 +78,18 @@ export function loadChatSettings() {
                     setChatSettings(parsedSettings);
                 }
             }
-            
         } catch (error) {
             // Store the default settings
             localStorage.setItem("settings", JSON.stringify(defaultSettings));
             console.log("Default settings stored");
             // Update the settings to the default settings
-            setChatSettings({ ...defaultSettings});
+            setChatSettings({ ...defaultSettings });
         }
     }
 </script>
 
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import {
-        //showQuickSettingsPanel,
-        //showThemesPanel,
-    } from "$lib/modalManager";
     import {
         buttonSoundEnabled,
         chatRoomStore,
@@ -100,8 +110,12 @@ export function loadChatSettings() {
     import { elasticOut } from "svelte/easing";
     import { addState, clearModals } from "../stateManager.svelte";
     import { onDestroy, onMount } from "svelte";
+    import type { Unsubscriber } from "svelte/store";
     import { DEFAULT_THEME, currentTheme, themes } from "$lib/themes";
-    import { DEFAULT_STICKER_GROUP, selectedStickerGroup } from "./stickersKeyboard.svelte";
+    import {
+        DEFAULT_STICKER_GROUP,
+        selectedStickerGroup,
+    } from "./stickersKeyboard.svelte";
 
     let showQuickEmojiDrawer = false;
 
@@ -119,16 +133,24 @@ export function loadChatSettings() {
                         history.back();
                         break;
                     case "buttonSound":
-                        setToLocalStorage({ buttonSoundEnabled: !$buttonSoundEnabled });
+                        setToLocalStorage({
+                            buttonSoundEnabled: !$buttonSoundEnabled,
+                        });
                         break;
                     case "messageSound":
-                        setToLocalStorage({ messageSoundEnabled: !$messageSoundEnabled });
+                        setToLocalStorage({
+                            messageSoundEnabled: !$messageSoundEnabled,
+                        });
                         break;
                     case "quickEmoji":
-                        setToLocalStorage({ quickEmojiEnabled: !$quickEmojiEnabled });
+                        setToLocalStorage({
+                            quickEmojiEnabled: !$quickEmojiEnabled,
+                        });
                         break;
                     case "ctrl+enter":
-                        setToLocalStorage({ sendMethod: SEND_METHOD.CTRL_ENTER });
+                        setToLocalStorage({
+                            sendMethod: SEND_METHOD.CTRL_ENTER,
+                        });
                         break;
                     case "enter":
                         setToLocalStorage({ sendMethod: SEND_METHOD.ENTER });
@@ -140,7 +162,6 @@ export function loadChatSettings() {
                         addState("themes", { showThemesPanel: true });
                         break;
                 }
-
             }
         };
 
@@ -154,35 +175,40 @@ export function loadChatSettings() {
         };
     }
 
-    function leaveChat(destroy: boolean = false){
-        splashMessage.set((destroy ? 'Destroying chat... ' : 'Leaving chat... ') + '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px">');
+    function leaveChat(destroy: boolean = false) {
+        splashMessage.set(
+            (destroy ? "Destroying chat... " : "Leaving chat... ") +
+                '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px">',
+        );
         clearModals();
-        socket.emit('leaveChat', destroy);
+        socket.emit("leaveChat", destroy);
     }
 
     $: KEY = $chatRoomStore.Key;
 
-    let copyKeyIcon = 'fa-regular fa-clone';
+    let copyKeyIcon = "fa-regular fa-clone";
     let copyTimeout: number | null = null;
 
-    function copyKey(){
-        navigator.clipboard.writeText($chatRoomStore.Key).then(() => {
-            showToastMessage('Copied to clipboard!');
-            copyKeyIcon = 'fa-solid fa-check';
-            if (copyTimeout) clearTimeout(copyTimeout);
-            copyTimeout = setTimeout(() => {
-                copyKeyIcon = 'fa-regular fa-clone';
-            }, 1000);
-        })
-        .catch(err => {
-            showToastMessage('Failed to copy');
-        });
+    function copyKey() {
+        navigator.clipboard
+            .writeText($chatRoomStore.Key)
+            .then(() => {
+                showToastMessage("Copied to clipboard!");
+                copyKeyIcon = "fa-solid fa-check";
+                if (copyTimeout) clearTimeout(copyTimeout);
+                copyTimeout = setTimeout(() => {
+                    copyKeyIcon = "fa-regular fa-clone";
+                }, 1000);
+            })
+            .catch((err) => {
+                showToastMessage("Failed to copy");
+            });
     }
 
     let quickEmojiSub: Unsubscriber;
 
     onMount(() => {
-        quickEmojiSub = quickEmoji.subscribe(value => {
+        quickEmojiSub = quickEmoji.subscribe((value) => {
             setToLocalStorage({ quickEmoji: value });
         });
     });
@@ -190,15 +216,14 @@ export function loadChatSettings() {
     onDestroy(() => {
         quickEmojiSub();
     });
-
 </script>
 
 <div class="settingsWrapper" use:handleClick>
-    <div class="settings back-blur" 
+    <div
+        class="settings back-blur"
         in:fly={{ x: 40, duration: 400, easing: elasticOut, opacity: 1 }}
-        out:fly={{ x: 40, duration: 100}}
+        out:fly={{ x: 40, duration: 100 }}
     >
-        
         <div class="top">
             <button
                 id="back"
@@ -206,24 +231,21 @@ export function loadChatSettings() {
             >
                 <i class="fa-solid fa-chevron-left" />
             </button>
-            <div class="title">
-                Chat options 
-            </div>
+            <div class="title">Chat options</div>
         </div>
 
-        
-
         <div class="subsectionsContainer">
-            
-            <button id="keyname" class="play-sound clickable" on:click={copyKey}><i class="{copyKeyIcon}"></i>Copy chat key: {KEY}</button>
-            
+            <button id="keyname" class="play-sound clickable" on:click={copyKey}
+                ><i class={copyKeyIcon}></i>Copy chat key: {KEY}</button
+            >
+
             {#if $chatRoomStore.userList && Object.keys($chatRoomStore.userList).length > 0}
-            <div class="subsection">
-                <div class="subtitle">
-                    Peoples on this chat <i class="fa-solid fa-users"></i>
+                <div class="subsection">
+                    <div class="subtitle">
+                        Peoples on this chat <i class="fa-solid fa-users"></i>
+                    </div>
+                    <UsersPanel />
                 </div>
-                <UsersPanel />
-            </div>
             {/if}
 
             <div class="subtitle sectionHeadTitle">
@@ -231,13 +253,11 @@ export function loadChatSettings() {
             </div>
 
             <div class="subsection">
-                <div
-                    class="subtitle">
+                <div class="subtitle">
                     Sounds <i class="fa-solid fa-volume-high" />
                 </div>
                 <!-- Enable/disable button sounds -->
-                <div
-                    class="field-checkers play-sound hoverShadow">
+                <div class="field-checkers play-sound hoverShadow">
                     <input
                         type="checkbox"
                         id="buttonSound"
@@ -254,8 +274,7 @@ export function loadChatSettings() {
                     </label>
                 </div>
                 <!-- Enable/disable message sounds -->
-                <div
-                    class="field-checkers play-sound hoverShadow">
+                <div class="field-checkers play-sound hoverShadow">
                     <input
                         type="checkbox"
                         id="messageSound"
@@ -273,14 +292,11 @@ export function loadChatSettings() {
                 </div>
             </div>
 
-
             <div class="subsection">
-                <div
-                    class="subtitle">
+                <div class="subtitle">
                     Keyboard <i class="fa-regular fa-keyboard" />
                 </div>
-                <div
-                    class="field-checkers play-sound hoverShadow">
+                <div class="field-checkers play-sound hoverShadow">
                     <input
                         bind:group={$sendMethod}
                         type="radio"
@@ -297,8 +313,7 @@ export function loadChatSettings() {
                     </label>
                 </div>
 
-                <div
-                    class="field-checkers play-sound hoverShadow">
+                <div class="field-checkers play-sound hoverShadow">
                     <input
                         bind:group={$sendMethod}
                         type="radio"
@@ -318,15 +333,12 @@ export function loadChatSettings() {
                 </div>
             </div>
 
-
             <!--Themes and emoji-->
             <div class="subsection">
-                <div
-                    class="subtitle">
+                <div class="subtitle">
                     Themes & emoji <i class="fa-solid fa-palette"></i>
                 </div>
-                <div
-                    class="field-checkers play-sound hoverShadow">
+                <div class="field-checkers play-sound hoverShadow">
                     <input
                         bind:checked={$quickEmojiEnabled}
                         type="checkbox"
@@ -344,7 +356,8 @@ export function loadChatSettings() {
                 </div>
                 <div
                     class="field-checkers play-sound hoverShadow"
-                    id="chooseQuickEmoji">
+                    id="chooseQuickEmoji"
+                >
                     <div class="wrapper">
                         <div class="label">
                             Change quick emoji
@@ -382,48 +395,42 @@ export function loadChatSettings() {
                     id="themeButton"
                     class="field-checkers play-sound hoverShadow"
                     title="Select themes [Alt+t]"
-                    >
+                >
                     <div class="wrapper">
                         Change theme
-                        <div class="moreInfo">
-                            Change the look of the chat
-                        </div>
+                        <div class="moreInfo">Change the look of the chat</div>
                     </div>
-                    <i class="fa-solid fa-brush"/>
+                    <i class="fa-solid fa-brush" />
                 </div>
             </div>
-
 
             <div class="subsection danger-zone">
                 <div class="subtitle sectionHeadTitle red">
                     Danger zone <i class="fa-solid fa-skull"></i>
                 </div>
                 <ul class="moreInfo">
-                    {#if $chatRoomStore.admin == $myId}                        
-                    <li>
-                        Destroy chat will end the chat session for all
-                    </li>
+                    {#if $chatRoomStore.admin == $myId}
+                        <li>Destroy chat will end the chat session for all</li>
                     {/if}
-                    <li>
-                        Leave chat will end the chat session for you
-                    </li>
+                    <li>Leave chat will end the chat session for you</li>
                 </ul>
                 <div class="btn-grp">
                     {#if $chatRoomStore.admin == $myId}
-                    <button
-                        on:click={() => leaveChat(true)}
-                        id="destroy"
-                        class="button hover button-animate play-sound capsule"
-                        title="Leave and end chat"
-                    >
-                        Destroy chat <i class="fa-solid fa-trash" />
-                    </button>
+                        <button
+                            on:click={() => leaveChat(true)}
+                            id="destroy"
+                            class="button hover button-animate play-sound capsule"
+                            title="Leave and end chat"
+                        >
+                            Destroy chat <i class="fa-solid fa-trash" />
+                        </button>
                     {/if}
                     <button
                         on:click={() => leaveChat(false)}
                         id="logoutButton"
                         class="button hover button-animate play-sound capsule"
-                    ><i class="fa-solid fa-arrow-right-from-bracket"></i>Leave chat
+                        ><i class="fa-solid fa-arrow-right-from-bracket"
+                        ></i>Leave chat
                     </button>
                 </div>
 
@@ -441,7 +448,6 @@ export function loadChatSettings() {
 </div>
 
 <style lang="scss">
-
     #keyname {
         border-radius: 10px;
         font-weight: 300;
@@ -454,42 +460,41 @@ export function loadChatSettings() {
         }
     }
 
-    .fa-brush{
+    .fa-brush {
         font-size: 2.2rem;
         color: var(--secondary-dark);
         padding: 5px 10px;
     }
 
-    a{
+    a {
         color: inherit;
     }
 
-    .feedback{
+    .feedback {
         padding: 10px 0 10px;
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        a{
+        a {
             color: var(--secondary-dark);
             text-decoration: none;
             font-size: 0.8rem;
             i {
                 color: inherit;
             }
-            &:hover{
+            &:hover {
                 text-decoration: underline;
             }
         }
     }
 
-    #back{
-        i{
+    #back {
+        i {
             pointer-events: none;
         }
     }
-
 
     .settingsWrapper {
         position: absolute;
@@ -506,8 +511,8 @@ export function loadChatSettings() {
         z-index: 100;
     }
 
-    .danger-zone{
-        .btn-grp{
+    .danger-zone {
+        .btn-grp {
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
@@ -523,16 +528,16 @@ export function loadChatSettings() {
         }
     }
 
-    #destroy{
+    #destroy {
         background: red;
     }
-    
-    #logoutButton{
+
+    #logoutButton {
         background: #19394d;
         color: inherit;
     }
 
-    .red{
+    .red {
         color: red !important;
         * {
             color: red !important;
@@ -544,7 +549,6 @@ export function loadChatSettings() {
     }
 
     .moreInfo {
-
         font-size: 0.7rem;
         color: var(--blue-grey-color);
         display: flex;
@@ -559,7 +563,7 @@ export function loadChatSettings() {
             font-size: inherit;
         }
 
-        li{
+        li {
             margin-left: 25px;
             list-style: disc;
         }
@@ -630,7 +634,7 @@ export function loadChatSettings() {
         }
     }
 
-    #themeButton{
+    #themeButton {
         * {
             pointer-events: none;
         }
@@ -723,7 +727,7 @@ export function loadChatSettings() {
         color: var(--secondary-dark);
         padding-bottom: 5px;
 
-        &.sectionHeadTitle{
+        &.sectionHeadTitle {
             width: 100%;
             margin-top: 10px;
             text-align: center;

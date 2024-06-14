@@ -1,8 +1,0 @@
-:root {
-    --secondary-dark: hsl(216, 37%, 44%);
-    --msg-get: hsl(216, 27%, 33%);
-    --msg-get-reply: hsl(216, 32%, 23%);
-    --msg-send: hsl(216, 37%, 44%);
-    --msg-send-reply: hsl(216, 20%, 21%);
-    --pattern: url('/images/backgrounds/Blackboard_w.webp');
-}

@@ -152,9 +152,11 @@ export function adjustMessagePosition(){
 
 export async function playClickSound(){
 
+    
     if (!get(buttonSoundEnabled)){
         return;
     }
+        
 
     clickSound.currentTime = 0;
     clickSound.play();

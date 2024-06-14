@@ -1,9 +1,0 @@
-:root {
-    --secondary-dark: hsl(15, 98%, 57%);
-    --msg-get: hsl(15, 40%, 57%);
-    --msg-get-reply: hsl(15, 88%, 27%);
-    --msg-send: hsl(15, 98%, 57%);
-    --msg-send-reply: hsl(15, 35%, 27%);
-    --pattern: url('/images/backgrounds/Geometry_w.webp');
-}
-  
