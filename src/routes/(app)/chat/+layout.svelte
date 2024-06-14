@@ -8,7 +8,6 @@
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { resetChatRoomStore } from "$lib/store";
-    import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
     import { currentTheme } from "$lib/themes";
     import type { Unsubscriber } from "svelte/store";
 
@@ -21,8 +20,6 @@
     let unsubscriber: Unsubscriber;
 
     onMount(() => {
-
-        loadChatSettings();
 
         unsubscriber = currentTheme.subscribe((val) => {
             const elem = document.getElementById('themesheet');
@@ -57,7 +54,9 @@
     });
 
     onDestroy(() => {
-        unsubscriber();
+        if (unsubscriber) {
+            unsubscriber();
+        }
     });
 
 </script>
