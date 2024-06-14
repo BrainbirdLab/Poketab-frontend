@@ -45,7 +45,7 @@
 
     import hljs from "highlight.js";
     import type { Unsubscriber } from "svelte/store";
-    import { selectedSticker } from "./stickersKeyboard.svelte";
+    import { selectedStickerGroup } from "./stickersKeyboard.svelte";
     import { addState } from "../stateManager.svelte";
 
 
@@ -207,7 +207,7 @@
 
                 const stickerGroup = (messageObj as StickerMessageObj).groupName;
                 //selectedSticker.set(stickerGroup);
-                selectedSticker.set(stickerGroup);
+                selectedStickerGroup.set(stickerGroup);
                 //showStickersPanel.set(true);
                 //pushState('/stickers/'+stickerGroup, { showStickersPanel: true });
                 addState("stickers", { showStickersPanel: true });

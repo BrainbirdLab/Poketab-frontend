@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
     import { writable } from "svelte/store";
-    export const selectedSticker = writable('');
+    export const DEFAULT_STICKER_GROUP = "catteftel";
+    export const selectedStickerGroup = writable(DEFAULT_STICKER_GROUP);
 </script>
 
 <script lang="ts">
@@ -8,6 +9,8 @@
     import { myId } from "$lib/store";
     import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { setToLocalStorage } from "./quickSettingsModal.svelte";
+
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -35,11 +38,11 @@
 
     function stickersHandler(node: HTMLElement){
 
-        if (!$selectedSticker){
-            selectedSticker.set(Stickers[0].name);
+        if (!$selectedStickerGroup){
+            selectedStickerGroup.set(Stickers[0].name);
         }
 
-        const unsub = selectedSticker.subscribe(value => {
+        const unsub = selectedStickerGroup.subscribe(value => {
 
             const elem = document.getElementById(value);
 
@@ -53,7 +56,7 @@
                 inline: "center",
             });
 
-            localStorage.setItem("selectedSticker", value);
+            setToLocalStorage({ selectedStickersGroup: value })
         });
 
         node.onclick = async (e: Event) => {
@@ -69,13 +72,13 @@
             if (target.closest('.stickersHeader')){
                 const groupName = target.dataset.group;
                 if (groupName){
-                    selectedSticker.set(groupName);
+                    selectedStickerGroup.set(groupName);
                 }
                 return;
             }
 
             if (target.closest('.stickerItem') && target.dataset.serial && target.closest('.stickerBoard')){
-                const group = $selectedSticker;
+                const group = $selectedStickerGroup;
                 const serial = target.dataset.serial;
 
                 const src = `/stickers/${group}/animated/${serial}.webp`;
@@ -128,7 +131,7 @@
                 if (entry.isIntersecting){
                     const groupName = entry.target.id;
                     if (groupName){
-                        selectedSticker.set(groupName);
+                        selectedStickerGroup.set(groupName);
                     }
                 }
             });
@@ -151,7 +154,7 @@
 
     function moveHeads(direction: 'left' | 'right'){
         //shift to next head
-        selectedSticker.update(value => {
+        selectedStickerGroup.update(value => {
             const index = Stickers.findIndex(sticker => sticker.name == value);
             if (direction == 'left'){
                 if (index == 0){
@@ -177,7 +180,7 @@
             <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>
             <div class="stickersHeader" id="stickersHeader" bind:this={stickersHeader}>
                 {#each Stickers as sticker}
-                    <img height="35px" width="35px" loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedSticker == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
+                    <img height="35px" width="35px" loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedStickerGroup == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}">
                 {/each}
             </div>
             <button on:click={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></button>

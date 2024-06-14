@@ -1,6 +1,6 @@
 <script lang="ts">
     import "$lib/styles/atom.css";
-    import { formNotification, formActionButtonDisabled, currentTheme } from "$lib/store";
+    import { formNotification, formActionButtonDisabled } from "$lib/store";
     import { onMount } from "svelte";
     import { socket } from "$lib/socket.js";
     import SplashScreen from "$lib/components/splashScreen.svelte";
@@ -9,6 +9,7 @@
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { resetChatRoomStore } from "$lib/store";
     import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
+    import { currentTheme } from "$lib/themes";
 
     export let data; // Get data from load function aka +layout.server.ts
 

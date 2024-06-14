@@ -24,7 +24,6 @@
 
     //scripts
     import { eventTriggerMessageId, lastMessageId } from "$lib/messageTypes";
-    import { themes } from "$lib/themeTypes";
     import {
         //activeModalsStack,
         //showAttachmentPickerPanel,
@@ -34,7 +33,7 @@
         //showStickersPanel,
         //showThemesPanel,
     } from "$lib/modalManager";
-    import { chatRoomStore, currentTheme, myId, quickEmoji } from "$lib/store";
+    import { chatRoomStore, myId } from "$lib/store";
     import { socket } from "$lib/socket";
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
@@ -97,8 +96,6 @@
     };
 
     onMount(() => {
-        //$messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
-        quickEmoji.set(themes[$currentTheme].quickEmoji);
 
         document.onkeydown = keyBindingHandler;
 

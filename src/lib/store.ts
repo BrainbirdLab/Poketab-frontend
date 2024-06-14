@@ -8,10 +8,6 @@ export const splashMessage = writable('');
 export const splashButtonText = writable('');
 
 export const userTypingString = writable('');
-export const currentTheme = writable('Ocean');
-
-
-
 
 export const joinError: Writable<ErrorLog> = writable({text: '', icon: ''});
 

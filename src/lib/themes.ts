@@ -1,3 +1,5 @@
+import { writable } from "svelte/store";
+    
 type ThemeAccent = {
     [key: string]: {
         quickEmoji: string;
@@ -25,3 +27,6 @@ export const themes: ThemeAccent = {
         quickEmoji: '🍃',
     }
 };
+
+export const DEFAULT_THEME = 'Ocean';
+export const currentTheme = writable(DEFAULT_THEME);

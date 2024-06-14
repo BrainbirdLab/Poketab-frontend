@@ -3,10 +3,13 @@
 import { get, type Unsubscriber } from "svelte/store";
 
 type Settings = {
-    buttonSoundEnabled: boolean;
-    messageSoundEnabled: boolean;
-    quickEmojiEnabled: boolean;
-    sendMethod: SEND_METHOD;
+    buttonSoundEnabled:     boolean;
+    messageSoundEnabled:    boolean;
+    quickEmojiEnabled:      boolean;
+    quickEmoji:             string;
+    selectedStickersGroup:  string;
+    currentTheme:           string;
+    sendMethod:             SEND_METHOD;
 };
 
 const defaultSettings = {
@@ -16,11 +19,26 @@ const defaultSettings = {
     sendMethod: get(deviceType) == "mobile" ? SEND_METHOD.CTRL_ENTER : SEND_METHOD.ENTER,
 };
 
-function setDefaultChatSettings() {
-    sendMethod.set(defaultSettings.sendMethod);
-    buttonSoundEnabled.set(defaultSettings.buttonSoundEnabled);
-    messageSoundEnabled.set(defaultSettings.messageSoundEnabled);
-    quickEmojiEnabled.set(defaultSettings.quickEmojiEnabled);
+function setChatSettings(parsedSettings: Partial<Settings>) {
+    buttonSoundEnabled.set(parsedSettings.buttonSoundEnabled ?? defaultSettings.buttonSoundEnabled);
+    messageSoundEnabled.set(parsedSettings.messageSoundEnabled ?? defaultSettings.messageSoundEnabled);
+    quickEmojiEnabled.set(parsedSettings.quickEmojiEnabled ?? defaultSettings.quickEmojiEnabled);
+    quickEmoji.set(parsedSettings.quickEmoji ?? themes[DEFAULT_THEME].quickEmoji);
+    selectedStickerGroup.set(parsedSettings.selectedStickersGroup ?? DEFAULT_STICKER_GROUP);
+    currentTheme.set(parsedSettings.currentTheme ?? DEFAULT_THEME);
+    sendMethod.set(parsedSettings.sendMethod ?? defaultSettings.sendMethod);
+}
+
+export function setToLocalStorage(updatedSettings: Partial<Settings>) {
+    const currentSettingsStr = localStorage.getItem("settings") || "{}";
+    const currentSettings: Settings = JSON.parse(currentSettingsStr);
+
+    const newSettings: Settings = {
+        ...currentSettings,
+        ...updatedSettings,
+    };
+
+    localStorage.setItem("settings", JSON.stringify(newSettings));
 }
 
 export function loadChatSettings() {
@@ -42,18 +60,16 @@ export function loadChatSettings() {
                 ) {
                     throw new Error("Invalid settings");
                 } else {
-                    buttonSoundEnabled.set(parsedSettings.buttonSoundEnabled);
-                    messageSoundEnabled.set(parsedSettings.messageSoundEnabled);
-                    quickEmojiEnabled.set(parsedSettings.quickEmojiEnabled);
-                    sendMethod.set(parsedSettings.sendMethod);
+                    setChatSettings(parsedSettings);
                 }
             }
+            
         } catch (error) {
             // Store the default settings
             localStorage.setItem("settings", JSON.stringify(defaultSettings));
             console.log("Default settings stored");
             // Update the settings to the default settings
-            setDefaultChatSettings();
+            setChatSettings({ ...defaultSettings});
         }
     }
 </script>
@@ -84,22 +100,12 @@ export function loadChatSettings() {
     import { elasticOut } from "svelte/easing";
     import { addState, clearModals } from "../stateManager.svelte";
     import { onDestroy, onMount } from "svelte";
+    import { DEFAULT_THEME, currentTheme, themes } from "$lib/themes";
+    import { DEFAULT_STICKER_GROUP, selectedStickerGroup } from "./stickersKeyboard.svelte";
 
     let showQuickEmojiDrawer = false;
 
     loadChatSettings();
-
-    function setToLocalStorage(updatedSettings: Partial<Settings>) {
-        const currentSettingsStr = localStorage.getItem("settings") || "{}";
-        const currentSettings: Settings = JSON.parse(currentSettingsStr);
-
-        const newSettings: Settings = {
-            ...currentSettings,
-            ...updatedSettings,
-        };
-
-        localStorage.setItem("settings", JSON.stringify(newSettings));
-    }
 
     function handleClick(node: HTMLElement) {
         const click = (e: Event) => {
@@ -177,7 +183,7 @@ export function loadChatSettings() {
 
     onMount(() => {
         quickEmojiSub = quickEmoji.subscribe(value => {
-            localStorage.setItem('quickEmoji', value);
+            setToLocalStorage({ quickEmoji: value });
         });
     });
 

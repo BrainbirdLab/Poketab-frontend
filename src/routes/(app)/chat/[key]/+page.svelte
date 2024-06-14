@@ -1,6 +1,7 @@
 
 <script lang="ts">
-    import {chatRoomStore, currentTheme, joinError, joinKey, showUserInputForm} from "$lib/store";
+    import {chatRoomStore, joinError, joinKey, showUserInputForm} from "$lib/store";
+    import {currentTheme} from "$lib/themes";
 
     export let data;
 

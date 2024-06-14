@@ -1,8 +1,8 @@
-import { themes } from "$lib/themeTypes";
 import { error, type NumericRange } from '@sveltejs/kit';
 import { io } from 'socket.io-client';
 import type { socketResponse } from '$lib/socket';
 import { PUBLIC_API_SERVER_URL } from "$env/static/public"
+import { DEFAULT_THEME, themes } from "$lib/themes";
 
 type fetchResponse = socketResponse & {
   key: string,
@@ -30,12 +30,12 @@ export async function load({ params, cookies }) {
 
     console.log('Connecting to server...');
 
-    let themename: string = cookies.get('theme') || 'Ocean';
+    let themename: string = cookies.get('theme') || DEFAULT_THEME;
     if (themename in themes){
         cookies.set('theme', themename, {path: '/'});
     } else {
-        cookies.set('theme', 'Ocean', {path: '/'});
-        themename = 'Ocean';
+        cookies.set('theme', DEFAULT_THEME, {path: '/'});
+        themename = DEFAULT_THEME;
     }
 
     socket.connect();
