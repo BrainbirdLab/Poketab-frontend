@@ -75,6 +75,8 @@
         }
     }
 
+    const swipeIconDistance = 40;
+
     function handleMessages(node: HTMLElement) {
         //on horizontal scroll on a single message, move the message to swipe reply
         let xStart = 0;
@@ -323,7 +325,8 @@
                         
                         //if msg is self
                         if (classList.includes("self") && sent) {
-                            if (xDiff >= 50) {
+                            replyIcon.style.transform = `translateX(${swipeIconDistance}px)`;
+                            if (xDiff >= swipeIconDistance) {
                                 replyTrigger = true;
                                 replyIcon.dataset.replyTrigger = "true";
                                 replyIcon.style.transform = `translateX(${xDiff}px)`;
@@ -334,7 +337,8 @@
                             xDiff = xDiff < 0 ? 0 : xDiff;
                             message.style.transform = `translateX(${-xDiff}px)`;
                         } else {
-                            if (xDiff <= -50) {
+                            replyIcon.style.transform = `translateX(-${swipeIconDistance}px)`;
+                            if (xDiff <= -swipeIconDistance) {
                                 replyTrigger = true;
                                 replyIcon.dataset.replyTrigger = "true";
                                 replyIcon.style.transform = `translateX(${xDiff}px)`;
@@ -375,9 +379,9 @@
                     const replyIcon = message.querySelector(".replyIcon",) as HTMLElement;
 
                     if (classList.includes("self") && sent) {
-                        replyIcon.style.transform = "translateX(50px)";
+                        replyIcon.style.transform = `translateX(${swipeIconDistance}px)`;
                     } else {
-                        replyIcon.style.transform = "translateX(-50px)";
+                        replyIcon.style.transform = `translateX(-${swipeIconDistance}px)`;
                     }
                         
                     replyIcon.dataset.swipeStart = "false";

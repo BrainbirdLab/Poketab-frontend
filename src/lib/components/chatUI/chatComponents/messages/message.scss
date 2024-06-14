@@ -46,7 +46,7 @@
             padding: 5px;
             aspect-ratio: 1;
             left: 0;
-            transform: translateX(-40px);
+            //transform: translateX(-40px);
             visibility: hidden;
             opacity: 0;
             transition: background-color 150ms;
@@ -201,7 +201,7 @@
     .replyIcon{
         right: 0;
         left: unset;
-        transform: translateX(50px);
+        //transform: translateX(50px);
     }
     .messageBody{
         align-items: flex-end;
