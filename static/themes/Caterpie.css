@@ -1,7 +1,7 @@
 :root {
     --secondary-dark: #9fbb4e;
-    --msg-get: hsl(73.47deg 20.59% 24.38%);
-    --msg-get-reply: hsl(40.2deg 57.35% 15.87%);
+    --msg-get: #957431;
+    --msg-get-reply: hsl(40.2deg 66.54% 19.37%);
     --msg-send: hsl(66.21deg 56.8% 37.19%);
     --msg-send-reply: hsl(72.97deg 38.23% 24.9%);
     --modal-color: hsl(150deg 7.38% 15.77%);
