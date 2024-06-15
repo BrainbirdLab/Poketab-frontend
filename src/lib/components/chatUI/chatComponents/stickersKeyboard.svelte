@@ -83,7 +83,7 @@
 
                 const src = `/stickers/${group}/animated/${serial}.webp`;
 
-                const tempId = crypto.randomUUID();
+                const tempId = Math.random().toString(36);
                 const messageObj = new StickerMessageObj();
                 messageObj.src = src;
                 messageObj.groupName = group;
