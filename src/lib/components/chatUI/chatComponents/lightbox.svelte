@@ -44,7 +44,6 @@
         position: fixed;
         inset: 0;
         background-color: var(--modal-color);
-        backdrop-filter: blur(2px);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -53,6 +52,8 @@
         overflow: hidden;
         width: 100%;
         height: 100%;
+
+        backdrop-filter: blur(2px);
 
         button{
             position: fixed;

@@ -134,6 +134,7 @@
             height: auto;
             background: var(--modal-color);
             mix-blend-mode: screen;
+            
             backdrop-filter: brightness(0.3);
 
             &:not(:has(img)){

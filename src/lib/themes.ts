@@ -8,7 +8,7 @@ type ThemeAccent = {
 
 //theme colors and backgrounds
 export const themes: ThemeAccent = {
-    'Sea': {
+    'Piplup': {
         quickEmoji: '🫧',
     },
     'Ocean': {
@@ -28,5 +28,5 @@ export const themes: ThemeAccent = {
     }
 };
 
-export const DEFAULT_THEME = 'Ocean';
+export const DEFAULT_THEME = 'Piplup';
 export const currentTheme = writable(DEFAULT_THEME);

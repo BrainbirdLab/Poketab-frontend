@@ -1,4 +1,4 @@
-import { DEFAULT_THEME } from "$lib/themes";
+import { DEFAULT_THEME, themes } from "$lib/themes";
 
 import type { Handle } from "@sveltejs/kit";
 
@@ -7,9 +7,11 @@ const maxAge = 60 * 60 * 24 * 200;
 
 export const handle: Handle = async ({ event, resolve }) => {
  
-    let theme = event.cookies.get('theme') || DEFAULT_THEME;
+    let theme = event.cookies.get('theme');
 
-    console.log('theme:', theme);
+    if (!theme || !themes[theme]) {
+        theme = DEFAULT_THEME;
+    }
 
     event.cookies.set('theme', theme, { path: '/', maxAge: maxAge });
 

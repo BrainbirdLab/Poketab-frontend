@@ -4,6 +4,7 @@
     --msg-get-reply: hsl(233, 64%, 30%);
     --msg-send: hsl(233, 100%, 71%);
     --msg-send-reply: hsl(233, 24%, 32%);
+    --modal-color: hsl(279.69deg 54.53% 19.09%);
     --pattern: url('/images/backgrounds/Gengar_w.webp');
     --fade: 0.6;
 }

@@ -4,6 +4,7 @@
     --msg-get-reply: hsl(162deg 42.9% 19.87%);
     --msg-send: hsl(162, 60%, 42%);
     --msg-send-reply: hsl(162deg 55.78% 20.25%);
+    --modal-color: hsl(168deg 45.62% 13.99%);
     --pattern: url('/images/backgrounds/River_w.webp');
     --fade: 0.7;
 }

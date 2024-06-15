@@ -4,6 +4,7 @@
     --msg-get-reply: hsl(187, 85%, 20%);
     --msg-send: hsl(187, 100%, 37%);
     --msg-send-reply: hsl(187, 40%, 32%);
+    --modal-color: hsl(198.57deg 87.5% 9.41%);
     --pattern: url('/images/backgrounds/Ocean_w.webp');
     --fade: 0.6;
 }

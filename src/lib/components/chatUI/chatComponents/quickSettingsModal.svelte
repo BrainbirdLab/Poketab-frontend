@@ -506,7 +506,6 @@
         justify-content: center;
         align-items: flex-end;
         transition: 200ms;
-        backdrop-filter: brightness(0.5);
         //background: #aaa;
         z-index: 100;
     }
@@ -533,8 +532,11 @@
     }
 
     #logoutButton {
-        background: #19394d;
+        background: #000000;
         color: inherit;
+        &:hover {
+            background: #141414;
+        }
     }
 
     .red {

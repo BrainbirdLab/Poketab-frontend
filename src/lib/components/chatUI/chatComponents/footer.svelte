@@ -310,8 +310,9 @@
             overflow: hidden;
             width: 100%;
             background: var(--glass-color);
-            backdrop-filter: blur(5px);
             border-radius: 24px;
+            
+            backdrop-filter: blur(5px);
             
             .textbox-wrapper {
                 position: relative;
