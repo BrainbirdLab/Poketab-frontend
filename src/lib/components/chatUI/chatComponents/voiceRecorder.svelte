@@ -1,8 +1,6 @@
 <script lang="ts">
     import { showToastMessage } from "@itsfuad/domtoastmessage";
 
-
-    import { voiceMessageAudio } from "$lib/messageTypes";
     import { playMessageSound } from "$lib/utils";
 
     export let isActive = false;
@@ -22,10 +20,12 @@
 
     let audioChunks: Blob[] = [];
 
-    let audioUrl = '';
+    export let audioUrl = '';
 
     let audioDuration = 0;
     let elapsedTime = 0;
+
+    let recordedAudio: HTMLAudioElement | null;
 
     export function getDuration(){
         return audioDuration;
@@ -54,11 +54,11 @@
 
     function updatePlayingTimer(){
 
-        if (!$voiceMessageAudio){
+        if (!recordedAudio){
             return;
         }
 
-        const remainingTime = audioDuration - Math.round($voiceMessageAudio.currentTime);
+        const remainingTime = audioDuration - Math.round(recordedAudio.currentTime);
         time = timeToPrintable(remainingTime);
     }
 
@@ -66,24 +66,24 @@
         micIcon = 'fa-pause';
 
         // play audio
-        if ($voiceMessageAudio){
-            $voiceMessageAudio.play();
-            $voiceMessageAudio.ontimeupdate = () => {
-                if (!$voiceMessageAudio){
+        if (recordedAudio){
+            recordedAudio.play();
+            recordedAudio.ontimeupdate = () => {
+                if (!recordedAudio){
                     return;
                 }
-                const progress = $voiceMessageAudio.currentTime / audioDuration;
+                const progress = recordedAudio.currentTime / audioDuration;
                 document.documentElement.style.setProperty('--recordedAudioPlaybackProgress', `${progress * 100}%`);
                 updatePlayingTimer();
             };
-            $voiceMessageAudio.onended = () => {
-                if (!$voiceMessageAudio){
+            recordedAudio.onended = () => {
+                if (!recordedAudio){
                     return;
                 }
                 micIcon = 'fa-play';
                 time = timeToPrintable(audioDuration);
                 document.documentElement.style.setProperty('--recordedAudioPlaybackProgress', "0%");
-                $voiceMessageAudio.ontimeupdate = null;
+                recordedAudio.ontimeupdate = null;
             };
         } else {
             console.log('Audio is not available');
@@ -94,8 +94,8 @@
     function pauseAudio(){
         micIcon = 'fa-play';
 
-        if ($voiceMessageAudio){
-            $voiceMessageAudio.pause();
+        if (recordedAudio){
+            recordedAudio.pause();
         } else {
             console.log('Audio is not available');
             showToastMessage('Audio data not loaded yet');
@@ -125,9 +125,12 @@
                 audioRecorder.onstop = () => {
 
                     const audioBlob = new Blob(audioChunks, {type: 'audio/mp3'});
+
+                    console.log(audioBlob);
+
                     audioUrl = URL.createObjectURL(audioBlob);
 
-                   voiceMessageAudio.set(new Audio(audioUrl));
+                    recordedAudio = new Audio(audioUrl);
 
                     audioRecorder.ondataavailable = null;
                 };
@@ -174,20 +177,23 @@
         }
     }
 
-    export function closeRecorder(){
+    export function closeRecorder(revoke: boolean){
         // close recorder if it is active
         if (recordingState){
             stopRecording();
         }
 
         //if audio
-        if ($voiceMessageAudio){
-            $voiceMessageAudio.pause();
-            $voiceMessageAudio.currentTime = 0;
+        if (recordedAudio){
+            recordedAudio.pause();
+            recordedAudio.currentTime = 0;
             
-            voiceMessageAudio.set(null);
+            recordedAudio = null;
 
-            URL.revokeObjectURL(audioUrl);
+            if (revoke){
+                URL.revokeObjectURL(audioUrl);
+                console.log('Audio url revoked');
+            }
         }
 
         time = '00:00';
@@ -218,7 +224,7 @@
             {/if}
             <span id="recordingTime" class="recordingTime">{time}</span>
         </div>
-        <button class="cancelBtn button-animate play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" on:click={closeRecorder}>
+        <button class="cancelBtn button-animate play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" on:click={() => {closeRecorder(true)}}>
             <i class="fa-solid fa-xmark"></i>
         </button>
         <div id="audiovisualizer"></div>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, voiceMessageAudio, AudioMessageObj, MessageObj } from "$lib/messageTypes";
+    import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./voiceRecorder.svelte";
     import { fly } from "svelte/transition";
@@ -19,25 +19,27 @@
     let recorder: Recorder;
     let recorderIsActive = false;
 
+    let voiceMessageAudioSrc: string;
+
     const codeParser = new TextParser();
     
     async function insertMessage(quickEmoji = false){
 
         let message: MessageObj;
 
-        if ($voiceMessageAudio){
+        if (voiceMessageAudioSrc){
 
             message = new AudioMessageObj();
 
             if (message instanceof AudioMessageObj){
-                message.url = $voiceMessageAudio.src;
+                message.url = voiceMessageAudioSrc;
                 message.audio.src = message.url;
                 message.type = 'audio/mpeg';
                 message.duration = recorder.getDuration();
                 message.name = `${$chatRoomStore.userList[$myId].avatar}'s voice message`;
             }
 
-            recorder.closeRecorder();
+            recorder.closeRecorder(false);
 
         } else {
             inputbox.style.height = 'min-content';
@@ -235,11 +237,11 @@
             {/if}
             <div class="textbox-wrapper">
                 <div style:opacity={recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
-                <Recorder bind:this={recorder} bind:isActive={recorderIsActive}/>
+                <Recorder bind:this={recorder} bind:isActive={recorderIsActive} bind:audioUrl={voiceMessageAudioSrc}/>
             </div>
         </div>
         <!-- Send Button-->
-        {#if $quickEmojiEnabled && newMessage.trim().length === 0 && !$voiceMessageAudio}
+        {#if $quickEmojiEnabled && newMessage.trim().length === 0 && !voiceMessageAudioSrc}
             <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
         {:else}
             <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
