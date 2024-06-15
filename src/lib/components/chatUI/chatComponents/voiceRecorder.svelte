@@ -126,8 +126,6 @@
 
                     const audioBlob = new Blob(audioChunks, {type: 'audio/mp3'});
 
-                    console.log(audioBlob);
-
                     audioUrl = URL.createObjectURL(audioBlob);
 
                     recordedAudio = new Audio(audioUrl);
