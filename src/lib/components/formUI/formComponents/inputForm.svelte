@@ -326,10 +326,45 @@
         height: 5px;
         cursor: pointer;
         box-shadow: 0px 0px 0px #000000;
-        background: var(--modal-color);
-        filter: brightness(1.4) saturate(0.8);
+        background:  hsla(0, 0%, 100%, 0.07);
         border-radius: 3px;
         border: 0px solid #000000;
+        z-index: 0;
+    }
+
+    input[type="range"]::-moz-range-track {
+        width: 100%;
+        height: 5px;
+        cursor: pointer;
+        box-shadow: 0px 0px 0px #000000;
+        background:  hsla(0, 0%, 100%, 0.07);
+        border-radius: 3px;
+        border: 0px solid #000000;
+        z-index: 0;
+    }
+
+    input[type="range"]::-ms-track {
+        width: 100%;
+        height: 5px;
+        cursor: pointer;
+        background: transparent;
+        border-color: transparent;
+        color: transparent;
+        z-index: 0;
+    }
+
+    input[type="range"]::-ms-fill-lower {
+        background:  hsla(0, 0%, 100%, 0.07);
+        border: 0px solid #000000;
+        border-radius: 2px;
+        box-shadow: 0px 0px 0px #000000;
+    }
+
+    input[type="range"]::-ms-fill-upper {
+        background:  hsla(0, 0%, 100%, 0.07);
+        border: 0px solid #000000;
+        border-radius: 2px;
+        box-shadow: 0px 0px 0px #000000;
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -342,17 +377,7 @@
         -webkit-appearance: none;
         appearance: none;
         margin-top: -6.5px;
-    }
-
-    input[type="range"]::-moz-range-track {
-        width: 100%;
-        height: 5px;
-        cursor: pointer;
-        box-shadow: 0px 0px 0px #000000;
-        background: var(--modal-color);
-        filter: brightness(1.4) saturate(0.8);
-        border-radius: 3px;
-        border: 0px solid #000000;
+        z-index: 2;
     }
 
     input[type="range"]::-moz-range-thumb {
@@ -362,31 +387,7 @@
         border-radius: 25px;
         background: var(--secondary-dark, #4598ff);
         cursor: pointer;
-    }
-
-    input[type="range"]::-ms-track {
-        width: 100%;
-        height: 5px;
-        cursor: pointer;
-        background: transparent;
-        border-color: transparent;
-        color: transparent;
-    }
-
-    input[type="range"]::-ms-fill-lower {
-        background: var(--modal-color);
-        filter: brightness(1.4) saturate(0.8);
-        border: 0px solid #000000;
-        border-radius: 2px;
-        box-shadow: 0px 0px 0px #000000;
-    }
-
-    input[type="range"]::-ms-fill-upper {
-        background: var(--modal-color);
-        filter: brightness(1.4) saturate(0.8);
-        border: 0px solid #000000;
-        border-radius: 2px;
-        box-shadow: 0px 0px 0px #000000;
+        z-index: 2;
     }
 
     input[type="range"]::-ms-thumb {
@@ -398,6 +399,7 @@
         border-radius: 25px;
         background: var(--secondary-dark, #4598ff);
         cursor: pointer;
+        z-index: 2;
     }
 
     .avatarsContainer {
