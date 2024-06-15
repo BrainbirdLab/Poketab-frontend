@@ -26,7 +26,7 @@
         >
             <div class="avt">
                 <img
-                    src="/images/avatars/{User.avatar}(custom).webp"
+                    src="/static/images/avatars/{User.avatar}(custom).webp"
                     height="30"
                     width="30"
                     alt="Profile-avatar"
@@ -60,7 +60,7 @@
 
         .avt {
             position: relative;
-            background: var(--dark-color);
+            background: var(--glass-color);
             border-radius: 50%;
 
             img {

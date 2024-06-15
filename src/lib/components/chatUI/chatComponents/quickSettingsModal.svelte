@@ -107,7 +107,6 @@
     import { socket } from "$lib/socket";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import UsersPanel from "./usersPanel.svelte";
-    import { elasticOut } from "svelte/easing";
     import { addState, clearModals } from "../stateManager.svelte";
     import { onDestroy, onMount } from "svelte";
     import type { Unsubscriber } from "svelte/store";
@@ -178,7 +177,7 @@
     function leaveChat(destroy: boolean = false) {
         splashMessage.set(
             (destroy ? "Destroying chat... " : "Leaving chat... ") +
-                '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px">',
+                '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px" />',
         );
         clearModals();
         socket.emit("leaveChat", destroy);
@@ -221,8 +220,8 @@
 <div class="settingsWrapper" use:handleClick>
     <div
         class="settings back-blur"
-        in:fly={{ x: 40, duration: 400, easing: elasticOut, opacity: 1 }}
-        out:fly={{ x: 40, duration: 100 }}
+        in:fly={{ x: 40, duration: 150, opacity: 1 }}
+        out:fly={{ x: 40, duration: 150 }}
     >
         <div class="top">
             <button
@@ -617,7 +616,7 @@
                 position: relative;
                 width: 40px;
                 height: 20px;
-                background: #aaa;
+                background: #fdfdfd1f;
                 display: flex;
                 border-radius: 25px;
                 transition: 300ms ease-in-out;

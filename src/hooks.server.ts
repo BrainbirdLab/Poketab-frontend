@@ -7,18 +7,18 @@ const maxAge = 60 * 60 * 24 * 200;
 
 export const handle: Handle = async ({ event, resolve }) => {
  
-    let theme = event.cookies.get('theme');
+    let themeName = event.cookies.get('theme');
 
-    if (!theme || !themes[theme]) {
-        theme = DEFAULT_THEME;
+    if (!themeName || !themes[themeName]) {
+        themeName = DEFAULT_THEME;
     }
 
-    event.cookies.set('theme', theme, { path: '/', maxAge: maxAge });
+    event.cookies.set('theme', themeName, { path: '/', maxAge: maxAge });
 
     //injects the theme in html
     return await resolve(event, {
         transformPageChunk: ({html}) => {
-            return html.replace('<%_theme_%>', theme);
+            return html.replace('<%_accent_%>', themes[themeName].accentColor).replace('<%_theme_%>', themeName);
         }
     });
 };

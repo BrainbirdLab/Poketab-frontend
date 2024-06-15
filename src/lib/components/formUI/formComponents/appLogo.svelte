@@ -6,7 +6,7 @@
 
 <div class="titleBar">
     <a href="/">
-        <img src="/images/pikachu-mini.png" alt="Logo" in:scale>
+        <img src="/images/pikachu-mini.png" alt="Logo" in:scale />
     </a>
     <div class="text">
         <div class="headingText" in:fly={{x: 20}}>Poketab | {title.text} <i class="{title.icon}"></i></div>

@@ -4,7 +4,7 @@
     import { elasticOut } from "svelte/easing";
 
     export let selectedEmoji = '';
-    export let height = "55vh";
+    export let height = "42vh";
     export let showClose = false;
     export let exclude: string[] = [];
 

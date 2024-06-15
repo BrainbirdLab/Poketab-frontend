@@ -8,7 +8,7 @@
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { resetChatRoomStore } from "$lib/store";
-    import { currentTheme } from "$lib/themes";
+    import { currentTheme, themes } from "$lib/themes";
     import type { Unsubscriber } from "svelte/store";
 
     export let data; // Get data from load function aka +layout.server.ts
@@ -22,11 +22,18 @@
     onMount(() => {
 
         unsubscriber = currentTheme.subscribe((val) => {
-            const elem = document.getElementById('themesheet');
+            const elem = document.getElementById('theme-css');
             if (!elem) {
                 return;
             }
             elem.setAttribute('href', `/themes/${val}.css`);
+            
+            const themeAccent = document.getElementById('theme-color');
+            if (!themeAccent) {
+                return;
+            }
+
+            themeAccent.setAttribute('content', themes[val].accentColor);
         });
 
         if ($page.route.id !== '/chat'){

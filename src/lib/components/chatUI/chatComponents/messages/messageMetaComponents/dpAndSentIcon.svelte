@@ -14,6 +14,6 @@
 {/if}
 {#if senderId != $myId}
     <div class="avatar">
-        <img src="/images/avatars/{$chatRoomStore.userList[senderId]?.avatar || 'Rip'}(custom).webp" width="30px" height="30px" alt="avatar">
+        <img src="/images/avatars/{$chatRoomStore.userList[senderId]?.avatar || 'Rip'}(custom).webp" width="30px" height="30px" alt="avatar"/>
     </div>
 {/if}

@@ -62,7 +62,7 @@
                 {#if $message instanceof TextMessageObj}
                     {getTextData($message.message)}
                 {:else if $message instanceof ImageMessageObj}
-                    <img class="image" src="{$message.url}" alt="{$message.name}">
+                    <img class="image" src="{$message.url}" alt="{$message.name}" />
                 {:else if $message instanceof FileMessageObj}
                     <i class="icon fa-solid {getIcon($message.type)}"></i> 
                     {getTextData($message.name)}
