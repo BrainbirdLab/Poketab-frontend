@@ -33,7 +33,7 @@
         height: 100%;
         width: 100%;
         inset: 0;
-        background: var(--primary-dark-color, #0b0c10);
+        background: var(--modal-color, #0b0c10);
     }
 
     .text {

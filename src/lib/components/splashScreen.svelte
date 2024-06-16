@@ -38,7 +38,7 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        background: #17191d;
+        background: var(--modal-color);
         z-index: 99999;
 
         &.bg{
