@@ -1,12 +1,12 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, AudioMessageObj, MessageObj } from "$lib/messageTypes";
+    import { replyTarget, eventTriggerMessageId, TextMessageObj, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder, { recorderIsActive, recordedAudioUrl } from "./voiceRecorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/socket";
 
-    import { quickEmojiEnabled, myId, sendMethod, chatRoomStore, quickEmoji} from "$lib/store";
+    import { quickEmojiEnabled, myId, sendMethod, chatRoomStore, quickEmoji, messageContainer, messageScrolledPx } from "$lib/store";
     import { SEND_METHOD } from "$lib/types";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";
@@ -208,7 +208,7 @@
 
 </script>
 
-<div class="footer" transition:fly={{y: 30}} bind:this={footer} >
+<div class="footer" transition:fly={{y: 30}} bind:this={footer} on:touchmove|preventDefault>
 
     <ScrollDownPopup/>
     
@@ -247,7 +247,6 @@
 <style lang="scss">
 
     .footer {
-
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -256,7 +255,9 @@
         transition: 300ms ease-in-out;
         bottom: 0px;
         padding-bottom: 10px;
+        position: relative;
         z-index: 1;
+        overscroll-behavior: none;
     }
 
     .chatInput{

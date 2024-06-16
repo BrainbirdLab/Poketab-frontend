@@ -26,6 +26,9 @@ export const formActionButtonDisabled = writable(true);
 export const showScrollPopUp = writable(false);
 export const listenScroll = writable(true);
 
+export const messageContainer = writable<HTMLElement>();
+export const messageScrolledPx = writable<number>(0);
+
 export const deviceType: Writable<'desktop' | 'mobile'> = writable('desktop');
 
 export const outgoingXHRs: Writable<

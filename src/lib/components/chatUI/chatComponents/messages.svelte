@@ -25,20 +25,17 @@
         replyTarget,
         LocationMessageObj,
         TextMessageObj,
-        messageContainer,
         FileMessageObj,
         AudioMessageObj,
         ImageMessageObj,
-        messageScrolledPx,
     } from "$lib/messageTypes";
     import {
-    showFilePreviewPanel,
         showMessageOptions,
         showReactsOnMessageModal,
         //showStickersPanel,
     } from "$lib/modalManager";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
-    import { chatRoomStore, listenScroll, showScrollPopUp } from "$lib/store";
+    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer } from "$lib/store";
     import { getFormattedDate, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { copyText } from "$lib/utils";
     import { afterUpdate, beforeUpdate, onDestroy, onMount, tick } from "svelte";
@@ -445,6 +442,8 @@
 
     let timeout: number | null = null;
 
+    let messagesHTML: HTMLElement;
+
     beforeUpdate(() => {
         if (!$messageContainer) {
             return;
@@ -452,7 +451,6 @@
 
         $messageContainer.style.height = 'auto';
         lastScrollPosition = $messageContainer.scrollTop;
-
     });
 
 
@@ -468,7 +466,6 @@
         
         heightChanged = $messageContainer.scrollHeight - lastHeight;
         scrollChanged = $messageContainer.scrollTop - lastScrollPosition;
-
     });
 
     onMount(() => {
@@ -531,7 +528,6 @@
             $messageContainer.scrollTo({
                 top: $messageContainer.scrollHeight,
                 behavior: "smooth",
-                
             });
 
             $messageContainer.addEventListener('scrollend', () => {
@@ -542,7 +538,7 @@
         lastHeight = $messageContainer.scrollHeight;
 
         //last message
-        const lastMessage = $messageContainer.lastElementChild as HTMLElement;
+        const lastMessage = messagesHTML.lastElementChild as HTMLElement;
 
         if (!lastMessage.classList.contains("message")) {
             return;
@@ -581,7 +577,11 @@
 
 </script>
 
-<ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={$messageContainer}>
+<ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={messagesHTML} on:touchmove|stopPropagation={(e) => {     
+        if (e.target == e.currentTarget){
+            e.preventDefault();
+        }
+    }}>
     <div class="welcome_wrapper" in:fade>
         <div class="welcomeText">
             <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
@@ -622,15 +622,12 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
-            overflow-y: scroll;
-            overflow-x: hidden;
             color: var(--text-color);
-            scrollbar-width: none;
             list-style: none;
-            flex-grow: 1;
             z-index: 1;
-            margin-bottom: 20px;
+            padding-bottom: 5px;
             //scroll-snap-type: y proximity;
+            overscroll-behavior: none;
             width: 100%;
 
             .welcome_wrapper {

@@ -33,7 +33,7 @@
         //showStickersPanel,
         //showThemesPanel,
     } from "$lib/modalManager";
-    import { chatRoomStore, myId } from "$lib/store";
+    import { chatRoomStore, myId, messageContainer } from "$lib/store";
     import { socket } from "$lib/socket";
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
@@ -153,11 +153,38 @@
 
 <div class="chatBox" class:offl={isOffline}>
     <NavBar />
-    <slot name="messages" />
-    <Footer />
+    <div class="middleLayer" on:touchmove|stopPropagation={(e) => {
+        if (e.target == e.currentTarget) {
+            e.preventDefault();
+        }
+    }}>
+        <div class="messageContainer" bind:this={$messageContainer} >
+            <slot name="messages" />
+        </div>
+        <Footer />
+    </div>
 </div>
 
 <style lang="scss">
+
+    .middleLayer {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        gap: 20px;
+
+        .messageContainer{
+            height: auto;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scrollbar-width: none;
+        }
+    }
+
     .chatBox {
 
         inset: 0;

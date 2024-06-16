@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { TextMessageObj, StickerMessageObj, messageContainer, messageScrolledPx, notice, FileMessageObj } from "$lib/messageTypes";
-    import { chatRoomStore, listenScroll, showScrollPopUp } from "$lib/store";
+    import { TextMessageObj, StickerMessageObj, notice, FileMessageObj } from "$lib/messageTypes";
+    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer, messageScrolledPx } from "$lib/store";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
     import { playMessageSound, toSentenceCase } from "$lib/utils";
