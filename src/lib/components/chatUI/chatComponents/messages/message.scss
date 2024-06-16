@@ -35,34 +35,40 @@
         font-size: 0.8rem;
         width: 100%;
         position: relative;
-        .replyIcon {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background: var(--glass-color);
-            border-radius: 50%;
-            position: absolute;
-            padding: 5px;
-            aspect-ratio: 1;
-            left: 0;
-            //transform: translateX(-40px);
-            visibility: hidden;
-            opacity: 0;
-            transition: background-color 150ms;
-            
-            &[data-swipe-start="true"]{
-                visibility: visible;
-                opacity: 1;
-            }
+    }
+    .replyIcon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background: var(--glass-color);
+        border-radius: 50%;
+        position: absolute;
+        padding: 5px;
+        aspect-ratio: 1;
+        left: 0;
+        //transform: translateX(-40px);
+        visibility: hidden;
+        opacity: 0;
+        transition: background-color 150ms;
         
-            &[data-reply-trigger="true"]{
-                background: var(--secondary-dark);
-            }
+        &[data-swipe-start="true"]{
+            visibility: visible;
+            opacity: 1;
+        }
+    
+        &[data-reply-trigger="true"]{
+            background: var(--msg-get);
+        }
 
-            i{
-                color: #ffffff70;
-            }
+        i{
+            color: #ffffff70;
+        }
+    }
+
+    &.self .replyIcon{
+        &[data-reply-trigger="true"]{
+            background: var(--msg-send);
         }
     }
 
