@@ -140,7 +140,6 @@
                 },
             );
         } else {
-            console.log("Joining key: " + $chatRoomStore.Key);
             socket.connect();
             socket.emit(
                 "joinChat",

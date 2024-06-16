@@ -6,10 +6,8 @@
 
     export function addState(url: string, state: App.PageState){
         if (Object.values(get(page).state).some(value => value === true)){
-            //console.log('Replacing state');
             replaceState(`${get(page).url.pathname}#${url}`, state);
         } else {
-            //console.log('Pushing state');
             pushState(`${get(page).url.pathname}#${url}`, state);
         }
     }

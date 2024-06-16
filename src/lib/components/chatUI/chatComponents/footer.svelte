@@ -2,7 +2,7 @@
     import { page } from "$app/stores";
     import { replyTarget, eventTriggerMessageId, TextMessageObj, messageScrolledPx, messageContainer, AudioMessageObj, MessageObj } from "$lib/messageTypes";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import Recorder from "./voiceRecorder.svelte";
+    import Recorder, { recorderIsActive, recordedAudioUrl } from "./voiceRecorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/socket";
 
@@ -17,9 +17,6 @@
     let newMessage = '';
 
     let recorder: Recorder;
-    let recorderIsActive = false;
-
-    let voiceMessageAudioSrc: string;
 
     const codeParser = new TextParser();
     
@@ -27,12 +24,12 @@
 
         let message: MessageObj;
 
-        if (voiceMessageAudioSrc){
+        if ($recordedAudioUrl.length !== 0){
 
             message = new AudioMessageObj();
 
             if (message instanceof AudioMessageObj){
-                message.url = voiceMessageAudioSrc;
+                message.url = $recordedAudioUrl;
                 message.audio.src = message.url;
                 message.type = 'audio/mpeg';
                 message.duration = recorder.getDuration();
@@ -181,7 +178,6 @@
                 if (entry.contentRect.height < lastHeight){
                     lastHeight = entry.contentRect.height;
                     $messageContainer.style.height = $messageContainer.scrollHeight + 'px';
-                    //console.log('Height decreased');
                     return;
                 }
 
@@ -189,7 +185,6 @@
 
                 if ($messageScrolledPx < 200){
                     $messageContainer.scrollTo({top: $messageContainer.scrollHeight});
-                    //console.log('Scrolled due to footer update');
                 }
             }
         });
@@ -236,12 +231,12 @@
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">
-                <div style:opacity={recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
-                <Recorder bind:this={recorder} bind:isActive={recorderIsActive} bind:audioUrl={voiceMessageAudioSrc}/>
+                <div style:opacity={$recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
+                <Recorder bind:this={recorder}/>
             </div>
         </div>
         <!-- Send Button-->
-        {#if $quickEmojiEnabled && newMessage.trim().length === 0 && !voiceMessageAudioSrc}
+        {#if $quickEmojiEnabled && newMessage.trim().length === 0 && !$recordedAudioUrl}
             <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
         {:else}
             <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>

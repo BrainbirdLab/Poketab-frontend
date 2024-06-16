@@ -1,9 +1,16 @@
+<script context="module" lang="ts">
+    
+    import { type Writable, writable } from 'svelte/store';
+
+    export const recordedAudioUrl: Writable<string> = writable('');
+    export const recorderIsActive: Writable<boolean> = writable(false);
+</script>
+
 <script lang="ts">
     import { showToastMessage } from "@itsfuad/domtoastmessage";
 
     import { playMessageSound } from "$lib/utils";
 
-    export let isActive = false;
     
     let recordingState = false;
     let playState = false;
@@ -20,7 +27,6 @@
 
     let audioChunks: Blob[] = [];
 
-    export let audioUrl = '';
 
     let audioDuration = 0;
     let elapsedTime = 0;
@@ -108,7 +114,7 @@
         navigator.mediaDevices.getUserMedia({audio: true})
         .then(mediaStream => {
                 playMessageSound('startRecording');
-                isActive = true;
+                recorderIsActive.set(true);
                 recordingState = true;
                 playState = false;
                 micIcon = 'fa-stop';
@@ -126,9 +132,9 @@
 
                     const audioBlob = new Blob(audioChunks, {type: 'audio/mp3'});
 
-                    audioUrl = URL.createObjectURL(audioBlob);
-
-                    recordedAudio = new Audio(audioUrl);
+                    recordedAudioUrl.set(URL.createObjectURL(audioBlob));
+                    console.log('Audio url set after recording');
+                    recordedAudio = new Audio($recordedAudioUrl);
 
                     audioRecorder.ondataavailable = null;
                 };
@@ -160,7 +166,7 @@
     function recordButtonHandler(){
         // this plays role to show the recorder, start recording, stop recording, play and pause the recorded audio
         // if the recorder is not active, it will be activated
-        if (!isActive){
+        if (!$recorderIsActive){
             startRecording();
         } else {
             if (playState){
@@ -176,31 +182,34 @@
     }
 
     export function closeRecorder(revoke: boolean){
+
         // close recorder if it is active
         if (recordingState){
+            audioRecorder.onstop = null;
             stopRecording();
         }
 
         //if audio
         if (recordedAudio){
+
+            if (revoke){
+                URL.revokeObjectURL($recordedAudioUrl);
+            }
+
             recordedAudio.pause();
             recordedAudio.currentTime = 0;
             
             recordedAudio = null;
-
-            if (revoke){
-                URL.revokeObjectURL(audioUrl);
-                console.log('Audio url revoked');
-            }
         }
-
+        
+        recordedAudioUrl.set('');
         time = '00:00';
         elapsedTime = 0;
         audioDuration = 0;
         if (timer){
             clearInterval(timer);
         }
-        isActive = false;
+        recorderIsActive.set(false);
         micIcon = 'fa-microphone';
         playState = false;
         if (document){
@@ -211,7 +220,7 @@
 </script>
 
 <!-- Microphone -->
-<div class="voiceRecorder" class:active={isActive} id="recorderOverlay" data-recordingstate="{recordingState}">
+<div class="voiceRecorder" class:active={$recorderIsActive} data-a="{$recorderIsActive}" id="recorderOverlay" data-recordingstate="{recordingState}">
     <div class="container">
         <button class="recordBtn button-animate roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
             <i class="fa-solid {micIcon}" id="micIcon"></i>

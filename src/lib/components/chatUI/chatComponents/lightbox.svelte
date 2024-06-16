@@ -3,17 +3,23 @@
     import { page } from "$app/stores";
 
     import { PanZoom } from "$lib/panzoom";
+    import { generateId } from "$lib/utils";
     import { onMount } from "svelte";
 
     let image: HTMLImageElement;
 
     function closeLightbox(){
-        console.log('closeLightbox');
         history.back();
     }
 
     function downloadImage(){
-        console.log('downloadImage');
+        const a = document.createElement('a');
+        a.href = image.src;
+        const name = image.getAttribute('data-ref-name') || 'image-' + generateId(16);
+
+        a.download = name;
+
+        a.click();
     }
 
     onMount(() => {
@@ -32,7 +38,7 @@
         <i class="fa-solid fa-download"></i>
     </button>
     <!-- use the img as image element -->
-    <img bind:this={image} src={$page.state.viewImage?.src} data-ref-id="{$page.state.viewImage?.id}" alt="Could not load" class="main-image"/>
+    <img bind:this={image} src={$page.state.viewImage.src} data-ref-id="{$page.state.viewImage.id}" data-ref-name="{$page.state.viewImage.name}" alt="Could not load" class="main-image"/>
     {:else}
         No longer available
     {/if}

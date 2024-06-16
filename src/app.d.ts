@@ -15,7 +15,8 @@ declare global {
 			showAttachmentPickerPanel?: boolean;
 			viewImage?: {
 				src: string,
-				id: string
+				id: string,
+				name: string,
 			}
 		}
 	}

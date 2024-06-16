@@ -10,6 +10,7 @@
     import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { setToLocalStorage } from "./quickSettingsModal.svelte";
+    import { generateId } from "$lib/utils";
 
 
     const Stickers = [
@@ -83,7 +84,7 @@
 
                 const src = `/stickers/${group}/animated/${serial}.webp`;
 
-                const tempId = Math.random().toString(36);
+                const tempId = generateId(16);
                 const messageObj = new StickerMessageObj();
                 messageObj.src = src;
                 messageObj.groupName = group;

@@ -4,7 +4,7 @@ import { chatRoomStore, myId, outgoingXHRs } from "$lib/store";
 import { socket } from "$lib/socket";
 import { badWords } from "./censoredWords";
 import { API_URL } from "$lib/socket";
-import { playMessageSound } from "$lib/utils";
+import { generateId, playMessageSound } from "$lib/utils";
 
 export const showReplyToast = writable(false);
 
@@ -59,7 +59,7 @@ export function remainingTime(totalTime: number, elapsedTime: number) {
 export async function sendMessage(message: MessageObj, file?: File){
 
 	message.sender = get(myId);
-	message.id = Math.random().toString(36);
+	message.id = generateId(16);
 
 	messageDatabase.add(message);
 	
