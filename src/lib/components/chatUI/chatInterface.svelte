@@ -109,6 +109,7 @@
     });
 
     onDestroy(() => {
+
         if (document){
             document.onkeydown = null;
         }
@@ -116,6 +117,7 @@
             window.onfocus = null;
         }
     });
+
 </script>
 
 <svelte:head>
@@ -123,6 +125,8 @@
 </svelte:head>
 
 <ConnectivityState bind:offline={isOffline} />
+
+<AttachmentsModal />
 
 {#if $page.state.viewImage != null}
     <Lightbox />
@@ -138,7 +142,6 @@
     <StickersKeyboardModal />
 {/if}
 
-<AttachmentsModal />
 
 <MessageSockets />
 
@@ -150,6 +153,8 @@
         <ReactsOnMessage />
     {/if}
 {/if}
+
+
 
 <div class="chatBox" class:offl={isOffline}>
     <NavBar />

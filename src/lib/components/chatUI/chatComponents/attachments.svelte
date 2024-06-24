@@ -1,13 +1,19 @@
+<script context="module" lang="ts">
+    export const showFilePicker = writable(false);
+    export const sendAsType: Writable<'file' | 'image' | 'audio'>  = writable('file');
+</script>
 <script lang="ts">
     import { fade, fly, scale } from "svelte/transition";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { socket } from "$lib/socket";
     import { chatRoomStore, myId } from "$lib/store";
     import { AudioMessageObj, FileMessageObj, ImageMessageObj, selectedFiles } from "$lib/messageTypes";
-    import { tick } from "svelte";
+    import { onDestroy, onMount, tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
     import { page } from "$app/stores";
+    import { type Writable, writable, type Unsubscriber } from "svelte/store";
+    import DropBox from "./dropBox.svelte";
 
 
     let locationBtn: HTMLButtonElement;
@@ -16,12 +22,25 @@
     let audioBtn: HTMLButtonElement;
 
     let filePicker: HTMLInputElement;
-    let showFilePicker = false;
 
     let acceptedTypes: null | 'image/png, image/jpg, image/jpeg' | 'audio/mp3, audio/wav, audio/ogg' = null;
     let sendAs: 'file' | 'image' | 'audio' = 'file';
 
     let urlObjects: Map<string, string> = new Map();
+
+    let sendAsUnsub: Unsubscriber;
+
+    onMount(() => {
+        sendAsUnsub = sendAsType.subscribe((val) => {
+            sendAs = val;
+        });
+    });
+
+    onDestroy(() => {
+        if (sendAsUnsub){
+            sendAsUnsub();
+        }
+    })
 
     function transmitLocation() {
 
@@ -71,7 +90,7 @@
     
                 if (target === node || target === fileBtn || target === imageBtn || target === audioBtn || target === locationBtn){
                     if (target !== node){
-                        showFilePicker = true;
+                        showFilePicker.set(true);
                         await tick();
                         filePicker.onchange = (e) => {
                             if ($selectedFiles.length > 10){
@@ -107,7 +126,7 @@
         //trigger change event
         filePicker.dispatchEvent(new Event('change'));
 
-        showFilePicker = false;
+        showFilePicker.set(false);
     }
 
     function deleteItem(id: number) {
@@ -208,7 +227,6 @@
 
     function handleClick(node: HTMLElement){
 
-
         node.onclick = (e: Event) => {
             const target = e.target as HTMLElement;
             if (target.tagName === "BUTTON"){
@@ -292,13 +310,15 @@
 
 </script>
 
+<DropBox />
+
 {#if $selectedFiles && $selectedFiles.length > 0}
 <div class="filePreviewContainer" use:handleClick in:fade={{duration: 100}} out:fade={{duration: 200}}>
     <FilePreview bind:sendAs={sendAs} bind:urlObjects={urlObjects}/>
 </div>
 {/if}
 
-{#if showFilePicker}
+{#if $showFilePicker}
     <input multiple bind:files={$selectedFiles} type="file" bind:this={filePicker} accept="{acceptedTypes}"/>
 {/if}
 
