@@ -86,6 +86,7 @@
         .main-image{
             position: absolute;
             max-width: 100%;
+            max-height: 100%;
         }
     }
 
