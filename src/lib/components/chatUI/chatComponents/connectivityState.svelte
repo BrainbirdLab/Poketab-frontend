@@ -24,7 +24,9 @@
     });
 
     socket.on('connection_error', () => {
-
+        if (offline){
+            return;
+        }
         title = 'Could not connect. Retrying... ' + retry++;
         icon = 'fa-circle-exclamation';
     });
