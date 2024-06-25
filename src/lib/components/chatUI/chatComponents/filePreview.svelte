@@ -230,7 +230,7 @@
         width: 100%;
         font-size: 0.9rem;
         max-width: 500px;
-        background: var(--modal-color);
+        background: var(--glass-color);
         width: 80%;
         border-radius: 50px;
         transition: 100ms ease-in-out;
