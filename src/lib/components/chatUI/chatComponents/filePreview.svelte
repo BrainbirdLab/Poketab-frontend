@@ -187,6 +187,9 @@
                         width: 100%;
                         text-overflow: ellipsis;
                     }
+                    .name{
+                        color: var(--transparent-white-color);
+                    }
                     .size{
                         color: var(--secondary-dark);
                         &.error{
@@ -237,7 +240,7 @@
             font-size: inherit !important;
         }
         .items-count{
-            color: var(--text-color);
+            color: var(--transparent-white-color);
             text-align: center;
             font-size: 0.75rem !important;
         }
