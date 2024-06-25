@@ -47,16 +47,16 @@
     })
 
 </script>
-<div class="replybox" in:slide={{duration: 600, easing: elasticOut}} out:closeAnimation={{duration: 500, easing: bounceOut}}>
+<div class="replybox" in:slide={{duration: 150}} out:closeAnimation={{duration: 500, easing: bounceOut}}>
     
     <div class="wrapper">
         <div class="content">
             <div class="top">
-                <div class="title" out:fade|global={{duration: 200}} in:fly|global={{y: 20, delay: 200, duration: 200}}>
+                <div class="title" out:fade|global={{duration: 200}} in:fly|global={{y: 20, delay: 100, duration: 200}}>
                     <i class="fa-solid fa-reply"></i>
                     Repliying to {sender}
                 </div>
-                <button out:scale|global={{duration: 50}} in:scale|global={{delay: 300, duration: 200}} class="close" on:click={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
+                <button out:scale|global={{duration: 50}} in:scale|global={{delay: 150, duration: 200}} class="close" on:click={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="replyData" out:fade|global={{duration: 200}} in:fly|global={{x: 10, delay: 150, duration: 300}}>
                 {#if $message instanceof TextMessageObj}
