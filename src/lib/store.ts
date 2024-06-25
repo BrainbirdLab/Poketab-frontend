@@ -4,13 +4,15 @@ import { messageDatabase } from "$lib/messageTypes";
 
 export const showUserInputForm = writable(true);
 export const formNotification = writable('');
+export const reconnectButtonEnabled = writable(false);
+export const formActionButtonDisabled = writable(true);
 export const splashMessage = writable('');
 export const splashButtonText = writable('');
 
 export const userTypingString = writable('');
 
-export const joinError: Writable<ErrorLog> = writable({text: '', icon: ''});
 
+export const joinError: Writable<ErrorLog> = writable({text: '', icon: ''});
 export const joinKey: Writable<string> = writable('');
 
 export const sendMethod: Writable<SEND_METHOD> = writable(SEND_METHOD.ENTER);
@@ -18,9 +20,6 @@ export const buttonSoundEnabled = writable(true);
 export const messageSoundEnabled = writable(true);
 export const quickEmojiEnabled = writable(true);
 export const quickEmoji = writable('');
-
-export const reconnectButtonEnabled = writable(false);
-export const formActionButtonDisabled = writable(true);
 
 
 export const showScrollPopUp = writable(false);

@@ -13,7 +13,6 @@
     import MessageOptionsModal from "$lib/components/chatUI/chatComponents/messageOptions.svelte";
 
     import ReactsOnMessage from "$lib/components/chatUI/chatComponents/reactsOnMessageModal.svelte";
-    import ConnectivityState from "$lib/components/chatUI/chatComponents/connectivityState.svelte";
 
     import { addState } from "./stateManager.svelte";
 
@@ -123,8 +122,6 @@
 <svelte:head>
     <title>Poketab - Chat</title>
 </svelte:head>
-
-<ConnectivityState bind:offline={isOffline} />
 
 <AttachmentsModal />
 

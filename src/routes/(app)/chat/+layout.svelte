@@ -2,7 +2,7 @@
     import "$lib/styles/atom.css";
     import { formNotification, formActionButtonDisabled } from "$lib/store";
     import { onMount, onDestroy } from "svelte";
-    import { socket } from "$lib/socket.js";
+    import { socket, retryCount } from "$lib/socket";
     import SplashScreen from "$lib/components/splashScreen.svelte";
     import {goto} from "$app/navigation";
     import { page } from "$app/stores";
@@ -20,6 +20,10 @@
     let unsubscriber: Unsubscriber;
 
     onMount(() => {
+        
+        if (!navigator.onLine){
+            handleOffline();
+        }
 
         unsubscriber = currentTheme.subscribe((val) => {
             const elem = document.getElementById('theme-css');
@@ -66,25 +70,28 @@
         }
     });
 
-</script>
-
-<svelte:window 
-
-    on:offline={() => {
+    function handleOffline() {
         console.log("Offline");
-        //disconnect the socket connection
-        socket.disconnect();
         /**
          * The Disconnection event listener will set the formNotification to "Disconnected from server"
          * But we want to show "You are offline" instead
         */
         formNotification.set("You are offline"); // So, we set it here
         formActionButtonDisabled.set(true); //disable the form action button
-    }}
+        //disconnect the socket connection
+        socket.disconnect();
+    }
+
+</script>
+
+<svelte:window 
+
+    on:offline={handleOffline}
 
     on:online={() => {
         console.log("Online");
         formNotification.set("Back to online"); //Set the formNotification to "Back to online"
+        socket.connect(); //Reconnect the socket connection
     }}
 />
 

@@ -52,36 +52,14 @@ if (browser) {
     });
 }
 
-socket.on('connect', () => {
-    //splashMessage.set('');
-    formActionButtonDisabled.set(false);
-    retryCount.set(1);
-    if (get(formNotification) == '') {
-        console.log('%cConnected to server', 'color: blue');
-        return;
-    }
-    formNotification.set('Connected to server');
-    console.log('%cReconnected to server', 'color: lime');
-    setTimeout(() => {
-        formNotification.set('');
-    }, 2000);
-});
-
-let retryCount = writable(1);
-
-formNotification.subscribe(value => {
-    if (value.includes('offline')) {
-        retryCount.set(1);
-        reconnectButtonEnabled.set(false);
-    } else if (value.includes('Error: ')) {
-        setTimeout(() => {
-            formNotification.set('');
-        }, 2000);
-    }
-});
-
-
 socket.on('connect_error', (err) => {
+
+    if (browser){
+        if (!navigator.onLine) {
+            return;
+        }
+    }
+
     console.log('%cConnection error - Socket.ts', 'color: red');
 
     if (get(formNotification) == 'Disconnected from server') {
@@ -102,8 +80,37 @@ socket.on('connect_error', (err) => {
     //socket.connect();
 });
 
+socket.on('connect', () => {
+    //splashMessage.set('');
+    formActionButtonDisabled.set(false);
+    retryCount.set(1);
+    if (get(formNotification) == '') {
+        console.log('%cConnected to server', 'color: blue');
+        return;
+    }
+    formNotification.set('Connected to server');
+    console.log('%cReconnected to server', 'color: lime');
+    setTimeout(() => {
+        formNotification.set('');
+    }, 2000);
+});
+
+export let retryCount = writable(1);
+
+formNotification.subscribe(value => {
+    if (value.includes('offline')) {
+        retryCount.set(1);
+        reconnectButtonEnabled.set(false);
+    } else if (value.includes('Error: ')) {
+        setTimeout(() => {
+            formNotification.set('');
+        }, 2000);
+    }
+});
+
 
 socket.on('disconnect', (_: string) => {
+    console.log(_);
     retryCount.set(1);
     if (get(currentPage) == 'chat') { // on the forms page
         resetChatRoomStore('Disconnected from server 🙃');

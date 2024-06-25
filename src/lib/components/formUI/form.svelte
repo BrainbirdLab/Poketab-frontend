@@ -5,15 +5,10 @@
     import Notification from "./formComponents/notification.svelte";
     import { onMount } from "svelte";
     import { socket } from "$lib/socket";
-    import { fly, scale } from "svelte/transition";
-
-    let mounted = false;
     
     reconnectButtonEnabled.set(false);
     
     onMount(() => {
-        //formNotification.set('');
-        mounted = true;
         if (socket.disconnected){
             console.log('Connecting to server...');
             socket.connect();
