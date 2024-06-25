@@ -551,7 +551,7 @@
 
     .moreInfo {
         font-size: 0.7rem;
-        color: var(--blue-grey-color);
+        color: var(--transparent-white-color);
         display: flex;
         flex-direction: column;
         align-items: flex-start;

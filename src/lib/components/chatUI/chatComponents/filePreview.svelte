@@ -237,7 +237,7 @@
             font-size: inherit !important;
         }
         .items-count{
-            color: var(--blue-grey-color);
+            color: var(--text-color);
             text-align: center;
             font-size: 0.75rem !important;
         }
