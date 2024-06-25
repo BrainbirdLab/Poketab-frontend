@@ -1,12 +1,19 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
     import { socket } from "$lib/socket";
+    import { onMount } from "svelte";
 
     let title = '';
     let icon = '';
     export let offline = false;
     
     let retry = 1;
+
+    onMount(() => {
+        if (!window.navigator.onLine) {
+            handleOffline();
+        }
+    });
 
     socket.on('connect', ()=>{
 
