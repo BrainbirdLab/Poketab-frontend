@@ -100,6 +100,7 @@
             border-radius: 15px;
             justify-content: center;
             transition: 200ms ease-in-out;
+            text-align: center;
 
             color: var(--text-color);
 
@@ -110,6 +111,7 @@
 
             > * {
                 color: inherit;
+                pointer-events: none;
             }
         }
     }

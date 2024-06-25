@@ -123,7 +123,6 @@
             aspect-ratio: 4/3;
             border-radius: 15px;
             width: 300px;
-            border: 3px solid var(--dark-color);
             align-items: center;
             justify-content: center;
             //gap: 10px;
@@ -131,10 +130,6 @@
             min-width: 150px;
             max-height: 80vh;
             height: auto;
-            background: var(--modal-color);
-            mix-blend-mode: screen;
-            
-            backdrop-filter: brightness(0.3);
 
             &:not(:has(img)){
                 min-height: 170px;
