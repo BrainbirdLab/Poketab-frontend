@@ -1,7 +1,7 @@
 
 <script lang="ts">
     import { onMount } from "svelte";
-    import { PanZoom } from "$lib/imageman.ts";
+    import { PanZoom } from "$lib/imageman";
 
     let container: HTMLDivElement;
     let image: HTMLImageElement;
