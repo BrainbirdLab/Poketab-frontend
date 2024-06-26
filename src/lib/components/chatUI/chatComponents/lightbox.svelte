@@ -1,10 +1,7 @@
 <script lang="ts">
 
     import { page } from "$app/stores";
-
-    import { PanZoom } from "$lib/panzoom";
     import { generateId } from "$lib/utils";
-    import { onMount } from "svelte";
 
     let image: HTMLImageElement;
 
@@ -21,10 +18,6 @@
 
         a.click();
     }
-
-    onMount(() => {
-        PanZoom(image);
-    });
 
 </script>
 

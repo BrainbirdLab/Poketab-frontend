@@ -18,8 +18,8 @@
         impedit. Odit autem cumque placeat, tenetur perspiciatis ab porro molestiae at odio exercitationem enim!
         Consequatur, pariatur.
     </div>
-    <div class="lightbox">
-        <img src="./../../static/images/pikachu.png" alt="">
+    <div class="lightbox" id="container">
+        <img src="./../../static/images/pikachu.png" alt="" id="img">
     </div>
     <div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum sit aut, doloremque odio dicta dolores tempora
@@ -67,135 +67,19 @@
         }
     </style>
 
+    <script src="./imageman.js"></script>
+
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("loaded");
+            const container = document.getElementById('container');
+            const image = document.getElementById('img');
 
-        const img = document.querySelector('img');
-        const lightbox = document.querySelector('.lightbox');
-
-        class PanZoom {
-
-            constructor(img) {
-                this.img = img;
-                // original position
-                this.originalX = 0;
-                this.originalY = 0;
-                this.originalHeight = parseFloat(getComputedStyle(img).height); // getComputedStyle returns computed styles, which are better for calculating than style properties
-                this.originalWidth = parseFloat(getComputedStyle(img).width); // Similarly for width
-                this.self = this;
-                this.increment = 0.1;
-                // is dragging
-                this.isDragging = false;
+            if (container && image) {
+                new ImageManipulator(container, image);
+                console.log("init");
             }
-
-            DragStart(e) {
-                this.isDragging = true;
-                this.originalX = e.offsetX;
-                this.originalY = e.offsetY;
-            }
-
-            DragEnd() {
-                this.isDragging = false;
-            }
-
-            Pan(e) {
-                if (this.isDragging) {
-                    const dx = e.offsetX - this.originalX;
-                    const dy = e.offsetY - this.originalY;
-
-                    this.img.style.left = `${dx}px`;
-                    this.img.style.top = `${dy}px`;
-                }
-            }
-
-            getTransformMatrix() {
-                const style = this.img.style.transform;
-                if (style === '') {
-                    return {
-                        scale: 1,
-                        translateX: 0,
-                        translateY: 0
-                    };
-                }
-                const values = style.split(/\w+\(|\);?/);
-                const transform = values[1].split(/,\s?/);
-                return {
-                    scale: parseFloat(transform[0]),
-                    translateX: parseFloat(transform[1]),
-                    translateY: parseFloat(transform[2])
-                };
-            }
-
-            setTransformMatrix({ scale, translateX, translateY }) {
-                this.img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
-            }
-
-            /**
-             * 
-             * @param {number} dx 
-             * @param {number} dy 
-             */
-            applyTranslate(dx, dy) {
-                const newTrans = this.getTransformMatrix();
-                newTrans.translateX += dx;
-                newTrans.translateY += dy;
-                this.setTransformMatrix(newTrans);
-            }
-
-            /**
-             * 
-             * @param {number} dscale 
-             * @param {number} x 
-             * @param {number} y 
-             */
-            applyScale(dscale, x, y) {
-                const newTrans = this.getTransformMatrix();
-                const width = ele.width ? ele.width : ele.offsetWidth;
-                const height = ele.height ? ele.height : ele.offsetHeight;
-                const tranX = x - (width / 2);
-                const tranY = y - (height / 2);
-                dscale = (this.liner ? dscale : dscale * (newTrans.scale)); // scale either liner or non-liner 
-                newTrans.scale += dscale;
-
-                const maxOrMinScale = (newTrans.scale <= this.minScale || newTrans.scale >= this.maxScale);
-                if (newTrans.scale < this.minScale)
-                    newTrans.scale = this.minScale;
-                if (newTrans.scale > this.maxScale)
-                    newTrans.scale = this.maxScale;
-                if (!maxOrMinScale) {
-                    this.applyTranslate(tranX, tranY);
-                    this.setTransformMatrix(newTrans);
-                    this.applyTranslate(-(tranX * dscale), -(tranY * dscale));
-                }
-            }
-            
-            /**
-             *
-             * @param {WheelEvent} e
-             */
-            wheelListener(e) {
-                if (e.deltaY < 0) {
-                    this.applyScale(this.increment, e.offsetX, e.offsetY);
-                }
-                else {
-                    this.applyScale(-this.increment, e.offsetX, e.offsetY);
-                }
-            }
-
-            AttachListeners() {
-                this.img.addEventListener('mousedown', this.DragStart);
-                this.img.addEventListener('mouseup', this.DragEnd);
-                this.img.addEventListener('mousemove', this.Pan);
-                this.img.addEventListener('wheel', this.wheelListener);
-            }
-
-        }
-
-
-
-        const panZoom = new PanZoom(img);
-        panZoom.AttachListeners();
-
-
+        });
     </script>
 
 </body>
