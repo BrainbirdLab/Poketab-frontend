@@ -23,6 +23,9 @@
                         currentTheme: theme,
                     });
                     quickEmoji.set(themes[theme].quickEmoji);
+                    setToLocalStorage({
+                        quickEmoji: themes[theme].quickEmoji,
+                    });
                 } else {
                     showToastMessage(`Could not apply ${theme} theme`);
                 }
