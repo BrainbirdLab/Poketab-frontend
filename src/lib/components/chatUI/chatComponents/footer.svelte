@@ -6,11 +6,12 @@
     import { fly } from "svelte/transition";
     import { socket } from "$lib/socket";
 
-    import { quickEmojiEnabled, myId, sendMethod, chatRoomStore, quickEmoji, messageContainer, messageScrolledPx } from "$lib/store";
+    import { myId, chatRoomStore, messageContainer, messageScrolledPx } from "$lib/store";
+    import { quickEmoji, quickEmojiEnabled, sendMethod } from "./quickSettingsModal.svelte";
     import { SEND_METHOD } from "$lib/types";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";
-    import ScrollDownPopup from "./scrollDownPopup.svelte";
+    import ScrollDownPopup from "./notify.svelte";
     import TypingIndicator from "./typingIndicator.svelte";
     import { addState } from "../stateManager.svelte";
 

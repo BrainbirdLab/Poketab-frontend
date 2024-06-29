@@ -1,6 +1,12 @@
 <script context="module" lang="ts">
     import { get } from "svelte/store";
 
+    export const sendMethod: Writable<SEND_METHOD> = writable(SEND_METHOD.ENTER);
+    export const buttonSoundEnabled = writable(true);
+    export const messageSoundEnabled = writable(true);
+    export const quickEmojiEnabled = writable(true);
+    export const quickEmoji = writable('');
+
     type Settings = {
         buttonSoundEnabled: boolean;
         messageSoundEnabled: boolean;
@@ -90,15 +96,11 @@
 
 <script lang="ts">
     import { fly } from "svelte/transition";
+    import { type Writable, writable } from "svelte/store";
     import {
-        buttonSoundEnabled,
         chatRoomStore,
         deviceType,
-        messageSoundEnabled,
         myId,
-        quickEmoji,
-        quickEmojiEnabled,
-        sendMethod,
         splashMessage,
     } from "$lib/store";
     import { SEND_METHOD } from "$lib/types";

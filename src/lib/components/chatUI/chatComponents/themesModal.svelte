@@ -5,7 +5,7 @@
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { page } from "$app/stores";
     import { setToLocalStorage } from "./quickSettingsModal.svelte";
-    import { quickEmoji } from "$lib/store";
+    import { quickEmoji } from "./quickSettingsModal.svelte";
 
     function validateTheme(
         theme: string,

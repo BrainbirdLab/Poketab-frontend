@@ -12,6 +12,11 @@
     }
 
     onMount(()=> {
+
+        //ask for notification permission
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
         
         messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
 
@@ -23,9 +28,33 @@
     });
 
     const unsub = notice.subscribe((value) => {
+
+        console.log(value);
+
         if (value && $showScrollPopUp){
             playMessageSound('notification');
         }
+
+        if (!document.hasFocus()){
+            //show a notification
+            if (value){
+
+                let msg = '';
+
+                if (value instanceof TextMessageObj){
+                    msg = value.message;
+                } else if (value instanceof StickerMessageObj){
+                    msg = 'Sticker';
+                } else if (value instanceof FileMessageObj){
+                    msg = toSentenceCase(value.baseType);
+                }
+
+                new Notification(value.sender, {
+                    body: msg,
+                    icon: `/images/avatars/${$chatRoomStore.userList[value.sender].avatar}(custom).webp`
+                });
+            }
+        } 
     });
 
     listenScroll.subscribe((value) => {

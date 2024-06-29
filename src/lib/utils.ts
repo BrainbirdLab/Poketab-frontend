@@ -1,7 +1,7 @@
 import { cubicOut } from "svelte/easing";
 import { get } from "svelte/store";
 import { showToastMessage } from "@itsfuad/domtoastmessage";
-import { buttonSoundEnabled, messageSoundEnabled } from "./store";
+import { buttonSoundEnabled, messageSoundEnabled } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
 import { browser } from "$app/environment";
 
 

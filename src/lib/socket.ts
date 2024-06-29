@@ -1,7 +1,6 @@
-import { reconnectButtonEnabled, formNotification, formActionButtonDisabled, resetChatRoomStore, currentPage } from "$lib/store";
+import { reconnectButtonEnabled, formNotification, formActionButtonDisabled, resetChatRoomStore, currentPage, chatRoomStore } from "$lib/store";
 import { get, writable } from "svelte/store";
 import { io } from "socket.io-client";
-import { chatRoomStore } from "$lib/store";
 import { type User } from "$lib/types";
 import { browser } from "$app/environment";
 
