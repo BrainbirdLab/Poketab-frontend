@@ -29,8 +29,6 @@
 
     const unsub = notice.subscribe((value) => {
 
-        console.log(value);
-
         if (value && $showScrollPopUp){
             playMessageSound('notification');
         }
