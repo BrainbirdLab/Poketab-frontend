@@ -1,5 +1,30 @@
 <script context="module" lang="ts">
     let currentPlayingAudioMessage: AudioMessageObj | null = null;
+
+    const actionTimeout = new Map<string, number>();
+
+    export function focusMessage(replyId: string) {
+        if (replyId) {
+            const replyMessage = document.getElementById(replyId);
+            if (replyMessage) {
+                replyMessage.classList.add("highlight");
+                replyMessage.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                });
+                //use action timeout to remove highlight
+                if (actionTimeout.has(replyId + 'reply-highlight')){
+                    clearTimeout(actionTimeout.get(replyId + 'reply-highlight') as number);
+                }
+
+                actionTimeout.set(replyId + 'reply-highlight', setTimeout(() => {
+                    replyMessage.classList.remove("highlight");
+                    actionTimeout.delete(replyId + 'reply-highlight');
+                }, 1400));
+            }
+        }
+    }
+
 </script>
 
 <script lang="ts">
@@ -84,8 +109,6 @@
         let touchEnded = true;
         let swipeStarted = false;
         let replyTrigger = false;
-
-        const actionTimeout = new Map<string, number>();
 
         node.onclick = (evt) => {
             const target = evt.target as HTMLElement;
@@ -215,25 +238,7 @@
                 const messageObj = messageDatabase.getMessage(message.id) as MessageObj;
                 const replyId = messageObj.replyTo;
                 //scroll to the replied message
-                if (replyId) {
-                    const replyMessage = document.getElementById(replyId);
-                    if (replyMessage) {
-                        replyMessage.classList.add("highlight");
-                        replyMessage.scrollIntoView({
-                            behavior: "smooth",
-                            block: "center",
-                        });
-                        //use action timeout to remove highlight
-                        if (actionTimeout.has(message.id + 'reply-highlight')){
-                            clearTimeout(actionTimeout.get(message.id + 'reply-highlight') as number);
-                        }
-
-                        actionTimeout.set(message.id + 'reply-highlight', setTimeout(() => {
-                            replyMessage.classList.remove("highlight");
-                            actionTimeout.delete(message.id + 'reply-highlight');
-                        }, 1400));
-                    }
-                }
+                focusMessage(replyId);
                 return;
             }
 
@@ -494,12 +499,10 @@
         if (Math.abs(heightChanged) < 16){
             if (heightChanged > 0) { //height increase, means the messages under has gone down by around 16px so we need to scroll up that much.
                 $messageContainer.scrollTop += heightChanged;
-                console.log('%cScrolled Up - react add', 'color: green;');
             }
             
             else if (heightChanged < 0 && (scrolledToBottomPx > 0 && scrollChanged === 0)){ //height decrease, means the messages under has gone up by around 16px so we need to scroll down that much.
                 $messageContainer.scrollTop += heightChanged;
-                console.log('%cScrolled Down - react remove', 'color: orange;');
             }
             
         } else if (heightChanged > 16 && !$showScrollPopUp){

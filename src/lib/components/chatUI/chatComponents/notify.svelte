@@ -1,38 +1,8 @@
-<script lang="ts">
-    import { TextMessageObj, StickerMessageObj, notice, FileMessageObj } from "$lib/messageTypes";
-    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer, messageScrolledPx } from "$lib/store";
-    import { onDestroy, onMount } from "svelte";
-    import { fly } from "svelte/transition";
-    import { playMessageSound, toSentenceCase } from "$lib/utils";
+<script context="module" lang="ts">
 
-    $: {
-        if ($messageScrolledPx < 200){
-            notice.set(null);
-        }
-    }
+    let notification: Notification;
 
-    onMount(()=> {
-
-        //ask for notification permission
-        if (Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
-        
-        messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
-
-        listenScroll.set(true);
-    })
-
-    onDestroy(() => {
-        $messageContainer.onscroll = null;
-    });
-
-    const unsub = notice.subscribe((value) => {
-
-        if (value && $showScrollPopUp){
-            playMessageSound('notification');
-        }
-
+    export function showNotification(value: MessageObj | null){
         if (!document.hasFocus()){
             //show a notification
             if (value){
@@ -49,14 +19,61 @@
 
                 Notification.requestPermission().then((permission) => {
                     if (permission === "granted") {
-                        new Notification(value.sender, {
+                        notification = new Notification(get(chatRoomStore).userList[value.sender].avatar, {
                             body: msg,
-                            icon: `/images/avatars/${$chatRoomStore.userList[value.sender].avatar}(custom).webp`
+                            data: value.id,
+                            icon: `/images/avatars/${get(chatRoomStore).userList[value.sender].avatar}(custom).webp`,
+                            tag: value.sender
                         });
                     }
                 });
             }
         } 
+    }
+</script>
+
+<script lang="ts">
+    import { TextMessageObj, StickerMessageObj, notice, FileMessageObj, MessageObj } from "$lib/messageTypes";
+    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer, messageScrolledPx } from "$lib/store";
+    import { onDestroy, onMount } from "svelte";
+    import { fly } from "svelte/transition";
+    import { playMessageSound, toSentenceCase } from "$lib/utils";
+    import { get } from "svelte/store";
+    
+    $: {
+        if ($messageScrolledPx < 200){
+            notice.set(null);
+        }
+    }
+
+    onMount(()=> {
+
+        //ask for notification permission
+        Notification.requestPermission();
+        
+        messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
+
+        listenScroll.set(true);
+
+        document.onvisibilitychange = () => {
+            if (document.visibilityState === 'visible'){
+                notification.close();
+            }
+        }
+    })
+
+    onDestroy(() => {
+        $messageContainer.onscroll = null;
+        document.onvisibilitychange = null;
+    });
+
+    const unsub = notice.subscribe((value) => {
+
+        if (value && $showScrollPopUp){
+            playMessageSound('notification');
+        }
+
+        showNotification(value);
     });
 
     listenScroll.subscribe((value) => {

@@ -257,7 +257,7 @@
 
             <div class="subsection">
                 <div class="subtitle">
-                    Sounds <i class="fa-solid fa-volume-high" />
+                    Sounds & Notifications <i class="fa-solid fa-volume-high" />
                 </div>
                 <!-- Enable/disable button sounds -->
                 <div class="field-checkers play-sound hoverShadow">
