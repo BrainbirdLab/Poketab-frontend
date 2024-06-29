@@ -64,8 +64,7 @@
         position: relative;
         font-size: 0.8rem;
         width: 100%;
-        color: var(--text-color);
-        opacity: 0.7;
+        color: var(--transparent-white-color);
 
         &.error{
             color: var(--red-color) !important;
