@@ -25,6 +25,12 @@
                             icon: `/images/avatars/${get(chatRoomStore).userList[value.sender].avatar}(custom).webp`,
                             tag: value.sender
                         });
+
+                        notification.onclick = () => {
+                            window.focus();
+                            notification.close();
+                            focusMessage(value.id);
+                        }
                     }
                 });
             }
@@ -39,7 +45,8 @@
     import { fly } from "svelte/transition";
     import { playMessageSound, toSentenceCase } from "$lib/utils";
     import { get } from "svelte/store";
-    
+    import { focusMessage } from "./messages.svelte";
+
     $: {
         if ($messageScrolledPx < 200){
             notice.set(null);
