@@ -13,7 +13,7 @@
                     .avatar}(custom).webp"
                 height="30"
                 width="30"
-                alt="Profile-avatar"
+                alt="{$chatRoomStore.userList[$myId].avatar}"
             />
         </div>
         <span>{$chatRoomStore.userList[$myId].avatar} (You)</span>
@@ -26,10 +26,10 @@
         >
             <div class="avt">
                 <img
-                    src="/static/images/avatars/{User.avatar}(custom).webp"
+                    src="/images/avatars/{User.avatar}(custom).webp"
                     height="30"
                     width="30"
-                    alt="Profile-avatar"
+                    alt="{User.avatar}"
                 />
             </div>
             <span>{User.avatar}</span>
