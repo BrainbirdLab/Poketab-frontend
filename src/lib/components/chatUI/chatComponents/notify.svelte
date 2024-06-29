@@ -47,9 +47,13 @@
                     msg = toSentenceCase(value.baseType);
                 }
 
-                new Notification(value.sender, {
-                    body: msg,
-                    icon: `/images/avatars/${$chatRoomStore.userList[value.sender].avatar}(custom).webp`
+                Notification.requestPermission().then((permission) => {
+                    if (permission === "granted") {
+                        new Notification(value.sender, {
+                            body: msg,
+                            icon: `/images/avatars/${$chatRoomStore.userList[value.sender].avatar}(custom).webp`
+                        });
+                    }
                 });
             }
         } 

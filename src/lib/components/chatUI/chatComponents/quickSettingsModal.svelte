@@ -120,6 +120,8 @@
 
     let showQuickEmojiDrawer = false;
 
+    const version = __VERSION__;
+
     loadChatSettings();
 
     function handleClick(node: HTMLElement) {
@@ -232,7 +234,7 @@
             >
                 <i class="fa-solid fa-chevron-left" />
             </button>
-            <div class="title">Chat options</div>
+            <div class="v-title">v{version}</div>
         </div>
 
         <div class="subsectionsContainer">
@@ -449,6 +451,12 @@
 </div>
 
 <style lang="scss">
+
+    .v-title{
+        color: var(--transparent-white-color);
+        font-size: 0.7rem;
+    }
+
     #keyname {
         border-radius: 10px;
         font-weight: 300;
