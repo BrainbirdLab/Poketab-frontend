@@ -6,6 +6,7 @@
     import { onMount } from "svelte";
 
     let image: HTMLImageElement;
+    let im: HTMLDivElement;
 
     function closeLightbox(){
         history.back();
@@ -22,9 +23,9 @@
     }
 
     onMount(() => {
-        const p = Panzoom(image);
-        if (image.parentElement) {
-            image.parentElement.addEventListener('wheel', p.zoomWithWheel);
+        const p = Panzoom(im);
+        if (im.parentElement) {
+            im.addEventListener('wheel', p.zoomWithWheel);
         }
     });
 
@@ -39,14 +40,30 @@
     <button class="download hoverShadow" on:click={downloadImage}>
         <i class="fa-solid fa-download"></i>
     </button>
-    <!-- use the img as image element -->
-    <img bind:this={image} src={$page.state.viewImage.src} data-ref-id="{$page.state.viewImage.id}" data-ref-name="{$page.state.viewImage.name}" alt="Could not load" class="main-image"/>
+    <div class="imgWrapper" bind:this={im}>
+        <!-- use the img as image element -->
+        <img bind:this={image} src={$page.state.viewImage.src} data-ref-id="{$page.state.viewImage.id}" data-ref-name="{$page.state.viewImage.name}" alt="Could not load" class="main-image"/>
+    </div>
     {:else}
         No longer available
     {/if}
 </div>
 
 <style lang="scss">
+
+    .imgWrapper{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .main-image{
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
     
     .lightbox{
         position: fixed;
@@ -81,14 +98,6 @@
                     color: var(--secondary-dark);
                 }
             }
-        }
-
-
-
-        .main-image{
-            position: absolute;
-            max-width: 100%;
-            max-height: 100%;
         }
     }
 
