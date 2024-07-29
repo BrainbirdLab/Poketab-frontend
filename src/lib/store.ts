@@ -40,8 +40,6 @@ export const reactArray: Writable<{
     last: '🌻'
 });
 
-//export const clientOnline = writable(false);
-
 export const myId: Writable<string> = writable('');
 
 export const chatRoomStore: Writable<chatRoomStoreType> = writable({

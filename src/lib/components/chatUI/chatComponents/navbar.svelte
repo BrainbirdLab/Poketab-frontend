@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { chatRoomStore } from "$lib/store";
-    //import { showQuickSettingsPanel } from "$lib/components/modalManager";
     import { fade, fly } from "svelte/transition";
     import { addState } from "../stateManager.svelte";
 

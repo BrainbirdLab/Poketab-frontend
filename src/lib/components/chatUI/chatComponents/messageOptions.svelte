@@ -1,7 +1,6 @@
 
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import {showMessageOptions} from "$lib/modalManager";
     import { socket } from "$lib/socket";
     import { MessageObj, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj, messageDatabase } from "$lib/messageTypes";
     import { chatRoomStore, myId, reactArray } from "$lib/store";
@@ -11,6 +10,8 @@
     import { onMount } from "svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { derived } from "svelte/store";
+    import { clearModals } from "../stateManager.svelte";
+    import { page } from "$app/stores";
 
     $: message = derived(messageDatabase, (messages) => {
         return messages[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj;
@@ -73,7 +74,7 @@
 
             if (e.target == node){
                 reactIsExpanded = false;
-                showMessageOptions.set(false);
+                clearModals();
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('emoji')) {
 
                 if (!message){
@@ -86,7 +87,7 @@
                     socket.emit('react', $message.id, $chatRoomStore.Key, $myId, selectedReact);
                 }
                 reactIsExpanded = false;
-                showMessageOptions.set(false);
+                clearModals();
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('option')) {
                 
                 if (e.target.classList.contains('Reply')) {
@@ -133,7 +134,7 @@
                 }
 
                 reactIsExpanded = false;
-                showMessageOptions.set(false);
+                clearModals();
             }
         }
 
@@ -159,7 +160,7 @@
         {/if}
         <div class="primary">
             {#each $reactArray.reacts as react}
-                <div class:shown={showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
+                <div class:shown={$page.state.showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
                     <div class="emoji" data-emoji="{react}">{react}</div>
                 </div>    
             {/each}

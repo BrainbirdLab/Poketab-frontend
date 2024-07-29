@@ -51,7 +51,7 @@ const iconMap: {[key: string]: string} = {
 export function getIcon(type: string){
 
     const regex = new RegExp(Object.keys(iconMap).join('|'), 'i');
-    const match = type.match(regex);
+    const match = RegExp(regex).exec(type);
 
     if (match){
         return iconMap[match[0]];
@@ -109,8 +109,8 @@ function fallbackCopyTextToClipboard(text: string){
     textArea.style.position="fixed";
     document.body.appendChild(textArea);
     textArea.select();
-
     try {
+        //fallback for older browsers
         document.execCommand('copy');
         showToastMessage('Copied to clipboard (Fallback)');
     } catch (err) {

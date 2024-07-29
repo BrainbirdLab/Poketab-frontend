@@ -76,11 +76,9 @@ socket.on('connect_error', (err) => {
         retryCount.update(n => n + 1);
     }
     console.log('%cRetrying...', 'color: red');
-    //socket.connect();
 });
 
 socket.on('connect', () => {
-    //splashMessage.set('');
     formActionButtonDisabled.set(false);
     retryCount.set(1);
     if (get(formNotification) == '') {
@@ -94,7 +92,7 @@ socket.on('connect', () => {
     }, 2000);
 });
 
-export let retryCount = writable(1);
+export const retryCount = writable(1);
 
 formNotification.subscribe(value => {
     if (value.includes('offline')) {

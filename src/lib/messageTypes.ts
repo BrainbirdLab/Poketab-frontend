@@ -44,8 +44,6 @@ export class MessageObj {
     sender: string;
     replyTo: string;
     timeout: number | undefined;
-    //seenBy: { [key: string]: boolean}
-    //reactedBy: { [key: string]: string}
 
     seenBy: Set<string> = new Set();
     reactedBy: Map<string, string> = new Map();
@@ -62,8 +60,6 @@ export class MessageObj {
         this.replyTo = '';
         this.timeStamp = Date.now();
         this.timeout = undefined;
-        //this.seenBy = {};
-        //this.reactedBy = {};
         this.seenBy = new Set();
         this.reactedBy = new Map();
     }
@@ -156,10 +152,11 @@ export class AudioMessageObj extends FileMessageObj {
     }
 }
 
+type MessageObjType = MessageObj | ServerMessageObj | LocationMessageObj;
 
 class MessageDatabase{
 
-    #messageDatabaseArray: Writable<Array<MessageObj | ServerMessageObj | LocationMessageObj>>;
+    #messageDatabaseArray: Writable<Array<MessageObjType>>;
     #messageIndexMap: Map<string, number>;
 
     constructor() {
@@ -167,7 +164,7 @@ class MessageDatabase{
         this.#messageIndexMap = new Map();
     }
 
-    add(message: MessageObj | ServerMessageObj | LocationMessageObj) {
+    add(message: MessageObjType) {
         //this.#messageDatabaseArray.push(message);
         
         this.#messageDatabaseArray.update(arr => {
@@ -233,8 +230,7 @@ class MessageDatabase{
             
                     if (message.baseType != lastMessageObj.baseType || lastMessageObj.sender !== message.sender){
                         classListString += ' start newGroup';
-                    } else {
-                        if (lastMessageObj.baseType === message.baseType){
+                    } else if (lastMessageObj.baseType === message.baseType){
                             //two messages of same kind
                             if ( (message.baseType === 'text' || message.baseType === 'file' || message.baseType === 'image' || message.baseType === 'audio') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
                                 lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
@@ -242,7 +238,6 @@ class MessageDatabase{
                                 classListString += ' start';
                             }
                         }
-                    }
                 }
             } else {
                 classListString += ' start newGroup';

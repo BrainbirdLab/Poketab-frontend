@@ -13,6 +13,8 @@ declare global {
 			showThemesPanel?: boolean;
 			showStickersPanel?: boolean;
 			showAttachmentPickerPanel?: boolean;
+			showReactsOnMessage?: boolean;
+			showMessageOptions?: boolean;
 			viewImage?: {
 				src: string,
 				id: string,

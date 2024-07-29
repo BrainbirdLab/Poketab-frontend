@@ -23,15 +23,6 @@
 
     //scripts
     import { eventTriggerMessageId, lastMessageId } from "$lib/messageTypes";
-    import {
-        //activeModalsStack,
-        //showAttachmentPickerPanel,
-        showMessageOptions,
-        //showQuickSettingsPanel,
-        showReactsOnMessageModal,
-        //showStickersPanel,
-        //showThemesPanel,
-    } from "$lib/modalManager";
     import { chatRoomStore, myId, messageContainer } from "$lib/store";
     import { socket } from "$lib/socket";
     import { page } from "$app/stores";
@@ -143,10 +134,10 @@
 <MessageSockets />
 
 {#if $eventTriggerMessageId}
-    {#if $showMessageOptions}
+    {#if $page.state.showMessageOptions}
         <MessageOptionsModal />
     {/if}
-    {#if $showReactsOnMessageModal}
+    {#if $page.state.showReactsOnMessage}
         <ReactsOnMessage />
     {/if}
 {/if}

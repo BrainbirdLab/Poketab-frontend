@@ -1,8 +1,8 @@
 <script lang="ts">
     import { chatRoomStore } from "$lib/store";
     import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageTypes";
-    import { showReactsOnMessageModal } from "$lib/modalManager";
     import { fly } from "svelte/transition";
+    import { clearModals } from "../stateManager.svelte";
     import { derived } from "svelte/store";
 
     $: message = derived(messageDatabase, (messages) => {
@@ -38,7 +38,7 @@
             if (target == node){
                 eventTriggerMessageId.set("");
                 selectedReact = 'All';
-                showReactsOnMessageModal.set(false);
+                clearModals();
             }
         }
 

@@ -54,11 +54,6 @@
         AudioMessageObj,
         ImageMessageObj,
     } from "$lib/messageTypes";
-    import {
-        showMessageOptions,
-        showReactsOnMessageModal,
-        //showStickersPanel,
-    } from "$lib/modalManager";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer } from "$lib/store";
     import { getFormattedDate, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
@@ -93,7 +88,7 @@
             }
 
             eventTriggerMessageId.set(messageObj.id);
-            showMessageOptions.set(true);
+            addState('', { showMessageOptions: true });
         }
     }
 
@@ -148,7 +143,7 @@
 
             if (target.classList.contains('reactsContainer')){
                 eventTriggerMessageId.set(messageObj.id);
-                showReactsOnMessageModal.set(true);
+                addState('', { showReactsOnMessage: true })
                 return;
             }
 
