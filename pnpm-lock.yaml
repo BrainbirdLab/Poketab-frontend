@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@panzoom/panzoom':
+        specifier: ^4.5.1
+        version: 4.5.1
     devDependencies:
       '@itsfuad/domtoastmessage':
         specifier: ^1.0.7
@@ -221,6 +225,9 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@panzoom/panzoom@4.5.1':
+    resolution: {integrity: sha512-QOr/t7314XTwgAUDazR+RDcTAWSbkpjDnZJddd9f56jSUA8ptUsyDblAb+sp/O5O1o5Fiu9KpWxVHKuhGUgp5w==}
 
   '@polka/url@1.0.0-next.25':
     resolution: {integrity: sha512-j7P6Rgr3mmtdkeDGTe0E/aYyWEWVtc5yFXtHCRHs28/jptDEWfaVOc5T7cblqy1XKPPfCxJc/8DwQ5YgLOZOVQ==}
@@ -899,6 +906,8 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
+
+  '@panzoom/panzoom@4.5.1': {}
 
   '@polka/url@1.0.0-next.25': {}
 

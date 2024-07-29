@@ -1,7 +1,9 @@
 <script lang="ts">
 
+    import Panzoom from "@panzoom/panzoom";
     import { page } from "$app/stores";
     import { generateId } from "$lib/utils";
+    import { onMount } from "svelte";
 
     let image: HTMLImageElement;
 
@@ -18,6 +20,13 @@
 
         a.click();
     }
+
+    onMount(() => {
+        const p = Panzoom(image);
+        if (image.parentElement) {
+            image.parentElement.addEventListener('wheel', p.zoomWithWheel);
+        }
+    });
 
 </script>
 

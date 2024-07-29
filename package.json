@@ -27,5 +27,8 @@
 		"typescript": "^5.0.0",
 		"vite": "^5.0.0"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@panzoom/panzoom": "^4.5.1"
+	}
 }
