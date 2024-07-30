@@ -152,7 +152,7 @@
 <!-- option menu for message right click -->
 <!-- This menu contains reacts, message copy, download, delete and reply options -->
 <div class="optionsContainer" use:clickHandler>
-    <div class="reactionsChooser back-blur" transition:fly|global={{y: -10, duration: 200}}>
+    <div class="reactionsChooser box-shadow back-blur" transition:fly|global={{y: -10, duration: 200}}>
         {#if reactIsExpanded}
             <EmojiPicker selectedEmoji={selectedReact} exclude={[...$reactArray.last, ...$reactArray.reacts]} onClose={()=>{
                 reactIsExpanded = false;
@@ -183,7 +183,7 @@
             {/if}
         </div>
     </div>
-    <div class="messageOptions back-blur" transition:fly|global={{y: 10, duration: 200}}>
+    <div class="messageOptions box-shadow back-blur" transition:fly|global={{y: 10, duration: 200}}>
         {#key optionsArray}
         {#each optionsArray as option, i (option) }
         {#if option != null}
@@ -210,7 +210,6 @@
         width: 400px;
         max-width: 100%;
         transition: all 100ms ease-in-out;
-        box-shadow: 10px 10px 35px var(--shadow-color);
         border-radius: 15px 15px 0 0;
         background: var(--modal-color);
 
@@ -261,7 +260,6 @@
             align-items: center;
             gap: 5px;
             transition: all 100ms ease-in-out;
-            box-shadow: 10px 10px 35px var(--shadow-color);
             max-width: min(300px, 95vw);
             background: var(--modal-color);
             border-radius: 23px;

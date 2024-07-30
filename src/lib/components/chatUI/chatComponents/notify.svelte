@@ -64,7 +64,7 @@
 
         document.onvisibilitychange = () => {
             if (document.visibilityState === 'visible'){
-                notification.close();
+                notification?.close();
             }
         }
     })
@@ -114,7 +114,7 @@
 </script>
 
 {#if $showScrollPopUp}
-    <button class="popup back-blur" tabindex="-1" transition:fly={{y: 20, duration: 200}} on:click={()=>{
+    <button class="popup box-shadow back-blur" tabindex="-1" transition:fly={{y: 20, duration: 200}} on:click={()=>{
         $messageContainer.scrollTo({top: $messageContainer.scrollHeight, behavior: "smooth"});
     }}>
     {#if $notice && $messageScrolledPx > 200}
@@ -158,7 +158,6 @@
         min-height: 2.5rem;
         background: var(--modal-color);
         filter: brightness(1);
-        box-shadow: 10px 10px 35px var(--shadow-color);
         
         &:hover{
             filter: brightness(0.90);

@@ -1,10 +1,10 @@
 import { MessageObj, messageDatabase, lastMessageId, FileMessageObj } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
 import { chatRoomStore, myId, outgoingXHRs } from "$lib/store";
-import { socket } from "$lib/socket";
+import { socket, API_URL } from "$lib/socket";
 import { badWords } from "./censoredWords";
-import { API_URL } from "$lib/socket";
 import { generateId, playMessageSound } from "$lib/utils";
+import { encryptMessage, encryptSymmetricKey, makeSymmetricKey  } from "$lib/e2e/encryption";
 
 export const showReplyToast = writable(false);
 
@@ -62,9 +62,32 @@ export async function sendMessage(message: MessageObj, file?: File){
 	message.id = generateId(16);
 
 	messageDatabase.add(message);
+
+	const rawSmKey = await makeSymmetricKey();
+
+	const smKeys: {[key: string]: ArrayBuffer} = {};
+
+	for (const [key, value] of Object.entries(get(chatRoomStore).userList)) {
+		if (key != get(myId)) {
+			if (!value.publicKey){
+				console.log(`User ${key} does not have a public key!`);
+				continue;
+			}
+			const enSmKey = await encryptSymmetricKey(rawSmKey, value.publicKey);
+			smKeys[key] = enSmKey;
+		}
+	}
+
+	//convert msg object to ArrayBuffer
+	const buffer = new TextEncoder().encode(JSON.stringify(message));
+
+	//encrypt the message
+	const encryptedMessage = await encryptMessage(buffer, rawSmKey);
+
+	console.log("sending smKeys: ", smKeys);
+	console.log(`message type: ${message.type}, ${message.baseType}`);
 	
-    socket.emit('newMessage', message, get(chatRoomStore).Key, (messageId: string) => {
-		
+    socket.emit('newMessage', encryptedMessage, get(chatRoomStore).Key, smKeys, (messageId: string) => {
 		
 		messageDatabase.markDelevered(message, messageId);
 		
@@ -74,8 +97,9 @@ export async function sendMessage(message: MessageObj, file?: File){
 			playMessageSound('outgoing');
 		}
 		
-		
 		if (file){
+
+			console.log('sending file data');
 
 			if (Object.keys(get(chatRoomStore).userList).length < 2 ){
 				messageDatabase.update(messages => {
@@ -86,32 +110,50 @@ export async function sendMessage(message: MessageObj, file?: File){
 				});
 				return;
 			}
-			
-			const formData = new FormData();
-			formData.append('file', file);
-			const xhr = new XMLHttpRequest();
 
-			outgoingXHRs.update(xhrs => {
-				xhrs.set(message.id, xhr);
-				return xhrs;
-			});
+			//encrypt the file with the symmetric key
+			const reader = new FileReader();
+			reader.readAsArrayBuffer(file);
 
-			xhr.open('POST', `${API_URL}/api/upload/${get(chatRoomStore).Key}/${get(myId)}/${message.id}`);
+			reader.onload = async () => {
+				const fileBuffer = reader.result as ArrayBuffer;
 
-			//progress event
-			xhr.upload.onprogress = (e) => {
-				if (e.lengthComputable){
-					const percent = (e.loaded / e.total) * 100;
+				const encryptedFileBuffer = await encryptMessage(fileBuffer, rawSmKey);
+				const encryptedFile = new Blob([encryptedFileBuffer], {type: 'application/octet-stream'});
+				
+				//create form data
+				const formData = new FormData();
+				formData.append('file', encryptedFile);
+				const xhr = new XMLHttpRequest();
+	
+				outgoingXHRs.update(xhrs => {
+					xhrs.set(message.id, xhr);
+					return xhrs;
+				});
+	
+				xhr.open('POST', `${API_URL}/api/upload/${get(chatRoomStore).Key}/${get(myId)}/${message.id}`);
+	
+				//progress event
+				xhr.upload.onprogress = (e) => {
+					if (e.lengthComputable){
+						const percent = (e.loaded / e.total) * 100;
+						updateProgress(percent);
+					}
+				}
+
+				function updateProgress(percent: number) {
 					//update message
 					messageDatabase.update(messages => {
-
-						(message as FileMessageObj).loaded = Math.round(percent);
-
+						(message as FileMessageObj).loaded = Math.round(percent);	
 						return messages;
 					});
 				}
+
+				console.log("launching...");
+				xhr.send(formData);
+				console.log("launched...!");
 			}
-			xhr.send(formData);
+			
 		}
 		
 		if (document.hasFocus()){
@@ -265,7 +307,7 @@ export class TextParser {
 				lang = 'txt';
 			}
 			lang = `class="language-${lang} line-numbers" data-lang="${lang}"`;
-			return `<pre ${lang}><div class="copy-btn" title="Copy to clipboard" data-action="Copy"></div><span class="line-row">${code.trim().split('\n').map(() => `<span class="line-number"></span>`).join('')}</span><code>${formatCode(code)}</code></pre>`;
+			return `<pre ${lang}><div class="copy-btn" title="Copy to clipboard" data-action="Copy"></div><span class="line-row">${code.trim().split('\n').map(() => '<span class="line-number"></span>').join('')}</span><code>${formatCode(code)}</code></pre>`;
 		});
 	}
 		
@@ -396,7 +438,7 @@ export function emojiParser(text: string){
 			//all charecter regex
 			const regex = /[a-zA-Z0-9_!@#$%^&*()+\-=[\]{};':"\\|,.<>/?]/;
 			//if there is any kind of charecters before or after the match then don't replace it. 
-			if (text.charAt(position - 1).match(regex) || text.charAt(position + key.length).match(regex)){
+			if (RegExp(regex).exec(text.charAt(position - 1)) || RegExp(regex).exec(text.charAt(position + key.length))){
 				continue;
 			}else{
 				text = text.replaceAll(key, value);

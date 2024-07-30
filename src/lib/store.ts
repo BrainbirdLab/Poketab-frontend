@@ -41,6 +41,7 @@ export const reactArray: Writable<{
 });
 
 export const myId: Writable<string> = writable('');
+export const myPrivateKey: Writable<CryptoKey> = writable();
 
 export const chatRoomStore: Writable<chatRoomStoreType> = writable({
     Key: '',
@@ -52,7 +53,6 @@ export const chatRoomStore: Writable<chatRoomStoreType> = writable({
 export const joinedChat = writable(false);
 
 export const currentPage = writable('form');
-
 
 export function isTaken(avatar: string){
 

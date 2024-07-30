@@ -36,6 +36,14 @@
         color: #ffeb38;
     }
 
+    .serverMessage[data-type="error"]{
+        color: #ff3d00;
+    }
+
+    .serverMessage[data-type="info"]{
+        color: #4598ff;
+    }
+
     :global(:not(.serverMessage) + .serverMessage) {
         margin-top: 15px;
     }

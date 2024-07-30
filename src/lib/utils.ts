@@ -157,10 +157,6 @@ if (browser){
     console.log('audios loaded');
 }
 
-export function adjustMessagePosition(){
-    console.log('adjustMessagePosition');
-}
-
 export async function playClickSound(){
 
     

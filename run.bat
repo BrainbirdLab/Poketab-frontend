@@ -1,1 +1,1 @@
-pnpm run dev --host
+pnpm run dev

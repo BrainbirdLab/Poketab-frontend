@@ -223,7 +223,7 @@
 
 <div class="settingsWrapper" use:handleClick>
     <div
-        class="settings back-blur"
+        class="settings box-shadow back-blur"
         in:fly={{ x: 40, duration: 150, opacity: 1 }}
         out:fly={{ x: 40, duration: 150 }}
     >
@@ -696,7 +696,6 @@
         position: relative;
         font-size: 0.7rem;
         transition: 100ms ease-in-out;
-        box-shadow: 10px 10px 35px var(--shadow-color);
 
         .top {
             width: 100%;

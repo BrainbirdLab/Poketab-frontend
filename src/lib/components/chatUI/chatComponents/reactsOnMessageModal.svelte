@@ -4,6 +4,9 @@
     import { fly } from "svelte/transition";
     import { clearModals } from "../stateManager.svelte";
     import { derived } from "svelte/store";
+    import Modal from "./modal.svelte";
+    import { page } from "$app/stores";
+    import { onDestroy } from "svelte";
 
     $: message = derived(messageDatabase, (messages) => {
         return messages[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj;
@@ -14,45 +17,22 @@
 
     $: selectedReact = 'All';
 
-    //$: reactsToShow = Object.entries(reacts).filter(([uid, react]) => selectedReact === 'All' || selectedReact === react);
     //reacts is a map, we have to filter by the value of the map, not the key
     $: reactsToShow = Array.from(reacts.entries()).filter(([_, react]) => selectedReact === 'All' || selectedReact === react);
-
-    //push react - count to map
-    // [react-emoji: string]: count: number
-    /*$: reactsCount = Array.from(new Set(Object.values(reacts))).reduce((acc, react) => {
-        acc[react] = Object.values(reacts).filter(r => r === react).length;
-        return acc;
-    }, {} as {[react: string]: number});
-    */
 
     $: reactsCount = Array.from(new Set(reacts.values())).reduce((acc, react) => {
         acc[react] = Array.from(reacts.values()).filter(r => r === react).length;
         return acc;
     }, {} as {[react: string]: number});
 
-    function handleClick(node: HTMLElement) {
-        node.onclick = (e) => {
-            const target = e.target as HTMLElement;
-
-            if (target == node){
-                eventTriggerMessageId.set("");
-                selectedReact = 'All';
-                clearModals();
-            }
-        }
-
-        return {
-            destroy() {
-                node.onclick = null;
-            }
-        }
-    }
+    onDestroy(() => {
+        selectedReact = 'All';
+    });
 
 </script>
 
-<div class="wrapper" use:handleClick transition:fly|global={{y: 40, duration: 100}}>
-    <div class="reactsOnMessage back-blur">
+<Modal show={$page.state.showReactsOnMessage}>
+    <div class="reactsOnMessage box-shadow back-blur" transition:fly|global={{y: 40, duration: 100}}>
         <div class="title">Reacts on {$chatRoomStore.userList[$message?.sender || '']?.avatar || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
@@ -91,23 +71,9 @@
             </div>
           </div>
     </div>
-</div>
+</Modal>
 
 <style lang="scss">
-
-    .wrapper{
-        position: fixed;
-        inset: 0;
-        z-index: 50;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        width: 100%;
-        gap: 10px;
-        z-index: 100;
-    }
 
     .totalReactsButtons{
         display: grid;
@@ -159,7 +125,7 @@
             }
 
             input:checked + .item{
-                background: var(--secondary-dark);
+                background: var(--msg-send-reply);
                 font-weight: 700;
             }
 
@@ -177,7 +143,6 @@
         height: 350px;
         max-width: 98vw;
         border-radius: 15px;
-        box-shadow: 10px 10px 35px var(--shadow-color);
 
         .title{
             color: var(--secondary-dark);

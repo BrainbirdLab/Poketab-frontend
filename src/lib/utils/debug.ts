@@ -1,3 +1,4 @@
+import { playMessageSound } from "$lib/utils";
 import { ServerMessageObj, messageDatabase } from "../messageTypes";
 
 let start = 0;
@@ -17,4 +18,20 @@ export function debugPrint(msg: string) {
     msgObj.baseType = 'server';
 
     messageDatabase.add(msgObj);
+}
+
+export function infoMessage(msg: string, type: 'join' | 'leave' | 'info') {
+    const msgObj = new ServerMessageObj();
+    msgObj.id = 'info-' + getRandID();
+    msgObj.text = msg;
+    msgObj.type = type;
+    msgObj.baseType = 'server';
+
+    messageDatabase.add(msgObj);
+
+    if (type == "join") {
+        playMessageSound("join");
+    } else if (type == "leave") {
+        playMessageSound("leave");
+    }
 }

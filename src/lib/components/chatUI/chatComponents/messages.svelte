@@ -149,6 +149,8 @@
 
             
             if (messageObj instanceof AudioMessageObj && target.closest('.data')){
+
+                console.log(messageObj.audio, messageObj.audio.src);
                 
                 if (target.classList.contains('control')){
 

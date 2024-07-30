@@ -6,7 +6,7 @@ export const lastMessageId = writable('');
 export class ServerMessageObj {
     id: string;
     text: string;
-    type: 'join' | 'leave' | 'debug';
+    type: 'join' | 'leave' | 'debug' | 'info';
     baseType: 'server';
     readonly timeStamp: number;
     constructor() {
@@ -115,6 +115,7 @@ export class FileMessageObj extends MessageObj {
     baseType: 'file' | 'image' | 'audio';
     loaded: number;
     loadScheme?: 'upload' | 'download' | null;
+    smKey?: CryptoKey;
     constructor() {
         super();
         this.url = '';

@@ -20,8 +20,11 @@
         currentPage,
         formNotification,
         splashMessage,
+        myPrivateKey,
     } from "$lib/store";
     import AppLogo from "./appLogo.svelte";
+    import type { User } from "$lib/types";
+    import { bufferToString, exportPublicKey, importPublicKey, makeKeyPair, stringToBuffer } from "$lib/e2e/encryption";
 
     let selectedavatar = "";
     let selectedMaxUser = 2;
@@ -74,7 +77,7 @@
         maxUserErr = "";
     });
 
-    function requestForChat(evt: Event) {
+    async function requestForChat(evt: Event) {
         evt.preventDefault();
 
         avatarErr = "";
@@ -102,30 +105,39 @@
         formActionButtonDisabled.set(true);
         actionButtonText = "Please wait ";
 
-        if (!$chatRoomStore.Key) {
+        //make my private-public key pair
+        const pair = await makeKeyPair();
+        const publicKey = await exportPublicKey(pair.publicKey);
+        //socket.emit("sharePublicKey", $myId, bufferToString(publicKey), $chatRoomStore.Key);
 
+        if (!$chatRoomStore.Key) {
             socket.emit(
                 "createChat",
                 selectedavatar,
                 selectedMaxUser,
+                bufferToString(publicKey),
                 (res: {
                     success: boolean;
                     message: string;
                     key: string;
                     userId: string;
+                    maxUsers: number;
+                    user: User;
                 }) => {
                     if (!res.success) {
                         console.log("Error: " + res.message);
                         formNotification.set("Error: " + res.message);
                         formActionButtonDisabled.set(false);
-                        //showUserInputForm.set(false);
                         return;
                     }
 
+                    res.user.publicKey = pair.publicKey;
+                    myPrivateKey.set(pair.privateKey);
                     chatRoomStore.update((room) => {
                         room.Key = res.key;
                         room.admin = res.userId;
                         room.maxUsers = selectedMaxUser;
+                        room.userList = {[res.userId]: res.user};
                         return room;
                     });
 
@@ -145,12 +157,18 @@
                 "joinChat",
                 $chatRoomStore.Key,
                 selectedavatar,
-                (res: {
+                bufferToString(publicKey),
+                async (res: {
                     success: boolean;
                     message: string;
                     userId: string;
                     admin: string;
                     maxUsers: number;
+                    users: {[key: string]: {
+                        avatar: string;
+                        uid: string;
+                        publicKey: string;
+                    }};
                 }) => {
                     if (!res.success) {
                         console.log("Error: " + res.message);
@@ -160,11 +178,29 @@
                         return;
                     }
 
+                    //we need to convert the string to buffer -> CryptoKey
+                    //loop through the users and convert the public key to CryptoKey
                     chatRoomStore.update((room) => {
                         room.admin = res.admin;
                         room.maxUsers = res.maxUsers;
                         return room;
                     });
+                    myPrivateKey.set(pair.privateKey);
+
+                    Object.entries(res.users).forEach(async ([uid, user]) => {
+
+                        const pubKey = await importPublicKey(stringToBuffer(user.publicKey));
+                        const u: User = {
+                            avatar: user.avatar,
+                            uid: user.uid,
+                            publicKey: pubKey,
+                        };
+                        chatRoomStore.update((room) => {
+                            room.userList[uid] = u;
+                            return room;
+                        });
+                    });
+
 
                     myId.set(res.userId);
 
@@ -190,7 +226,7 @@
 
 {#if mounted}
     <div class="formWrapper">
-        <div class="form back-blur" in:fly={{ y: 30 }}>
+        <div class="form box-shadow back-blur" in:fly={{ y: 30 }}>
             <div class="formtitle">
                 <AppLogo title={ !$chatRoomStore.Key ? {text: 'Create chat', icon: "fa-solid fa-meteor"} : {text: 'Join chat', icon: "fa-solid fa-handshake"}}/>
             </div>

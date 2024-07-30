@@ -17,7 +17,7 @@
           ? "filter: blur(10px); transform: scale(1.1); transition: 500ms ease-in-out;"
           : ""}
 />
-{#if file.loaded < 100}
+{#if file.loaded >= 100}
     <div
         class="imageProgressCircle"
         style="stroke-dasharray: {(file.loaded * 251.2) / 100}, 251.2;"
@@ -54,6 +54,8 @@
     .image {
         max-width: 100%;
         max-height: 100%;
+        min-height: 100px;
+        min-width: 100px;
         height: auto;
         object-fit: contain;
     }
@@ -72,7 +74,7 @@
         z-index: 12;
 
         svg {
-            width: 20%;
+            width: 65px;
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.15);
         }

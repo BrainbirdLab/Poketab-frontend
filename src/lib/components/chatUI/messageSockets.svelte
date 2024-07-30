@@ -19,14 +19,28 @@
         reactArray,
         incommingXHRs,
         outgoingXHRs,
+        myPrivateKey,
     } from "$lib/store";
     import { type User } from "$lib/types";
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { socket, API_URL } from "$lib/socket";
     import { emojis, playMessageSound } from "$lib/utils";
     import { onDestroy } from "svelte";
+    import { decryptMessage, decryptSymmetricKey, importPublicKey, stringToBuffer } from "$lib/e2e/encryption";
+    import { infoMessage } from "$lib/utils/debug";
 
-    socket.on("newMessage", (message: MessageObj, messageId: string) => {
+    socket.on("newMessage", async (encryptedMessage: ArrayBuffer, smKey: ArrayBuffer, messageId: string) => {
+        if (!encryptedMessage || !smKey || !messageId) {
+            console.log("Invalid message");
+            return;
+        }
+
+        //decrypt the symmetric key
+        const dSmKey = await decryptSymmetricKey(smKey, $myPrivateKey);
+        //decrypt the message
+        const decrypteBuffer = await decryptMessage(encryptedMessage, dSmKey);
+        //convert the buffer to MessageObj
+        let message = JSON.parse(new TextDecoder().decode(decrypteBuffer)) as MessageObj;
 
         if (message.baseType == "text" || message.baseType == "deleted") {
             message = Object.setPrototypeOf(message, TextMessageObj.prototype);
@@ -51,10 +65,10 @@
         message.seenBy = new Set(Object.keys(message.seenBy));
 
         //Ready to go ... ✨✨
-
         if (message instanceof TextMessageObj) {
             message.message = filterBadWords(message.message);
         } else if (message instanceof FileMessageObj) {
+            message.smKey = dSmKey;
             message.loadScheme = "upload";
             if (message instanceof ImageMessageObj) {
                 message.url = message.thumbnail;
@@ -106,6 +120,7 @@
     );
 
     socket.on("fileDownload", (messageId: string, sender: string) => {
+
         if (!$chatRoomStore.userList[sender]) {
             return;
         }
@@ -118,10 +133,6 @@
         const message = messageDatabase.getMessage(messageId) as FileMessageObj;
 
         const xhr = new XMLHttpRequest();
-        /**
-         //file download
-        app.get('/download/:key/:userId/:messageId', async (ctx) => {
-        */
 
         incommingXHRs.update((xhrs) => {
             xhrs.set(messageId, xhr);
@@ -136,12 +147,23 @@
             true,
         );
 
-        xhr.onload = function () {
+        xhr.onload = async function () {
             if (this.status === 200) {
-                const blob = this.response;
+                if (message.smKey == null) {
+                    console.log("Symmetric key is null");
+                    return;
+                }
+
+                const blob = this.response; // sent as application/octet-stream
+
+                //blob to buffer
+                const encryptedBuffer = await new Response(blob).arrayBuffer();
+
+                //decrypt the blob
+                const decryptedBuffer = await decryptMessage(encryptedBuffer, message.smKey);
 
                 //blob is raw file data
-                const file = new File([blob], message.name, {
+                const file = new File([decryptedBuffer], message.name, {
                     type: message.type,
                 });
 
@@ -316,11 +338,32 @@
         });
     });
 
-    socket.on("updateUserList", (users: { [key: string]: User }) => {
+    socket.on("newUser", (user: { avatar: string, uid: string, publicKey: string }) => {
+        //import the public key
+        importPublicKey(stringToBuffer(user.publicKey)).then((key) => {
+            chatRoomStore.update((chatRoom) => {
+                chatRoom.userList[user.uid] = {
+                    avatar: user.avatar,
+                    uid: user.uid,
+                    publicKey: key,
+                    lastSeenMessage: "",
+                };
+                return chatRoom;
+            });
+            infoMessage(`User ${user.avatar} joined the chat 🥳`, 'join');
+        });
+    });
+
+    socket.on('userLeft', (uid: string) => {
+        if (!$chatRoomStore.userList[uid]) {
+            return;
+        }
+        const avatar = $chatRoomStore.userList[uid].avatar;
         chatRoomStore.update((chatRoom) => {
-            chatRoom.userList = users;
+            delete chatRoom.userList[uid];
             return chatRoom;
         });
+        infoMessage(`User ${avatar} left the chat 🥺`, 'leave');
     });
 
     socket.on("seen", (uid: string, messageId: string) => {

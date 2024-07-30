@@ -23,11 +23,14 @@
 
     //scripts
     import { eventTriggerMessageId, lastMessageId } from "$lib/messageTypes";
-    import { chatRoomStore, myId, messageContainer } from "$lib/store";
+    import { chatRoomStore, myId, messageContainer, myPrivateKey } from "$lib/store";
     import { socket } from "$lib/socket";
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import Lightbox from "./chatComponents/lightbox.svelte";
+    import { bufferToString, exportPublicKey, importPublicKey, makeKeyPair, stringToBuffer } from "$lib/e2e/encryption";
+    import PublicKeys from "./chatComponents/publicKeys.svelte";
+    import { infoMessage } from "$lib/utils/debug";
 
     let isOffline = false;
 
@@ -85,6 +88,8 @@
         }
     };
 
+    let ready = false;
+
     onMount(() => {
 
         document.onkeydown = keyBindingHandler;
@@ -96,6 +101,9 @@
 
             socket.emit("seen", $myId, $chatRoomStore.Key, $lastMessageId);
         };
+
+        infoMessage("You joined the chat 😸", "join");
+        ready = true;
     });
 
     onDestroy(() => {
@@ -142,10 +150,12 @@
     {/if}
 {/if}
 
-
+{#if $page.state.showPublicKeysOf != undefined &&  $page.state.showPublicKeysOf != ''}
+    <PublicKeys />
+{/if}
 
 <div class="chatBox" class:offl={isOffline}>
-    <NavBar />
+    <NavBar bind:encrypted={ready}/>
     <div class="middleLayer" on:touchmove|stopPropagation={(e) => {
         if (e.target == e.currentTarget) {
             e.preventDefault();

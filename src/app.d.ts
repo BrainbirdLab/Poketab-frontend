@@ -15,6 +15,7 @@ declare global {
 			showAttachmentPickerPanel?: boolean;
 			showReactsOnMessage?: boolean;
 			showMessageOptions?: boolean;
+			showPublicKeysOf?: string;
 			viewImage?: {
 				src: string,
 				id: string,

@@ -241,6 +241,9 @@ input[type=number]::-webkit-inner-spin-button {
     justify-content: center;
 }
 
+.box-shadow{
+    box-shadow: 10px 10px 35px var(--shadow-color);
+}
 
 body{
     color: ghostwhite;

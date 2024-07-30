@@ -11,12 +11,13 @@ export type ErrorLog = {
 export type User = {
     uid: string,
     avatar: string,
+    publicKey: CryptoKey,
     lastSeenMessage?: string | null,
 }
 
 export type chatRoomStoreType = {
     Key: string,
     admin: string,
-    userList: { readonly [key: string]: User},
+    userList: { [key: string]: User},
     maxUsers: number,
 };

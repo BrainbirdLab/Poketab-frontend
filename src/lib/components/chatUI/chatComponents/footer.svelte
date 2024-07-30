@@ -24,17 +24,22 @@
     async function insertMessage(quickEmoji = false){
 
         let message: MessageObj;
+        let file: File | undefined;
 
         if ($recordedAudioUrl.length !== 0){
 
             message = new AudioMessageObj();
+
+            const name = `${$chatRoomStore.userList[$myId].avatar}'s voice message`;
 
             if (message instanceof AudioMessageObj){
                 message.url = $recordedAudioUrl;
                 message.audio.src = message.url;
                 message.type = 'audio/mpeg';
                 message.duration = recorder.getDuration();
-                message.name = `${$chatRoomStore.userList[$myId].avatar}'s voice message`;
+                message.name = name;
+
+                file = await fetch(message.url).then(res => res.blob()).then(blob => new File([blob], name, {type: 'audio/mpeg'}));
             }
 
             recorder.closeRecorder(false);
@@ -76,7 +81,7 @@
             showReplyToast.set(false);
         }
 
-        await sendMessage(message);
+        await sendMessage(message, file);
 
         endTypingStatus();
     }

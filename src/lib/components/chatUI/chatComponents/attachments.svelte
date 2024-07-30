@@ -325,7 +325,7 @@
 {#if $page.state.showAttachmentPickerPanel === true}
 <div class="wrapper" use:attachmentsClickHandler transition:fly={{y: 30, duration: 150}}>
     {#if ready}
-    <div class="attachmentContainer back-blur">
+    <div class="attachmentContainer back-blur box-shadow">
         <!-- File Choose -->
         <div transition:scale={{duration: 100, start: 0.5}}
             class="upload_file button-animate icon play-sound attachmentButton"
@@ -438,7 +438,6 @@
             @include flex-row-center;
             width: max-content;
             background: var(--modal-color);
-            box-shadow: 10px 10px 35px var(--shadow-color);
             z-index: 20;
             transform-origin: bottom;
             transition: 200ms;

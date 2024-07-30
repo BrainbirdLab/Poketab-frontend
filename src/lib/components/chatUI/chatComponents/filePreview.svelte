@@ -67,7 +67,7 @@
         </div>
     {/each}
 </div>
-<div class="filePreviewOptions back-blur" transition:fly={{y: 10}}>
+<div class="filePreviewOptions back-blur box-shadow" transition:fly={{y: 10}}>
     <button
         transition:fly={{x: -10, delay: 100}}
         id="cancel"
@@ -235,7 +235,6 @@
         border-radius: 50px;
         transition: 100ms ease-in-out;
         z-index: 1;
-        box-shadow: 10px 10px 35px var(--shadow-color);
         * {
             font-size: inherit !important;
         }
