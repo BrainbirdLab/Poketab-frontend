@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { chatRoomStore } from "$lib/store";
+    import { chatRoomStore, myId } from "$lib/store";
     import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageTypes";
     import { fly } from "svelte/transition";
     import { clearModals } from "../stateManager.svelte";
@@ -41,7 +41,12 @@
                 <div class="user">
                     <div class="userInfo" in:fly|global={{x: -5, delay: 50 * (i + 1)}}>
                         <img src="/images/avatars/{$chatRoomStore.userList[uid]?.avatar || "Rip"}(custom).png" alt="user"/>
-                        <span>{$chatRoomStore.userList[uid]?.avatar || "Zombie"}</span>
+                        <span>
+                            {$chatRoomStore.userList[uid]?.avatar || "Zombie"}
+                            {#if uid === $myId}
+                                (You)
+                            {/if}
+                        </span>
                     </div>
                     <span class="react-emoji" in:fly|global={{x: 5, delay: 50 * (i + 1)}}>{react}</span>
                 </div>
