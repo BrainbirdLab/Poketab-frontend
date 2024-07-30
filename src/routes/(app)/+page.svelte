@@ -21,9 +21,9 @@
         },
         {
             iconClass: "fas fa-lock",
-            title: "Encrypted message.",
+            title: "E2E Encrypted message.",
             description:
-                "We understand the importance of privacy, which is why we do not store any of your messages or files on our servers. Our app simply relays the information, ensuring that your conversations remain private and secure.",
+                "Poketab Messenger uses end-to-end encryption to secure your messages. This means that only you and the person you're communicating with can read what is sent, and nobody in between, not even the server, can read it. Your messages are protected from hackers, governments, and even us.",
         },
         {
             iconClass: "fas fa-mobile-alt",
