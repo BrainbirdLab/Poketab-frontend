@@ -1,4 +1,4 @@
-# Poketab Messenger (In development)
+# Poketab Messenger
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/BrainbirdLab/Poketab-frontend?style=flat-square)
 ![GitHub repo size](https://img.shields.io/github/repo-size/BrainbirdLab/Poketab-frontend)
 ![GitHub contributors](https://img.shields.io/github/contributors/BrainbirdLab/Poketab-frontend?style=flat-square)
@@ -10,6 +10,7 @@
 Poketab Messenger is a temporary chat application that allows users to create and join group chats with up to 10 people. The app utilizes a unique key system to ensure privacy and security, as users can only join a chat by using a key generated and sent by the server.
 
 ## Key Features
+- End-to-end encryption.
 - Create and join group chats with up to 10 people
 - Share images, files, audio, and stickers with others in the chat
 - Built-in audio player and recorder to play and record audio within the app
