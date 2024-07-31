@@ -1,10 +1,11 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { chatRoomStore } from "$lib/store";
-    import { fade, fly } from "svelte/transition";
+    import { fade, fly, scale } from "svelte/transition";
     import { addState } from "../stateManager.svelte";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
+    import { startScrambleAnimation, stopScrambleAnimation } from "$lib/scrambler";
 
     export let encrypted = false;
 
@@ -12,46 +13,17 @@
     const textToScrambleFinal = "End-to-end encrypted";
     const scrambledText = writable(textToScrambleInitial);
 
-    const randomChars = "ABCDEFGH**IJKLMNOPQRST**UVWXYZabcdefghij**klmnopqrstuvw**xyz0123456**789";
-
-    function* scrambleText(input: string) {
-        let text = input.split("");
-
-        function getRandomInt(max: number) {
-            return Math.floor(Math.random() * max);
-        }
-
-        while (true) {
-            const index = getRandomInt(text.length);
-            text[index] = randomChars[getRandomInt(randomChars.length)];
-            yield text.join("");
-        }
-    }
-
-    let interval: number;
-
-    function startScrambleAnimation(initialText: string) {
-        const generator = scrambleText(initialText);
-        interval = setInterval(() => {
-            const result = generator.next();
-            if (!result.done && result.value) {
-                scrambledText.set(result.value);
-            }
-        }, 100); // Adjust the interval time as needed for the animation effect
-    }
-
     onMount(() => {
-        console.log("mounted");
-        startScrambleAnimation(textToScrambleInitial);
+        startScrambleAnimation(textToScrambleInitial, scrambledText);
     });
 
     $: if (encrypted) {
-        clearInterval(interval);
+        stopScrambleAnimation();
         scrambledText.set(textToScrambleFinal);
     }
 </script>
 
-<div class="navbar" transition:fly={{ y: -50 }}>
+<div class="navbar" transition:scale={{ start: 1.3 }}>
     <div class="currentlyActive">
         <div class="users">
             <i class="fa-solid fa-user"></i> Active: {Object.keys(

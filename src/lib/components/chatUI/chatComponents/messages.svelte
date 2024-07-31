@@ -481,7 +481,7 @@
         }
     });
 
-    async function updateUI(){
+    export async function updateUI(){
 
         await tick();
 

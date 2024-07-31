@@ -6,6 +6,7 @@
     export const messageSoundEnabled = writable(true);
     export const quickEmojiEnabled = writable(true);
     export const quickEmoji = writable('');
+    export const linkPreviewOn = writable(true);
 
     type Settings = {
         buttonSoundEnabled: boolean;
@@ -15,12 +16,14 @@
         selectedStickersGroup: string;
         currentTheme: string;
         sendMethod: SEND_METHOD;
+        linkPreviewOn: boolean;
     };
 
     const defaultSettings = {
         buttonSoundEnabled: true,
         messageSoundEnabled: true,
         quickEmojiEnabled: true,
+        linkPreviewOn: true,
         sendMethod:
             get(deviceType) == "mobile"
                 ? SEND_METHOD.CTRL_ENTER
@@ -48,6 +51,9 @@
         );
         currentTheme.set(parsedSettings.currentTheme ?? DEFAULT_THEME);
         sendMethod.set(parsedSettings.sendMethod ?? defaultSettings.sendMethod);
+        linkPreviewOn.set(
+            parsedSettings.linkPreviewOn ?? defaultSettings.linkPreviewOn,
+        );
     }
 
     export function setToLocalStorage(updatedSettings: Partial<Settings>) {
@@ -71,7 +77,8 @@
                 typeof parsedSettings.buttonSoundEnabled != "boolean" ||
                 typeof parsedSettings.messageSoundEnabled != "boolean" ||
                 typeof parsedSettings.quickEmojiEnabled != "boolean" ||
-                typeof parsedSettings.sendMethod != "string"
+                typeof parsedSettings.sendMethod != "string" ||
+                typeof parsedSettings.linkPreviewOn != "boolean"
             ) {
                 throw new Error("Invalid settings");
             } else {
@@ -143,6 +150,11 @@
                     case "messageSound":
                         setToLocalStorage({
                             messageSoundEnabled: !$messageSoundEnabled,
+                        });
+                        break;
+                    case "linkPreview":
+                        setToLocalStorage({
+                            linkPreviewOn: !$linkPreviewOn,
                         });
                         break;
                     case "quickEmoji":
@@ -288,6 +300,28 @@
                             Message sound
                             <div class="moreInfo">
                                 Message action sound (send, recieve, reacts)
+                            </div>
+                        </div>
+                        <span class="toggleButton" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subtitle">
+                    Link Preview <i class="fa-solid fa-link" />
+                </div>
+                <div class="field-checkers play-sound hoverShadow">
+                    <input
+                        type="checkbox"
+                        id="linkPreview"
+                        bind:checked={$linkPreviewOn}
+                    />
+                    <label for="linkPreview">
+                        <div class="textContainer">
+                            Enable link preview
+                            <div class="moreInfo">
+                                Show link preview for shared links
                             </div>
                         </div>
                         <span class="toggleButton" />

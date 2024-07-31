@@ -12,7 +12,7 @@
         theme: string,
     ) {
         //make a request to the server to update the cookie
-        fetch(`/theme/${theme}`, {
+        fetch(`/api/theme/${theme}`, {
             method: "PUT",
         })
             .then((response) => {

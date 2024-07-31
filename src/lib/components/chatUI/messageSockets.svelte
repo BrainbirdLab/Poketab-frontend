@@ -21,13 +21,13 @@
         outgoingXHRs,
         myPrivateKey,
     } from "$lib/store";
-    import { type User } from "$lib/types";
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { socket, API_URL } from "$lib/socket";
     import { emojis, playMessageSound } from "$lib/utils";
     import { onDestroy } from "svelte";
     import { decryptMessage, decryptSymmetricKey, importPublicKey, stringToBuffer } from "$lib/e2e/encryption";
     import { infoMessage } from "$lib/utils/debug";
+    import { getLinkMetadata } from "$lib/linkmeta";
 
     socket.on("newMessage", async (encryptedMessage: ArrayBuffer, smKey: ArrayBuffer, messageId: string) => {
         if (!encryptedMessage || !smKey || !messageId) {
@@ -84,6 +84,7 @@
         messageDatabase.add(message);
         lastMessageId.set(messageId);
         notice.set(message);
+        getLinkMetadata(message);
 
         //audios
         if (message instanceof StickerMessageObj) {
@@ -92,32 +93,6 @@
             playMessageSound("incoming");
         }
     });
-
-    socket.on(
-        "linkPreviewData",
-        (
-            messageId: string,
-            data: {
-                title: string;
-                description: string;
-                image: string;
-                url: string;
-            },
-        ) => {
-
-            if (!messageDatabase.has(messageId)) {
-                return;
-            }
-
-            messageDatabase.update((messages) => {
-                (
-                    messageDatabase.getMessage(messageId) as TextMessageObj
-                ).linkPreviewData = data;
-
-                return messages;
-            });
-        },
-    );
 
     socket.on("fileDownload", (messageId: string, sender: string) => {
 

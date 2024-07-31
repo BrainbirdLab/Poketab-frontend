@@ -21,3 +21,18 @@ export type chatRoomStoreType = {
     userList: { [key: string]: User},
     maxUsers: number,
 };
+
+
+
+type linkResData = {
+	title: string,
+	description: string,
+	image: string,
+	url: string
+}
+
+export type linkRes = {
+	success: boolean,
+	data: linkResData | null,
+	error: string | null
+}

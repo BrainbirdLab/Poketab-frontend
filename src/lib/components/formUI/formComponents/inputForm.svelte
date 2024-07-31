@@ -25,6 +25,8 @@
     import AppLogo from "./appLogo.svelte";
     import type { User } from "$lib/types";
     import { bufferToString, exportPublicKey, importPublicKey, makeKeyPair, stringToBuffer } from "$lib/e2e/encryption";
+    import { writable } from "svelte/store";
+    import { startScrambleAnimation, stopScrambleAnimation } from "$lib/scrambler";
 
     let selectedavatar = "";
     let selectedMaxUser = 2;
@@ -45,7 +47,7 @@
         }
     }
 
-    $: actionButtonText = $chatRoomStore.Key ? "Join" : "Create";
+    const actionButtonText = writable($chatRoomStore.Key ? "Join" : "Create");
 
     let mounted = false;
 
@@ -103,12 +105,15 @@
 
         //initChatActionDisabled = true;
         formActionButtonDisabled.set(true);
-        actionButtonText = "Please wait ";
+        //actionButtonText = "Creating encryption keys ";
+        startScrambleAnimation("Creating encryption keys ", actionButtonText, { speed: 150, delay: 300 });
 
         //make my private-public key pair
         const pair = await makeKeyPair();
         const publicKey = await exportPublicKey(pair.publicKey);
-        //socket.emit("sharePublicKey", $myId, bufferToString(publicKey), $chatRoomStore.Key);
+
+        //actionButtonText = "Establishing connection ";
+        startScrambleAnimation("Establishing connection ", actionButtonText, { speed: 150, delay: 300 });
 
         if (!$chatRoomStore.Key) {
             socket.emit(
@@ -131,6 +136,9 @@
                         return;
                     }
 
+                    //actionButtonText = "Encrypting chat "
+                    startScrambleAnimation("Encrypting chat ", actionButtonText, { speed: 150, delay: 300 });
+
                     res.user.publicKey = pair.publicKey;
                     myPrivateKey.set(pair.privateKey);
                     chatRoomStore.update((room) => {
@@ -149,6 +157,7 @@
                     selectedavatar = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.set(false);
+                    stopScrambleAnimation();
                 },
             );
         } else {
@@ -178,6 +187,8 @@
                         return;
                     }
 
+                    //actionButtonText = "Encrypting chat "
+                    startScrambleAnimation("Encrypting chat ", actionButtonText, { speed: 150, delay: 300 });
                     //we need to convert the string to buffer -> CryptoKey
                     //loop through the users and convert the public key to CryptoKey
                     chatRoomStore.update((room) => {
@@ -210,6 +221,7 @@
                     selectedavatar = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.set(false);
+                    stopScrambleAnimation();
                 },
             );
         }
@@ -221,7 +233,7 @@
 </script>
 
 <svelte:head>
-    <title>Poketab - {actionButtonText}</title>
+    <title>Poketab - {$actionButtonText}</title>
 </svelte:head>
 
 {#if mounted}
@@ -323,8 +335,8 @@
                             !socket.connected}
                         on:click={requestForChat}
                     >
-                        {actionButtonText}
-                        {#if $formActionButtonDisabled && actionButtonText.includes("Please wait")}
+                        {$actionButtonText}
+                        {#if $formActionButtonDisabled && !$actionButtonText.includes("Join") && !$actionButtonText.includes("Create")}
                             <i class="fa-solid fa-spin fa-circle-notch"></i>
                         {/if}
                     </button>

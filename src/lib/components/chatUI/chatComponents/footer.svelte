@@ -21,7 +21,7 @@
 
     const codeParser = new TextParser();
     
-    async function insertMessage(quickEmoji = false){
+    async function insertMessage(Emoji = false){
 
         let message: MessageObj;
         let file: File | undefined;
@@ -49,13 +49,13 @@
     
             message = new TextMessageObj();
     
-            if (!quickEmoji && newMessage.trim() === ''){
+            if (!Emoji && newMessage.trim() === ''){
                 return;
             }
             
             newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
     
-            if (quickEmoji){
+            if (Emoji){
                 newMessage = $quickEmojiEnabled ? $quickEmoji : '';
                 message.type = 'emoji';
                 message.baseType = 'text';

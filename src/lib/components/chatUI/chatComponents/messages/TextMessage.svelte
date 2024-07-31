@@ -4,6 +4,7 @@
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
+    import { messageContainer, messageScrolledPx } from "$lib/store";
 
     export let message: TextMessageObj;
 
@@ -22,7 +23,11 @@
                     <div class="linkMetadata">
                         {#if message.linkPreviewData.image}
                         <div class="linkMetadata__image">
-                            <img src="{message.linkPreviewData.image}" alt="{message.linkPreviewData.title}" />
+                            <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" on:load|once={()=> {
+                                if ($messageScrolledPx < 20) {
+                                    $messageContainer.scrollTop = $messageContainer.scrollHeight;
+                                }
+                            }}/>
                         </div>
                         {/if}
                         <div class="linkMetadata__details">
@@ -48,19 +53,39 @@
 
 <style lang="scss">
 
+    .self {
+        .linkMetadata .linkMetadata__details{
+            border-left: 2px solid var(--msg-send);
+            border-right: 2px solid var(--msg-send);
+            border-bottom: 2px solid var(--msg-send);
+        }
+        .linkMetadata__url{
+            color: var(--msg-send);
+        }
+    }
+
     .linkMetadata{
         width: 100%;
         border-bottom-left-radius: inherit;
         border-bottom-right-radius: inherit;
         text-decoration: none;
+        .linkMetadata__details{
+            border-left: 2px solid var(--msg-get);
+            border-right: 2px solid var(--msg-get);
+            border-bottom: 2px solid var(--msg-get);
+        }
     }
 
     .linkMetadata__title{
-        font-size: 1rem;
+        font-size: 0.7rem;
+        text-align: left;
+        word-break: break-all;
     }
 
     .linkMetadata__description{
-        color: grey;
+        color: var(--transparent-white-color);
+        font-size: 0.6rem;
+        text-align: left;
     }
 
     .linkMetadata__details{
@@ -95,12 +120,11 @@
             height: 100%;
             width: 100%;
             display: block;
+            color: var(--shadow-color);
         }
     }
 
     .linkMetadata__url{
-        color: #b6b6b6;
+        color: var(--msg-get);
     }
-
-
 </style>

@@ -5,6 +5,7 @@ import { socket, API_URL } from "$lib/socket";
 import { badWords } from "./censoredWords";
 import { generateId, playMessageSound } from "$lib/utils";
 import { encryptMessage, encryptSymmetricKey, makeSymmetricKey  } from "$lib/e2e/encryption";
+import { getLinkMetadata } from "$lib/linkmeta";
 
 export const showReplyToast = writable(false);
 
@@ -83,13 +84,11 @@ export async function sendMessage(message: MessageObj, file?: File){
 
 	//encrypt the message
 	const encryptedMessage = await encryptMessage(buffer, rawSmKey);
-
-	console.log("sending smKeys: ", smKeys);
-	console.log(`message type: ${message.type}, ${message.baseType}`);
 	
     socket.emit('newMessage', encryptedMessage, get(chatRoomStore).Key, smKeys, (messageId: string) => {
 		
 		messageDatabase.markDelevered(message, messageId);
+		getLinkMetadata(message);
 		
 		if (message.type === 'sticker'){
 			playMessageSound('sticker');
@@ -143,7 +142,7 @@ export async function sendMessage(message: MessageObj, file?: File){
 
 				function updateProgress(percent: number) {
 					//update message
-					messageDatabase.update(messages => {
+					messageDatabase.update((messages) => {
 						(message as FileMessageObj).loaded = Math.round(percent);	
 						return messages;
 					});
