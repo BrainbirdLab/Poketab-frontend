@@ -90,7 +90,7 @@ export async function copyText(text: string){
     if (!text) return;
 
     if (!navigator.clipboard) {
-        fallbackCopyTextToClipboard(text);
+        console.error('Clipboard API not available');
         return;
     }
 
@@ -101,24 +101,6 @@ export async function copyText(text: string){
         console.error('Async: Could not copy text: ', err);
         showToastMessage('Could not copy to clipboard');
     }
-}
-
-function fallbackCopyTextToClipboard(text: string){
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position="fixed";
-    document.body.appendChild(textArea);
-    textArea.select();
-    try {
-        //fallback for older browsers
-        document.execCommand('copy');
-        showToastMessage('Copied to clipboard (Fallback)');
-    } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err);
-        showToastMessage('Could not copy to clipboard (Fallback)');
-    }
-
-    document.body.removeChild(textArea);
 }
 
 let clickSound: HTMLAudioElement;

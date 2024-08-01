@@ -136,18 +136,11 @@ export async function sendMessage(message: MessageObj, file?: File){
 				xhr.upload.onprogress = (e) => {
 					if (e.lengthComputable){
 						const percent = (e.loaded / e.total) * 100;
-						updateProgress(percent);
+						updateProgress(percent, message as FileMessageObj);
 					}
 				}
 
-				function updateProgress(percent: number) {
-					//update message
-					messageDatabase.update((messages) => {
-						(message as FileMessageObj).loaded = Math.round(percent);	
-						return messages;
-					});
-				}
-
+				
 				console.log("launching...");
 				xhr.send(formData);
 				console.log("launched...!");
@@ -160,6 +153,15 @@ export async function sendMessage(message: MessageObj, file?: File){
 		}
 
     });
+}
+
+
+function updateProgress(percent: number, message: FileMessageObj) {
+	//update message
+	messageDatabase.update((messages) => {
+		message.loaded = Math.round(percent);	
+		return messages;
+	});
 }
 
 

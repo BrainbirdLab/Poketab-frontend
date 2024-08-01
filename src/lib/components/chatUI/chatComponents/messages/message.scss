@@ -47,7 +47,6 @@
         padding: 5px;
         aspect-ratio: 1;
         left: 0;
-        //transform: translateX(-40px);
         visibility: hidden;
         opacity: 0;
         transition: background-color 150ms;
@@ -67,6 +66,8 @@
     }
 
     &.self .replyIcon{
+        right: 0;
+        left: unset;
         &[data-reply-trigger="true"]{
             background: var(--msg-send);
         }
@@ -93,7 +94,7 @@
     .messageBody{
         position: relative;
         background: #00000000;
-        max-width: 90%;
+        max-width: 83%;
         display: flex;
         flex-direction: column;
         overflow-wrap: anywhere;
@@ -153,7 +154,6 @@
 
 .message:has(.reactsContainer) + .message{
     .msg{
-        //background: red;
         border-top-left-radius: 18px !important;
         border-top-right-radius: 18px !important;
     }
@@ -183,7 +183,7 @@
 
 .message.reply .messageTitle::before {
     content: '\f3e5';
-    font-family: 'FontAwesome';
+    font-family: 'FontAwesome', sans-serif;
     font-size: 1rem;
 }
 
@@ -197,11 +197,6 @@
     .messageTime{
         justify-content: flex-end;
         padding: 0 5px 0 0;
-    }
-    .replyIcon{
-        right: 0;
-        left: unset;
-        //transform: translateX(50px);
     }
     .messageBody{
         align-items: flex-end;
@@ -278,7 +273,6 @@
 .msg{
     color: white;
     position: relative;
-    transition: none;
     max-width: 100%;
     width: min-content;
     border-radius: 5px 18px 18px 5px;
@@ -286,6 +280,7 @@
     &:hover{
         cursor: pointer;
     }
+
     transition: 100ms ease-in-out;
     border-top-right-radius: 18px;
     border-bottom-right-radius: 18px;

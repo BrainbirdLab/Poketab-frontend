@@ -233,13 +233,13 @@ class MessageDatabase{
                     if (message.baseType != lastMessageObj.baseType || lastMessageObj.sender !== message.sender){
                         classListString += ' start newGroup';
                     } else if (lastMessageObj.baseType === message.baseType){
-                            //two messages of same kind
-                            if ( (message.baseType === 'text' || message.baseType === 'file' || message.baseType === 'image' || message.baseType === 'audio') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
-                                lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
-                            } else {
-                                classListString += ' start';
-                            }
+                        //two messages of same kind
+                        if ( (message.baseType === 'text' || message.baseType === 'file' || message.baseType === 'image' || message.baseType === 'audio') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
+                            lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
+                        } else {
+                            classListString += ' start';
                         }
+                    }
                 }
             } else {
                 classListString += ' start newGroup';

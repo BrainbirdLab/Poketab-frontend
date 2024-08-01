@@ -1,8 +1,7 @@
 /// <reference types="@sveltejs/kit" />
 /// <reference lib="webworker" />
 
-import { files, build } from "$service-worker";
-import { version } from "$service-worker";
+import { files, build, version  } from "$service-worker";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -60,14 +59,11 @@ self.addEventListener("fetch", (event) => {
 			if (response.status === 200) {
 				cache.put(event.request, response.clone());
 			}
-
-			//console.log(`Serving ${event.request.url} from network`);
 			return response;
 		} catch (err) {
 			const response = await cache.match(event.request);
 
 			if (response) {
-				//console.log(`Serving ${event.request.url} from cache`);
 				return response;
 			}
 

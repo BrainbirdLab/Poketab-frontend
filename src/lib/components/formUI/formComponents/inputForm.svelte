@@ -47,7 +47,8 @@
         }
     }
 
-    const actionButtonText = writable($chatRoomStore.Key ? "Join" : "Create");
+    let titleText = $chatRoomStore.Key ? "Join chat" : "Create chat";
+    const actionButtonText = writable(titleText);
 
     let mounted = false;
 

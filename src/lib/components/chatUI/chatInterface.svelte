@@ -28,7 +28,6 @@
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import Lightbox from "./chatComponents/lightbox.svelte";
-    import PublicKeys from "./chatComponents/publicKeys.svelte";
     import { infoMessage } from "$lib/utils/debug";
 
     let isOffline = false;
@@ -147,10 +146,6 @@
     {#if $page.state.showReactsOnMessage}
         <ReactsOnMessage />
     {/if}
-{/if}
-
-{#if $page.state.showPublicKeysOf != undefined &&  $page.state.showPublicKeysOf != ''}
-    <PublicKeys />
 {/if}
 
 <div class="chatBox" class:offl={isOffline}>

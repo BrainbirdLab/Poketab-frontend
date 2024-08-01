@@ -73,6 +73,10 @@
 {/if}
 
 <style lang="scss">
+
+    .sub-container{
+        margin-bottom: 5px;
+    }
     .flex{
         display: flex;
         align-items: flex-end;
@@ -93,5 +97,6 @@
     .content {
         font-size: 0.8rem;
         color: var(--transparent-white-color);
+        margin-left: 3px;
     }
 </style>

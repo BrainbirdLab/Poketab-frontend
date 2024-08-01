@@ -32,7 +32,7 @@
     <div class="user">
         <UserItem avatar={$chatRoomStore.userList[$myId].avatar} uid={$myId} bind:showId={targetId} />
     </div>
-    {#each Object.entries($chatRoomStore.userList).filter(([id, _]) => id !== $myId) as [id, _], _ (id)}
+    {#each Object.entries($chatRoomStore.userList).filter(([id, _]) => id !== $myId) as [id, _], i (id)}
         <li
             class="user"
             out:fly={{ x: -20, duration: 100 }}
@@ -59,7 +59,7 @@
 
     .user {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
         justify-content: space-between;
         gap: 5px;
