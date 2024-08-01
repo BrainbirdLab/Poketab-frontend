@@ -148,7 +148,7 @@
         align-items: center;
         justify-content: center;
         gap: 5px;
-        font-size: 2rem;
+        font-size: 1.6rem;
         font-weight: 900;
         color: #ffd400;
     }
