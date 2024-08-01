@@ -15,11 +15,8 @@
         <MessageMeta senderId={message.sender} isSent={message.sent}/>
         <div class="messageBody">
             <MessageTop senderId={message.sender} classList={message.classList} replyTo={message.replyTo}/>
-            <div class="messageMain">
-                <div class="msg" data-mtype="sticker">
-                    <img src="{message.src}" alt="{message.src}" data-sticker="{message.groupName}" class="data"/>
-                </div>
-                <div class="messageTime">Just now</div>
+            <div class="msg" data-mtype="sticker">
+                <img src="{message.src}" alt="{message.src}" data-sticker="{message.groupName}" class="data"/>
             </div>
             <Reacts reactedBy={message.reactedBy} />
         </div>

@@ -56,7 +56,7 @@
     } from "$lib/messageTypes";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer } from "$lib/store";
-    import { getFormattedDate, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { copyText } from "$lib/utils";
     import { afterUpdate, beforeUpdate, onDestroy, onMount, tick } from "svelte";
 
@@ -123,23 +123,6 @@
             }
 
             const messageObj = messageDatabase.getMessage(message.id) as MessageObj;
-
-            //show the time on click
-            const time = message.querySelector(".messageTime") as HTMLElement;
-            if (time) {
-
-                time.textContent = getFormattedDate(messageObj.timeStamp);
-                time.classList.add("active");
-
-                if (actionTimeout.has(message.id + 'show-time')){
-                    clearTimeout(actionTimeout.get(message.id + 'show-time') as number);
-                }
-
-                actionTimeout.set(message.id + 'show-time', setTimeout(() => {
-                    time.classList.remove("active");
-                    actionTimeout.delete(message.id + 'show-time');
-                }, 1400));
-            }
 
             if (target.classList.contains('reactsContainer')){
                 eventTriggerMessageId.set(messageObj.id);
@@ -438,7 +421,6 @@
     let lastHeight = 0;
     let lastScrollPosition = 0;
     let scrollChanged = 0;
-    let timeStampInterval: number | null = null;
     let heightChanged = 0;
     let scrolledToBottomPx = 0;
 
@@ -557,22 +539,6 @@
         if (!lastMessageObj) {
             return;
         }
-
-
-        const timeStamp = lastMessageObj.timeStamp;
-
-        if (timeStampInterval) {
-            clearInterval(timeStampInterval);
-        }
-
-        //update time stamp of the last message
-        timeStampInterval = setInterval(() => {
-            const time = lastMessage.querySelector(".messageTime") as HTMLElement;
-            if (!time) {
-                return;
-            }
-            time.textContent = getFormattedDate(timeStamp);
-        }, 10000);
     }
 
 </script>

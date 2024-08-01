@@ -133,11 +133,9 @@
 //if previous message has react
 
 .message:has(.reactsContainer){
-    .messageMain{
-        .msg{
-            border-bottom-right-radius: 18px !important;
-            border-bottom-left-radius: 18px !important;
-        }
+    .msg{
+        border-bottom-right-radius: 18px !important;
+        border-bottom-left-radius: 18px !important;
     }
 }
 
@@ -164,11 +162,9 @@
 
 //! Classlist based modifications
 .message.start{
-    .messageMain{
-        & > *{
-            border-bottom-left-radius: 5px;
-            border-top-left-radius: 18px;
-        }
+    .msg{
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 18px;
     }
 }
 
@@ -177,10 +173,8 @@
 }
 
 .message.end{
-    .messageMain{
-        & > *{
-            border-bottom-left-radius: 18px;
-        }
+    .msg{
+        border-bottom-left-radius: 18px;
     }
     .avatar{
         visibility: visible;
@@ -221,33 +215,24 @@
                 border-radius: 18px 18px 8px 18px !important;
             }
         }
-        .messageMain{
-            flex-direction: row-reverse;
-            .msg{
-                &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="audio"]{
-                    .data{
-                        background: var(--msg-send);
-                    }
+        .msg{
+            &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="audio"]{
+                .data{
+                    background: var(--msg-send);
                 }
             }
-            & > *{
-                border-radius: 18px 5px 5px 18px;
-            }
+            border-radius: 18px 5px 5px 18px;
         }
     }
     &.start{
-        .messageMain{
-            & > *{
-                border-bottom-right-radius: 5px;
-                border-top-right-radius: 18px;
-            }
+        .msg{
+            border-bottom-right-radius: 5px;
+            border-top-right-radius: 18px;
         }
     }
     &.end{
-        .messageMain{
-            & > *{
-                border-bottom-right-radius: 18px;
-            }
+        .msg{
+            border-bottom-right-radius: 18px;
         }
         .avatar{
             visibility: visible;
@@ -286,66 +271,60 @@
 .data{
     width: max-content;
     max-width: 100%;
+    border-radius: inherit;
 }
 
 //!Main Message Element
-.messageMain{
-    display: flex;
+.msg{
     color: white;
     position: relative;
-    flex-direction: row;
     transition: none;
     max-width: 100%;
     width: min-content;
-
-    & > * {
-        border-radius: 5px 18px 18px 5px;
-    }
+    border-radius: 5px 18px 18px 5px;
 
     &:hover{
         cursor: pointer;
     }
-    .msg{
-        transition: 100ms ease-in-out;
-        border-top-right-radius: 18px;
-        border-bottom-right-radius: 18px;
-        overflow: hidden;
-        &[data-mtype="text"] .data{
-            white-space: pre-wrap;
-            display: block;
-            padding: 8px 15px;
-            a{
-                color: inherit;
-                word-break: break-all;
-                text-decoration: underline;
+    transition: 100ms ease-in-out;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
+    overflow: hidden;
+    &[data-mtype="text"] .data{
+        white-space: pre-wrap;
+        display: block;
+        padding: 8px 15px;
+        a{
+            color: inherit;
+            word-break: break-all;
+            text-decoration: underline;
+        }
+    }
+
+    &[data-mtype="emoji"]{
+        .data{
+            font-size: 2rem;
+        }
+    }
+
+    &[data-mtype="image"]{
+        .data{
+            background: var(--glass-color);
+
+            &:hover{
+                filter: brightness(1.1) contrast(0.9);
             }
         }
+    }
 
-        &[data-mtype="emoji"]{
-            .data{
-                font-size: 2rem;
-            }
-        }
-
-        &[data-mtype="image"]{
-            .data{
-                background: var(--glass-color);
-
-                &:hover{
-                    filter: brightness(1.1) contrast(0.9);
-                }
-            }
-        }
-
-        &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="audio"]{
-            .data{
-                background: var(--msg-get);
-            }
+    &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="audio"]{
+        .data{
+            background: var(--msg-get);
         }
     }
 }
 
-.messageReply + .messageMain{
+.messageReply + .msg{
     margin-top: -10px;
 }
 

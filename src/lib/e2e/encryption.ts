@@ -71,6 +71,11 @@ export async function exportPrivateKey(privateKey: CryptoKey): Promise<ArrayBuff
     return crypto.subtle.exportKey("pkcs8", privateKey);
 }
 
+export function bufferToHexCode(key: ArrayBuffer) {
+    const str = new Uint8Array(key).reduce((str, byte) => str + byte.toString(16).padStart(2, "0") + " ", "");
+    return str;
+}
+
 export async function importPublicKey(key: ArrayBuffer): Promise<CryptoKey> {
     return crypto.subtle.importKey(
         "spki",

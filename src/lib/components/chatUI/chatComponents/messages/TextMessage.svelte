@@ -16,35 +16,32 @@
         <MessageMeta senderId={message.sender} isSent={message.sent}/>
         <div class="messageBody">
             <MessageTop senderId={message.sender} replyTo={message.replyTo} classList={message.classList}/>
-            <div class="messageMain">
-                <div class="msg" data-mtype="{message.type}">
-                    <div class="data">{@html message.message}</div>
-                    {#if message.linkPreviewData}
-                    <div class="linkMetadata">
-                        {#if message.linkPreviewData.image}
-                        <div class="linkMetadata__image">
-                            <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" on:load|once={()=> {
-                                if ($messageScrolledPx < 20) {
-                                    $messageContainer.scrollTop = $messageContainer.scrollHeight;
-                                }
-                            }}/>
-                        </div>
-                        {/if}
-                        <div class="linkMetadata__details">
-                            {#if message.linkPreviewData.title}
-                            <div class="linkMetadata__title">{@html message.linkPreviewData.title}</div>
-                            {/if}
-                            {#if message.linkPreviewData.description}
-                            <div class="linkMetadata__description">{@html message.linkPreviewData.description}</div>
-                            {/if}
-                            {#if message.linkPreviewData.url}
-                            <div class="linkMetadata__url">{message.linkPreviewData.url}</div>
-                            {/if}
-                        </div>
+            <div class="msg" data-mtype="{message.type}">
+                <div class="data">{@html message.message}</div>
+                {#if message.linkPreviewData}
+                <div class="linkMetadata">
+                    {#if message.linkPreviewData.image}
+                    <div class="linkMetadata__image">
+                        <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" on:load|once={()=> {
+                            if ($messageScrolledPx < 20) {
+                                $messageContainer.scrollTop = $messageContainer.scrollHeight;
+                            }
+                        }}/>
                     </div>
                     {/if}
+                    <div class="linkMetadata__details">
+                        {#if message.linkPreviewData.title}
+                        <div class="linkMetadata__title">{@html message.linkPreviewData.title}</div>
+                        {/if}
+                        {#if message.linkPreviewData.description}
+                        <div class="linkMetadata__description">{@html message.linkPreviewData.description}</div>
+                        {/if}
+                        {#if message.linkPreviewData.url}
+                        <div class="linkMetadata__url">{message.linkPreviewData.url}</div>
+                        {/if}
+                    </div>
                 </div>
-                <div class="messageTime">Just now</div>
+                {/if}
             </div>
             <Reacts reactedBy={message.reactedBy} />
         </div>

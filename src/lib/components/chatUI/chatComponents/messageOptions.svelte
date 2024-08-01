@@ -1,6 +1,6 @@
 
 <script lang="ts">
-    import { fly } from "svelte/transition";
+    import { fade, fly } from "svelte/transition";
     import { socket } from "$lib/socket";
     import { MessageObj, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj, messageDatabase } from "$lib/messageTypes";
     import { chatRoomStore, myId, reactArray } from "$lib/store";
@@ -12,12 +12,14 @@
     import { derived } from "svelte/store";
     import { clearModals } from "../stateManager.svelte";
     import { page } from "$app/stores";
+    import MessageInfo from "./messageInfo.svelte";
 
     $: message = derived(messageDatabase, (messages) => {
         return messages[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj;
     });
 
     let reactIsExpanded = false;
+    let showMessageInfo = false;
 
     $: reactedEmoji = $message?.reactedBy.get($myId) || '';
     $: messageKind = $message?.baseType;
@@ -33,6 +35,7 @@
         Copy: 'fa-solid fa-clone',
         Download: 'fa-solid fa-download',
         Delete: 'fa-solid fa-trash',
+        Info: 'fa-solid fa-info-circle',
     };
 
     onMount(() => {
@@ -66,12 +69,13 @@
             arr.push('Copy');
         }
 
+        arr.push('Info');
+
         return arr;
     }
 
     function clickHandler(node: HTMLElement){
         node.onclick = (e: MouseEvent) => {
-
             if (e.target == node){
                 reactIsExpanded = false;
                 clearModals();
@@ -131,6 +135,9 @@
                         return;
                     }
                     socket.emit('deleteMessage', $message.id, $chatRoomStore.Key, $myId);
+                } else if (e.target.classList.contains('Info')) {
+                    showMessageInfo = true;
+                    return;
                 }
 
                 reactIsExpanded = false;
@@ -151,7 +158,8 @@
 
 <!-- option menu for message right click -->
 <!-- This menu contains reacts, message copy, download, delete and reply options -->
-<div class="optionsContainer" use:clickHandler>
+<div class="optionsContainer" use:clickHandler out:fade={{duration: 300}}>
+    {#if !showMessageInfo}
     <div class="reactionsChooser box-shadow back-blur" transition:fly|global={{y: -10, duration: 200}}>
         {#if reactIsExpanded}
             <EmojiPicker selectedEmoji={selectedReact} exclude={[...$reactArray.last, ...$reactArray.reacts]} onClose={()=>{
@@ -162,7 +170,7 @@
             {#each $reactArray.reacts as react}
                 <div class:shown={$page.state.showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
                     <div class="emoji" data-emoji="{react}">{react}</div>
-                </div>    
+                </div>
             {/each}
             
             <!-- Show reactedEmoji as last react if has, else show $reactArray.last as last -->
@@ -183,17 +191,22 @@
             {/if}
         </div>
     </div>
+    {/if}
     <div class="messageOptions box-shadow back-blur" transition:fly|global={{y: 10, duration: 200}}>
-        {#key optionsArray}
-        {#each optionsArray as option, i (option) }
-        {#if option != null}
-            <div in:fly|global={{y: 10, delay: ((i+1)*50)}} class="option {option}" class:delete={option == 'Delete'} title="{option}">
-                <i class="{messageOptions[option]}"></i>
-                {option}
-            </div>
+        {#if showMessageInfo}
+            <MessageInfo message={$message}/>
+        {:else}
+            {#key optionsArray}
+            {#each optionsArray as option, i (option) }
+            {#if option != null}
+                <div in:fly|global={{y: 10, delay: ((i+1)*50)}} class="option {option}" class:delete={option == 'Delete'} title="{option}">
+                    <i class="{messageOptions[option]}"></i>
+                    {option}
+                </div>
+            {/if}
+            {/each}
+            {/key}
         {/if}
-        {/each}
-        {/key}
     </div>
 </div>
 
@@ -206,10 +219,11 @@
         justify-content: center;
         align-items: center;
         gap: 10px;
-        padding: 15px;
+        min-height: 75px;
+        padding: 12px;
         width: 400px;
         max-width: 100%;
-        transition: all 100ms ease-in-out;
+        transition: height 1000ms ease-in-out;
         border-radius: 15px 15px 0 0;
         background: var(--modal-color);
 

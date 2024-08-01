@@ -245,6 +245,14 @@ input[type=number]::-webkit-inner-spin-button {
     box-shadow: 10px 10px 35px var(--shadow-color);
 }
 
+.monospace{
+    font-family: monospace;
+}
+
+.user-select{
+    user-select: text;
+}
+
 body{
     color: ghostwhite;
     font-family: 'Com';

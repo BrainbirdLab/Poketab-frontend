@@ -2,7 +2,6 @@
     import { chatRoomStore, myId } from "$lib/store";
     import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageTypes";
     import { fly } from "svelte/transition";
-    import { clearModals } from "../stateManager.svelte";
     import { derived } from "svelte/store";
     import Modal from "./modal.svelte";
     import { page } from "$app/stores";

@@ -44,6 +44,7 @@ export class MessageObj {
     sender: string;
     replyTo: string;
     timeout: number | undefined;
+    smKey: CryptoKey | null;
 
     seenBy: Set<string> = new Set();
     reactedBy: Map<string, string> = new Map();
@@ -62,6 +63,7 @@ export class MessageObj {
         this.timeout = undefined;
         this.seenBy = new Set();
         this.reactedBy = new Map();
+        this.smKey = null;
     }
 }
 
@@ -115,7 +117,6 @@ export class FileMessageObj extends MessageObj {
     baseType: 'file' | 'image' | 'audio';
     loaded: number;
     loadScheme?: 'upload' | 'download' | null;
-    smKey?: CryptoKey;
     constructor() {
         super();
         this.url = '';

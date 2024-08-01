@@ -56,8 +56,12 @@
             message = Object.setPrototypeOf(message, ImageMessageObj.prototype);
         } else if (message.baseType === "audio") {
             message = Object.setPrototypeOf(message, AudioMessageObj.prototype);
+        } else {
+            console.log('Invalid message: ', message);
+            return;
         }
 
+        message.smKey = dSmKey;
         //The message is recieved as Object, All properties of type Map, Set are lost as they become Object.
         //So we need to convert them back to Map, Set.. etc 🤧
         message.reactedBy = new Map(Object.entries(message.reactedBy));
@@ -68,7 +72,6 @@
         if (message instanceof TextMessageObj) {
             message.message = filterBadWords(message.message);
         } else if (message instanceof FileMessageObj) {
-            message.smKey = dSmKey;
             message.loadScheme = "upload";
             if (message instanceof ImageMessageObj) {
                 message.url = message.thumbnail;

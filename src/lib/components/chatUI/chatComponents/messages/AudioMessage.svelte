@@ -19,55 +19,52 @@
         <MessageMeta senderId={file.sender} isSent={file.sent}/>
         <div class="messageBody">
             <MessageTop senderId={file.sender} classList={file.classList} replyTo={file.replyTo}/>
-            <div class="messageMain">
-                <div class="msg" data-mtype="file">
-                    <div class="data" style="--progress: { (file.audio.currentTime / duration) * 100 }%; transition: {file.audio.currentTime === 0 ? "none" : "150ms"};">
-                        <div class="controls">
+            <div class="msg" data-mtype="file">
+                <div class="data" style="--progress: { (file.audio.currentTime / duration) * 100 }%; transition: {file.audio.currentTime === 0 ? "none" : "150ms"};">
+                    <div class="controls">
 
-                            {#if file.audio.paused || file.audio.ended}
-                                <i in:fly|global={{x: 5}} class="control fa-solid fa-play"></i>
-                            {:else if !file.audio.paused && !file.audio.ended}
-                                {#if isFinite(duration)}
-                                    <i in:fly|global={{x: -5}} class="control fa-solid fa-pause"></i>
-                                    <i in:fly|global={{x: 5}} class="control fa-solid fa-stop"></i>
-                                {:else}
-                                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                                {/if}
+                        {#if file.audio.paused || file.audio.ended}
+                            <i in:fly|global={{x: 5}} class="control fa-solid fa-play"></i>
+                        {:else if !file.audio.paused && !file.audio.ended}
+                            {#if isFinite(duration)}
+                                <i in:fly|global={{x: -5}} class="control fa-solid fa-pause"></i>
+                                <i in:fly|global={{x: 5}} class="control fa-solid fa-stop"></i>
+                            {:else}
+                                <i class="fa-solid fa-circle-notch fa-spin"></i>
                             {/if}
-
-                        </div>
-                        {#if file.loaded < 100}
-                            <div class="progress">
-                                {#if file.loadScheme == "upload"}
-                                    <i class="fa-solid fa-arrow-up"
-                                    ></i>
-                                    { file.sender === $myId ? `${file.loaded}%` : "Sending" }
-                                {:else if file.loadScheme == "download"}
-                                    <i
-                                        class="fa-solid fa-arrow-down"
-                                    ></i>
-                                    {file.loaded}%
-                                {/if}
-                            </div>
                         {/if}
-                        <div class="duration">
-                            {#if file.audio.paused}
-                                {#if isFinite(duration)}
-                                    {#if file.audio.currentTime > 0}
-                                    {remainingTime(duration, file.audio.currentTime)}
-                                    {:else}
-                                    {remainingTime(duration, 0)}
-                                    {/if}
+
+                    </div>
+                    {#if file.loaded < 100}
+                        <div class="progress">
+                            {#if file.loadScheme == "upload"}
+                                <i class="fa-solid fa-arrow-up"
+                                ></i>
+                                { file.sender === $myId ? `${file.loaded}%` : "Sending" }
+                            {:else if file.loadScheme == "download"}
+                                <i
+                                    class="fa-solid fa-arrow-down"
+                                ></i>
+                                {file.loaded}%
+                            {/if}
+                        </div>
+                    {/if}
+                    <div class="duration">
+                        {#if file.audio.paused}
+                            {#if isFinite(duration)}
+                                {#if file.audio.currentTime > 0}
+                                {remainingTime(duration, file.audio.currentTime)}
                                 {:else}
-                                    --:--
+                                {remainingTime(duration, 0)}
                                 {/if}
                             {:else}
-                                {remainingTime(duration, file.audio.currentTime)}
+                                --:--
                             {/if}
-                        </div>
+                        {:else}
+                            {remainingTime(duration, file.audio.currentTime)}
+                        {/if}
                     </div>
                 </div>
-                <div class="messageTime">Just now</div>
             </div>
             <Reacts reactedBy={file.reactedBy} />
         </div>

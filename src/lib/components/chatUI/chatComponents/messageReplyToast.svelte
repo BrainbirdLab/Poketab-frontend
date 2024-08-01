@@ -3,7 +3,7 @@
     import {chatRoomStore, myId} from "$lib/store";
     import { slide, fly, fade, scale } from "svelte/transition";
     import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { bounceOut, elasticOut } from "svelte/easing";
+    import { bounceOut } from "svelte/easing";
     import { onDestroy, onMount } from "svelte";
     import { getIcon } from "$lib/utils";
     import { derived } from "svelte/store";

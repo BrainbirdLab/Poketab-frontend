@@ -26,45 +26,42 @@
                 classList={file.classList}
                 replyTo={file.replyTo}
             />
-            <div class="messageMain">
-                <div class="msg" data-mtype={file.baseType}>
-                    <div class="data">
-                        {#if !(file instanceof ImageMessageObj)}
-                            <i class="icon fa-solid {getIcon(file.type)}"></i>
-                            <div class="fileInfo">
-                                <div class="fileName">{file.name}</div>
-                                <div class="fileMeta">
-                                    <div class="ext">
-                                        {file.name.split(".").pop() ||
-                                            "Document"}
+            <div class="msg" data-mtype={file.baseType}>
+                <div class="data">
+                    {#if !(file instanceof ImageMessageObj)}
+                        <i class="icon fa-solid {getIcon(file.type)}"></i>
+                        <div class="fileInfo">
+                            <div class="fileName">{file.name}</div>
+                            <div class="fileMeta">
+                                <div class="ext">
+                                    {file.name.split(".").pop() ||
+                                        "Document"}
+                                </div>
+                                {#if file.loaded < 100}
+                                    <div class="progress">
+                                        {#if file.loadScheme == "upload"}
+                                            <i class="fa-solid fa-arrow-up"
+                                            ></i>
+                                            {file.sender === $myId
+                                                ? `${file.loaded}%`
+                                                : "Sending"}
+                                        {:else if file.loadScheme == "download"}
+                                            <i
+                                                class="fa-solid fa-arrow-down"
+                                            ></i>
+                                            {file.loaded}%
+                                        {/if}
                                     </div>
-                                    {#if file.loaded < 100}
-                                        <div class="progress">
-                                            {#if file.loadScheme == "upload"}
-                                                <i class="fa-solid fa-arrow-up"
-                                                ></i>
-                                                {file.sender === $myId
-                                                    ? `${file.loaded}%`
-                                                    : "Sending"}
-                                            {:else if file.loadScheme == "download"}
-                                                <i
-                                                    class="fa-solid fa-arrow-down"
-                                                ></i>
-                                                {file.loaded}%
-                                            {/if}
-                                        </div>
-                                    {/if}
-                                    <div class="fileSize">
-                                        {getSize(file.size)}
-                                    </div>
+                                {/if}
+                                <div class="fileSize">
+                                    {getSize(file.size)}
                                 </div>
                             </div>
-                        {:else}
-                            <ImageMessage file={file} />
-                        {/if}
-                    </div>
+                        </div>
+                    {:else}
+                        <ImageMessage file={file} />
+                    {/if}
                 </div>
-                <div class="messageTime">Just now</div>
             </div>
             <Reacts reactedBy={file.reactedBy} />
         </div>

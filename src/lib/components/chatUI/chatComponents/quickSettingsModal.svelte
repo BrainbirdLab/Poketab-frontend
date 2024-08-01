@@ -771,6 +771,11 @@
         color: var(--secondary-dark);
         padding-bottom: 5px;
 
+        i {
+            font-size: inherit;
+            color: inherit;
+        }
+
         &.sectionHeadTitle {
             width: 100%;
             margin-top: 10px;

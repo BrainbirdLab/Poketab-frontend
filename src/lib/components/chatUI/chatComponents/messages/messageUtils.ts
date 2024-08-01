@@ -59,12 +59,12 @@ export function remainingTime(totalTime: number, elapsedTime: number) {
 
 export async function sendMessage(message: MessageObj, file?: File){
 
+	const rawSmKey = await makeSymmetricKey();
+
 	message.sender = get(myId);
 	message.id = generateId(16);
-
+	message.smKey = rawSmKey;
 	messageDatabase.add(message);
-
-	const rawSmKey = await makeSymmetricKey();
 
 	const smKeys: {[key: string]: ArrayBuffer} = {};
 

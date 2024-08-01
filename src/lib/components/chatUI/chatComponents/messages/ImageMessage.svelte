@@ -17,7 +17,7 @@
           ? "filter: blur(10px); transform: scale(1.1); transition: 500ms ease-in-out;"
           : ""}
 />
-{#if file.loaded >= 100}
+{#if file.loaded < 100}
     <div
         class="imageProgressCircle"
         style="stroke-dasharray: {(file.loaded * 251.2) / 100}, 251.2;"
