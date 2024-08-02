@@ -24,9 +24,10 @@
     $: reactedEmoji = $message?.reactedBy.get($myId) || '';
     $: messageKind = $message?.baseType;
     $: sender = $message?.sender;
+    $: isSent = $message?.sent;
     $: downloadable = ($message instanceof FileMessageObj) ? (sender === $myId ? true : ($message as FileMessageObj).loaded >= 100) : false;
 
-    $: optionsArray = [...getMessageOptions(), downloadable ? 'Download' : null];
+    $: optionsArray = [...getMessageOptions(), downloadable ? 'Download' : null, isSent ? 'Info' : null];
 
     let selectedReact = '';
 
@@ -68,8 +69,6 @@
         if (messageKind == 'text'){
             arr.push('Copy');
         }
-
-        arr.push('Info');
 
         return arr;
     }

@@ -25,8 +25,8 @@
     import AppLogo from "./appLogo.svelte";
     import type { User } from "$lib/types";
     import { bufferToString, exportPublicKey, importPublicKey, makeKeyPair, stringToBuffer } from "$lib/e2e/encryption";
-    import { writable } from "svelte/store";
-    import { startScrambleAnimation, stopScrambleAnimation } from "$lib/scrambler";
+    import Quantum from "$lib/components/icons/quantum.svelte";
+    import DotStream from "$lib/components/icons/dotStream.svelte";
 
     let selectedavatar = "";
     let selectedMaxUser = 2;
@@ -48,7 +48,12 @@
     }
 
     let titleText = $chatRoomStore.Key ? "Join chat" : "Create chat";
-    const actionButtonText = writable(titleText);
+
+    const actionCreateKey = "Creating encryption keys";
+    const actionConnectKey = "Establishing connection";
+    const actionEncryptChat = "Encrypting chat";
+
+    let actionButtonText = titleText;
 
     let mounted = false;
 
@@ -106,16 +111,14 @@
 
         //initChatActionDisabled = true;
         formActionButtonDisabled.set(true);
-        //actionButtonText = "Creating encryption keys ";
-        startScrambleAnimation("Creating encryption keys ", actionButtonText, { speed: 150, delay: 300 });
+        actionButtonText = actionCreateKey;
 
         //make my private-public key pair
         const pair = await makeKeyPair();
         const publicKey = await exportPublicKey(pair.publicKey);
 
-        //actionButtonText = "Establishing connection ";
-        startScrambleAnimation("Establishing connection ", actionButtonText, { speed: 150, delay: 300 });
-
+        actionButtonText = actionConnectKey;
+        
         if (!$chatRoomStore.Key) {
             socket.emit(
                 "createChat",
@@ -137,8 +140,7 @@
                         return;
                     }
 
-                    //actionButtonText = "Encrypting chat "
-                    startScrambleAnimation("Encrypting chat ", actionButtonText, { speed: 150, delay: 300 });
+                    actionButtonText = actionEncryptChat;
 
                     res.user.publicKey = pair.publicKey;
                     myPrivateKey.set(pair.privateKey);
@@ -158,7 +160,6 @@
                     selectedavatar = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.set(false);
-                    stopScrambleAnimation();
                 },
             );
         } else {
@@ -188,10 +189,8 @@
                         return;
                     }
 
-                    //actionButtonText = "Encrypting chat "
-                    startScrambleAnimation("Encrypting chat ", actionButtonText, { speed: 150, delay: 300 });
-                    //we need to convert the string to buffer -> CryptoKey
-                    //loop through the users and convert the public key to CryptoKey
+                    actionButtonText = actionEncryptChat;
+
                     chatRoomStore.update((room) => {
                         room.admin = res.admin;
                         room.maxUsers = res.maxUsers;
@@ -222,7 +221,6 @@
                     selectedavatar = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.set(false);
-                    stopScrambleAnimation();
                 },
             );
         }
@@ -234,7 +232,7 @@
 </script>
 
 <svelte:head>
-    <title>Poketab - {$actionButtonText}</title>
+    <title>Poketab - {titleText}</title>
 </svelte:head>
 
 {#if mounted}
@@ -336,9 +334,13 @@
                             !socket.connected}
                         on:click={requestForChat}
                     >
-                        {$actionButtonText}
-                        {#if $formActionButtonDisabled && !$actionButtonText.includes("Join") && !$actionButtonText.includes("Create")}
-                            <i class="fa-solid fa-spin fa-circle-notch"></i>
+                        {actionButtonText} 
+                        {#if $formActionButtonDisabled}
+                            {#if actionButtonText == actionConnectKey}
+                            <DotStream/>
+                            {:else}
+                            <Quantum />
+                            {/if}
                         {/if}
                     </button>
                 {/if}

@@ -10,6 +10,7 @@
     import { showToastMessage } from "@itsfuad/domtoastmessage";
 
     import { playMessageSound } from "$lib/utils";
+    import Mirage from "$lib/components/icons/mirage.svelte";
 
     
     let recordingState = false;
@@ -227,7 +228,7 @@
         </button>
         <div class="recording">
             {#if recordingState}
-            <span class="recordingText"><i class="fa-solid fa-circle recordIcon"></i></span>
+            <Mirage />
             {/if}
             <span id="recordingTime" class="recordingTime">{time}</span>
         </div>
@@ -303,11 +304,6 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                .recordIcon {
-                    font-size: 0.6rem !important;
-                    color: var(--red-color);
-                    animation: blink 0.5s infinite alternate;
-                }
             }
             .recordingTime {
                 font-size: 0.8rem;

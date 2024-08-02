@@ -201,7 +201,7 @@ a {
 }
 
 button[disabled]{
-    filter: brightness(0.7) saturate(0) !important;
+    filter: brightness(0.7) !important;
     cursor: not-allowed !important;
 }
 
