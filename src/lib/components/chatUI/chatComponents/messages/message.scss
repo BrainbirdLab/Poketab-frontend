@@ -94,7 +94,7 @@
     .messageBody{
         position: relative;
         background: #00000000;
-        max-width: 83%;
+        max-width: 78%;
         display: flex;
         flex-direction: column;
         overflow-wrap: anywhere;
@@ -266,7 +266,6 @@
 .data{
     width: max-content;
     max-width: 100%;
-    border-radius: inherit;
 }
 
 //!Main Message Element
@@ -291,8 +290,7 @@
         padding: 8px 15px;
         a{
             color: inherit;
-            word-break: break-all;
-            text-decoration: underline;
+            width: 100%;
         }
     }
 
@@ -418,10 +416,12 @@ pre{
     padding: 0 5px;
     margin-right: 2px;
     border-right: 1px solid var(--glass-color);
+    color: var(--transparent-white-color);
     counter-reset: codeLine;
 
     span {
         counter-increment: codeLine;
+        color: inherit;
     }
 
     span::before {
@@ -438,4 +438,12 @@ pre{
     background: transparent !important;
     font-size: inherit !important;
     font-family: inherit !important;
+}
+
+@media screen and (orientation: landscape) and (min-device-aspect-ratio: 1.5 / 1) {
+    .message {
+        .messageBody{
+            max-width: 65%;
+        }
+    }
 }

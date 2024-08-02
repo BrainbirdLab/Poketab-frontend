@@ -225,7 +225,7 @@
                 //showStickersPanel.set(true)
                 //pushState('/stickers/'+$selectedSticker, { showStickersPanel: true })
                 addState("stickers", { showStickersPanel: true });
-            }} 
+            }}
             class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
         
         <button on:click={() => {
@@ -315,6 +315,7 @@
             width: 100%;
             background: var(--glass-color);
             border-radius: 24px;
+            transition: 300ms;
             
             backdrop-filter: blur(5px);
             

@@ -40,7 +40,7 @@
 {#if smKeyStr}
     <div class="container"  in:slide={{axis: "y", duration: 200}}>
         <div class="title">
-            <i class="fa-solid fa-info-circle"></i> Message information
+            <i class="fa-solid fa-info-circle"></i> Message information (E2E)
         </div>
         <div class="sub-container">
             <div class="sub-title">

@@ -303,7 +303,6 @@
 
                         swipeStarted = true;
                         replyIcon.dataset.swipeStart = "true";
-                        
                         //if msg is self
                         if (classList.includes("self") && sent) {
                             replyIcon.style.transform = `translateX(${swipeIconDistance}px)`;
@@ -339,15 +338,20 @@
 
         let unsub: () => void;
 
-        node.ontouchend = (evt) => {
+        const endHandler = (evt: TouchEvent) => {
             try {
-                if (!swipeStarted) return;
+
+                touchEnded = true;
+
+                if (!swipeStarted){
+                    return;
+                };
 
                 const target = evt.target as HTMLElement;
                 const message = target.closest(".message") as HTMLElement;
 
                 if (target.closest(".msg") && messageDatabase.has(message.id)) {
-                    touchEnded = true;
+                    //touchEnded = true;
 
                     const messageObj = messageDatabase.getMessage(message.id) as MessageObj;
 
@@ -389,11 +393,15 @@
             }
         };
 
+        node.ontouchend = endHandler;
+        node.ontouchcancel = endHandler;
+        
         return {
             destroy() {
                 node.ontouchstart = null;
                 node.ontouchmove = null;
                 node.ontouchend = null;
+                node.ontouchcancel = null;
                 node.onclick = null;
                 if (unsub) unsub();
             },

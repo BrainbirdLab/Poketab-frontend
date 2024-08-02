@@ -257,7 +257,10 @@
             {#if $chatRoomStore.userList && Object.keys($chatRoomStore.userList).length > 0}
                 <div class="subsection">
                     <div class="subtitle">
-                        Peoples on this chat <i class="fa-solid fa-users"></i>
+                        {Object.keys($chatRoomStore.userList).length } People{Object.keys($chatRoomStore.userList).length > 1 ? "'s" : ""} on this chat <i class="fa-solid fa-users"></i>
+                        <div class="moreInfo">
+                            Click eye icon next to user to view user's public key
+                        </div>
                     </div>
                     <UsersPanel />
                 </div>

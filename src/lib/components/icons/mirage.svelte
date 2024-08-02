@@ -1,9 +1,9 @@
 <script>
 
-    import { slide } from "svelte/transition";
+    import { fade } from "svelte/transition";
 
 </script>
-<div class="container" out:slide={{axis: "x"}}>
+<div class="container" out:fade>
     <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
@@ -32,10 +32,10 @@
   <style>
     .container {
       --uib-size: 80px;
-      --uib-color: rgb(255, 255, 255);
+      --uib-color: #4f6768;
       --uib-speed: 2.6s;
       --uib-dot-size: calc(var(--uib-size) * 0.23);
-      position: relative;
+      position: absolute;
       display: flex;
       align-items: center;
       justify-content: space-between;

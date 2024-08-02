@@ -53,10 +53,11 @@
     
     .image {
         max-width: 100%;
-        max-height: 100%;
         min-height: 100px;
         min-width: 100px;
         height: auto;
+        width: auto;
+        max-height: 55vh;
         object-fit: contain;
     }
 

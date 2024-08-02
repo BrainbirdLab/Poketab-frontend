@@ -307,6 +307,7 @@
             }
             .recordingTime {
                 font-size: 0.8rem;
+                position: absolute;
             }
         }
 
