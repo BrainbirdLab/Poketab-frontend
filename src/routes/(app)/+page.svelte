@@ -54,72 +54,75 @@
 
 {#if mounted}
 
-<div class="container">
-    <div class="top-hero" in:fly|global={{ y: -10, delay: 100 }}>
-        <div class="flex column center">
-            <div class="logo">
-                <ReactiveLogo size={80}/>
-            </div>
-            <div class="name">
-                Poketab Messenger
-            </div>
-        </div>
-        <div class="version-info">
-            <div class="version">v.{version}</div>
-            Free and Open Source
-        </div>
-    </div>
-    <div class="slogan" transition:fly={{x:-10, delay: 300}}>A Secure and User-Friendly Chatting WebApp</div>
-    
-    <div class="more" transition:fly={{x: 10, delay: 350}}>
-        Poketab Messenger is a chat app that offers a temporary and secure way
-        to connect with friends and family. It requires no login or account
-        creation and has a range of features, including rich text typing, code
-        highlighting, location sharing, file transfers, and personalized themes
-        and stickers. The app is serverless, ensuring that no data is stored on
-        its servers. Simply start a chat and share the link with friends for a
-        hassle-free communication experience with guaranteed privacy and
-        security.
-    </div>
-    
-    <div class="links">
-        <a data-sveltekit-replacestate id="login" class="button-animate button play-sound" href="/chat"
-            transition:fly={{y: 10, delay: 600}}
-            >Start Chat
-        </a>
-        <a
-            id="github"
-            class="button-animate button play-sound"
-            href="https://github.com/BrainbirdLab/Poketab-frontend"
-            transition:fly={{y: 10, delay: 700}}
-            >View Source <i class="fa-solid fa-arrow-up-right-from-square"></i>
-        </a>
-    </div>
-    
-    <div class="titleText" in:fly={{x: 10, delay: 800}}>What does it offer?</div>
-    <div class="feature" in:fade|global={{delay: 1000}}>
-        {#each featureItemsData as feature}
-            <div class="feature-item back-blur" >
-                <i class={feature.iconClass} />
-                <div class="feature-item-title">
-                    {feature.title}
+<div class="container back-blur">
+    <section>
+        <div class="top-hero" in:fly|global={{ y: -10, delay: 100 }}>
+            <div class="flex column center">
+                <div class="logo">
+                    <ReactiveLogo size={80}/>
                 </div>
-                <div class="detail">
-                    {feature.description}
+                <div class="name">
+                    Poketab Messenger
                 </div>
             </div>
-        {/each}
-    </div>
-    
-    <div class="footer">
-        <div class="assets">
-            <a href="https://fontawesome.com"> <i class="fa-solid fa-font"></i> Fontawesome</a>
-            <a href="https://www.flaticon.com/free-icons/avatar"><i class="fa-solid fa-compass-drafting"></i> Flaticon</a>
+            <div class="version-info">
+                <div class="version">v.{version}</div>
+                Free and Open Source
+            </div>
         </div>
-        <div class="copyrights">
-            &copy; {new Date().getFullYear()} - BrainBird.org
+        <div class="slogan" transition:fly={{x:-10, delay: 300}}>A Secure and User-Friendly Chatting WebApp</div>
+        
+        <div class="more" transition:fly={{x: 10, delay: 350}}>
+            Poketab Messenger is a chat app that offers a temporary and secure way
+            to connect with friends and family. It requires no login or account
+            creation and has a range of features, including rich text typing, code
+            highlighting, location sharing, file transfers, and personalized themes
+            and stickers. The app is serverless, ensuring that no data is stored on
+            its servers. Simply start a chat and share the link with friends for a
+            hassle-free communication experience with guaranteed privacy and
+            security.
         </div>
-    </div>
+        
+        <div class="links">
+            <a data-sveltekit-replacestate id="login" class="button-animate button play-sound" href="/chat"
+                transition:fly={{y: 10, delay: 600}}
+                >Start Chat
+            </a>
+            <a
+                id="github"
+                class="button-animate button play-sound"
+                href="https://github.com/BrainbirdLab/Poketab-frontend"
+                transition:fly={{y: 10, delay: 700}}
+                >View Source <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+        </div>
+    </section>
+    <section>
+        <div class="titleText" in:fly={{x: 10, delay: 800}}>What does it offer?</div>
+        <div class="feature" in:fade|global={{delay: 1000}}>
+            {#each featureItemsData as feature}
+                <div class="feature-item" >
+                    <i class={feature.iconClass} />
+                    <div class="feature-item-title">
+                        {feature.title}
+                    </div>
+                    <div class="detail">
+                        {feature.description}
+                    </div>
+                </div>
+            {/each}
+        </div>
+        
+        <div class="footer">
+            <div class="assets">
+                <a href="https://fontawesome.com"> <i class="fa-solid fa-font"></i> Fontawesome</a>
+                <a href="https://www.flaticon.com/free-icons/avatar"><i class="fa-solid fa-compass-drafting"></i> Flaticon</a>
+            </div>
+            <div class="copyrights">
+                &copy; {new Date().getFullYear()} - BrainBird.org
+            </div>
+        </div>
+    </section>
 </div>
 {/if}
 
@@ -132,6 +135,7 @@
     justify-content: space-between;
     width: 100%;
     padding: 20px;
+    margin-top: 70px;
     gap: 5px;
 
     .logo{
@@ -191,7 +195,6 @@
         align-items: center;
         justify-content: flex-start;
         gap: 20px;
-        padding: 20px;
         height: 100%;
         width: 100%;
         inset: 0;
@@ -203,6 +206,14 @@
         text-align: justify;
         color: #ffffff95;
         width: min(100%, 900px);
+    }
+
+    section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
     }
 
     #login {
@@ -220,6 +231,7 @@
     .links {
         display: flex;
         flex-direction: row;
+        margin-top: 10px;
         gap: 20px;
     }
     .titleText {
@@ -246,22 +258,15 @@
         gap: 30px;
         align-items: flex-start;
         justify-content: center;
-        background: var(--modal-color);
-        box-shadow: 0 3px 5px var(--shadow-color);
         padding: 35px;
         border-radius: 10px;
         position: relative;
         max-width: 400px;
         transition: 200ms ease-in-out;
-        cursor: pointer;
     }
 
     .feature-item i {
         font-size: 4rem;
-    }
-
-    .feature-item:hover {
-        transform: translateY(-5px);
     }
 
     .feature-item-title {
