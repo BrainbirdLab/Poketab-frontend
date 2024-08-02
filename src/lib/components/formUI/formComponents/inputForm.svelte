@@ -338,7 +338,7 @@
                         {#if $formActionButtonDisabled}
                             {#if actionButtonText == actionConnectKey}
                             <DotStream/>
-                            {:else}
+                            {:else if actionButtonText != titleText}
                             <Quantum />
                             {/if}
                         {/if}
