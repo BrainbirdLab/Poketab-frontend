@@ -198,6 +198,7 @@
         height: 100%;
         width: 100%;
         inset: 0;
+        padding: 15px;
         overflow: scroll;
     }
 
@@ -237,6 +238,7 @@
     .titleText {
         font-size: 1.6rem;
         padding-top: 85px;
+        padding-bottom: 20px;
         text-align: center;
     }
 
@@ -259,10 +261,12 @@
         align-items: flex-start;
         justify-content: center;
         padding: 35px;
+        border: 2px solid var(--glass-color);
         border-radius: 10px;
         position: relative;
         max-width: 400px;
-        transition: 200ms ease-in-out;
+        min-height: 350px;
+        transition: .2s ease-in-out;
     }
 
     .feature-item i {
@@ -309,7 +313,7 @@
         justify-content: center;
         align-items: center;
         gap: 10px;
-        margin-top: auto;
+        margin-top: 25px;
 
         .assets{
             display: flex;
