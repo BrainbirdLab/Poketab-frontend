@@ -11,7 +11,7 @@
     margin: 0;
     box-sizing: border-box;
     -ms-overflow-style: none;
-    font-family: 'Com';
+    font-family: 'Com', sans-serif;
     color: var(--text-color);
     caret-color: var(--text-color);
     user-select: none;
@@ -255,7 +255,7 @@ input[type=number]::-webkit-inner-spin-button {
 
 body{
     color: ghostwhite;
-    font-family: 'Com';
+    font-family: 'Com', sans-serif;
     background-color: #111d2a;
 }
 
