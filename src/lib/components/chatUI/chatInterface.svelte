@@ -90,6 +90,9 @@
 
     onMount(() => {
 
+        //reset all modals
+        
+
         document.onkeydown = keyBindingHandler;
 
         window.onfocus = () => {

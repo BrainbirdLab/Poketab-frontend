@@ -467,7 +467,7 @@
 
                 .text {
                     font-size: 0.7rem;
-                    color: var(--blue-grey-color);
+                    color: var(--text-color);
                 }
             }
         }
