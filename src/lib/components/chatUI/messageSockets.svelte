@@ -328,7 +328,7 @@
                 };
                 return chatRoom;
             });
-            infoMessage(`User ${user.avatar} joined the chat 🥳`, 'join');
+            infoMessage(`${user.avatar} joined the chat 🥳`, 'join');
         });
     });
 
@@ -341,7 +341,7 @@
             delete chatRoom.userList[uid];
             return chatRoom;
         });
-        infoMessage(`User ${avatar} left the chat 🥺`, 'leave');
+        infoMessage(`${avatar} left the chat 🥺`, 'leave');
     });
 
     socket.on("seen", (uid: string, messageId: string) => {

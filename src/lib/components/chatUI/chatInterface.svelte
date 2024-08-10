@@ -14,7 +14,7 @@
 
     import ReactsOnMessage from "$lib/components/chatUI/chatComponents/reactsOnMessageModal.svelte";
 
-    import { addState } from "./stateManager.svelte";
+    import { addState, resetModals } from "./stateManager.svelte";
 
     import MessageSockets from "./messageSockets.svelte";
 
@@ -91,7 +91,7 @@
     onMount(() => {
 
         //reset all modals
-        
+        resetModals();
 
         document.onkeydown = keyBindingHandler;
 
