@@ -257,10 +257,7 @@
             {#if $chatRoomStore.userList && Object.keys($chatRoomStore.userList).length > 0}
                 <div class="subsection">
                     <div class="subtitle">
-                        {Object.keys($chatRoomStore.userList).length } People{Object.keys($chatRoomStore.userList).length > 1 ? "'s" : ""} on this chat <i class="fa-solid fa-users"></i>
-                        <div class="moreInfo">
-                            Click eye icon next to user to view user's public key
-                        </div>
+                        {Object.keys($chatRoomStore.userList).length } People{Object.keys($chatRoomStore.userList).length > 1 ? "'s" : ""} <i class="fa-solid fa-users"></i>
                     </div>
                     <UsersPanel />
                 </div>
@@ -525,13 +522,10 @@
         justify-content: center;
         a {
             color: var(--secondary-dark);
-            text-decoration: none;
+            text-decoration: underline;
             font-size: 0.8rem;
             i {
                 color: inherit;
-            }
-            &:hover {
-                text-decoration: underline;
             }
         }
     }
