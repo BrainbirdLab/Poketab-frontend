@@ -13,6 +13,15 @@ async function fetcher(url: string) {
     return response;
 }
 
+function decodeURIComponentSafe(uri: string) {
+    try {
+        // if has &amp; replace it with &
+        return uri.replace(/&amp;/g, '&');
+    } catch (_) {
+        return uri;
+    }
+}
+
 export async function parseMetadata(url: string): Promise<linkRes> {
     try {
 
@@ -42,8 +51,14 @@ export async function parseMetadata(url: string): Promise<linkRes> {
             image = `${urlObject.protocol}//${urlObject.host}${image}`;
         }
 
+        if (image) {
+            image = decodeURIComponentSafe(image);
+        }
+
         const urlObject = new URL(url);
         const urlWithoutPath = `${urlObject.protocol}//${urlObject.host}`;
+
+        console.log({ title, description, image, urlWithoutPath });
 
         return {
             success: true,
