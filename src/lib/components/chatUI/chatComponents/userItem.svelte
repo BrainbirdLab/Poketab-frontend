@@ -45,9 +45,14 @@
         <i class="fa-solid fa-eye{key ? "" : "-slash"}"></i>
     </div>
 </div>
-{#if key}    
+{#if key} 
 <div class="key user-select monospace" transition:slide>
-    {key}
+    <div class="info">
+        Used to encrypt messages for this user
+    </div>
+    <div class="hash">
+        {key}
+    </div>
 </div>
 {/if}
 
@@ -61,9 +66,14 @@
 
     .key {
         font-size: 0.7rem;
-        color: var(--transparent-white-color);
-        max-height: 128px;
-        overflow: scroll;
+        .info{
+            color: var(--secondary-dark);
+        }
+        .hash{
+            color: var(--transparent-white-color);
+            max-height: 128px;
+            overflow: scroll;
+        }
     }
 
     .userInfo {

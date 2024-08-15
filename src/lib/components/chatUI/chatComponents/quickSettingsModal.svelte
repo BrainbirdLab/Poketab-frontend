@@ -723,7 +723,7 @@
         background: var(--modal-color);
         height: 100%;
         width: 400px;
-        max-width: 85vw;
+        max-width: 100%;
         position: relative;
         font-size: 0.7rem;
         transition: 100ms ease-in-out;
