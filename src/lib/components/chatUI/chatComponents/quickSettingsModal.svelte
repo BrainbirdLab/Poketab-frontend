@@ -250,14 +250,13 @@
         </div>
 
         <div class="subsectionsContainer">
-            <button id="keyname" class="play-sound clickable" on:click={copyKey}
-                ><i class={copyKeyIcon}></i>Copy chat key: {KEY}</button
-            >
-
             {#if $chatRoomStore.userList && Object.keys($chatRoomStore.userList).length > 0}
                 <div class="subsection">
                     <div class="subtitle">
-                        {Object.keys($chatRoomStore.userList).length } People{Object.keys($chatRoomStore.userList).length > 1 ? "'s" : ""} <i class="fa-solid fa-users"></i>
+                        {Object.keys($chatRoomStore.userList).length } People{Object.keys($chatRoomStore.userList).length > 1 ? "'s" : ""} on
+                        <button id="keyname" class="play-sound clickable" on:click={copyKey}
+                        >{KEY}<i class={copyKeyIcon}></i></button
+                        >
                     </div>
                     <UsersPanel />
                 </div>
