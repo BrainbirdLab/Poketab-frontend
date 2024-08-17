@@ -83,13 +83,6 @@
 <style lang="scss">
 
     .maincontainer {
-        background: rgba(0, 0, 0, var(--fade)) var(--pattern);
-        transition: background 500ms;
-        background-blend-mode: soft-light;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
         color: white;
         display: flex;
         flex-direction: column;

@@ -32,7 +32,7 @@
   <style>
     .container {
       --uib-size: 80px;
-      --uib-color: #4f6768;
+      --uib-color: #ffffff37;
       --uib-speed: 2.6s;
       --uib-dot-size: calc(var(--uib-size) * 0.23);
       position: absolute;
