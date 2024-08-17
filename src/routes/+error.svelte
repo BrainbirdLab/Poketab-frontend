@@ -45,7 +45,7 @@
 
     h1 {
         font-size: 6rem;
-        color: #3e5968;
+        color: #ffffff42;
     }
 
     h3 {
