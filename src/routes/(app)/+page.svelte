@@ -35,9 +35,10 @@
 </script>
 
 <svelte:head>
-  <title>
-    Poketab Messenger
-  </title>
+    <meta name="theme-color" id="theme-color" content="#0f1a25"/>
+    <title>
+        Poketab Messenger
+    </title>
 </svelte:head>
 
 {#if mounted}
@@ -527,6 +528,7 @@
     .credits {
         a {
             text-decoration: underline;
+            color: #03a9f4;
             &:hover {
                 opacity: 0.9;
             }
