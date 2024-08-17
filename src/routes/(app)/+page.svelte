@@ -105,10 +105,10 @@
                     <div class="content flex row wrap a-c j-sa">
                         <div class="main flex col a-c j-c">
                             <h3 class="big-title">
-                                Insane security system for every messages
+                                Insane security system for every message
                             </h3>
                             <p class="des">
-                                Unique crypto-key for every messages. No one can
+                                Unique crypto-key for every message. No one can
                                 read your messages except you and the person
                                 you're communicating with.
                             </p>
@@ -527,6 +527,7 @@
     .credits {
         a {
             text-decoration: underline;
+            color: var(--trace-col);
             &:hover {
                 opacity: 0.9;
             }
