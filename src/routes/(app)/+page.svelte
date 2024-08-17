@@ -46,7 +46,7 @@
                 <section class="flex row-rev wrap a-c j-c">
                     <img
                         class="landing-img"
-                        src="/images/pikachu-landing.png"
+                        src="/images/pikachu-landing.webp"
                         alt="landing"
                     />
                     <div class="hero short-width flex col">
@@ -626,6 +626,7 @@
     .landing-img {
         width: 480px;
         max-width: 100%;
+        padding: 25px;
     }
 
     .container {
