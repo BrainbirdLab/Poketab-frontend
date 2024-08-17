@@ -265,7 +265,7 @@
                         />
                         <div>Or, use this address</div>
                         <button class="btc" on:click={handleCopy}
-                            >0x736Cc7836fF2A6988Ae0f25678Ce7640B71E7f04</button
+                            >0x736Cc7836fF2A6988Ae0f25678Ce7640B71E7f04 <i class="fa-regular fa-copy"></i></button
                         >
                     </div>
                 </div>
@@ -510,6 +510,9 @@
         text-align: justify;
         font-family: monospace;
         font-size: 0.7rem;
+        i {
+            font-size: inherit;
+        }
         &:hover {
             filter: brightness(0.9);
         }
