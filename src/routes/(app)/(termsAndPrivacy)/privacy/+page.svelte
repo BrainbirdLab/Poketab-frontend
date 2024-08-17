@@ -1,3 +1,9 @@
+<svelte:head>
+  <title>
+    Privacy Policy
+  </title>
+</svelte:head>
+
 <h2>Privacy Policy</h2>
 <p>
   Welcome! We're glad you're here. At Poketab Messenger, your privacy is our top

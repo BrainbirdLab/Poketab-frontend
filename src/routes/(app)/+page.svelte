@@ -33,6 +33,12 @@
 
 </script>
 
+<svelte:head>
+  <title>
+    Poketab Messenger
+  </title>
+</svelte:head>
+
 {#if mounted}
     <div class="wrapper ball-open">
         <div class="container">
