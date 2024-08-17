@@ -58,11 +58,10 @@
 
         p,
         ul {
-            font-size: 1rem;
+            font-size: 0.9rem;
             line-height: 1.6;
             margin-bottom: 15px;
-            color: rgba(255, 255, 255, 0.79);
-            font-family: monospace;
+            color: #ffffffad;
         }
         ul {
             margin-left: 20px;
@@ -71,14 +70,6 @@
         li {
             color: inherit;
             font-family: inherit;
-        }
-    }
-    .footer {
-        text-align: center;
-        padding: 10px 0;
-        .footer-text {
-            color: #ffffff40;
-            font-size: 0.85rem;
         }
     }
 }

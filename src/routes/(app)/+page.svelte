@@ -86,9 +86,9 @@
                         </div>
                         <div class="consent" in:fade={{delay: 500}}>
                             By using Poketab Messenger, you agree to our <a
-                                href="/terms">Terms of Service</a
+                                href="/terms">Terms</a
                             >
-                            and <a href="/privacy">Privacy Policy</a>.
+                            and <a href="/policy">Policy</a>
                         </div>
                     </div>
                 </section>
@@ -509,6 +509,7 @@
         word-break: break-all;
         text-align: justify;
         font-family: monospace;
+        font-size: 0.7rem;
         &:hover {
             filter: brightness(0.9);
         }
@@ -551,6 +552,10 @@
     .feature-info {
         max-width: 400px;
         padding: 30px;
+        p{
+            color: #ffffffad;
+            font-size: 0.9rem;
+        }
     }
 
     .images {
