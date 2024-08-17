@@ -130,9 +130,12 @@
         height: 100%;
         width: 100%;
         inset: 0;
+        background: rgba(0, 0, 0, var(--fade)) var(--pattern);
+        transition: background 500ms;
         background-blend-mode: soft-light;
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        background-attachment: fixed;
     }
 </style>

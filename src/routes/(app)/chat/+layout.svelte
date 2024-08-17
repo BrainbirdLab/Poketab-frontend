@@ -106,6 +106,13 @@
 
 <style>
     .chat-content{
+        background: rgba(0, 0, 0, var(--fade)) var(--pattern);
+        transition: background 500ms;
+        background-blend-mode: soft-light;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
         display: flex;
         flex-direction: column;
         justify-content: safe center;
