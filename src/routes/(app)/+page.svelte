@@ -7,6 +7,7 @@
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { onMount } from "svelte";
     import { fade, fly } from "svelte/transition";
+    import Landing from "$lib/components/landing/landing.svelte";
 
     const version = __VERSION__;
 
@@ -44,11 +45,9 @@
         <div class="container">
             <main class="hero-container">
                 <section class="flex row-rev wrap a-c j-c">
-                    <img
-                        class="landing-img"
-                        src="/images/pikachu-landing.webp"
-                        alt="landing"
-                    />
+                    <div class="landing-img" in:fly={{y: -5, delay: 100}}>
+                        <Landing />
+                    </div>
                     <div class="hero short-width flex col">
                         <div class="title flex col j-c">
                             <div class="titleText" in:fly={{x: -10}}>
