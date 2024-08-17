@@ -293,7 +293,7 @@
 
 <style lang="scss">
     :root {
-        --highlight: #00bcd4;
+        --highlight: #0d90d2;
         --line-col: #badcfc21;
         --trace-col: #03a9f4;
     }
@@ -342,7 +342,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 5px;
-        background: var(--trace-col);
+        background: var(--highlight);
         border-radius: 25px;
         height: 34px;
         width: 200px;
@@ -351,7 +351,7 @@
         .progress {
             width: 30%;
             height: 100%;
-            background: rgba(0, 0, 255, 0.158);
+            background: rgb(0 0 0 / 13%);
             left: 0;
             position: absolute;
             z-index: 0;
@@ -367,7 +367,7 @@
         }
         .time {
             font-size: 0.7rem;
-            color: var(--trace-col);
+            color: var(--highlight);
             background: white;
             border-radius: 25px;
             padding: 2px 5px;
@@ -527,7 +527,7 @@
     .credits {
         a {
             text-decoration: underline;
-            color: var(--trace-col);
+            color: var(--highlight);
             &:hover {
                 opacity: 0.9;
             }
