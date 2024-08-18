@@ -34,29 +34,50 @@
                 alt={avatar}
             />
         </div>
-        <span
+        <div
             >{avatar}
             {#if uid == $myId}
                 (You)
-            {/if}</span
-        >
+            {/if}
+            {#if key}
+            <div class="moreInfo" transition:slide={{duration: 150}}>
+                Encryption key
+            </div>
+            {/if}
+        </div>
     </div>
     <div class="e2eKey" title="View public key" data-uid={uid}>
-        <i class="fa-solid fa-eye{key ? "" : "-slash"}"></i>
+        <i class="fa-solid fa-chevron-right {key ? "active" : ""}"></i>
     </div>
 </div>
 {#if key} 
-<div class="key user-select monospace" transition:slide>
-    <div class="info">
-        Used to encrypt messages for this user
-    </div>
-    <div class="hash">
-        {key}
-    </div>
+<div class="key user-select monospace" transition:slide={{duration: 150}}>
+    {key}
 </div>
 {/if}
 
 <style lang="scss">
+
+    .fa-chevron-right{
+        transition: 100ms;
+        &:not(.active):hover{
+            transform: translateX(2px);
+        }
+        &.active{
+            transform: rotate(90deg);
+        }
+    }
+
+    .moreInfo{
+        font-size: 0.7rem;
+        color: var(--transparent-white-color);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        text-align: left;
+        gap: 5px;
+    }
 
     .wrapper {
         display: flex;
@@ -66,14 +87,9 @@
 
     .key {
         font-size: 0.7rem;
-        .info{
-            color: var(--secondary-dark);
-        }
-        .hash{
-            color: var(--transparent-white-color);
-            max-height: 128px;
-            overflow: scroll;
-        }
+        color: var(--transparent-white-color);
+        max-height: 128px;
+        overflow: scroll;
     }
 
     .userInfo {
