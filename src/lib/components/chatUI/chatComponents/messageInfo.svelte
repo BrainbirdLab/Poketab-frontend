@@ -1,6 +1,6 @@
 <script lang="ts">
     import { bufferToHexCode } from "$lib/e2e/encryption";
-    import type { MessageObj } from "$lib/messageTypes";
+    import { FileMessageObj, ImageMessageObj, type MessageObj } from "$lib/messageTypes";
     import { onDestroy, onMount } from "svelte";
     import { getFormattedDate } from "./messages/messageUtils";
     import { chatRoomStore } from "$lib/store";
@@ -57,6 +57,20 @@
                 {$chatRoomStore.userList[message.sender].avatar}
             </div>
         </div>
+        <div class="sub-content">
+            <div class="sub-title">Message type</div>
+            <div class="content cap">
+                {message.type}
+            </div>
+        </div>
+        {#if message instanceof FileMessageObj}
+            <div class="sub-container">
+                <div class="sub-title">File name</div>
+                <div class="content">
+                    {message.name}
+                </div>
+            </div>
+        {/if}
         <div class="sub-container">
             <div class="sub-title">Sent on</div>
             <div class="content">
@@ -65,7 +79,7 @@
         </div>
         <div class="sub-container">
             <div class="sub-title">Encryption key</div>
-            <div class="content monospace user-select">
+            <div class="content upper monospace user-select">
                 {smKeyStr}
             </div>
         </div>
@@ -73,6 +87,10 @@
 {/if}
 
 <style lang="scss">
+
+    .container {
+        overflow-x: hidden;
+    }
 
     .sub-container{
         margin-bottom: 5px;
@@ -98,5 +116,7 @@
         font-size: 0.8rem;
         color: var(--transparent-white-color);
         margin-left: 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>

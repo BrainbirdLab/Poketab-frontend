@@ -467,7 +467,7 @@
 
                 .text {
                     font-size: 0.7rem;
-                    color: var(--text-color);
+                    color: var(--transparent-white-color);
                 }
             }
         }

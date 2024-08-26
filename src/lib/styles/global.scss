@@ -42,7 +42,7 @@ html{
     --glass-color: #ffffff17;
     --shadow-color: #0000007a;
     --blue-grey-color: #7e9ebb;
-    --transparent-white-color: #ffffff66;
+    --transparent-white-color: #ffffff78;
     --dark-color: #26485e;
     --dark-color-hover: #3f6476;
     --amplitude: 0px;
@@ -81,6 +81,14 @@ img{
         transform: translateY(-5px);
         filter: saturate(1) drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
     }
+}
+
+.cap {
+    text-transform: capitalize;
+}
+
+.upper {
+    text-transform: uppercase;
 }
 
 input{

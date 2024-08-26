@@ -22,21 +22,21 @@
             <div class="msg" data-mtype="file">
                 <div class="data" style="--progress: { (file.audio.currentTime / duration) * 100 }%; transition: {file.audio.currentTime === 0 ? "none" : "150ms"};">
                     <div class="controls">
-
                         {#if file.audio.paused || file.audio.ended}
-                            <i in:fly|global={{x: 5}} class="control fa-solid fa-play"></i>
+                            <i class="control fa-solid fa-play"></i>
                         {:else if !file.audio.paused && !file.audio.ended}
                             {#if isFinite(duration)}
-                                <i in:fly|global={{x: -5}} class="control fa-solid fa-pause"></i>
-                                <i in:fly|global={{x: 5}} class="control fa-solid fa-stop"></i>
+                                <i class="control fa-solid fa-pause"></i>
                             {:else}
                                 <i class="fa-solid fa-circle-notch fa-spin"></i>
                             {/if}
                         {/if}
-
                     </div>
-                    {#if file.loaded < 100}
-                        <div class="progress">
+                    <div class="progress-container">
+                        <div class="progressBar"></div>
+                    </div>
+                    <div class="duration">
+                        {#if file.loaded < 100}
                             {#if file.loadScheme == "upload"}
                                 <i class="fa-solid fa-arrow-up"
                                 ></i>
@@ -47,21 +47,20 @@
                                 ></i>
                                 {file.loaded}%
                             {/if}
-                        </div>
-                    {/if}
-                    <div class="duration">
-                        {#if file.audio.paused}
-                            {#if isFinite(duration)}
-                                {#if file.audio.currentTime > 0}
-                                {remainingTime(duration, file.audio.currentTime)}
+                        {:else}
+                            {#if file.audio.paused}
+                                {#if isFinite(duration)}
+                                    {#if file.audio.currentTime > 0}
+                                    {remainingTime(duration, file.audio.currentTime)}
+                                    {:else}
+                                    {remainingTime(duration, 0)}
+                                    {/if}
                                 {:else}
-                                {remainingTime(duration, 0)}
+                                    --:--
                                 {/if}
                             {:else}
-                                --:--
+                                {remainingTime(duration, file.audio.currentTime)}
                             {/if}
-                        {:else}
-                            {remainingTime(duration, file.audio.currentTime)}
                         {/if}
                     </div>
                 </div>
@@ -81,38 +80,66 @@
         padding: 5px 10px;
         min-width: 220px;
         width: 100%;
-        height: 34px;
+        height: 35px;
+        min-height: 35px;
         position: relative;
 
-        &::before{
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: var(--progress, 0%);
-            height: 100%;
-            background: #00000026;
-            pointer-events: none;
-            transition: inherit;
-            z-index: 1;
+        .progress-container{
+            position: relative;
+            width: 100%;
+            height: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
         }
+
+        .progressBar{
+            position: relative;
+            width: 100%;
+            height: 2px;
+            background: var(--glass-color);
+            pointer-events: none;
+            &::after{
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: var(--progress);
+                max-width: 100%;
+                pointer-events: none;
+                background: var(--transparent-white-color);
+                z-index: 2;
+            }
+        }
+
 
         .controls{
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2;
+            background: var(--text-color);
+            border-radius: 25px;
+            height: 23px;
+            width: 23px;
+            min-width: 23px;
+            min-height: 23px;
+            max-height: 23px;
+            max-width: 23px;
+            aspect-ratio: 1 / 1;
+            margin-left: -3.5px;
         }
 
         .control{
-            font-size: 17px;
+            font-size: 12px;
             width: 20px;
             height: 20px;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--secondary-dark);
+            color: var(--message-color) !important;
             z-index: 2;
         }
 
@@ -122,10 +149,17 @@
             border-radius: 10px;
             padding: 2px 5px;
             min-width: 40px;
-            color: var(--secondary-dark);
+            height: 18px;
+            min-height: 18px;
+            margin-right: -2px;
+            color: var(--message-color);
             text-align: center;
             pointer-events: none;
             z-index: 2;
+            * {
+                color: inherit !important;
+                font-size: inherit !important;
+            }
         }
     }
 

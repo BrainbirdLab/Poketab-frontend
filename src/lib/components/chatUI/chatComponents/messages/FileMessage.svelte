@@ -69,6 +69,18 @@
 </li>
 
 <style lang="scss">
+
+    .progress {
+        white-space: break-spaces;
+        text-align: center;
+        min-width: 50px;
+        font-size: 0.6rem !important;
+        * {
+            font-size: 0.6rem !important;
+            color: inherit !important;
+        }
+    }
+
     .data {
         display: flex;
         flex-direction: row;
@@ -82,9 +94,9 @@
         }
 
         .icon {
-            font-size: 23px;
-            color: #ffffffae;
-            padding-left: 5px;
+            font-size: 25px;
+            color: var(--transparent-white-color);
+            padding: 8px 0 5px 8px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -115,5 +127,9 @@
         align-items: center;
         gap: 10px;
         font-size: 0.6rem;
+        color: var(--transparent-white-color);
+        * {
+            color: inherit;
+        }
     }
 </style>

@@ -77,7 +77,7 @@
         svg {
             width: 65px;
             border-radius: 50%;
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.25);
         }
 
         .progress {
@@ -85,6 +85,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            color: #ffffffb5;
+            font-size: 0.8rem;
         }
     }
 </style>

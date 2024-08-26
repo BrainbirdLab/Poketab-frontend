@@ -51,7 +51,7 @@
     </div>
 </div>
 {#if key} 
-<div class="key user-select monospace" transition:slide={{duration: 150}}>
+<div class="key upper user-select monospace" transition:slide={{duration: 150}}>
     {key}
 </div>
 {/if}

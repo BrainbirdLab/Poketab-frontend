@@ -14,6 +14,8 @@
     padding: 0 18px 0 5px;
     transition: filter 200ms ease-in-out, height 200ms ease-in-out;
 
+    --message-color: var(--msg-get);
+
     &:not(.self):has(.messageReply){
         .msg{
             border-top-left-radius: 5px !important;
@@ -57,7 +59,7 @@
         }
     
         &[data-reply-trigger="true"]{
-            background: var(--msg-get);
+            background: var(--message-color);
         }
 
         i{
@@ -68,16 +70,13 @@
     &.self .replyIcon{
         right: 0;
         left: unset;
-        &[data-reply-trigger="true"]{
-            background: var(--msg-send);
-        }
     }
 
     .sent{
         i{
             font-size: 0.5rem !important;
             padding: 0;
-            color: var(--text-color);
+            color: var(--transparent-white-color);
         }
     }
     .avatar{
@@ -188,6 +187,7 @@
 }
 
 .message.self{
+    --message-color: var(--msg-send);
     .messageContainer{
         flex-direction: row-reverse;
     }
@@ -211,11 +211,6 @@
             }
         }
         .msg{
-            &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="audio"]{
-                .data{
-                    background: var(--msg-send);
-                }
-            }
             border-radius: 18px 5px 5px 18px;
         }
     }
@@ -312,7 +307,7 @@
 
     &[data-mtype="text"], &[data-mtype="file"], &[data-mtype="audio"]{
         .data{
-            background: var(--msg-get);
+            background: var(--message-color);
         }
     }
 }
@@ -391,15 +386,9 @@ pre{
     }
 }
 
-.progress {
-    white-space: break-spaces;
-    text-align: center;
-    min-width: 50px;
-    font-size: 0.6rem !important;
-    * {
-        font-size: 0.6rem !important;
-        color: inherit !important;
-    }
+.progress i {
+    font-size: inherit !important;
+    color: inherit !important;
 }
 
 ::selection{

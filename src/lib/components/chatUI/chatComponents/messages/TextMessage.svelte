@@ -50,27 +50,20 @@
 
 <style lang="scss">
 
-    .self {
-        .linkMetadata .linkMetadata__details{
-            border-left: 2px solid var(--msg-send);
-            border-right: 2px solid var(--msg-send);
-            border-bottom: 2px solid var(--msg-send);
-        }
-        .linkMetadata__url{
-            color: var(--msg-send);
-        }
-    }
-
     .linkMetadata{
         width: 100%;
         border-bottom-left-radius: inherit;
         border-bottom-right-radius: inherit;
         text-decoration: none;
         .linkMetadata__details{
-            border-left: 2px solid var(--msg-get);
-            border-right: 2px solid var(--msg-get);
-            border-bottom: 2px solid var(--msg-get);
+            border-left: 2px solid var(--message-color);
+            border-right: 2px solid var(--message-color);
+            border-bottom: 2px solid var(--message-color);
         }
+    }
+
+    .linkMetadata__url{
+        color: var(--message-color);
     }
 
     .linkMetadata__title{
@@ -121,7 +114,4 @@
         }
     }
 
-    .linkMetadata__url{
-        color: var(--msg-get);
-    }
 </style>

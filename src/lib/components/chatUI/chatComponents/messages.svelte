@@ -171,19 +171,17 @@
                             });
                         }
 
-                    } else if (!messageObj.audio.paused && target.classList.contains('fa-stop')) {
+                    } else if (!messageObj.audio.paused) {
                         messageObj.audio.currentTime = 0;
-                        messageObj.audio.pause();
-                    } else if (!messageObj.audio.paused && !messageObj.audio.ended){
                         messageObj.audio.pause();
                     }
 
                     return;
                 }
 
-                const audioContainer = target.closest('.data') as HTMLElement;
+                const progressContainer = target.closest('.progress-container') as HTMLElement;
 
-                if (!messageObj.audio.paused && evt.offsetX < audioContainer.offsetWidth && evt.offsetX > 0) {
+                if (!messageObj.audio.paused && evt.offsetX < progressContainer.offsetWidth && evt.offsetX > 0) {
                     //if duration is not finite, then set it to 0 and wait for it to be updated
                     if (!isFinite(messageObj.audio.duration)) {
                         showToastMessage('Please wait for the audio to load');
@@ -191,7 +189,7 @@
                     }
                     //get the calculated time and seek to it
                     const duration = messageObj.audio.duration;
-                    const time = (evt.offsetX / audioContainer.offsetWidth) * duration;
+                    const time = (evt.offsetX / progressContainer.offsetWidth) * duration;
                     messageObj.audio.currentTime = time;
                     //seekAudioMessage(audio, time);
 				}

@@ -1,12 +1,17 @@
 import { redirect } from "@sveltejs/kit";
-import { config } from "dotenv"
 
-config();
+import { DEVELOPMENT } from "$env/static/private";
 
 export function load(){
-    const dev = process.env.DEVELOPMENT ? true : false;
 
-    if (!dev){
+    try {
+        const dev = DEVELOPMENT == "true"
+    
+        if (!dev){
+            redirect(301, "/");
+        }
+    } catch (e) {
         redirect(301, "/");
     }
+
 }

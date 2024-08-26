@@ -155,7 +155,7 @@
             .icon {
                 font-size: 4rem;
                 //padding: 15px;
-                color: #ffffff9c;
+                color: var(--transparent-white-color);
                 width: 100px;
                 height: 100px;
                 display: flex;

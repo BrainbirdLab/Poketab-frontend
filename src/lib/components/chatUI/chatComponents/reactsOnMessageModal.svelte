@@ -129,7 +129,7 @@
             }
 
             input:checked + .item{
-                background: var(--msg-send-reply);
+                background: var(--secondary-dark);
                 font-weight: 700;
             }
 
