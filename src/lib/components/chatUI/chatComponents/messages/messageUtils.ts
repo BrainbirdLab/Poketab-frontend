@@ -139,11 +139,7 @@ export async function sendMessage(message: MessageObj, file?: File){
 						updateProgress(percent, message as FileMessageObj);
 					}
 				}
-
-				
-				console.log("launching...");
 				xhr.send(formData);
-				console.log("launched...!");
 			}
 			
 		}

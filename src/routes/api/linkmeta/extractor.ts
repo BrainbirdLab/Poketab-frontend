@@ -58,8 +58,6 @@ export async function parseMetadata(url: string): Promise<linkRes> {
         const urlObject = new URL(url);
         const urlWithoutPath = `${urlObject.protocol}//${urlObject.host}`;
 
-        console.log({ title, description, image, urlWithoutPath });
-
         return {
             success: true,
             data: {
