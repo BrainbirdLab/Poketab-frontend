@@ -74,7 +74,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--secondary-dark) !important;
+            color: var(--highlight) !important;
             z-index: 2;
         }
 
