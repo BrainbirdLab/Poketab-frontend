@@ -24,8 +24,21 @@
 
     onMount(() => {
         const p = Panzoom(im);
+        p.setOptions({
+            minScale: 1,
+            maxScale: 5,
+        });
         if (im.parentElement) {
             im.addEventListener('wheel', p.zoomWithWheel);
+            //reset on double click or double tap
+            let lastClick = 0;
+            im.addEventListener('click', (e) => {
+                const now = new Date().getTime();
+                if (now - lastClick < 300) {
+                    p.reset();
+                }
+                lastClick = now;
+            });
         }
     });
 
