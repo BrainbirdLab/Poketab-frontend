@@ -1,3 +1,5 @@
+import puppeteer from 'puppeteer';
+
 import type { linkRes } from "$lib/types";
 
 export async function POST({ request }) {
@@ -33,39 +35,50 @@ function decodeURIComponentSafe(uri: string) {
 async function parseMetadata(url: string): Promise<linkRes> {
     try {
 
-        const response = await fetch(url);
+        url = decodeURIComponentSafe(url);
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch link metadata: ' + response.statusText);
-        }
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.goto(url);
 
-        const html = await response.text();
+        const metadata = await page.evaluate(() => {
+            const metaTags = Array.from(document.getElementsByTagName('meta'));
 
-        console.log(html);
+            const metadata: { title: string | null; description: string | null; image: string | null } = {
+                title: null,
+                description: null,
+                image: null
+            };
 
-        const titleRegex = /<title[^>]*>([^<]+)<\/title>/i;
-        const descriptionRegex = /<meta[^>]*name="description"[^>]*content="([^"]*)"/i;
-        const imageRegex = /<meta[^>]*property="og:image"[^>]*content="([^"]*)"/i;
+            metaTags.forEach((tag) => {
+                const name = tag.getAttribute('name') ?? tag.getAttribute('property');
+                const content = tag.getAttribute('content');
 
-        const titleMatch = RegExp(titleRegex).exec(html);
-        const descriptionMatch = RegExp(descriptionRegex).exec(html);
-        const imageMatch = RegExp(imageRegex).exec(html);
+                if (name === 'og:title' || name === 'twitter:title') {
+                    metadata.title = content;
+                }
 
-        const title = titleMatch ? titleMatch[1] : '';
-        const description = descriptionMatch ? descriptionMatch[1] : '';
-        let image = imageMatch ? imageMatch[1] : '';
+                if (name === 'og:description' || name === 'twitter:description') {
+                    metadata.description = content;
+                }
 
-        if (image?.startsWith('/')) {
-            const urlObject = new URL(url);
-            image = `${urlObject.protocol}//${urlObject.host}${image}`;
-        }
+                if (name === 'og:image' || name === 'twitter:image') {
+                    metadata.image = content;
+                }
+            });
 
-        if (image) {
-            image = decodeURIComponentSafe(image);
-        }
+            return metadata;
+        });
+
+        const title = metadata.title ?? '';
+        const description = metadata.description ?? '';
+        const image = metadata.image ?? '';
 
         const urlObject = new URL(url);
         const urlWithoutPath = `${urlObject.protocol}//${urlObject.host}`;
+
+        // Close the browser
+        await browser.close();
 
         return {
             success: true,
@@ -75,7 +88,6 @@ async function parseMetadata(url: string): Promise<linkRes> {
                 image,
                 url: urlWithoutPath,
             },
-            html: html,
             error: null,
         };
     } catch (_) {
