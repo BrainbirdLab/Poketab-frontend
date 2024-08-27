@@ -130,7 +130,7 @@ export async function sendMessage(message: MessageObj, file?: File){
 					return xhrs;
 				});
 	
-				xhr.open('POST', `${API_URL}/api/upload/${get(chatRoomStore).Key}/${get(myId)}/${message.id}`);
+				xhr.open('POST', `${API_URL}/api/files/upload/${get(chatRoomStore).Key}/${get(myId)}/${message.id}`);
 	
 				//progress event
 				xhr.upload.onprogress = (e) => {

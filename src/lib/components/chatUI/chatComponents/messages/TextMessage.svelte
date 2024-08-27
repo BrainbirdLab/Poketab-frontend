@@ -81,7 +81,7 @@
     .linkMetadata__details{
         height: min-content;
         width: 100%;
-        background: #111d2a;
+        background: #252628;
         padding: 10px;
         display: flex;
         text-align: left;

@@ -121,7 +121,7 @@
 
         xhr.open(
             "GET",
-            `${API_URL}/api/download/${$chatRoomStore.Key}/${$myId}/${messageId}`,
+            `${API_URL}/api/files/download/${$chatRoomStore.Key}/${$myId}/${messageId}`,
             true,
         );
 

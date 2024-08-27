@@ -62,16 +62,15 @@
 
 <h3>Termination</h3>
 <p>
-  We reserve the right to terminate or suspend your access to Poketab Messenger
-  at any time, without notice, for any reason, including but not limited to
-  violations of these terms.
+  We reserve the right to terminate or suspend your devices' access to Poketab Messenger
+  at any time, without notice, for any valid reason, including but not limited to
+  violations of these terms including doing harm to our servers.
 </p>
 
 <h3>Changes to These Terms</h3>
 <p>
-  We may update these terms from time to time. If we do, we'll post the new
-  terms on this page. Continuing to use our service after any changes means you
-  accept the updated terms.
+  We may might update these terms from time to time. But our goal will remain the same:
+  to provide you with a secure and anonymous communication platform.
 </p>
 <p>
   Thank you for choosing Poketab Messenger. We're here to provide you with a

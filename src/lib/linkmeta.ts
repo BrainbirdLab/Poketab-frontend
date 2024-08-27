@@ -2,6 +2,7 @@ import type { linkRes } from "./types";
 import { messageDatabase, type TextMessageObj, type MessageObj } from "./messageTypes";
 import { linkPreviewOn } from "./components/chatUI/chatComponents/quickSettingsModal.svelte";
 import { get } from "svelte/store";
+import { API_URL } from "./socket";
 
 export async function getLinkMetadata(msgObj: MessageObj) {
 
@@ -28,7 +29,7 @@ export async function getLinkMetadata(msgObj: MessageObj) {
             return;
         }
 
-        const res = await fetch(`/api/linkmeta?url=${url}`);
+        const res = await fetch(`${API_URL}/api/linkmeta?url=${url}`);
 
         if (!res.ok) {
             return;

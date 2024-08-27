@@ -37,12 +37,14 @@
 <p>Here's a quick rundown of how it works:</p>
 <ul>
   <li>
-    Our system creates a unique cryptographic key pair for you: a public key and
-    a private key.
+    Your device creates a unique cryptographic key pair for you: a public key and
+    a private key. In simple terms, public keys are used to encrypt messages, and
+    private keys are used to decrypt them. Think of the public key as a lock and
+    the private key as a key to that lock.
   </li>
   <li>
-    The public key is shared with others so they can send you messages. The
-    private key stays with you and is used to read the messages you receive.
+    The public key is shared with others so that they can use it later. The
+    private key stays with you and never leaves your device. It is used to read the messages you receive.
   </li>
   <li>
     When you send a message, a new symmetric key (a special kind of key) is
