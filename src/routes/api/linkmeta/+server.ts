@@ -33,7 +33,7 @@ function decodeURIComponentSafe(uri: string) {
 async function parseMetadata(url: string): Promise<linkRes> {
     try {
 
-        const response = await fetch(url, { redirect: 'follow' });
+        const response = await fetch(url, { redirect: 'follow', referrer: 'https://chat.brainbird.org' });
 
         if (!response.ok) {
             throw new Error('Failed to fetch link metadata: ' + response.statusText);
