@@ -29,12 +29,12 @@ export async function getLinkMetadata(msgObj: MessageObj) {
             return;
         }
 
-        const form = new FormData();
-        form.append('link', url);
-
-        const res = await fetch(`${API_URL}/api/linkmeta`, {
+        const res = await fetch(`/api/linkmeta`, {
             method: 'POST',
-            body: form,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `link=${url}`,
         });
 
         if (!res.ok) {

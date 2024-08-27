@@ -2,7 +2,7 @@ import type { linkRes } from "$lib/types";
 
 export async function POST({ request }) {
     const form = await request.formData();
-    const url = form.get('lnk')?.toString();
+    const url = form.get('link')?.toString();
 
     if (!url) {
         return new Response('No URL provided', { status: 400 });
@@ -14,7 +14,7 @@ export async function POST({ request }) {
         return new Response(res.error, { status: 400 });
     }
 
-    return new Response(JSON.stringify(res.data), {
+    return new Response(JSON.stringify(res), {
         headers: {
             'content-type': 'application/json',
         },
