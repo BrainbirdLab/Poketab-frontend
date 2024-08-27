@@ -34,5 +34,6 @@ type linkResData = {
 export type linkRes = {
 	success: boolean,
 	data: linkResData | null,
-	error: string | null
+	error: string | null,
+    html?: string,
 }

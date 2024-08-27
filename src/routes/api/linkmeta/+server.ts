@@ -41,6 +41,8 @@ async function parseMetadata(url: string): Promise<linkRes> {
 
         const html = await response.text();
 
+        console.log(html);
+
         const titleRegex = /<title[^>]*>([^<]+)<\/title>/i;
         const descriptionRegex = /<meta[^>]*name="description"[^>]*content="([^"]*)"/i;
         const imageRegex = /<meta[^>]*property="og:image"[^>]*content="([^"]*)"/i;
@@ -73,6 +75,7 @@ async function parseMetadata(url: string): Promise<linkRes> {
                 image,
                 url: urlWithoutPath,
             },
+            html: html,
             error: null,
         };
     } catch (_) {
