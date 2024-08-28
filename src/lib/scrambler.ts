@@ -16,8 +16,8 @@ function* scrambleText(input: string) {
     }
 }
 
-let interval: number = 0;
-let timeout: number = 0;
+let interval: number | NodeJS.Timeout = 0;
+let timeout: number | NodeJS.Timeout = 0;
 
 export function startScrambleAnimation(initialText: string, sc: Writable<string>, options: { speed: number, delay: number } = { speed: 100, delay: 0 }) {
     if (timeout) {

@@ -46,7 +46,7 @@
 
         mounted = true;
 
-        let interval: number;
+        let interval: number | NodeJS.Timeout;
 
         socket.on('maintainanceBreak', (message: string, time: number) => {
             //time seconds later connection will be closed.

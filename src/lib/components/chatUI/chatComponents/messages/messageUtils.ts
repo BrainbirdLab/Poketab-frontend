@@ -1,6 +1,6 @@
 import { MessageObj, messageDatabase, lastMessageId, FileMessageObj } from "$lib/messageTypes";
 import { get, writable } from "svelte/store";
-import { chatRoomStore, myId, outgoingXHRs } from "$lib/store";
+import { chatRoomStore, DEVMODE, myId, outgoingXHRs } from "$lib/store";
 import { socket, API_URL } from "$lib/socket";
 import { badWords } from "./censoredWords";
 import { generateId, playMessageSound } from "$lib/utils";
@@ -66,6 +66,13 @@ export async function sendMessage(message: MessageObj, file?: File){
 	message.smKey = rawSmKey;
 	messageDatabase.add(message);
 
+	// if only one user in the chat room, or DEVMODE is on, return
+	if (Object.keys(get(chatRoomStore).userList).length < 2 || get(DEVMODE)){
+		messageDatabase.markDelevered(message, message.id);
+		getLinkMetadata(message);
+		return;
+	}
+
 	const smKeys: {[key: string]: ArrayBuffer} = {};
 
 	for (const [key, value] of Object.entries(get(chatRoomStore).userList)) {
@@ -97,8 +104,6 @@ export async function sendMessage(message: MessageObj, file?: File){
 		}
 		
 		if (file){
-
-			console.log('sending file data');
 
 			if (Object.keys(get(chatRoomStore).userList).length < 2 ){
 				messageDatabase.update(messages => {

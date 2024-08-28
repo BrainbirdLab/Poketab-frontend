@@ -19,7 +19,7 @@
         window.removeEventListener("drop", handleDrop);
     });
 
-    let dragtimer = 0;
+    let dragtimer: number | NodeJS.Timeout;
 
     function handleDragOver(e: DragEvent) {
         e.stopPropagation();

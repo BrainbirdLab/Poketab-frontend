@@ -192,21 +192,6 @@ button {
     background: rgba(255, 255, 255, 0.0392156863) !important;
 }
 
-a {
-    color: var(--secondary-dark, #4598ff);
-    text-decoration: none;
-    cursor: pointer;
-    transition: 100ms ease-in-out;
-    display: flex;
-    flex-direction: row;
-    gap: 3px;
-    align-items: center;
-    justify-content: center;
-    &:hover{
-        text-decoration: underline;
-    }
-}
-
 button[disabled]{
     filter: brightness(0.7) !important;
     cursor: not-allowed !important;

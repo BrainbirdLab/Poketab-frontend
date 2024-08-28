@@ -3,7 +3,7 @@
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
     import { onMount } from "svelte";
-    import { chatRoomStore, currentPage, formActionButtonDisabled, joinedChat, myId, splashMessage } from "$lib/store";
+    import { chatRoomStore, currentPage, DEVMODE, formActionButtonDisabled, joinedChat, myId, splashMessage } from "$lib/store";
     import { messageDatabase, TextMessageObj } from "$lib/messageTypes";
     import { makeKeyPair } from "$lib/e2e/encryption";
 
@@ -69,6 +69,8 @@
     }
     
     onMount( async () => {
+
+        $DEVMODE = true;
 
         $myId = "uid-0";
         const myPair = await makeKeyPair();

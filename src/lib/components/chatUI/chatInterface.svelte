@@ -33,7 +33,7 @@
     let isOffline = false;
 
     let pressedOnce = false;
-    let pressedOnceTimer: number;
+    let pressedOnceTimer: number | NodeJS.Timeout;
 
     function exitChat(e?: Event) {
 

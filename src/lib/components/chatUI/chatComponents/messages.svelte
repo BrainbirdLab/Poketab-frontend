@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
     let currentPlayingAudioMessage: AudioMessageObj | null = null;
 
-    const actionTimeout = new Map<string, number>();
+    const actionTimeout = new Map<string, number | NodeJS.Timeout>();
 
     export function focusMessage(replyId: string) {
         if (replyId) {

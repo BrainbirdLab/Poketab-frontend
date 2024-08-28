@@ -10,7 +10,7 @@
 
     let smKeyStr: string;
     let msgTime: string;
-    let timeStampInterval: number;
+    let timeStampInterval: number | NodeJS.Timeout;
 
     onMount(async () => {
         //convert symmetric key to string

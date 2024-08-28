@@ -202,7 +202,7 @@
     $: KEY = $chatRoomStore.Key;
 
     let copyKeyIcon = "fa-regular fa-clone";
-    let copyTimeout: number | null = null;
+    let copyTimeout: number | NodeJS.Timeout | null = null;
 
     function copyKey() {
         navigator.clipboard

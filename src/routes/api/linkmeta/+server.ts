@@ -57,9 +57,7 @@ async function parseMetadata(url: string): Promise<linkRes> {
         const description = descriptionMatch ? descriptionMatch[1] : '';
         let image = imageMatch ? imageMatch[1] : '';
 
-        if (image?.startsWith('/')) {
-            image = `${urlObject.protocol}//${urlObject.host}${image}`;
-        }
+        image = new URL(image, url).href;
 
         if (image) {
             image = decodeURIComponentSafe(image);

@@ -64,6 +64,7 @@
 
     .linkMetadata__url{
         color: var(--message-color);
+        font-size: 0.7rem;
     }
 
     .linkMetadata__title{
@@ -109,6 +110,7 @@
             padding: 0;
             height: 100%;
             width: 100%;
+            min-width: 300px;
             display: block;
             color: var(--shadow-color);
         }

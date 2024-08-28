@@ -92,7 +92,7 @@
         return !/[^\s]/.test(text);
     }
 
-    let isTypingTimeout: number;
+    let isTypingTimeout: number | NodeJS.Timeout;
 
     function sendTypingStatus(){
         socket.emit('typing', $myId, $chatRoomStore.Key, 'start');

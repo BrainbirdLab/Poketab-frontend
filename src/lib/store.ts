@@ -54,6 +54,8 @@ export const joinedChat = writable(false);
 
 export const currentPage = writable('form');
 
+export const DEVMODE = writable(false);
+
 export function isTaken(avatar: string){
 
     const obj = get(chatRoomStore).userList;

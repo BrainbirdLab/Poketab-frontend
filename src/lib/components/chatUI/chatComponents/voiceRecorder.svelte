@@ -20,7 +20,7 @@
 
     let time = '00:00';
 
-    let timer: number | null = null;
+    let timer: number | NodeJS.Timeout | null = null;
 
     let audioStream: MediaStream;
 
