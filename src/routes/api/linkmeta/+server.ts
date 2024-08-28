@@ -33,7 +33,11 @@ function decodeURIComponentSafe(uri: string) {
 async function parseMetadata(url: string): Promise<linkRes> {
     try {
 
-        const response = await fetch(url, { redirect: 'follow', referrer: 'https://chat.brainbird.org' });
+        const urlObject = new URL(url);
+
+        const response = await fetch(url, { redirect: 'follow', referrer: urlObject.origin, headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.'
+        }});
 
         if (!response.ok) {
             throw new Error('Failed to fetch link metadata: ' + response.statusText);
@@ -54,7 +58,6 @@ async function parseMetadata(url: string): Promise<linkRes> {
         let image = imageMatch ? imageMatch[1] : '';
 
         if (image?.startsWith('/')) {
-            const urlObject = new URL(url);
             image = `${urlObject.protocol}//${urlObject.host}${image}`;
         }
 
@@ -62,7 +65,6 @@ async function parseMetadata(url: string): Promise<linkRes> {
             image = decodeURIComponentSafe(image);
         }
 
-        const urlObject = new URL(url);
         const urlWithoutPath = `${urlObject.protocol}//${urlObject.host}`;
 
         return {
