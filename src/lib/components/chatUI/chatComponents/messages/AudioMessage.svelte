@@ -4,13 +4,16 @@
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
-    import { fly } from "svelte/transition";
     import { remainingTime } from "./messageUtils";
     import { myId } from "$lib/store";
 
     export let file: AudioMessageObj;
 
     let duration = file.duration;
+
+    $: {
+        console.log(duration, file.loaded, file.loadScheme);
+    }
 </script>
 
 <li class="message msg-item {file.classList}" id="{file.id}"> <!-- noreply notitle delevered start end self react -->
@@ -36,6 +39,7 @@
                         <div class="progressBar"></div>
                     </div>
                     <div class="duration">
+                    {#if file.audio.paused}
                         {#if file.loaded < 100}
                             {#if file.loadScheme == "upload"}
                                 <i class="fa-solid fa-arrow-up"
@@ -48,20 +52,19 @@
                                 {file.loaded}%
                             {/if}
                         {:else}
-                            {#if file.audio.paused}
-                                {#if isFinite(duration)}
-                                    {#if file.audio.currentTime > 0}
-                                    {remainingTime(duration, file.audio.currentTime)}
-                                    {:else}
-                                    {remainingTime(duration, 0)}
-                                    {/if}
+                            {#if isFinite(duration)}
+                                {#if file.audio.currentTime > 0}
+                                {remainingTime(duration, file.audio.currentTime)}
                                 {:else}
-                                    --:--
+                                {remainingTime(duration, 0)}
                                 {/if}
                             {:else}
-                                {remainingTime(duration, file.audio.currentTime)}
+                                --:--
                             {/if}
                         {/if}
+                    {:else}
+                        {remainingTime(duration, file.audio.currentTime)} <!-- Playing -->
+                    {/if}
                     </div>
                 </div>
             </div>

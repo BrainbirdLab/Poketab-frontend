@@ -38,7 +38,7 @@
                 message.type = 'audio/mpeg';
                 message.duration = recorder.getDuration();
                 message.name = name;
-
+                message.loadScheme = 'upload';
                 file = await fetch(message.url).then(res => res.blob()).then(blob => new File([blob], name, {type: 'audio/mpeg'}));
             }
 

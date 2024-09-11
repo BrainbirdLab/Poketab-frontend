@@ -134,7 +134,6 @@
                     const audioBlob = new Blob(audioChunks, {type: 'audio/mp3'});
 
                     recordedAudioUrl.set(URL.createObjectURL(audioBlob));
-                    console.log('Audio url set after recording');
                     recordedAudio = new Audio($recordedAudioUrl);
 
                     audioRecorder.ondataavailable = null;

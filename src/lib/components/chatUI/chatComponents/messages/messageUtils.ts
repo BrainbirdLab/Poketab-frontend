@@ -69,6 +69,9 @@ export async function sendMessage(message: MessageObj, file?: File){
 	// if only one user in the chat room, or DEVMODE is on, return
 	if (Object.keys(get(chatRoomStore).userList).length < 2 || get(DEVMODE)){
 		messageDatabase.markDelevered(message, message.id);
+		if (file) {
+			(message as FileMessageObj).loaded = 100;
+		}
 		getLinkMetadata(message);
 		return;
 	}
@@ -78,7 +81,6 @@ export async function sendMessage(message: MessageObj, file?: File){
 	for (const [key, value] of Object.entries(get(chatRoomStore).userList)) {
 		if (key != get(myId)) {
 			if (!value.publicKey){
-				console.log(`User ${key} does not have a public key!`);
 				continue;
 			}
 			const enSmKey = await encryptSymmetricKey(rawSmKey, value.publicKey);

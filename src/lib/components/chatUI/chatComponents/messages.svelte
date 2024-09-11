@@ -132,12 +132,10 @@
 
             
             if (messageObj instanceof AudioMessageObj && target.closest('.data')){
-
-                console.log(messageObj.audio, messageObj.audio.src);
                 
                 if (target.classList.contains('control')){
 
-                    
+
                     if (messageObj.audio.paused){
                         //stop all other audios
                         if (currentPlayingAudioMessage && currentPlayingAudioMessage.audio.src !== messageObj.audio.src){
@@ -370,7 +368,7 @@
                     replyIcon.dataset.swipeStart = "false";
                     
                     //use spring animation to translate back to 0
-                    const x = spring(xDiff, { stiffness: 0.3, damping: 0.5 });
+                    const x = spring(xDiff, { stiffness: 0.3, damping: 0.8 });
                     unsub = x.subscribe((value) => {
                         message.style.transform = `translateX(${value}px)`;
                     });
