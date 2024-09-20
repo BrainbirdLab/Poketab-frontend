@@ -185,6 +185,7 @@
             type="text"
             name="key"
             placeholder="xx-xxx-xx"
+            autocomplete="off"
             />
             <label for="key" class:error={$joinError.text}>
                 {#if $joinError.text}
