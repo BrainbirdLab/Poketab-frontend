@@ -186,6 +186,8 @@
             name="key"
             placeholder="xx-xxx-xx"
             autocomplete="off"
+            disabled={$formActionButtonDisabled ||
+                            !socket.connected}
             />
             <label for="key" class:error={$joinError.text}>
                 {#if $joinError.text}

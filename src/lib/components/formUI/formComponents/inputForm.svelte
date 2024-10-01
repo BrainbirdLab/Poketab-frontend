@@ -281,6 +281,8 @@
                                         name="avatar"
                                         value={avatar}
                                         id={avatar}
+                                        disabled={$formActionButtonDisabled ||
+                                        !socket.connected}
                                     />
                                     <label
                                         class="avatarLabel btn-animate"
@@ -311,6 +313,8 @@
                         </div>
                     {/if}
                     <input
+                        disabled={$formActionButtonDisabled ||
+                            !socket.connected}
                         type="range"
                         bind:value={selectedMaxUser}
                         name="maxUsers"
