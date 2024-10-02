@@ -56,7 +56,7 @@
         min-height: 100px;
         min-width: 100px;
         height: auto;
-        width: auto;
+        //width: auto;
         max-height: 55vh;
         object-fit: contain;
     }
