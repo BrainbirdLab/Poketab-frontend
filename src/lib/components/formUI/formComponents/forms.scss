@@ -137,6 +137,10 @@ input[type="radio"]{
     display: none;
 }
 
+input[type="radio"]:disabled + label {
+    filter: saturate(0) !important;
+}
+
 .recon {
     background: var(--red-color) !important;
 }
