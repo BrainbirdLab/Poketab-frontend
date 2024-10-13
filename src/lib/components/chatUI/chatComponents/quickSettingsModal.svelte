@@ -469,7 +469,8 @@
                         ></i>Leave chat
                     </button>
                 </div>
-
+            </div>
+            <div class="subsection">
                 <div class="feedback">
                     <a href="mailto:itsfuad@programmer.net">
                         Provide feedback <i class="fa-solid fa-envelope"></i>
@@ -550,6 +551,7 @@
     }
 
     .danger-zone {
+        border-left: 3px solid red;
         .btn-grp {
             display: flex;
             flex-direction: row;
@@ -558,6 +560,7 @@
             align-items: center;
             justify-content: center;
             width: 100%;
+            padding-left: 8px;
 
             & > button {
                 min-width: fit-content;
