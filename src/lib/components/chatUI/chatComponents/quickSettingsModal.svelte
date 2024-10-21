@@ -472,8 +472,8 @@
             </div>
             <div class="subsection">
                 <div class="feedback">
-                    <a href="mailto:itsfuad@programmer.net">
-                        Provide feedback <i class="fa-solid fa-envelope"></i>
+                    <a href="https://discord.gg/7CFzy28y">
+                        Join Discord <i class="fa-brands fa-discord"></i>
                     </a>
                     <div class="moreInfo">
                         Report bugs, suggest features, or just say hi!
