@@ -1,35 +1,25 @@
 
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
-    import { socket } from "$lib/socket";
+    import { socket } from "$lib/connection/socketClient";
     import { MessageObj, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj, messageDatabase } from "$lib/messageTypes";
-    import { chatRoomStore, myId, reactArray } from "$lib/store";
+    import { chatRoomStore, myId, reactArray } from "$lib/store.svelte";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
     import { copyText, emojis, playMessageSound, spin } from "$lib/utils";
     import { onMount } from "svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
-    import { derived } from "svelte/store";
     import { clearModals } from "../stateManager.svelte";
     import { page } from "$app/stores";
     import MessageInfo from "./messageInfo.svelte";
 
-    $: message = derived(messageDatabase, (messages) => {
-        return messages[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj;
-    });
 
-    let reactIsExpanded = false;
-    let showMessageInfo = false;
+    let reactIsExpanded = $state(false);
+    let showMessageInfo = $state(false);
 
-    $: reactedEmoji = $message?.reactedBy.get($myId) || '';
-    $: messageKind = $message?.baseType;
-    $: sender = $message?.sender;
-    $: isSent = $message?.sent;
-    $: downloadable = ($message instanceof FileMessageObj) ? (sender === $myId ? true : ($message as FileMessageObj).loaded >= 100) : false;
 
-    $: optionsArray = [...getMessageOptions(), downloadable ? 'Download' : null, isSent ? 'Info' : null];
 
-    let selectedReact = '';
+    let selectedReact = $state('');
 
     const messageOptions: {[key: string]: string} = {
         Reply: 'fa-solid fa-reply',
@@ -58,10 +48,10 @@
 
         const arr = [];
 
-        if (sender && $chatRoomStore.userList[sender] && $message.sent){
+        if (sender && $chatRoomStore.userList[sender] && message.sent){
             arr.push('Reply');
             //if the sender is me, add delete option
-            if (sender == $myId){
+            if (sender == myId.value){
                 arr.push('Delete');
             }
         }
@@ -87,14 +77,14 @@
                 selectedReact = e.target.dataset.emoji as string || '';
                 if (selectedReact && emojis.includes(selectedReact)) {
                     //send the emoji to the server via socket
-                    socket.emit('react', $message.id, $chatRoomStore.Key, $myId, selectedReact);
+                    socket.emit('react', message.id, $chatRoomStore.Key, myId.value, selectedReact);
                 }
                 reactIsExpanded = false;
                 clearModals();
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('option')) {
                 
                 if (e.target.classList.contains('Reply')) {
-                    replyTarget.set($message);
+                    replyTarget.set(message);
                     showReplyToast.set(true);
                 } else if (e.target.classList.contains('Copy')) {
 
@@ -102,7 +92,7 @@
 
                     //make html element to put data
                     const elem = document.createElement('div');
-                    elem.innerHTML = ($message as TextMessageObj).message;
+                    elem.innerHTML = (message as TextMessageObj).message;
                     const text = elem.innerText;
                     //copy the text
                     copyText(text);
@@ -125,15 +115,15 @@
 
                     //create a link and click it to download the file
                     const link = document.createElement('a');
-                    link.href = ($message as FileMessageObj).url;
-                    link.download = ($message as FileMessageObj).name;
+                    link.href = (message as FileMessageObj).url;
+                    link.download = (message as FileMessageObj).name;
                     link.click();
 
                 } else if (e.target.classList.contains('Delete')) {
                     if (!message){
                         return;
                     }
-                    socket.emit('deleteMessage', $message.id, $chatRoomStore.Key, $myId);
+                    socket.emit('deleteMessage', message.id, $chatRoomStore.Key, myId.value);
                 } else if (e.target.classList.contains('Info')) {
                     showMessageInfo = true;
                     return;
@@ -153,6 +143,13 @@
         }
     }
 
+    let message = $derived(messageDatabase.getMessageByIndex(messageDatabase.getIndex($eventTriggerMessageId)) as MessageObj);
+    let reactedEmoji = $derived(message?.reactedBy.get(myId.value) || '');
+    let messageKind = $derived(message?.baseType);
+    let sender = $derived(message?.sender);
+    let isSent = $derived(message?.sent);
+    let downloadable = $derived((message instanceof FileMessageObj) ? (sender === myId.value ? true : (message as FileMessageObj).loaded >= 100) : false);
+    let optionsArray = $derived([...getMessageOptions(), downloadable ? 'Download' : null, isSent ? 'Info' : null]);
 </script>
 
 <!-- option menu for message right click -->
@@ -184,16 +181,16 @@
             {/if}
 
             {#if !reactIsExpanded}
-                <button in:spin={{duration: 250, degree: 180}} class="more roundedBtn" title="More" on:click={()=>{reactIsExpanded = true}}><i class="fa-solid fa-caret-up"></i></button>
+                <button aria-label="more" in:spin={{duration: 250, degree: 180}} class="more roundedBtn" title="More" onclick={()=>{reactIsExpanded = true}}><i class="fa-solid fa-caret-up"></i></button>
             {:else}
-                <button in:spin={{duration: 250, degree: 180}} class="more roundedBtn" title="Less" on:click={()=>{reactIsExpanded = false}}><i class="fa-solid fa-caret-down"></i></button>
+                <button aria-label="more" in:spin={{duration: 250, degree: 180}} class="more roundedBtn" title="Less" onclick={()=>{reactIsExpanded = false}}><i class="fa-solid fa-caret-down"></i></button>
             {/if}
         </div>
     </div>
     {/if}
     <div class="messageOptions box-shadow back-blur" transition:fly|global={{y: 10, duration: 200}}>
         {#if showMessageInfo}
-            <MessageInfo message={$message}/>
+            <MessageInfo message={message}/>
         {:else}
             {#key optionsArray}
             {#each optionsArray as option, i (option) }

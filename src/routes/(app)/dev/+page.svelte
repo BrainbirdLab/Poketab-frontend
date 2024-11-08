@@ -3,7 +3,7 @@
     import ChatInterface from "$lib/components/chatUI/chatInterface.svelte";
     import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
     import { onMount } from "svelte";
-    import { chatRoomStore, currentPage, DEVMODE, formActionButtonDisabled, joinedChat, myId, splashMessage } from "$lib/store";
+    import { chatRoomStore, currentPage, DEVMODE, formActionButtonDisabled, joinedChat, myId, splashMessage } from "$lib/store.svelte";
     import { messageDatabase, TextMessageObj } from "$lib/messageTypes";
     import { makeKeyPair } from "$lib/e2e/encryption";
 
@@ -50,7 +50,7 @@
     */
 
     
-    let mounted = false;
+    let mounted = $state(false);
     joinedChat.set(true);
     currentPage.set("chat");
     splashMessage.set("");
@@ -102,7 +102,7 @@
 
 </script>
 
-<svelte:document on:keydown={(e) => {
+<svelte:document onkeydown={(e) => {
     if (e.altKey) {
         switch (e.key) {
             case '1':
@@ -118,7 +118,9 @@
 {#if mounted}
 <div class="content">
     <ChatInterface>
-        <Messages slot="messages"/>
+        {#snippet messages()}
+                        <Messages />
+                    {/snippet}
     </ChatInterface>
 </div>
 {/if}

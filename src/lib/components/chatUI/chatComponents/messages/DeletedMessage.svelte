@@ -4,7 +4,11 @@
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
 
-    export let message: TextMessageObj;
+    interface Props {
+        message: TextMessageObj;
+    }
+
+    let { message }: Props = $props();
 
 </script>
 

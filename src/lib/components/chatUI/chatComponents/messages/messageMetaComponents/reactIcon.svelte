@@ -1,7 +1,11 @@
 <script lang="ts">
     import { type TransitionConfig } from "svelte/transition";
-    export let react: string;
-    export let users: string[] = [];
+  interface Props {
+    react: string;
+    users?: string[];
+  }
+
+  let { react, users = [] }: Props = $props();
 
     function halfQuadOut(t: number) {
         return -t * (t - 1.0);

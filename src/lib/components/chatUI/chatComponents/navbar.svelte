@@ -1,13 +1,19 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { page } from "$app/stores";
-    import { chatRoomStore } from "$lib/store";
+    import { chatRoomStore } from "$lib/store.svelte";
     import { fade, fly, scale } from "svelte/transition";
     import { addState } from "../stateManager.svelte";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
     import { startScrambleAnimation, stopScrambleAnimation } from "$lib/scrambler";
 
-    export let encrypted = false;
+    interface Props {
+        encrypted?: boolean;
+    }
+
+    let { encrypted = $bindable(false) }: Props = $props();
 
     const textToScrambleInitial = "Encrypting this chat";
     const textToScrambleFinal = "End-to-end encrypted";
@@ -17,10 +23,12 @@
         startScrambleAnimation(textToScrambleInitial, scrambledText);
     });
 
-    $: if (encrypted) {
-        stopScrambleAnimation();
-        scrambledText.set(textToScrambleFinal);
-    }
+    run(() => {
+        if (encrypted) {
+            stopScrambleAnimation();
+            scrambledText.set(textToScrambleFinal);
+        }
+    });
 </script>
 
 <div class="navbar" transition:scale={{ start: 1.3 }}>
@@ -42,10 +50,11 @@
     <div class="optionPanel">
         {#if !$page.state.showQuickSettingsPanel}
             <button
+                aria-label="Customize chat"
                 transition:fade={{ duration: 100 }}
                 class="button-animate hover roundedBtn play-sound hoverShadow"
                 title="Customize chat"
-                on:click={() => {
+                onclick={() => {
                     addState("quickSettings", { showQuickSettingsPanel: true });
                 }}
             >

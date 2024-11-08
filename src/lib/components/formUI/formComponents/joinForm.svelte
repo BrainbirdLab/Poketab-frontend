@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
 
-    import { socket, reConnectSocket } from "$lib/socket";
+    import { socket, reConnectSocket } from "$lib/connection/socketClient";
     import {
         formNotification,
         reconnectButtonEnabled,
@@ -10,7 +10,7 @@
         showUserInputForm,
         joinError,
         joinKey,
-    } from "$lib/store";
+    } from "$lib/store.svelte";
 
     import type { User } from "$lib/types";
 
@@ -28,19 +28,19 @@
         }
         if (e.key == "Enter") {
             checkKey();
-        } else if (/^[a-zA-Z0-9]$/.test(e.key) && $joinKey.length < 9) {
+        } else if (/^[a-zA-Z0-9]$/.test(e.key) && joinKey.value.length < 9) {
             // Only allow letters and numbers
-            if ($joinKey.length == 2 || $joinKey.length == 6) {
-                $joinKey += "-";
+            if (joinKey.value.length == 2 || joinKey.value.length == 6) {
+                joinKey.value += "-";
             }
-            $joinKey += e.key;
+            joinKey.value += e.key;
         } else if (e.key == "Backspace") {
-            if ($joinKey.length > 0) {
+            if (joinKey.value.length > 0) {
                 // Remove '-' if the previous character is '-'
-                if ($joinKey.at(-2) == "-") {
-                    $joinKey = $joinKey.slice(0, -2);
+                if (joinKey.value.at(-2) == "-") {
+                    joinKey.value = joinKey.value.slice(0, -2);
                 } else {
-                    $joinKey = $joinKey.slice(0, -1);
+                    joinKey.value = joinKey.value.slice(0, -1);
                 }
             }
         }
@@ -61,7 +61,7 @@
                 value.slice(5, 7);
         }
         if (testKey(value)) {
-            $joinKey = value;
+            joinKey.value = value;
             checkKey();
         }
     }
@@ -69,9 +69,9 @@
     let LabelText = "Enter key";
     let LabelIcon = "fa-solid fa-key";
 
-    let joinActionText = "Join Chat";
+    let joinActionText = $state("Join Chat");
 
-    let joinInput: HTMLInputElement;
+    let joinInput = $state() as HTMLInputElement;
 
     type fetchResponse = {
         success: boolean;
@@ -84,82 +84,82 @@
 
     function checkKey() {
 
-        $joinError.text = "";
+        joinError.value.text = "";
 
-        if (!$joinKey) {
-            $joinError.text = "Key is required";
-            $joinError.icon = "fa-solid fa-triangle-exclamation";
+        if (!joinKey.value) {
+            joinError.value.text = "Key is required";
+            joinError.value.icon = "fa-solid fa-triangle-exclamation";
             joinInput.focus();
             return;
         } else {
-            $joinError.text = "";
+            joinError.value.text = "";
         }
 
-        if (!testKey($joinKey)) {
-            $joinError.text = "Invalid key";
-            $joinError.icon = "fa-solid fa-triangle-exclamation";
+        if (!testKey(joinKey.value)) {
+            joinError.value.text = "Invalid key";
+            joinError.value.icon = "fa-solid fa-triangle-exclamation";
             joinInput.focus();
             return;
         } else {
-            $joinError.text = "";
+            joinError.value.text = "";
         }
 
         joinActionText = "Checking...";
-        formActionButtonDisabled.set(true);
+        formActionButtonDisabled.value = true;
 
-        $joinError.icon = "";
+        joinError.value.icon = "";
 
 
         //params: key: string, ssr: boolean, callback: (res: fetchResponse) => void
         socket
-            .emit("fetchKeyData", $joinKey, false, (res: fetchResponse) => {
+            .emit("fetchKeyData", joinKey.value, false, (res: fetchResponse) => {
                 joinActionText = "Join Chat";
                 //joinActionDisabled = false;
-                formActionButtonDisabled.set(false);
+                formActionButtonDisabled.value = false;
 
                 if (!res.success) {
 
                     if (res.statusCode >= 500) {
-                        formNotification.set("Error: " + res.message);
+                        formNotification.value = "Error: " + res.message;
                         return;
                     }
 
-                    $joinError.text = res.message;
-                    $joinError.icon = res.icon;
+                    joinError.value.text = res.message;
+                    joinError.value.icon = res.icon;
                     return;
                 }
 
                 chatRoomStore.update((room) => {
-                    room.Key = $joinKey;
+                    room.Key = joinKey.value;
                     room.userList = res.users;
                     room.maxUsers = res.maxUsers;
                     return room;
                 });
 
-                showUserInputForm.set(true);
-                formActionButtonDisabled.set(false);
+                showUserInputForm.value = true;
+                formActionButtonDisabled.value = false;
             })
             .on("error", (err: string) => {
                 console.log(err);
-                $joinError.text = err;
-                $joinError.icon = "fa-solid fa-circle-exclamation";
+                joinError.value.text = err;
+                joinError.value.icon = "fa-solid fa-circle-exclamation";
             });
     }
 
     function createChat() {
-        $joinKey = "";
-        showUserInputForm.set(true);
+        joinKey.value = "";
+        showUserInputForm.value = true;
     }
 
     onMount(() => {
-        if (socket.connected && $formActionButtonDisabled){
-            formActionButtonDisabled.set(false);
+        if (socket.connected && formActionButtonDisabled.value){
+            formActionButtonDisabled.value = false;
         }
     });
 
     onDestroy(() => {
-        joinError.set({ text: "", icon: "" });
-        joinKey.set("");
+        joinError.value = { text: "", icon: "" };
+        joinKey.value = "";
     });
 </script>
 
@@ -176,41 +176,41 @@
         in:fly={{y: 5, delay: 150}}
         >
             <input
-            on:paste={parseKey}
-            on:keydown={validateKey}
-            on:input={() => { joinError.set({ text: "", icon: "" }); }}
-            bind:value={$joinKey}
+            onpaste={parseKey}
+            onkeydown={validateKey}
+            oninput={() => { joinError.value = { text: "", icon: "" }}}
+            bind:value={joinKey.value}
             bind:this={joinInput}
             id="key"
             type="text"
             name="key"
             placeholder="xx-xxx-xx"
             autocomplete="off"
-            disabled={$formActionButtonDisabled ||
+            disabled={formActionButtonDisabled.value ||
                             !socket.connected}
             />
-            <label for="key" class:error={$joinError.text}>
-                {#if $joinError.text}
-                    {$joinError.text} <i class={$joinError.icon}></i>
+            <label for="key" class:error={joinError.value.text}>
+                {#if joinError.value.text}
+                    {joinError.value.text} <i class={joinError.value.icon}></i>
                 {:else}
                     {LabelText} <i class={LabelIcon}></i>
                 {/if}
             </label>
         </div>
         <div class="formfield">
-            {#if $reconnectButtonEnabled}
+            {#if reconnectButtonEnabled.value}
                 <button
                     class="button-animate hover  play-sound recon"
-                    on:click={() => {reConnectSocket()}}>Reconnect</button
+                    onclick={() => {reConnectSocket()}}>Reconnect</button
                 >
             {:else}
                 <button
                     class="button-animate hover  play-sound"
-                    disabled={$formActionButtonDisabled || !socket.connected}
-                    on:click={checkKey}
+                    disabled={formActionButtonDisabled.value || !socket.connected}
+                    onclick={checkKey}
                 >
                     {joinActionText}
-                    {#if $formActionButtonDisabled && joinActionText == "Checking..."}
+                    {#if formActionButtonDisabled.value && joinActionText == "Checking..."}
                         <i class="fa-solid fa-circle-notch fa-spin"></i>
                     {/if}
                 </button>
@@ -221,7 +221,7 @@
             <button
                 id="redirect"
                 class="noSelect button-animate hover play-sound"
-                on:click={createChat}>Create a chat?</button
+                onclick={createChat}>Create a chat?</button
             >
         </div>
     </div>

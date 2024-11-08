@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     import { get } from "svelte/store";
 
     export const sendMethod: Writable<SEND_METHOD> = writable(SEND_METHOD.ENTER);
@@ -7,6 +7,8 @@
     export const quickEmojiEnabled = writable(true);
     export const quickEmoji = writable('');
     export const linkPreviewOn = writable(true);
+    export const DEFAULT_STICKER_GROUP = "catteftel";
+    export const selectedStickerGroup = writable(DEFAULT_STICKER_GROUP);
 
     type Settings = {
         buttonSoundEnabled: boolean;
@@ -25,7 +27,7 @@
         quickEmojiEnabled: true,
         linkPreviewOn: true,
         sendMethod:
-            get(deviceType) == "mobile"
+            deviceType.value == "mobile"
                 ? SEND_METHOD.CTRL_ENTER
                 : SEND_METHOD.ENTER,
     };
@@ -109,23 +111,20 @@
         deviceType,
         myId,
         splashMessage,
-    } from "$lib/store";
+    } from "$lib/store.svelte";
     import { SEND_METHOD } from "$lib/types";
     import EmojiPicker from "./emojiPicker.svelte";
     import { spin } from "$lib/utils";
-    import { socket } from "$lib/socket";
+    import { socket } from "$lib/connection/socketClient";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import UsersPanel from "./usersPanel.svelte";
     import { addState, clearModals } from "../stateManager.svelte";
     import { onDestroy, onMount } from "svelte";
     import type { Unsubscriber } from "svelte/store";
-    import { DEFAULT_THEME, currentTheme, themes } from "$lib/themes";
-    import {
-        DEFAULT_STICKER_GROUP,
-        selectedStickerGroup,
-    } from "./stickersKeyboard.svelte";
+    import { DEFAULT_THEME, themes } from "$lib/themesTypes";
+    import { currentTheme } from "$lib/themeStore.svelte";
 
-    let showQuickEmojiDrawer = false;
+    let showQuickEmojiDrawer = $state(false);
 
     const version = __VERSION__;
 
@@ -191,17 +190,14 @@
     }
 
     function leaveChat(destroy: boolean = false) {
-        splashMessage.set(
-            (destroy ? "Destroying chat... " : "Leaving chat... ") +
-                '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px" />',
-        );
+        splashMessage.value = destroy ? "Destroying chat... " : "Leaving chat... " + '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px" />';
         clearModals();
         socket.emit("leaveChat", destroy);
     }
 
-    $: KEY = $chatRoomStore.Key;
+    let KEY = $derived($chatRoomStore.Key);
 
-    let copyKeyIcon = "fa-regular fa-clone";
+    let copyKeyIcon = $state("fa-regular fa-clone");
     let copyTimeout: number | NodeJS.Timeout | null = null;
 
     function copyKey() {
@@ -241,10 +237,11 @@
     >
         <div class="top">
             <button
+                aria-label="Back"
                 id="back"
                 class="back button-animate clickable hover roundedBtn"
             >
-                <i class="fa-solid fa-chevron-left" />
+                <i class="fa-solid fa-chevron-left"></i>
             </button>
             <div class="v-title">v{version}</div>
         </div>
@@ -254,7 +251,7 @@
                 <div class="subsection">
                     <div class="subtitle">
                         {Object.keys($chatRoomStore.userList).length } People{Object.keys($chatRoomStore.userList).length > 1 ? "'s" : ""} on
-                        <button id="keyname" class="play-sound clickable" on:click={copyKey}
+                        <button id="keyname" class="play-sound clickable" onclick={copyKey}
                         >{KEY}<i class={copyKeyIcon}></i></button
                         >
                     </div>
@@ -268,7 +265,7 @@
 
             <div class="subsection">
                 <div class="subtitle">
-                    Sounds & Notifications <i class="fa-solid fa-volume-high" />
+                    Sounds & Notifications <i class="fa-solid fa-volume-high"></i>
                 </div>
                 <!-- Enable/disable button sounds -->
                 <div class="field-checkers play-sound hoverShadow">
@@ -284,7 +281,7 @@
                                 Buttons and UI elements sound
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
                 <!-- Enable/disable message sounds -->
@@ -301,14 +298,14 @@
                                 Message action sound (send, recieve, reacts)
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
             </div>
 
             <div class="subsection">
                 <div class="subtitle">
-                    Link Preview <i class="fa-solid fa-link" />
+                    Link Preview <i class="fa-solid fa-link"></i>
                 </div>
                 <div class="field-checkers play-sound hoverShadow">
                     <input
@@ -323,14 +320,14 @@
                                 Show link preview for shared links
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
             </div>
 
             <div class="subsection">
                 <div class="subtitle">
-                    Keyboard <i class="fa-regular fa-keyboard" />
+                    Keyboard <i class="fa-regular fa-keyboard"></i>
                 </div>
                 <div class="field-checkers play-sound hoverShadow">
                     <input
@@ -345,7 +342,7 @@
                             Use Ctrl+Enter to send
                             <div class="moreInfo">Enter to add newlines</div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
 
@@ -364,7 +361,7 @@
                                 Shift+Enter to add newlines
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
             </div>
@@ -387,7 +384,7 @@
                                 Use send button to send a quick emoji
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
                 <div
@@ -436,7 +433,7 @@
                         Change theme
                         <div class="moreInfo">Change the look of the chat</div>
                     </div>
-                    <i class="fa-solid fa-brush" />
+                    <i class="fa-solid fa-brush"></i>
                 </div>
             </div>
 
@@ -445,24 +442,24 @@
                     Danger zone <i class="fa-solid fa-skull"></i>
                 </div>
                 <ul class="moreInfo">
-                    {#if $chatRoomStore.admin == $myId}
+                    {#if $chatRoomStore.admin == myId.value}
                         <li>Destroy chat will end the chat session for all</li>
                     {/if}
                     <li>Leave chat will end the chat session for you</li>
                 </ul>
                 <div class="btn-grp">
-                    {#if $chatRoomStore.admin == $myId}
+                    {#if $chatRoomStore.admin == myId.value}
                         <button
-                            on:click={() => leaveChat(true)}
+                            onclick={() => leaveChat(true)}
                             id="destroy"
                             class="button hover button-animate play-sound capsule"
                             title="Leave and end chat"
                         >
-                            Destroy chat <i class="fa-solid fa-trash" />
+                            Destroy chat <i class="fa-solid fa-trash"></i>
                         </button>
                     {/if}
                     <button
-                        on:click={() => leaveChat(false)}
+                        onclick={() => leaveChat(false)}
                         id="logoutButton"
                         class="button hover button-animate play-sound capsule"
                         ><i class="fa-solid fa-arrow-right-from-bracket"

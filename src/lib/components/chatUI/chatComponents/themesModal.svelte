@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { currentTheme, themes } from "$lib/themes";
+    import { themes } from "$lib/themesTypes";
+    import { currentTheme } from "$lib/themeStore.svelte";
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showToastMessage } from "@itsfuad/domtoastmessage";

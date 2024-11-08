@@ -1,12 +1,18 @@
 <script lang="ts">
 
     import Panzoom from "@panzoom/panzoom";
-    import { page } from "$app/stores";
     import { generateId } from "$lib/utils";
     import { onMount } from "svelte";
+    import type { LightBoxTargettype } from "$lib/types";
 
-    let image: HTMLImageElement;
-    let im: HTMLDivElement;
+    interface Props {
+        target: LightBoxTargettype | null;
+    }
+
+    let { target }: Props = $props();
+
+    let image = $state() as HTMLImageElement;
+    let im = $state() as HTMLDivElement;
 
     function closeLightbox(){
         history.back();
@@ -45,17 +51,17 @@
 </script>
 
 <div class="lightbox">
-    {#if $page.state.viewImage?.id}
-    <button class="close hoverShadow" on:click={closeLightbox}>
+    {#if target}
+    <button class="close hoverShadow" onclick={closeLightbox}>
         <!-- back arrow -->
         <i class="fa-solid fa-arrow-left"></i>
     </button>
-    <button class="download hoverShadow" on:click={downloadImage}>
+    <button aria-label="download" class="download hoverShadow" onclick={downloadImage}>
         <i class="fa-solid fa-download"></i>
     </button>
     <div class="imgWrapper" bind:this={im}>
         <!-- use the img as image element -->
-        <img bind:this={image} src={$page.state.viewImage.src} data-ref-id="{$page.state.viewImage.id}" data-ref-name="{$page.state.viewImage.name}" alt="Could not load" class="main-image"/>
+        <img bind:this={image} src={target.src} data-ref-id="{target.id}" data-ref-name="{target.name}" alt="Could not load" class="main-image"/>
     </div>
     {:else}
         No longer available

@@ -1,7 +1,11 @@
 <script lang="ts">
-    import { chatRoomStore } from "$lib/store";
-    export let seenBy: Set<string>;
-    export let id: string;
+    import { chatRoomStore } from "$lib/store.svelte";
+    interface Props {
+        seenBy: Set<string>;
+        id: string;
+    }
+
+    let { seenBy, id }: Props = $props();
 </script>
 
 {#if seenBy.size > 0}

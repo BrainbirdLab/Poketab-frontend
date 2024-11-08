@@ -5,10 +5,12 @@
     import { flip } from "svelte/animate";
     import { getIcon } from "$lib/utils";
 
+    interface Props {
+        sendAsType: 'file' | 'image' | 'audio';
+        urlObjects: Map<string, string>;
+    }
 
-    export let sendAs: 'file' | 'image' | 'audio';
-    
-    export let urlObjects: Map<string, string>;
+    let { sendAsType = $bindable(), urlObjects = $bindable() }: Props = $props();
 
     function createURLObject(file: File) {
         const url = URL.createObjectURL(file);
@@ -20,12 +22,12 @@
            return 'Should be < 10 Mb';
         }
 
-        if (sendAs == 'audio') {
+        if (sendAsType == 'audio') {
             const supportedAudioFormats = ['audio/mp3', 'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/x-m4a'];
             if (!supportedAudioFormats.includes(file.type)) {
                 return 'Cannot send as audio';
             }
-        } else if (sendAs == 'image') {
+        } else if (sendAsType == 'image') {
             const supportedImageFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!supportedImageFormats.includes(file.type)) {
                 return 'Cannot send as image';
@@ -45,7 +47,7 @@
             class="file_preview back-blur"
             data-id={i}
         >
-            {#if sendAs === 'image'}
+            {#if sendAsType === 'image'}
                 <img src={createURLObject(file)} alt="preview" />
             {:else}
             <i class="icon fa-solid {getIcon(file.type)}"></i>

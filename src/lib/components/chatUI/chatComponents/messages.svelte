@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     let currentPlayingAudioMessage: AudioMessageObj | null = null;
 
     const actionTimeout = new Map<string, number | NodeJS.Timeout>();
@@ -55,16 +55,21 @@
         ImageMessageObj,
     } from "$lib/messageTypes";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
-    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer } from "$lib/store";
+    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer } from "$lib/store.svelte";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { copyText } from "$lib/utils";
-    import { afterUpdate, beforeUpdate, onDestroy, onMount, tick } from "svelte";
+    import { onMount, tick } from "svelte";
 
     import hljs from "highlight.js";
-    import type { Unsubscriber } from "svelte/store";
-    import { selectedStickerGroup } from "./stickersKeyboard.svelte";
     import { addState } from "../stateManager.svelte";
+    import type { LightBoxTargettype } from "$lib/types";
+    import { selectedStickerGroup } from "./quickSettingsModal.svelte";
 
+    interface Props {
+        lightBoxTarget: LightBoxTargettype | null;
+    };
+
+    let { lightBoxTarget = $bindable() }: Props = $props();
 
     function handleRightClick(e: MouseEvent) {
         e.preventDefault();
@@ -194,7 +199,8 @@
 
                 return;
             } else if (messageObj instanceof ImageMessageObj && target.closest('img')){
-                addState('view', { viewImage: { src: messageObj.url, id: messageObj.id, name: messageObj.name} });
+                addState('view', { showLightBox: true });
+                lightBoxTarget = { src: messageObj.url, id: messageObj.id, name: messageObj.name};
             }
 
             //if message is a sticker, show the sticker panel of that group
@@ -419,85 +425,80 @@
             showToastMessage(`${err}`);
         }
     }
-
-    let unsubMessageDatabase: Unsubscriber;
     
+    //decimal
     let lastHeight = 0;
     let lastScrollPosition = 0;
     let scrollChanged = 0;
     let heightChanged = 0;
     let scrolledToBottomPx = 0;
 
-    let timeout: number | null = null;
-
     let messagesHTML: HTMLElement;
 
-    beforeUpdate(() => {
-        if (!$messageContainer) {
-            return;
-        }
-
-        $messageContainer.style.height = 'auto';
-        lastScrollPosition = $messageContainer.scrollTop;
-    });
-
-
-    afterUpdate(() => {
-
-        if (!$messageContainer) {
-            return;
-        }
-
-        $messageContainer.style.height = `${$messageContainer.offsetHeight}px`;
-
-        scrolledToBottomPx = Math.floor($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.offsetHeight);
-        
-        heightChanged = $messageContainer.scrollHeight - lastHeight;
-        scrollChanged = $messageContainer.scrollTop - lastScrollPosition;
-    });
 
     onMount(() => {
-        unsubMessageDatabase = messageDatabase.subscribe(updateUI);
         hljs.highlightAll();
-    });
+        //observe the message container for height change
+        const observer = new ResizeObserver(() => {
+            updateUI();
+        });
 
-    onDestroy(() => {
-        if (unsubMessageDatabase){
-            unsubMessageDatabase();
+        messageContainer.value.addEventListener('scroll', () => {
+            currentScrollTop = messageContainer.value.scrollTop;
+        });
+
+        observer.observe(messagesHTML);
+
+        return () => {
+            observer.disconnect();
         }
     });
+    // Capture the latest scroll position before making adjustments
+    let currentScrollTop = 0;
 
+    function scrollBy(value: number) {
+
+        // Calculate the new target position and set it directly
+        let newPosition = currentScrollTop + value;
+        messageContainer.value.scrollTop = newPosition; // Rounds to 10 decimal places
+    }
+    
     export async function updateUI(){
-
-        await tick();
-
-        if (!$messageContainer){
+        if (!messageContainer.value){
             return;
         }
+        console.log('updating UI');
+        messageContainer.value.style.height = 'auto';
+        await tick();
+        messageContainer.value.style.height = `${messageContainer.value.offsetHeight}px`;
+        
+        scrolledToBottomPx = messagesHTML.getBoundingClientRect().height - messageContainer.value.scrollTop - messageContainer.value.getBoundingClientRect().height;
 
-        if (timeout){
-            clearTimeout(timeout);
-        }
+        heightChanged = messagesHTML.getBoundingClientRect().height - lastHeight;
+        scrollChanged = lastScrollPosition - messageContainer.value.scrollTop;
 
+        console.log('height changed', heightChanged, 'scroll changed', scrollChanged, 'scrolledToBottomPx', scrolledToBottomPx);
         if (Math.abs(heightChanged) < 16){
             if (heightChanged > 0) { //height increase, means the messages under has gone down by around 16px so we need to scroll up that much.
-                $messageContainer.scrollTop += heightChanged;
+                scrollBy(heightChanged);
+                console.log('scrolling up');
             }
             
-            else if (heightChanged < 0 && (scrolledToBottomPx > 0 && scrollChanged === 0)){ //height decrease, means the messages under has gone up by around 16px so we need to scroll down that much.
-                $messageContainer.scrollTop += heightChanged;
+            else if (heightChanged < 0 && (scrolledToBottomPx > 0 && scrollChanged == 0)){ //height decrease, means the messages under has gone up by around 16px so we need to scroll down that much.
+                scrollBy(heightChanged);
+                console.log('scrolling down');
             }
             
-        } else if (heightChanged > 16 && !$showScrollPopUp){
+        } else if (heightChanged > 16 && !showScrollPopUp.value){
             
-            listenScroll.set(false);
-
+            listenScroll.value = false;
+            
             //if the message is image, wait for it to load
-            const lastMessage = $messageContainer.lastElementChild as HTMLElement;
+            const lastMessage = messageContainer.value.lastElementChild as HTMLElement;
             if (messageDatabase.has(lastMessage.id)){
 
                 const lastMessageObj = messageDatabase.getMessage(lastMessage.id) as MessageObj;
-
+                
                 if (lastMessageObj.type != "sticker"){
                     const img = lastMessage.querySelector('img') as HTMLImageElement;
     
@@ -511,17 +512,19 @@
                 }
             }
             
-            $messageContainer.scrollTo({
-                top: $messageContainer.scrollHeight,
-                behavior: "smooth",
+            messageContainer.value.scrollTo({
+                top: messagesHTML.getBoundingClientRect().height,  // Scroll to the bottom based on scrollHeight
+                behavior: "smooth"
             });
-
-            $messageContainer.addEventListener('scrollend', () => {
-                listenScroll.set(true);
+            messageContainer.value.addEventListener('scrollend', () => {
+                listenScroll.value = true;
             }, {once: true});
         }
+        
+        lastHeight = messagesHTML.getBoundingClientRect().height;
+        lastScrollPosition = messageContainer.value.scrollTop;
 
-        lastHeight = $messageContainer.scrollHeight;
+        console.log('lastScrollPosition: ', lastScrollPosition)
 
         //last message
         const lastMessage = messagesHTML.lastElementChild as HTMLElement;
@@ -543,50 +546,61 @@
         if (!lastMessageObj) {
             return;
         }
+
     }
 
 </script>
-
-<ul class="messages" use:handleMessages on:contextmenu={handleRightClick} id="messages" bind:this={messagesHTML} on:touchmove|stopPropagation={(e) => {     
-        if (e.target == e.currentTarget){
+<div class="messageContainer" bind:this={messageContainer.value}>
+    <ul class="messages" use:handleMessages oncontextmenu={handleRightClick} id="messages" bind:this={messagesHTML} ontouchmove={(e) => {     
             e.preventDefault();
-        }
-    }}>
-    <div class="welcome_wrapper" in:fade>
-        <div class="welcomeText">
-            <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
-            <div>Share this chat link to others to join</div>
-            <button id="invite" class="clickable hover play-sound button capsule" title="Click to share" on:click={invite}>
-                Share
-                <i class="fa-solid fa-share-nodes"></i>
-            </button>
+            if (e.target == e.currentTarget){
+                e.preventDefault();
+            }
+        }}>
+        <div class="welcome_wrapper" in:fade>
+            <div class="welcomeText">
+                <img src="/images/greetings/{Math.floor(Math.random() * (9 - 1 + 1)) + 1}.webp" alt="Welcome Sticker" height="160px" width="160px" id="welcomeSticker" />
+                <div>Share this chat link to others to join</div>
+                <button id="invite" class="clickable hover play-sound button capsule" title="Click to share" onclick={invite}>
+                    Share
+                    <i class="fa-solid fa-share-nodes"></i>
+                </button>
+            </div>
         </div>
-    </div>
-    {#each $messageDatabase as message (message)}
-
-        {#if message instanceof MessageObj}
-            
-            {#if message instanceof TextMessageObj && (message.type === "text" || message.type === "emoji")}
-                <TextMessage message={message} />
-            {:else if message instanceof StickerMessageObj}
-                <StickerMessage message={message}/>
-            {:else if message instanceof AudioMessageObj}
-                <AudioMessage file={message}/>
-            {:else if message instanceof FileMessageObj}
-                <FileMessage file={message}/>
-            {:else if message instanceof TextMessageObj && message.type === "deleted"}
-                <DeletedMessage message={message}/>
+        {#each $messageDatabase as message (message)}
+    
+            {#if message instanceof MessageObj}
+                
+                {#if message instanceof TextMessageObj && (message.type === "text" || message.type === "emoji")}
+                    <TextMessage message={message} />
+                {:else if message instanceof StickerMessageObj}
+                    <StickerMessage message={message}/>
+                {:else if message instanceof AudioMessageObj}
+                    <AudioMessage file={message}/>
+                {:else if message instanceof FileMessageObj}
+                    <FileMessage file={message}/>
+                {:else if message instanceof TextMessageObj && message.type === "deleted"}
+                    <DeletedMessage message={message}/>
+                {/if}
+    
+            {:else if message instanceof ServerMessageObj}
+                <ServerMessage message={message} />
+            {:else if message instanceof LocationMessageObj}
+                <LocationMessage location={message}/>
             {/if}
-
-        {:else if message instanceof ServerMessageObj}
-            <ServerMessage message={message} />
-        {:else if message instanceof LocationMessageObj}
-            <LocationMessage location={message}/>
-        {/if}
-    {/each}
-</ul>
+        {/each}
+    </ul>
+</div>
 
 <style lang="scss">
+
+        .messageContainer{
+            height: auto;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scrollbar-width: none;
+        }
+
         #messages {
             position: relative;
             display: flex;

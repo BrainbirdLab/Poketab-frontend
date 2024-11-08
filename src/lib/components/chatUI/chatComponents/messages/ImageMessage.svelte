@@ -1,8 +1,12 @@
 <script lang="ts">
     import type { ImageMessageObj } from "$lib/messageTypes";
-    import { myId } from "$lib/store";
+    import { myId } from "$lib/store.svelte";
 
-    export let file: ImageMessageObj;
+    interface Props {
+        file: ImageMessageObj;
+    }
+
+    let { file }: Props = $props();
 </script>
 
 <img
@@ -11,7 +15,7 @@
     alt={file.name}
     height={file.height}
     width={file.width}
-    style={file.sender === $myId
+    style={file.sender === myId.value
         ? ""
         : file.loaded < 100
           ? "filter: blur(10px); transform: scale(1.1); transition: 500ms ease-in-out;"
@@ -40,7 +44,7 @@
         <div class="progress">
             {#if file.loadScheme == "upload"}
                 <i class="fa-solid fa-arrow-up"></i>
-                {file.sender === $myId ? `${file.loaded}%` : "Sending"}
+                {file.sender === myId.value ? `${file.loaded}%` : "Sending"}
             {:else if file.loadScheme == "download"}
                 <i class="fa-solid fa-arrow-down"></i>
                 {file.loaded}%

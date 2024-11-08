@@ -1,8 +1,12 @@
 <script lang="ts">
-    import { chatRoomStore, myId } from "$lib/store";
+    import { chatRoomStore, myId } from "$lib/store.svelte";
 
-    export let senderId: string;
-    export let isSent: boolean;
+    interface Props {
+        senderId: string;
+        isSent: boolean;
+    }
+
+    let { senderId, isSent }: Props = $props();
 
 </script>
 
@@ -12,7 +16,7 @@
 {#if !isSent}
     <div class="sent"><i class="fa-regular fa-paper-plane"></i></div>
 {/if}
-{#if senderId != $myId}
+{#if senderId != myId.value}
     <div class="avatar">
         <img src="/images/avatars/{$chatRoomStore.userList[senderId]?.avatar || 'Rip'}(custom).webp" width="30px" height="30px" alt="avatar"/>
     </div>

@@ -2,7 +2,12 @@
     import { clearModals } from "../stateManager.svelte";
 
 
-    export let show: boolean | undefined;
+    interface Props {
+        show: boolean | undefined;
+        children?: import('svelte').Snippet;
+    }
+
+    let { show, children }: Props = $props();
 
     function handle(node: HTMLElement) {
         node.onclick = (e: Event) => {
@@ -21,7 +26,7 @@
 
 {#if show}
 <div class="modal" use:handle>
-    <slot></slot>
+    {@render children?.()}
 </div>
 {/if}
 

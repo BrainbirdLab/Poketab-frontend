@@ -1,5 +1,3 @@
-import { writable } from "svelte/store";
-    
 type ThemeAccent = {
     [key: string]: {
         quickEmoji: string;
@@ -36,4 +34,3 @@ export const themes: ThemeAccent = {
 };
 
 export const DEFAULT_THEME = 'Piplup';
-export const currentTheme = writable(DEFAULT_THEME);

@@ -2,12 +2,18 @@
     import { selectedFiles } from "$lib/messageTypes";
     import { onMount, onDestroy } from "svelte";
     import { fade } from "svelte/transition";
-    import { showFilePicker, sendAsType } from "./attachments.svelte";
 
-    let isFileDragging = false;
-    let isFileOnDropTarget = false;
+    interface Props {
+        showFilePicker: boolean;
+        sendAsType: "file" | "image" | "audio";
+    }
 
-    let dropZone: HTMLElement;
+    let { showFilePicker = $bindable(), sendAsType = $bindable() }: Props = $props();
+
+    let isFileDragging = $state(false);
+    let isFileOnDropTarget = $state(false);
+
+    let dropZone = $state() as HTMLElement;
 
     onMount(() => {
         window.addEventListener("dragover", handleDragOver);
@@ -52,14 +58,14 @@
         }
 
         if (e.dataTransfer.files.length > 0) {
-            showFilePicker.set(true);
+            showFilePicker = true;
             const files = e.dataTransfer.files;
             if (Array.from(files).every(file => file.type.startsWith('image/'))) {
-                sendAsType.set('image');
+                sendAsType = 'image';
             } else if (Array.from(files).every(file => file.type.startsWith('audio/'))){
-                sendAsType.set('audio');
+                sendAsType = 'audio';
             } else {
-                sendAsType.set('file');
+                sendAsType = 'file';
             }
             $selectedFiles = e.dataTransfer.files;
         }

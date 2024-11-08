@@ -1,12 +1,18 @@
 <script lang="ts">
+    import { once } from 'svelte/legacy';
+
     import type { TextMessageObj } from "$lib/messageTypes";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
-    import { messageContainer, messageScrolledPx } from "$lib/store";
+    import { messageContainer, messageScrolledPx } from "$lib/store.svelte";
 
-    export let message: TextMessageObj;
+    interface Props {
+        message: TextMessageObj;
+    }
+
+    let { message }: Props = $props();
 
 </script>
 
@@ -22,11 +28,11 @@
                 <div class="linkMetadata">
                     {#if message.linkPreviewData.image}
                     <div class="linkMetadata__image">
-                        <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" on:load|once={()=> {
-                            if ($messageScrolledPx < 20) {
-                                $messageContainer.scrollTop = $messageContainer.scrollHeight;
+                        <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" onload={once(()=> {
+                            if (messageScrolledPx.value < 20) {
+                                messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
                             }
-                        }}/>
+                        })}/>
                     </div>
                     {/if}
                     <div class="linkMetadata__details">

@@ -1,24 +1,12 @@
 <script lang="ts">
+
     import { replyTarget, TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj, messageDatabase, MessageObj} from "$lib/messageTypes";
-    import {chatRoomStore, myId} from "$lib/store";
+    import {chatRoomStore, myId} from "$lib/store.svelte";
     import { slide, fly, fade, scale } from "svelte/transition";
     import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { bounceOut } from "svelte/easing";
     import { onDestroy, onMount } from "svelte";
     import { getIcon } from "$lib/utils";
-    import { derived } from "svelte/store";
-
-    $: message = derived(messageDatabase, (messages) => {
-        return messages[messageDatabase.getIndex($replyTarget?.id || "")] as MessageObj;
-    });
-
-    $: sender = $replyTarget ? ($message.sender === $myId ? 'self' : $chatRoomStore.userList[$message.sender]?.avatar || 'Zombie') : 'Zombie';
-
-    $: {
-        if (!$message || $message.type == 'deleted' || !$chatRoomStore.userList[$message.sender]){
-            closeReplyToast();
-        }
-    }
 
     let userClosed = false;
 
@@ -46,6 +34,13 @@
         replyTarget.set(null);
     })
 
+    let message = $derived(messageDatabase.getMessageByIndex(messageDatabase.getIndex($replyTarget?.id || "")) as MessageObj);
+    let sender = $derived($replyTarget ? (message.sender === myId.value ? 'self' : $chatRoomStore.userList[message.sender]?.avatar || 'Zombie') : 'Zombie');
+    $effect(() => {
+        if (!message || message.type == 'deleted' || !$chatRoomStore.userList[message.sender]){
+            closeReplyToast();
+        }
+    });
 </script>
 <div class="replybox" in:slide={{duration: 150}} out:closeAnimation={{duration: 500, easing: bounceOut}}>
     
@@ -56,18 +51,18 @@
                     <i class="fa-solid fa-reply"></i>
                     Repliying to {sender}
                 </div>
-                <button out:scale|global={{duration: 50}} in:scale|global={{delay: 150, duration: 200}} class="close" on:click={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
+                <button aria-label="close" out:scale|global={{duration: 50}} in:scale|global={{delay: 150, duration: 200}} class="close" onclick={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="replyData" out:fade|global={{duration: 200}} in:fly|global={{x: 10, delay: 150, duration: 300}}>
-                {#if $message instanceof TextMessageObj}
-                    {getTextData($message.message)}
-                {:else if $message instanceof ImageMessageObj}
-                    <img class="image" src="{$message.url}" alt="{$message.name}" />
-                {:else if $message instanceof FileMessageObj}
-                    <i class="icon fa-solid {getIcon($message.type)}"></i> 
-                    {getTextData($message.name)}
-                {:else if $message instanceof StickerMessageObj}
-                    <img class="sticker" src="{$message.src}" alt="sticker reply" />
+                {#if message instanceof TextMessageObj}
+                    {getTextData(message.message)}
+                {:else if message instanceof ImageMessageObj}
+                    <img class="image" src="{message.url}" alt="{message.name}" />
+                {:else if message instanceof FileMessageObj}
+                    <i class="icon fa-solid {getIcon(message.type)}"></i> 
+                    {getTextData(message.name)}
+                {:else if message instanceof StickerMessageObj}
+                    <img class="sticker" src="{message.src}" alt="sticker reply" />
                 {/if}
             </div>
         </div>

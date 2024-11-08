@@ -1,19 +1,22 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import type { AudioMessageObj } from "$lib/messageTypes";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
     import { remainingTime } from "./messageUtils";
-    import { myId } from "$lib/store";
+    import { myId } from "$lib/store.svelte";
 
-    export let file: AudioMessageObj;
+    interface Props {
+        file: AudioMessageObj;
+    }
+
+    let { file }: Props = $props();
 
     let duration = file.duration;
 
-    $: {
-        console.log(duration, file.loaded, file.loadScheme);
-    }
 </script>
 
 <li class="message msg-item {file.classList}" id="{file.id}"> <!-- noreply notitle delevered start end self react -->
@@ -44,7 +47,7 @@
                             {#if file.loadScheme == "upload"}
                                 <i class="fa-solid fa-arrow-up"
                                 ></i>
-                                { file.sender === $myId ? `${file.loaded}%` : "Sending" }
+                                { file.sender === myId.value ? `${file.loaded}%` : "Sending" }
                             {:else if file.loadScheme == "download"}
                                 <i
                                     class="fa-solid fa-arrow-down"

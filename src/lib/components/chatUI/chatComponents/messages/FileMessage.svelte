@@ -9,10 +9,14 @@
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
     import { getIcon } from "$lib/utils";
-    import { myId } from "$lib/store";
+    import { myId } from "$lib/store.svelte";
     import ImageMessage from "./ImageMessage.svelte";
 
-    export let file: FileMessageObj;
+    interface Props {
+        file: FileMessageObj;
+    }
+
+    let { file }: Props = $props();
 </script>
 
 <li class="message msg-item {file.classList}" id={file.id}>

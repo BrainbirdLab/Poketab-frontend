@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import "./forms.scss";
     import { avList } from "$lib/utils/validation";
     import { fly, scale } from "svelte/transition";
@@ -7,8 +9,7 @@
     import {
         socket,
         reConnectSocket,
-        type socketResponse,
-    } from "$lib/socket";
+    } from "$lib/connection/socketClient";
     import {
         formActionButtonDisabled,
         reconnectButtonEnabled,
@@ -21,22 +22,23 @@
         formNotification,
         splashMessage,
         myPrivateKey,
-    } from "$lib/store";
+    } from "$lib/store.svelte";
     import AppLogo from "./appLogo.svelte";
     import type { User } from "$lib/types";
     import { bufferToString, exportPublicKey, importPublicKey, makeKeyPair, stringToBuffer } from "$lib/e2e/encryption";
     import Quantum from "$lib/components/icons/quantum.svelte";
     import DotStream from "$lib/components/icons/dotStream.svelte";
+    import type { socketResponse } from '$lib/connection/socketResponseType';
 
-    let selectedavatar = "";
-    let selectedMaxUser = 2;
+    let selectedavatar = $state("");
+    let selectedMaxUser = $state(2);
 
-    let avatarErr = "";
-    let maxUserErr = "";
+    let avatarErr = $state("");
+    let maxUserErr = $state("");
 
-    let errAnimation = "";
+    let errAnimation = $state("");
 
-    $: {
+    run(() => {
         if (avatarErr || maxUserErr) {
             errAnimation = "shake";
             setTimeout(() => {
@@ -45,7 +47,7 @@
         } else {
             errAnimation = "";
         }
-    }
+    });
 
     let titleText = $chatRoomStore.Key ? "Join chat" : "Create chat";
 
@@ -53,9 +55,9 @@
     const actionConnectKey = "Establishing connection";
     const actionEncryptChat = "Encrypting chat";
 
-    let actionButtonText = titleText;
+    let actionButtonText = $state(titleText);
 
-    let mounted = false;
+    let mounted = $state(false);
 
     if ($chatRoomStore.Key) {
         socket.emit(
@@ -64,13 +66,13 @@
             false,
             (res: socketResponse) => {
                 if (!res.success) {
-                    showUserInputForm.set(false);
+                    showUserInputForm.value = false;
                 } else {
                     chatRoomStore.update((room) => {
                         room.userList = res.users;
                         return room;
                     });
-                    showUserInputForm.set(true);
+                    showUserInputForm.value = true;
                 }
             },
         );
@@ -110,7 +112,7 @@
         }
 
         //initChatActionDisabled = true;
-        formActionButtonDisabled.set(true);
+        formActionButtonDisabled.value = true;
         actionButtonText = actionCreateKey;
 
         //make my private-public key pair
@@ -135,15 +137,15 @@
                 }) => {
                     if (!res.success) {
                         console.log("Error: " + res.message);
-                        formNotification.set("Error: " + res.message);
-                        formActionButtonDisabled.set(false);
+                        formNotification.value = "Error: " + res.message;
+                        formActionButtonDisabled.value = false;
                         return;
                     }
 
                     actionButtonText = actionEncryptChat;
 
                     res.user.publicKey = pair.publicKey;
-                    myPrivateKey.set(pair.privateKey);
+                    myPrivateKey.value = pair.privateKey;
                     chatRoomStore.update((room) => {
                         room.Key = res.key;
                         room.admin = res.userId;
@@ -152,14 +154,14 @@
                         return room;
                     });
 
-                    myId.set(res.userId);
+                    myId.value = res.userId;
 
-                    joinedChat.set(true);
-                    currentPage.set("chat");
-                    splashMessage.set("");
+                    joinedChat.value = true;
+                    currentPage.value = "chat";
+                    splashMessage.value = "";
                     selectedavatar = "";
                     selectedMaxUser = 2;
-                    formActionButtonDisabled.set(false);
+                    formActionButtonDisabled.value = false;
                 },
             );
         } else {
@@ -183,9 +185,9 @@
                 }) => {
                     if (!res.success) {
                         console.log("Error: " + res.message);
-                        formNotification.set("Error: " + res.message);
-                        formActionButtonDisabled.set(false);
-                        showUserInputForm.set(false);
+                        formNotification.value = "Error: " + res.message;
+                        formActionButtonDisabled.value = false;
+                        showUserInputForm.value = false;
                         return;
                     }
 
@@ -196,7 +198,7 @@
                         room.maxUsers = res.maxUsers;
                         return room;
                     });
-                    myPrivateKey.set(pair.privateKey);
+                    myPrivateKey.value = pair.privateKey;
 
                     Object.entries(res.users).forEach(async ([uid, user]) => {
 
@@ -213,21 +215,21 @@
                     });
 
 
-                    myId.set(res.userId);
+                    myId.value = res.userId;
 
-                    joinedChat.set(true);
-                    currentPage.set("chat");
-                    splashMessage.set("");
+                    joinedChat.value = true;
+                    currentPage.value = "chat";
+                    splashMessage.value = "";
                     selectedavatar = "";
                     selectedMaxUser = 2;
-                    formActionButtonDisabled.set(false);
+                    formActionButtonDisabled.value = false;
                 },
             );
         }
     }
 
     function redirect() {
-        showUserInputForm.set(false);
+        showUserInputForm.value = false;
     }
 </script>
 
@@ -276,12 +278,12 @@
                                     <input
                                         type="radio"
                                         class="avatarInput"
-                                        on:input={() => (avatarErr = "")}
+                                        oninput={() => (avatarErr = "")}
                                         bind:group={selectedavatar}
                                         name="avatar"
                                         value={avatar}
                                         id={avatar}
-                                        disabled={$formActionButtonDisabled ||
+                                        disabled={formActionButtonDisabled.value ||
                                         !socket.connected}
                                     />
                                     <label
@@ -313,7 +315,7 @@
                         </div>
                     {/if}
                     <input
-                        disabled={$formActionButtonDisabled ||
+                        disabled={formActionButtonDisabled.value ||
                             !socket.connected}
                         type="range"
                         bind:value={selectedMaxUser}
@@ -326,20 +328,20 @@
             {/if}
 
             <div class="formfield">
-                {#if $reconnectButtonEnabled}
+                {#if reconnectButtonEnabled.value}
                     <button
                         class="button-animate hover play-sound recon"
-                        on:click={() => {reConnectSocket()}}>Reconnect</button
+                        onclick={() => {reConnectSocket()}}>Reconnect</button
                     >
                 {:else}
                     <button
                         class="button-animate hover play-sound"
-                        disabled={$formActionButtonDisabled ||
+                        disabled={formActionButtonDisabled.value ||
                             !socket.connected}
-                        on:click={requestForChat}
+                        onclick={requestForChat}
                     >
                         {actionButtonText} 
-                        {#if $formActionButtonDisabled}
+                        {#if formActionButtonDisabled.value}
                             {#if actionButtonText == actionConnectKey}
                             <DotStream/>
                             {:else if actionButtonText != titleText}
@@ -355,7 +357,7 @@
                 <button
                     id="redirect"
                     class="noSelect button-animate hover play-sound"
-                    on:click={redirect}>Join a chat?</button
+                    onclick={redirect}>Join a chat?</button
                 >
             </div>
         </div>

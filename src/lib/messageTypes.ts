@@ -1,5 +1,5 @@
 import { get, writable, type Updater, type Writable, type Subscriber } from "svelte/store";
-import { chatRoomStore, myId } from "./store";
+import { chatRoomStore, myId } from "./store.svelte";
 
 export const lastMessageId = writable('');
 
@@ -211,7 +211,7 @@ class MessageDatabase{
 
         let classListString = ' end';
     
-        if (message.sender === get(myId)){
+        if (message.sender === myId.value){
             classListString += ' self';
         }
     
@@ -297,8 +297,6 @@ class MessageDatabase{
 
 
 export const messageDatabase = new MessageDatabase();
-
-
 export const eventTriggerMessageId = writable<string> ("");
 export const replyTarget = writable<MessageObj | null> (null);
 export const selectedFiles = writable<FileList>();

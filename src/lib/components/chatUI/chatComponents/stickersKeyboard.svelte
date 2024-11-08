@@ -1,17 +1,10 @@
-<script context="module" lang="ts">
-    import { writable } from "svelte/store";
-    export const DEFAULT_STICKER_GROUP = "catteftel";
-    export const selectedStickerGroup = writable(DEFAULT_STICKER_GROUP);
-</script>
-
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { myId } from "$lib/store";
+    import { myId } from "$lib/store.svelte";
     import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { setToLocalStorage } from "./quickSettingsModal.svelte";
+    import { selectedStickerGroup, setToLocalStorage } from "./quickSettingsModal.svelte";
     import { generateId } from "$lib/utils";
-
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -35,7 +28,7 @@
         { name: "text", count: "24", icon: "4" },
     ];
 
-    let stickersHeader: HTMLElement;
+    let stickersHeader = $state() as HTMLElement;
 
     function stickersHandler(node: HTMLElement){
 
@@ -89,7 +82,7 @@
                 messageObj.src = src;
                 messageObj.groupName = group;
                 messageObj.number = Number(serial);
-                messageObj.sender = $myId;
+                messageObj.sender = myId.value;
                 messageObj.id = tempId;
                 messageObj.type = 'sticker';
                 messageObj.baseType = 'sticker';
@@ -178,13 +171,13 @@
 <div class="stickerKeyboardContainer" transition:fly|global={{y: 40, duration: 100}} use:stickersHandler>
     <div class="stickerKeyboard back-blur">
         <div class="headers">
-            <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>
+            <button aria-label="left" onclick={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="stickersHeader" id="stickersHeader" bind:this={stickersHeader}>
                 {#each Stickers as sticker}
                     <img height="35px" width="35px" loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedStickerGroup == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}" />
                 {/each}
             </div>
-            <button on:click={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></button>
+            <button aria-label="right" onclick={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
         <div class="stickersBody" id="stickersBody" use:stickersBodyHandler>
             {#each Stickers as sticker}

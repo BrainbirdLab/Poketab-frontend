@@ -1,7 +1,11 @@
 <script lang="ts">
     import { fly, scale } from "svelte/transition";
 
-    export let title: {text: string, icon: string};
+    interface Props {
+        title: {text: string, icon: string};
+    }
+
+    let { title }: Props = $props();
 </script>
 
 <div class="titleBar">

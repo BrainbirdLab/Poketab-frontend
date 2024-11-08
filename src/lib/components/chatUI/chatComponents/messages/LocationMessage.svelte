@@ -1,8 +1,12 @@
 <script lang="ts">
     import type { LocationMessageObj } from "$lib/messageTypes";
-    import { chatRoomStore } from "$lib/store";
+    import { chatRoomStore } from "$lib/store.svelte";
 
-    export let location: LocationMessageObj;
+    interface Props {
+        location: LocationMessageObj;
+    }
+
+    let { location }: Props = $props();
 
 </script>
 

@@ -2,11 +2,15 @@
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
 
-    export let size: number;
+    interface Props {
+        size: number;
+    }
 
-    let logo: HTMLElement;
-    let styleLeft = "transform: rotate(-79.186deg);";
-    let styleRight = "transform: rotate(79.186deg);";
+    let { size }: Props = $props();
+
+    let logo = $state() as HTMLElement;
+    let styleLeft = $state("transform: rotate(-79.186deg);");
+    let styleRight = $state("transform: rotate(79.186deg);");
 
     let Document: any;
 
@@ -60,10 +64,10 @@
         alt="logo"
     />
     <div class="eyesocket left" style="{styleLeft}">
-        <div class="eye" />
+        <div class="eye"></div>
     </div>
     <div class="eyesocket right" style="{styleRight}">
-        <div class="eye" />
+        <div class="eye"></div>
     </div>
 </div>
 

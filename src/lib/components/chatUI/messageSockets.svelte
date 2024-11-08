@@ -14,20 +14,23 @@
     } from "$lib/messageTypes";
     import {
         chatRoomStore,
-        userTypingString,
         myId,
         reactArray,
         incommingXHRs,
         outgoingXHRs,
         myPrivateKey,
-    } from "$lib/store";
+    } from "$lib/store.svelte";
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { socket, API_URL } from "$lib/socket";
+    import { socket } from "$lib/connection/socketClient";
     import { emojis, playMessageSound } from "$lib/utils";
     import { onDestroy } from "svelte";
     import { decryptMessage, decryptSymmetricKey, importPublicKey, stringToBuffer } from "$lib/e2e/encryption";
     import { infoMessage } from "$lib/utils/debug";
-    import { getLinkMetadata } from "$lib/linkmeta";
+    import { getLinkMetadata } from "$lib/linkmetaParser";
+    import { PUBLIC_API_SERVER_URL } from "$env/static/public";
+    import TypingIndicator from "./chatComponents/typingIndicator.svelte";
+
+    let userTypingString = $state("");
 
     socket.on("newMessage", async (encryptedMessage: ArrayBuffer, smKey: ArrayBuffer, messageId: string) => {
         if (!encryptedMessage || !smKey || !messageId) {
@@ -36,7 +39,7 @@
         }
 
         //decrypt the symmetric key
-        const dSmKey = await decryptSymmetricKey(smKey, $myPrivateKey);
+        const dSmKey = await decryptSymmetricKey(smKey, myPrivateKey.value);
         //decrypt the message
         const decrypteBuffer = await decryptMessage(encryptedMessage, dSmKey);
         //convert the buffer to MessageObj
@@ -103,7 +106,7 @@
             return;
         }
 
-        if ($myId === sender) {
+        if (myId.value === sender) {
             return;
         }
 
@@ -121,7 +124,7 @@
 
         xhr.open(
             "GET",
-            `${API_URL}/api/files/download/${$chatRoomStore.Key}/${$myId}/${messageId}`,
+            `${PUBLIC_API_SERVER_URL}/api/files/download/${$chatRoomStore.Key}/${myId.value}/${messageId}`,
             true,
         );
 
@@ -292,7 +295,7 @@
                     message.reactedBy.delete(uid);
                 } else {
                     //if its my own react
-                    if ($myId == uid) {
+                    if (myId.value == uid) {
                         if (
                             !$reactArray.reacts.includes(react) &&
                             emojis.includes(react)
@@ -395,16 +398,15 @@
 
             switch (userTypingSet.size) {
                 case 1:
-                    userTypingString.set(
+                    userTypingString = 
                         `${
                             $chatRoomStore.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
-                        } is typing`,
-                    );
+                        } is typing`;
                     break;
                 case 2:
-                    userTypingString.set(
+                    userTypingString = 
                         `${
                             $chatRoomStore.userList[
                                 userIdArray.at(-1) as string
@@ -413,11 +415,10 @@
                             $chatRoomStore.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
-                        } are typing`,
-                    );
+                        } are typing`;
                     break;
                 case 3:
-                    userTypingString.set(
+                    userTypingString = 
                         `${
                             $chatRoomStore.userList[
                                 userIdArray.at(-1) as string
@@ -426,11 +427,10 @@
                             $chatRoomStore.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
-                        } and 1 other are typing`,
-                    );
+                        } and 1 other are typing`;
                     break;
                 default:
-                    userTypingString.set(
+                    userTypingString = 
                         `${
                             $chatRoomStore.userList[
                                 userIdArray.at(-1) as string
@@ -439,12 +439,11 @@
                             $chatRoomStore.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
-                        } and ${userTypingSet.size - 2} others are typing`,
-                    );
+                        } and ${userTypingSet.size - 2} others are typing`;
                     break;
             }
         } else {
-            userTypingString.set("");
+            userTypingString = "";
         }
     });
 
@@ -459,3 +458,5 @@
         socket.off("typing");
     });
 </script>
+
+<TypingIndicator bind:typingString={userTypingString}/>

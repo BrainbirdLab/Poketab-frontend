@@ -3,12 +3,22 @@
     import { emojis } from "$lib/utils";
     import { elasticOut } from "svelte/easing";
 
-    export let selectedEmoji = '';
-    export let height = "42vh";
-    export let showClose = false;
-    export let exclude: string[] = [];
 
-    export let onClose: () => void;
+    interface Props {
+        selectedEmoji?: string;
+        height?: string;
+        showClose?: boolean;
+        exclude?: string[];
+        onClose: () => void;
+    }
+
+    let {
+        selectedEmoji = $bindable(''),
+        height = "42vh",
+        showClose = false,
+        exclude = [],
+        onClose
+    }: Props = $props();
 
     function handleClick(node: HTMLElement){
         node.onclick = (e: MouseEvent) => {
@@ -32,7 +42,7 @@
 
 <div class="emojiPicker" style="height: {height};" in:slide={{duration: 600, easing: elasticOut}} out:slide={{duration: 100}} use:handleClick>
     {#if showClose}
-    <button class="down">
+    <button class="down" aria-label="close">
         <i class="fa-solid fa-chevron-down"></i>
     </button>
     {/if}

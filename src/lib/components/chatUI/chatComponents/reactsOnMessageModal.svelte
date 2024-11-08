@@ -1,28 +1,26 @@
 <script lang="ts">
-    import { chatRoomStore, myId } from "$lib/store";
+    import { chatRoomStore, myId } from "$lib/store.svelte";
     import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageTypes";
     import { fly } from "svelte/transition";
-    import { derived } from "svelte/store";
     import Modal from "./modal.svelte";
     import { page } from "$app/stores";
     import { onDestroy } from "svelte";
 
-    $: message = derived(messageDatabase, (messages) => {
-        return messages[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj;
-    });
+    let message = $derived($messageDatabase[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj);
 
     // [uid: string]: react-emoji
-    $: reacts = $message?.reactedBy || new Map<string, string>();
+    let reacts = $derived(message?.reactedBy || new Map<string, string>());
 
-    $: selectedReact = 'All';
+    let selectedReact = $state('All');
+    
 
     //reacts is a map, we have to filter by the value of the map, not the key
-    $: reactsToShow = Array.from(reacts.entries()).filter(([_, react]) => selectedReact === 'All' || selectedReact === react);
+    let reactsToShow = $derived(Array.from(reacts.entries()).filter(([_, react]) => selectedReact === 'All' || selectedReact === react));
 
-    $: reactsCount = Array.from(new Set(reacts.values())).reduce((acc, react) => {
+    let reactsCount = $derived(Array.from(new Set(reacts.values())).reduce((acc, react) => {
         acc[react] = Array.from(reacts.values()).filter(r => r === react).length;
         return acc;
-    }, {} as {[react: string]: number});
+    }, {} as {[react: string]: number}));
 
     onDestroy(() => {
         selectedReact = 'All';
@@ -32,7 +30,7 @@
 
 <Modal show={$page.state.showReactsOnMessage}>
     <div class="reactsOnMessage box-shadow back-blur" transition:fly|global={{y: 40, duration: 100}}>
-        <div class="title">Reacts on {$chatRoomStore.userList[$message?.sender || '']?.avatar || "Zombie"}'s message</div>
+        <div class="title">Reacts on {$chatRoomStore.userList[message?.sender || '']?.avatar || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
             {#key reactsToShow}
@@ -42,7 +40,7 @@
                         <img src="/images/avatars/{$chatRoomStore.userList[uid]?.avatar || "Rip"}(custom).png" alt="user"/>
                         <span>
                             {$chatRoomStore.userList[uid]?.avatar || "Zombie"}
-                            {#if uid === $myId}
+                            {#if uid === myId.value}
                                 (You)
                             {/if}
                         </span>
@@ -116,12 +114,12 @@
                 border-radius: 15px;
                 transition: 100ms ease-in-out;
                 cursor: pointer;
-                * {
-                    pointer-events: none;
-                }
                 &:hover{
                     background: var(--glass-color);
                 }
+            }
+            :global(.item *){
+                pointer-events: none;
             }
 
             input{

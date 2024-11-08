@@ -1,46 +1,30 @@
-<script context="module" lang="ts">
-    export const showFilePicker = writable(false);
-    export const sendAsType: Writable<'file' | 'image' | 'audio'>  = writable('file');
-</script>
 <script lang="ts">
     import { fade, fly, scale } from "svelte/transition";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
-    import { socket } from "$lib/socket";
-    import { chatRoomStore, myId } from "$lib/store";
+    import { socket } from "$lib/connection/socketClient";
+    import { chatRoomStore, myId } from "$lib/store.svelte";
     import { AudioMessageObj, FileMessageObj, ImageMessageObj, selectedFiles } from "$lib/messageTypes";
-    import { onDestroy, onMount, tick } from "svelte";
+    import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
     import { page } from "$app/stores";
-    import { type Writable, writable, type Unsubscriber } from "svelte/store";
-    import DropBox from "./dropBox.svelte";
 
+    interface Props {
+        showFilePicker: boolean;
+        sendAsType: "file" | "image" | "audio";
+    }
+    let { showFilePicker = $bindable(), sendAsType = $bindable() }: Props = $props();
 
-    let locationBtn: HTMLButtonElement;
-    let fileBtn: HTMLButtonElement;
-    let imageBtn: HTMLButtonElement;
-    let audioBtn: HTMLButtonElement;
+    let locationBtn = $state() as HTMLButtonElement;
+    let fileBtn = $state() as HTMLButtonElement;
+    let imageBtn = $state() as HTMLButtonElement;
+    let audioBtn = $state() as HTMLButtonElement;
 
-    let filePicker: HTMLInputElement;
+    let filePicker = $state() as HTMLInputElement;
 
-    let acceptedTypes: null | 'image/png, image/jpg, image/jpeg' | 'audio/mp3, audio/wav, audio/ogg' = null;
-    let sendAs: 'file' | 'image' | 'audio' = 'file';
+    let acceptedTypes: null | 'image/png, image/jpg, image/jpeg' | 'audio/mp3, audio/wav, audio/ogg' = $state(null);
 
-    let urlObjects: Map<string, string> = new Map();
-
-    let sendAsUnsub: Unsubscriber;
-
-    onMount(() => {
-        sendAsUnsub = sendAsType.subscribe((val) => {
-            sendAs = val;
-        });
-    });
-
-    onDestroy(() => {
-        if (sendAsUnsub){
-            sendAsUnsub();
-        }
-    })
+    let urlObjects: Map<string, string> = $state(new Map());
 
     function transmitLocation() {
 
@@ -56,7 +40,7 @@
         navigator.geolocation.getCurrentPosition((position) => {
             clearTimeout(timeout);
             const {latitude, longitude} = position.coords;
-            socket.emit('location', {latitude, longitude}, $chatRoomStore.Key, $myId);
+            socket.emit('location', {latitude, longitude}, $chatRoomStore.Key, myId.value);
         }, (error) => {
             clearTimeout(timeout);
             showToastMessage('Unable to get location.');
@@ -76,13 +60,13 @@
             try{
                 if (target === fileBtn){
                     acceptedTypes = null;
-                    sendAs = 'file';
+                    sendAsType = 'file';
                 } else if (target === imageBtn){
                     acceptedTypes = 'image/png, image/jpg, image/jpeg';
-                    sendAs = 'image';
+                    sendAsType = 'image';
                 } else if (target === audioBtn){
                     acceptedTypes = 'audio/mp3, audio/wav, audio/ogg';
-                    sendAs = 'audio';
+                    sendAsType = 'audio';
                 } else if (target === locationBtn){
                     transmitLocation();
                     return;
@@ -90,7 +74,7 @@
     
                 if (target === node || target === fileBtn || target === imageBtn || target === audioBtn || target === locationBtn){
                     if (target !== node){
-                        showFilePicker.set(true);
+                        showFilePicker = true;
                         await tick();
                         filePicker.onchange = (e) => {
                             if ($selectedFiles.length > 10){
@@ -120,13 +104,15 @@
     }
 
     function clearInput() {
-        filePicker.value = '';
-        filePicker.files = null;
+        if (filePicker){
+            filePicker.value = '';
+            filePicker.files = null;
+    
+            //trigger change event
+            filePicker.dispatchEvent(new Event('change'));
+        }
 
-        //trigger change event
-        filePicker.dispatchEvent(new Event('change'));
-
-        showFilePicker.set(false);
+        showFilePicker = false;
     }
 
     function deleteItem(id: number) {
@@ -164,15 +150,15 @@
 
                 let message: FileMessageObj | ImageMessageObj | AudioMessageObj;
 
-                if (sendAs !== 'audio'){
+                if (sendAsType !== 'audio'){
                     
-                    if (sendAs === 'file'){
+                    if (sendAsType === 'file'){
                         message = new FileMessageObj();
                     } else {
                         message = new ImageMessageObj();
                     }
                     
-                    message.sender = $myId;
+                    message.sender = myId.value;
                     message.size = file.size;
                     message.type = file.type;
                     message.name = file.name;
@@ -197,7 +183,7 @@
 
                     if (message instanceof AudioMessageObj) { // Here we used this to make typescript happy
 
-                        message.sender = $myId;
+                        message.sender = myId.value;
                         message.size = file.size;
                         message.name = file.name;
                         message.audio = new Audio();
@@ -310,15 +296,15 @@
 
 </script>
 
-<DropBox />
+
 
 {#if $selectedFiles && $selectedFiles.length > 0}
 <div class="filePreviewContainer" use:handleClick in:fade={{duration: 100}} out:fade={{duration: 200}}>
-    <FilePreview bind:sendAs={sendAs} bind:urlObjects={urlObjects}/>
+    <FilePreview bind:sendAsType={sendAsType} bind:urlObjects={urlObjects}/>
 </div>
 {/if}
 
-{#if $showFilePicker}
+{#if showFilePicker}
     <input multiple bind:files={$selectedFiles} type="file" bind:this={filePicker} accept="{acceptedTypes}"/>
 {/if}
 
@@ -330,8 +316,8 @@
         <div transition:scale={{duration: 100, start: 0.5}}
             class="upload_file button-animate icon play-sound attachmentButton"
         >
-            <button bind:this={fileBtn}>
-                <i class="fa-regular fa-file-lines" />
+            <button aria-label="file" bind:this={fileBtn}>
+                <i class="fa-regular fa-file-lines"></i>
             </button>
             <div class="text">File</div>
         </div>
@@ -339,8 +325,8 @@
         <div transition:scale={{duration: 150}}
             class="upload_image button-animate icon play-sound attachmentButton"
         >
-            <button bind:this={imageBtn}>
-                <i class="fa-regular fa-image" />
+            <button aria-label='image' bind:this={imageBtn}>
+                <i class="fa-regular fa-image"></i>
             </button>
             <div class="text">Image</div>
         </div>
@@ -349,8 +335,8 @@
         <div transition:scale={{duration: 200}}
             class="upload_audio button-animate icon play-sound attachmentButton"
         >
-            <button bind:this={audioBtn}>
-                <i class="fa-solid fa-music" />
+            <button aria-label="music" bind:this={audioBtn}>
+                <i class="fa-solid fa-music"></i>
             </button>
             <div class="text">Audio</div>
         </div>
@@ -359,8 +345,8 @@
         <div transition:scale={{duration: 250}}
             class="location button-animate icon play-sound attachmentButton"
         >
-            <button bind:this={locationBtn}>
-                <i class="fa-solid fa-location-crosshairs" />
+            <button aria-label="location" bind:this={locationBtn}>
+                <i class="fa-solid fa-location-crosshairs"></i>
             </button>
             <div class="text">Location</div>
         </div>

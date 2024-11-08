@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 
     let notification: Notification;
 
@@ -39,28 +39,29 @@
 </script>
 
 <script lang="ts">
+
     import { TextMessageObj, StickerMessageObj, notice, FileMessageObj, MessageObj } from "$lib/messageTypes";
-    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer, messageScrolledPx } from "$lib/store";
+    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer, messageScrolledPx } from "$lib/store.svelte";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
     import { playMessageSound, toSentenceCase } from "$lib/utils";
     import { get } from "svelte/store";
     import { focusMessage } from "./messages.svelte";
 
-    $: {
-        if ($messageScrolledPx < 200){
+    $effect(() => {
+        if (messageScrolledPx.value < 200){
             notice.set(null);
         }
-    }
+    });
 
     onMount(()=> {
 
         //ask for notification permission
         Notification.requestPermission();
         
-        messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
+        messageScrolledPx.value = messageContainer.value.scrollHeight - messageContainer.value.scrollTop - messageContainer.value.clientHeight;
 
-        listenScroll.set(true);
+        listenScroll.value = true;
 
         document.onvisibilitychange = () => {
             if (document.visibilityState === 'visible'){
@@ -70,54 +71,54 @@
     })
 
     onDestroy(() => {
-        $messageContainer.onscroll = null;
+        messageContainer.value.onscroll = null;
         document.onvisibilitychange = null;
     });
 
     const unsub = notice.subscribe((value) => {
 
-        if (value && $showScrollPopUp){
+        if (value && showScrollPopUp.value){
             playMessageSound('notification');
         }
 
         showNotification(value);
     });
 
-    listenScroll.subscribe((value) => {
-
-        if (!$messageContainer){
+    const unsubScroll = listenScroll.onChange((value) => {
+        if (!messageContainer.value){
             return;
         }
 
         if (value){
-            $messageContainer.onscroll = scrollHandler;
+            messageContainer.value.onscroll = scrollHandler;
         } else {
-            $messageContainer.onscroll = null;
-            messageScrolledPx.set(0);
+            messageContainer.value.onscroll = null;
+            messageScrolledPx.value = 0;
         }
     });
 
     function scrollHandler(){
         //if scrolled up more than 200px
-        messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
-        if ( $messageScrolledPx > 200) {
-            showScrollPopUp.set(true);
+        messageScrolledPx.value = messageContainer.value.scrollHeight - messageContainer.value.scrollTop - messageContainer.value.clientHeight;
+        if ( messageScrolledPx.value > 200) {
+            showScrollPopUp.value = true;
         } else {
-            showScrollPopUp.set(false);
+            showScrollPopUp.value = false;
         }
     }
 
     onDestroy(() => {
         unsub();
+        unsubScroll();
     });
 
 </script>
 
-{#if $showScrollPopUp}
-    <button class="popup box-shadow back-blur" tabindex="-1" transition:fly={{y: 20, duration: 200}} on:click={()=>{
-        $messageContainer.scrollTo({top: $messageContainer.scrollHeight, behavior: "smooth"});
+{#if showScrollPopUp.value}
+    <button class="popup box-shadow back-blur" tabindex="-1" transition:fly={{y: 20, duration: 200}} onclick={()=>{
+        messageContainer.value.scrollTo({top: messageContainer.value.scrollHeight, behavior: "smooth"});
     }}>
-    {#if $notice && $messageScrolledPx > 200}
+    {#if $notice && messageScrolledPx.value > 200}
         <div class="content">
             <img src="/images/avatars/{$chatRoomStore.userList[$notice.sender].avatar}(custom).webp" alt="avatar"/>
             {#if $notice instanceof TextMessageObj}

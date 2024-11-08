@@ -1,15 +1,20 @@
 <script lang="ts">
+
     import { bufferToHexCode, exportPublicKey } from "$lib/e2e/encryption";
-    import { chatRoomStore, myId } from "$lib/store";
+    import { chatRoomStore, myId } from "$lib/store.svelte";
     import { slide } from "svelte/transition";
 
-    export let avatar: string;
-    export let uid: string;
-    export let showId: string;
+    interface Props {
+        avatar: string;
+        uid: string;
+        showId: string;
+    }
 
-    let key: string;
+    let { avatar, uid, showId }: Props = $props();
 
-    $: {
+    let key = $state('');
+
+    $effect.pre(() => {
         if (showId == uid) {
             const publicKey = $chatRoomStore.userList[uid].publicKey;
             if (publicKey) {
@@ -21,7 +26,7 @@
         } else {
             key = '';
         }
-    }
+    });
 </script>
 
 <div class="wrapper">
@@ -36,7 +41,7 @@
         </div>
         <div
             >{avatar}
-            {#if uid == $myId}
+            {#if uid == myId.value}
                 (You)
             {/if}
             {#if key}

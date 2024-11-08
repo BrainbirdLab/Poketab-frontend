@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 
     import { replaceState, pushState } from "$app/navigation";
     import { page } from "$app/stores";

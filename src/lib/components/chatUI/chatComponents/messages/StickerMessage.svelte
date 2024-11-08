@@ -5,7 +5,11 @@
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
 
-    export let message: StickerMessageObj
+    interface Props {
+        message: StickerMessageObj;
+    }
+
+    let { message }: Props = $props();
 
 </script>
 

@@ -1,17 +1,22 @@
-<script>
-    import { userTypingString } from "$lib/store";
+<script lang="ts">
     import { fly } from "svelte/transition";
+
+    interface Props {
+        typingString: string;
+    }
+
+    let { typingString = $bindable() }: Props = $props();
 
 </script>
 
-{#if $userTypingString}
+{#if typingString}
 <div class="indicatorWrapper">
     <div id="typingIndicator" transition:fly={{y: 5, duration: 100}}>
-        <div class="text">{$userTypingString}</div>
+        <div class="text">{typingString}</div>
         <div class="bubble">
-            <div class="dot bouncing" />
-            <div class="dot bouncing" />
-            <div class="dot bouncing" />
+            <div class="dot bouncing"></div>
+            <div class="dot bouncing"></div>
+            <div class="dot bouncing"></div>
         </div>
     </div>
 </div>

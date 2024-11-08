@@ -3,6 +3,12 @@ export enum SEND_METHOD {
     CTRL_ENTER = "Ctrl+Enter",
 };
 
+export type LightBoxTargettype = {
+    src: string,
+    id: string,
+    name: string,
+};
+
 export type ErrorLog = {
     text: string,
     icon: string,
@@ -21,7 +27,6 @@ export type chatRoomStoreType = {
     userList: { [key: string]: User},
     maxUsers: number,
 };
-
 
 
 type linkResData = {
