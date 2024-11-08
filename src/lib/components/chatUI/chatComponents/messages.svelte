@@ -462,15 +462,25 @@
         let newPosition = currentScrollTop + value;
         messageContainer.value.scrollTop = newPosition; // Rounds to 10 decimal places
     }
-    
-    export async function updateUI(){
+
+
+    $effect.pre(() => {
+        if (!messageContainer.value){
+            return;
+        }
+        messageContainer.value.style.height = 'auto';
+    })
+
+    $effect(() => {
         if (!messageContainer.value){
             return;
         }
         console.log('updating UI');
-        messageContainer.value.style.height = 'auto';
-        await tick();
+        //await tick();
         messageContainer.value.style.height = `${messageContainer.value.offsetHeight}px`;
+    })
+    
+    export async function updateUI(){
         
         scrolledToBottomPx = messagesHTML.getBoundingClientRect().height - messageContainer.value.scrollTop - messageContainer.value.getBoundingClientRect().height;
 
