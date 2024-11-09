@@ -77,7 +77,7 @@
                         showFilePicker = true;
                         await tick();
                         filePicker.onchange = (e) => {
-                            if (selectedFiles.value.length > 10){
+                            if (selectedFiles.value && selectedFiles.value.length > 10){
                                 showToastMessage('You can only send 10 files at a time.');
                                 clearInput();
                                 return;
@@ -105,10 +105,8 @@
 
     function clearInput() {
         if (filePicker){
-            filePicker.value = '';
-            filePicker.files = null;
-    
-            //trigger change event
+           //use DataTransfer to clear files
+            filePicker.files = new DataTransfer().files;
             filePicker.dispatchEvent(new Event('change'));
         }
 
@@ -117,7 +115,7 @@
 
     function deleteItem(id: number) {
 
-        if (!filePicker.files){
+        if (!filePicker?.files){
             return;
         }
 
@@ -137,6 +135,10 @@
     }
 
     function sendFiles() {
+
+        if (!selectedFiles.value || selectedFiles.value.length === 0){
+            return;
+        }
 
         //copy files to variable
         const files = [...selectedFiles.value];
@@ -291,7 +293,6 @@
 
     const ready = true;
 
-
 </script>
 
 
@@ -302,7 +303,7 @@
 </div>
 {/if}
 
-{#if showFilePicker}
+{#if true}
     <input multiple bind:files={selectedFiles.value} type="file" bind:this={filePicker} accept="{acceptedTypes}"/>
 {/if}
 

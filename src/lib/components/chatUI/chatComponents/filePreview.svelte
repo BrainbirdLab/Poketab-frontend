@@ -39,6 +39,7 @@
 </script>
 
 <div class="selectedFiles">
+    {#if selectedFiles.value}
     {#each selectedFiles.value as file, i (file.name)}
         <div
             animate:flip={{duration: 600}}
@@ -68,6 +69,7 @@
             </div>
         </div>
     {/each}
+    {/if}
 </div>
 <div class="filePreviewOptions back-blur box-shadow" transition:fly={{y: 10}}>
     <button
@@ -77,7 +79,7 @@
         >Cancel <i class="fa-solid fa-trash default"></i></button
     >
     <div class="items-count">
-        {selectedFiles.value.length} {selectedFiles.value.length < 2 ? "item" : "items"} selected
+        {selectedFiles.value?.length} {selectedFiles.value?.length || 0 < 2 ? "item" : "items"} selected
     </div>
     <button 
         transition:fly={{x: 10, delay: 100}}

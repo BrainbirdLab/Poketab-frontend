@@ -32,7 +32,7 @@
     import { lastMessageId, eventTriggerMessageId } from "$lib/messageStore.svelte";
 
     let showFilePicker = $state(false);
-    let sendAsType: 'file' | 'image' | 'audio' = $state('file');
+    let sendAsType: "file" | "image" | "audio" = $state("file");
 
     let lightboxTarget: LightBoxTargettype | null = $state(null);
 
