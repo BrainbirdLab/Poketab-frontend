@@ -159,9 +159,9 @@
 
                         messageObj.audio.ontimeupdate = () => {
 
-                            //messageDatabase.value.update((messages) => {
-                            //    return messages;
-                            //});
+                            messageDatabase.update((messages) => {
+                                return messages;
+                            });
                         }
 
                         messageObj.audio.onended = () => {
@@ -169,9 +169,9 @@
                             messageObj.audio.onended = null;
                             messageObj.audio.ontimeupdate = null;
                             currentPlayingAudioMessage = null;
-                            //messageDatabase.value.update((messages) => {
-                            //    return messages;
-                            //});
+                            messageDatabase.update((messages) => {
+                                return messages;
+                            });
                         }
 
                     } else if (!messageObj.audio.paused) {
