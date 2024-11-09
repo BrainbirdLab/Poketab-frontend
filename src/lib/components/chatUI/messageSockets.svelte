@@ -4,14 +4,14 @@
         TextMessageObj,
         StickerMessageObj,
         LocationMessageObj,
-        messageDatabase,
-        lastMessageId,
-        notice,
         ServerMessageObj,
         FileMessageObj,
         ImageMessageObj,
         AudioMessageObj,
-    } from "$lib/messageTypes";
+        lastMessageId,
+        messageDatabase,
+        notice,
+    } from "$lib/messageStore.svelte";
     import {
         chatRoomStore,
         myId,
@@ -88,8 +88,8 @@
         message.sent = true;
         message.id = messageId;
         messageDatabase.add(message);
-        lastMessageId.set(messageId);
-        notice.set(message);
+        lastMessageId.value = messageId;
+        notice.value = message;
         getLinkMetadata(message);
 
         //audios
@@ -102,7 +102,7 @@
 
     socket.on("fileDownload", (messageId: string, sender: string) => {
 
-        if (!$chatRoomStore.userList[sender]) {
+        if (!chatRoomStore.value.userList[sender]) {
             return;
         }
 
@@ -115,16 +115,13 @@
 
         const xhr = new XMLHttpRequest();
 
-        incommingXHRs.update((xhrs) => {
-            xhrs.set(messageId, xhr);
-            return xhrs;
-        });
+        incommingXHRs.value.set(messageId, xhr);
 
         xhr.responseType = "blob";
 
         xhr.open(
             "GET",
-            `${PUBLIC_API_SERVER_URL}/api/files/download/${$chatRoomStore.Key}/${myId.value}/${messageId}`,
+            `${PUBLIC_API_SERVER_URL}/api/files/download/${chatRoomStore.value.Key}/${myId.value}/${messageId}`,
             true,
         );
 
@@ -159,7 +156,6 @@
                     }
                     message.loadScheme = "download";
                     message.loaded = 100;
-
                     return messages;
                 });
             }
@@ -170,11 +166,9 @@
             if (e.lengthComputable) {
                 const percent = (e.loaded / e.total) * 100;
                 //update message
-
                 messageDatabase.update((messages) => {
                     message.loadScheme = "download";
                     message.loaded = Math.round(percent);
-
                     return messages;
                 });
             }
@@ -188,7 +182,7 @@
 
             if (
                 !messageDatabase.has(messageId) ||
-                !$chatRoomStore.userList[uid]
+                !chatRoomStore.value.userList[uid]
             ) {
                 return;
             }
@@ -203,17 +197,15 @@
                 const sent = message.sent;
                 const id = message.id;
 
-                if ($incommingXHRs.has(id) || $outgoingXHRs.has(id)) {
-                    $incommingXHRs.get(id)?.abort();
-                    $incommingXHRs.delete(id);
+                if (incommingXHRs.value.has(id) || outgoingXHRs.value.has(id)) {
+                    incommingXHRs.value.get(id)?.abort();
+                    incommingXHRs.value.delete(id);
 
-                    $outgoingXHRs.get(id)?.abort();
-                    $outgoingXHRs.delete(id);
-
+                    outgoingXHRs.value.get(id)?.abort();
+                    outgoingXHRs.value.delete(id);
                 }
 
                 messageDatabase.update((messages) => {
-                    //change the message to "This message was deleted"
                     message = new TextMessageObj();
                     message.message = "This message was deleted";
                     message.id = "";
@@ -222,9 +214,7 @@
                     message.sender = sender;
                     message.sent = sent;
                     message.classList = classList.replace("title", "");
-
                     messages[messageDatabase.getIndex(id)] = message;
-
                     return messages;
                 });
             }
@@ -240,7 +230,7 @@
             id: string,
             uid: string,
         ) => {
-            if (!$chatRoomStore.userList[uid]) {
+            if (!chatRoomStore.value.userList[uid]) {
                 return;
             }
 
@@ -279,8 +269,8 @@
         if (
             !uid ||
             !messageId ||
-            !$chatRoomStore ||
-            !$chatRoomStore.userList[uid] ||
+            !chatRoomStore.value ||
+            !chatRoomStore.value.userList[uid] ||
             !messageDatabase.has(messageId)
         ) {
             return;
@@ -297,14 +287,11 @@
                     //if its my own react
                     if (myId.value == uid) {
                         if (
-                            !$reactArray.reacts.includes(react) &&
+                            !reactArray.value.reacts.includes(react) &&
                             emojis.includes(react)
                         ) {
                             // update reactArray
-                            reactArray.update((val) => {
-                                val.last = react;
-                                return val;
-                            });
+                            reactArray.value.last = react;
                             localStorage.setItem("lastReact", react);
                         }
                     }
@@ -322,28 +309,22 @@
     socket.on("newUser", (user: { avatar: string, uid: string, publicKey: string }) => {
         //import the public key
         importPublicKey(stringToBuffer(user.publicKey)).then((key) => {
-            chatRoomStore.update((chatRoom) => {
-                chatRoom.userList[user.uid] = {
+            chatRoomStore.value.userList[user.uid] = {
                     avatar: user.avatar,
                     uid: user.uid,
                     publicKey: key,
                     lastSeenMessage: "",
                 };
-                return chatRoom;
-            });
             infoMessage(`${user.avatar} joined the chat 🥳`, 'join');
         });
     });
 
     socket.on('userLeft', (uid: string) => {
-        if (!$chatRoomStore.userList[uid]) {
+        if (!chatRoomStore.value.userList[uid]) {
             return;
         }
-        const avatar = $chatRoomStore.userList[uid].avatar;
-        chatRoomStore.update((chatRoom) => {
-            delete chatRoom.userList[uid];
-            return chatRoom;
-        });
+        const avatar = chatRoomStore.value.userList[uid].avatar;
+        delete chatRoomStore.value.userList[uid];
         infoMessage(`${avatar} left the chat 🥺`, 'leave');
     });
 
@@ -351,17 +332,14 @@
         if (
             !uid ||
             !messageId ||
-            !$chatRoomStore ||
-            !$chatRoomStore.userList[uid] ||
+            !chatRoomStore.value ||
+            !chatRoomStore.value.userList[uid] ||
             !messageDatabase.has(messageId)
         ) {
             return;
         }
 
-        chatRoomStore.update((chatRoom) => {
-            chatRoom.userList[uid].lastSeenMessage = messageId;
-            return chatRoom;
-        });
+        chatRoomStore.value.userList[uid].lastSeenMessage = messageId;
 
         const message = messageDatabase.getMessage(messageId) as MessageObj;
 
@@ -369,7 +347,6 @@
             if (message && message instanceof MessageObj) {
                 message.seenBy.add(uid);
             }
-
             return messages;
         });
     });
@@ -400,7 +377,7 @@
                 case 1:
                     userTypingString = 
                         `${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
                         } is typing`;
@@ -408,11 +385,11 @@
                 case 2:
                     userTypingString = 
                         `${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
                         } and ${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
                         } are typing`;
@@ -420,11 +397,11 @@
                 case 3:
                     userTypingString = 
                         `${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
                         }, ${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
                         } and 1 other are typing`;
@@ -432,11 +409,11 @@
                 default:
                     userTypingString = 
                         `${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
                         }, ${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
                         } and ${userTypingSet.size - 2} others are typing`;

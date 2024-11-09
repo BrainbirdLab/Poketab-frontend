@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { selectedFiles } from "$lib/messageTypes";
+    import { selectedFiles } from "$lib/messageStore.svelte";
     import { onMount, onDestroy } from "svelte";
     import { fade } from "svelte/transition";
 
@@ -67,7 +67,7 @@
             } else {
                 sendAsType = 'file';
             }
-            $selectedFiles = e.dataTransfer.files;
+            selectedFiles.value = e.dataTransfer.files;
         }
     }
 

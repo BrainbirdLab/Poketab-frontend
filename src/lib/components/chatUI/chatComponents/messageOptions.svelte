@@ -2,7 +2,7 @@
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
     import { socket } from "$lib/connection/socketClient";
-    import { MessageObj, eventTriggerMessageId, replyTarget, TextMessageObj, FileMessageObj, AudioMessageObj, messageDatabase } from "$lib/messageTypes";
+    import { MessageObj, TextMessageObj, FileMessageObj, AudioMessageObj, eventTriggerMessageId, messageDatabase, replyTarget } from "$lib/messageStore.svelte";
     import { chatRoomStore, myId, reactArray } from "$lib/store.svelte";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import EmojiPicker from "./emojiPicker.svelte";
@@ -13,11 +13,8 @@
     import { page } from "$app/stores";
     import MessageInfo from "./messageInfo.svelte";
 
-
     let reactIsExpanded = $state(false);
     let showMessageInfo = $state(false);
-
-
 
     let selectedReact = $state('');
 
@@ -30,12 +27,9 @@
     };
 
     onMount(() => {
-        const lastReact = localStorage.getItem('lastReact') || $reactArray.last;
+        const lastReact = localStorage.getItem('lastReact') || reactArray.value.last;
         if (emojis.includes(lastReact)){
-            reactArray.update((reacts) => {
-                reacts.last = lastReact;
-                return reacts;
-            });
+            reactArray.value.last = lastReact;
         }
         playMessageSound('reactsMenu');
     });
@@ -48,7 +42,7 @@
 
         const arr = [];
 
-        if (sender && $chatRoomStore.userList[sender] && message.sent){
+        if (sender && chatRoomStore.value.userList[sender] && message.sent){
             arr.push('Reply');
             //if the sender is me, add delete option
             if (sender == myId.value){
@@ -77,15 +71,15 @@
                 selectedReact = e.target.dataset.emoji as string || '';
                 if (selectedReact && emojis.includes(selectedReact)) {
                     //send the emoji to the server via socket
-                    socket.emit('react', message.id, $chatRoomStore.Key, myId.value, selectedReact);
+                    socket.emit('react', message.id, chatRoomStore.value.Key, myId.value, selectedReact);
                 }
                 reactIsExpanded = false;
                 clearModals();
             } else if (e.target instanceof HTMLElement && e.target.classList.contains('option')) {
                 
                 if (e.target.classList.contains('Reply')) {
-                    replyTarget.set(message);
-                    showReplyToast.set(true);
+                    replyTarget.value = message;
+                    showReplyToast.value = true;
                 } else if (e.target.classList.contains('Copy')) {
 
                     if (!(message)) return;
@@ -123,7 +117,7 @@
                     if (!message){
                         return;
                     }
-                    socket.emit('deleteMessage', message.id, $chatRoomStore.Key, myId.value);
+                    socket.emit('deleteMessage', message.id, chatRoomStore.value.Key, myId.value);
                 } else if (e.target.classList.contains('Info')) {
                     showMessageInfo = true;
                     return;
@@ -138,45 +132,45 @@
             destroy(){
                 node.onclick = null;
                 selectedReact = '';
-                eventTriggerMessageId.set("");
+                eventTriggerMessageId.value = "";
             }
         }
     }
 
-    let message = $derived(messageDatabase.getMessageByIndex(messageDatabase.getIndex($eventTriggerMessageId)) as MessageObj);
+    let message = $derived($messageDatabase[messageDatabase.getIndex(eventTriggerMessageId.value)] as MessageObj);
     let reactedEmoji = $derived(message?.reactedBy.get(myId.value) || '');
     let messageKind = $derived(message?.baseType);
     let sender = $derived(message?.sender);
     let isSent = $derived(message?.sent);
     let downloadable = $derived((message instanceof FileMessageObj) ? (sender === myId.value ? true : (message as FileMessageObj).loaded >= 100) : false);
-    let optionsArray = $derived([...getMessageOptions(), downloadable ? 'Download' : null, isSent ? 'Info' : null]);
+    let optionsArray = $derived([...getMessageOptions(), downloadable ? 'Download' : null, isSent && chatRoomStore.value.userList[message.sender] ? 'Info' : null]);
 </script>
 
 <!-- option menu for message right click -->
 <!-- This menu contains reacts, message copy, download, delete and reply options -->
 <div class="optionsContainer" use:clickHandler out:fade={{duration: 300}}>
-    {#if !showMessageInfo}
+    {#if !showMessageInfo && chatRoomStore.value.userList[message.sender]}
     <div class="reactionsChooser box-shadow back-blur" transition:fly|global={{y: -10, duration: 200}}>
         {#if reactIsExpanded}
-            <EmojiPicker selectedEmoji={selectedReact} exclude={[...$reactArray.last, ...$reactArray.reacts]} onClose={()=>{
+            <EmojiPicker selectedEmoji={selectedReact} exclude={[...reactArray.value.last, ...reactArray.value.reacts]} onClose={()=>{
                 reactIsExpanded = false;
             }}/>
         {/if}
         <div class="primary">
-            {#each $reactArray.reacts as react}
+            {#each reactArray.value.reacts as react}
                 <div class:shown={$page.state.showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
                     <div class="emoji" data-emoji="{react}">{react}</div>
                 </div>
             {/each}
             
-            <!-- Show reactedEmoji as last react if has, else show $reactArray.last as last -->
-            {#if reactedEmoji && !$reactArray.reacts.includes(reactedEmoji)}
+            <!-- Show reactedEmoji as last react if has, else show reactArray.value.last as last -->
+            {#if reactedEmoji && !reactArray.value.reacts.includes(reactedEmoji)}
                 <div class="reactContainer roundedBtn" class:selected={true}>
                     <div class="emoji" data-emoji="{reactedEmoji}">{reactedEmoji}</div>
                 </div>
             {:else}
-                <div class="reactContainer roundedBtn" class:selected={selectedReact == $reactArray.last}>
-                    <div class="emoji" data-emoji="{$reactArray.last}">{$reactArray.last}</div>
+                <div class="reactContainer roundedBtn" class:selected={selectedReact == reactArray.value.last}>
+                    <div class="emoji" data-emoji="{reactArray.value.last}">{reactArray.value.last}</div>
                 </div>
             {/if}
 
@@ -193,7 +187,7 @@
             <MessageInfo message={message}/>
         {:else}
             {#key optionsArray}
-            {#each optionsArray as option, i (option) }
+            {#each optionsArray as option, i (i) }
             {#if option != null}
                 <div in:fly|global={{y: 10, delay: ((i+1)*50)}} class="option {option}" class:delete={option == 'Delete'} title="{option}">
                     <i class="{messageOptions[option]}"></i>

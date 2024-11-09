@@ -24,7 +24,7 @@
         myPrivateKey,
     } from "$lib/store.svelte";
     import AppLogo from "./appLogo.svelte";
-    import type { User } from "$lib/types";
+    import type { chatRoomStoreType, User } from "$lib/types";
     import { bufferToString, exportPublicKey, importPublicKey, makeKeyPair, stringToBuffer } from "$lib/e2e/encryption";
     import Quantum from "$lib/components/icons/quantum.svelte";
     import DotStream from "$lib/components/icons/dotStream.svelte";
@@ -38,7 +38,7 @@
 
     let errAnimation = $state("");
 
-    run(() => {
+    $effect(() => {
         if (avatarErr || maxUserErr) {
             errAnimation = "shake";
             setTimeout(() => {
@@ -49,7 +49,7 @@
         }
     });
 
-    let titleText = $chatRoomStore.Key ? "Join chat" : "Create chat";
+    let titleText = chatRoomStore.value.Key ? "Join chat" : "Create chat";
 
     const actionCreateKey = "Creating encryption keys";
     const actionConnectKey = "Establishing connection";
@@ -59,19 +59,20 @@
 
     let mounted = $state(false);
 
-    if ($chatRoomStore.Key) {
+    socket.on("disconnect", () => {
+        actionButtonText = titleText;
+    });
+
+    if (chatRoomStore.value.Key) {
         socket.emit(
             "fetchKeyData",
-            $chatRoomStore.Key,
+            chatRoomStore.value.Key,
             false,
             (res: socketResponse) => {
                 if (!res.success) {
                     showUserInputForm.value = false;
                 } else {
-                    chatRoomStore.update((room) => {
-                        room.userList = res.users;
-                        return room;
-                    });
+                    chatRoomStore.value.userList = res.users;
                     showUserInputForm.value = true;
                 }
             },
@@ -99,7 +100,7 @@
         }
 
         if (
-            (!$chatRoomStore.Key && selectedMaxUser < 2) ||
+            (!chatRoomStore.value.Key && selectedMaxUser < 2) ||
             selectedMaxUser > 10
         ) {
             maxUserErr = "Max users must be between 2 and 10";
@@ -121,7 +122,7 @@
 
         actionButtonText = actionConnectKey;
         
-        if (!$chatRoomStore.Key) {
+        if (!chatRoomStore.value.Key) {
             socket.emit(
                 "createChat",
                 selectedavatar,
@@ -146,13 +147,15 @@
 
                     res.user.publicKey = pair.publicKey;
                     myPrivateKey.value = pair.privateKey;
-                    chatRoomStore.update((room) => {
-                        room.Key = res.key;
-                        room.admin = res.userId;
-                        room.maxUsers = selectedMaxUser;
-                        room.userList = {[res.userId]: res.user};
-                        return room;
-                    });
+
+                    const newVal: chatRoomStoreType = {
+                        Key: res.key,
+                        admin: res.userId,
+                        maxUsers: selectedMaxUser,
+                        userList: {[res.userId]: res.user},
+                    }
+
+                    chatRoomStore.value = newVal;
 
                     myId.value = res.userId;
 
@@ -162,13 +165,15 @@
                     selectedavatar = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.value = false;
+
+                    console.log("%cChat created", "color: green");
                 },
             );
         } else {
             socket.connect();
             socket.emit(
                 "joinChat",
-                $chatRoomStore.Key,
+                chatRoomStore.value.Key,
                 selectedavatar,
                 bufferToString(publicKey),
                 async (res: {
@@ -193,11 +198,15 @@
 
                     actionButtonText = actionEncryptChat;
 
-                    chatRoomStore.update((room) => {
-                        room.admin = res.admin;
-                        room.maxUsers = res.maxUsers;
-                        return room;
-                    });
+                    const newVal: chatRoomStoreType = {
+                        Key: chatRoomStore.value.Key,
+                        admin: res.admin,
+                        maxUsers: res.maxUsers,
+                        userList: {},
+                    }
+
+                    chatRoomStore.value = newVal;
+
                     myPrivateKey.value = pair.privateKey;
 
                     Object.entries(res.users).forEach(async ([uid, user]) => {
@@ -208,10 +217,7 @@
                             uid: user.uid,
                             publicKey: pubKey,
                         };
-                        chatRoomStore.update((room) => {
-                            room.userList[uid] = u;
-                            return room;
-                        });
+                        chatRoomStore.value.userList[uid] = u;
                     });
 
 
@@ -223,6 +229,8 @@
                     selectedavatar = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.value = false;
+
+                    console.log("%cChat joined", "color: green");
                 },
             );
         }
@@ -241,7 +249,7 @@
     <div class="formWrapper">
         <div class="form box-shadow back-blur" in:fly={{ y: 30 }}>
             <div class="formtitle">
-                <AppLogo title={ !$chatRoomStore.Key ? {text: 'Create chat', icon: "fa-solid fa-meteor"} : {text: 'Join chat', icon: "fa-solid fa-handshake"}}/>
+                <AppLogo title={ !chatRoomStore.value.Key ? {text: 'Create chat', icon: "fa-solid fa-meteor"} : {text: 'Join chat', icon: "fa-solid fa-handshake"}}/>
             </div>
             <div class="formfield">
                 <label for="avatar" class:error={avatarErr} class:selected={selectedavatar}>
@@ -255,7 +263,7 @@
                 <div id="avatar" class="avatarsContainer">
                     <div class="avatars">
                         {#each avList as avatar, i}
-                            {#if $chatRoomStore.Key && isTaken(avatar)}
+                            {#if chatRoomStore.value.Key && isTaken(avatar)}
                                 <div
                                     class="avatar inuse"
                                     in:fly|global={{ x: 10, delay: i * 30 }}
@@ -303,7 +311,7 @@
                 </div>
             </div>
 
-            {#if !$chatRoomStore.Key}
+            {#if !chatRoomStore.value.Key}
                 <div class="formfield range">
                     <label for="maxUsers"
                         >Create chat for ({selectedMaxUser}) users</label

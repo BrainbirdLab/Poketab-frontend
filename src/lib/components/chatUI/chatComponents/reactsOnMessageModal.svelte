@@ -1,12 +1,12 @@
 <script lang="ts">
     import { chatRoomStore, myId } from "$lib/store.svelte";
-    import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageTypes";
+    import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageStore.svelte";
     import { fly } from "svelte/transition";
     import Modal from "./modal.svelte";
     import { page } from "$app/stores";
     import { onDestroy } from "svelte";
 
-    let message = $derived($messageDatabase[messageDatabase.getIndex($eventTriggerMessageId)] as MessageObj);
+    let message = $derived($messageDatabase[messageDatabase.getIndex(eventTriggerMessageId.value)] as MessageObj);
 
     // [uid: string]: react-emoji
     let reacts = $derived(message?.reactedBy || new Map<string, string>());
@@ -30,16 +30,16 @@
 
 <Modal show={$page.state.showReactsOnMessage}>
     <div class="reactsOnMessage box-shadow back-blur" transition:fly|global={{y: 40, duration: 100}}>
-        <div class="title">Reacts on {$chatRoomStore.userList[message?.sender || '']?.avatar || "Zombie"}'s message</div>
+        <div class="title">Reacts on {chatRoomStore.value.userList[message?.sender || '']?.avatar || "Zombie"}'s message</div>
         <div class="users">
             <!-- Slow selected type of reacts -->
             {#key reactsToShow}
             {#each reactsToShow as [uid, react], i}
                 <div class="user">
                     <div class="userInfo" in:fly|global={{x: -5, delay: 50 * (i + 1)}}>
-                        <img src="/images/avatars/{$chatRoomStore.userList[uid]?.avatar || "Rip"}(custom).png" alt="user"/>
+                        <img src="/images/avatars/{chatRoomStore.value.userList[uid]?.avatar || "Rip"}(custom).png" alt="user"/>
                         <span>
-                            {$chatRoomStore.userList[uid]?.avatar || "Zombie"}
+                            {chatRoomStore.value.userList[uid]?.avatar || "Zombie"}
                             {#if uid === myId.value}
                                 (You)
                             {/if}

@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
 
     import { page } from "$app/stores";
     import { chatRoomStore } from "$lib/store.svelte";
-    import { fade, fly, scale } from "svelte/transition";
+    import { fade, scale } from "svelte/transition";
     import { addState } from "../stateManager.svelte";
     import { onMount } from "svelte";
-    import { writable } from "svelte/store";
-    import { startScrambleAnimation, stopScrambleAnimation } from "$lib/scrambler";
+    import { startScrambleAnimation, stopScrambleAnimation } from "$lib/scrambler.svelte";
+    import { ref } from '$lib/ref.svelte';
 
     interface Props {
         encrypted?: boolean;
@@ -17,16 +16,16 @@
 
     const textToScrambleInitial = "Encrypting this chat";
     const textToScrambleFinal = "End-to-end encrypted";
-    const scrambledText = writable(textToScrambleInitial);
+    const scrambledText = ref(textToScrambleInitial);
 
     onMount(() => {
         startScrambleAnimation(textToScrambleInitial, scrambledText);
     });
 
-    run(() => {
+    $effect(() => {
         if (encrypted) {
             stopScrambleAnimation();
-            scrambledText.set(textToScrambleFinal);
+            scrambledText.value = textToScrambleFinal;
         }
     });
 </script>
@@ -35,8 +34,8 @@
     <div class="currentlyActive">
         <div class="users">
             <i class="fa-solid fa-user"></i> Active: {Object.keys(
-                $chatRoomStore.userList,
-            ).length}/{$chatRoomStore.maxUsers}
+                chatRoomStore.value.userList,
+            ).length}/{chatRoomStore.value.maxUsers}
         </div>
         <div class="enc">
             {#if encrypted}
@@ -44,7 +43,7 @@
             {:else}
                 <i class="fa-solid fa-lock-open"></i>
             {/if}
-            {$scrambledText}
+            {scrambledText.value}
         </div>
     </div>
     <div class="optionPanel">

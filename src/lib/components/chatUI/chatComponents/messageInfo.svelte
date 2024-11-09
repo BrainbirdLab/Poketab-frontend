@@ -1,6 +1,6 @@
 <script lang="ts">
     import { bufferToHexCode } from "$lib/e2e/encryption";
-    import { FileMessageObj, type MessageObj } from "$lib/messageTypes";
+    import { FileMessageObj, type MessageObj } from "$lib/messageStore.svelte";
     import { onDestroy, onMount } from "svelte";
     import { getFormattedDate } from "./messages/messageUtils";
     import { chatRoomStore } from "$lib/store.svelte";
@@ -52,13 +52,13 @@
             </div>
             <div class="content flex">
                 <img
-                    src="/images/avatars/{$chatRoomStore.userList[message.sender]
+                    src="/images/avatars/{chatRoomStore.value.userList[message.sender]
                         .avatar}(custom).webp"
                     height="20"
                     width="20"
-                    alt="{$chatRoomStore.userList[message.sender].avatar}"
+                    alt="{chatRoomStore.value.userList[message.sender].avatar}"
                 />
-                {$chatRoomStore.userList[message.sender].avatar}
+                {chatRoomStore.value.userList[message.sender].avatar}
             </div>
         </div>
         <div class="sub-content">

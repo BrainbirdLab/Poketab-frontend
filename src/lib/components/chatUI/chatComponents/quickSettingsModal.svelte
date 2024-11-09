@@ -87,14 +87,14 @@
         socket.emit("leaveChat", destroy);
     }
 
-    let KEY = $derived($chatRoomStore.Key);
+    let KEY = $derived(chatRoomStore.value.Key);
 
     let copyKeyIcon = $state("fa-regular fa-clone");
     let copyTimeout: number | NodeJS.Timeout | null = null;
 
     function copyKey() {
         navigator.clipboard
-            .writeText($chatRoomStore.Key)
+            .writeText(chatRoomStore.value.Key)
             .then(() => {
                 showToastMessage("Copied to clipboard!");
                 copyKeyIcon = "fa-solid fa-check";
@@ -139,10 +139,10 @@
         </div>
 
         <div class="subsectionsContainer">
-            {#if $chatRoomStore.userList && Object.keys($chatRoomStore.userList).length > 0}
+            {#if chatRoomStore.value.userList && Object.keys(chatRoomStore.value.userList).length > 0}
                 <div class="subsection">
                     <div class="subtitle">
-                        {Object.keys($chatRoomStore.userList).length } People{Object.keys($chatRoomStore.userList).length > 1 ? "'s" : ""} on
+                        {Object.keys(chatRoomStore.value.userList).length } People{Object.keys(chatRoomStore.value.userList).length > 1 ? "'s" : ""} on
                         <button id="keyname" class="play-sound clickable" onclick={copyKey}
                         >{KEY}<i class={copyKeyIcon}></i></button
                         >
@@ -334,13 +334,13 @@
                     Danger zone <i class="fa-solid fa-skull"></i>
                 </div>
                 <ul class="moreInfo">
-                    {#if $chatRoomStore.admin == myId.value}
+                    {#if chatRoomStore.value.admin == myId.value}
                         <li>Destroy chat will end the chat session for all</li>
                     {/if}
                     <li>Leave chat will end the chat session for you</li>
                 </ul>
                 <div class="btn-grp">
-                    {#if $chatRoomStore.admin == myId.value}
+                    {#if chatRoomStore.value.admin == myId.value}
                         <button
                             onclick={() => leaveChat(true)}
                             id="destroy"

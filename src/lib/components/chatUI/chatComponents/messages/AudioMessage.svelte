@@ -1,7 +1,7 @@
 <script lang="ts">
     import { run } from 'svelte/legacy';
 
-    import type { AudioMessageObj } from "$lib/messageTypes";
+    import type { AudioMessageObj } from "$lib/messageStore.svelte";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
@@ -15,7 +15,7 @@
 
     let { file }: Props = $props();
 
-    let duration = file.duration;
+    let duration = $derived(file.duration);
 
 </script>
 

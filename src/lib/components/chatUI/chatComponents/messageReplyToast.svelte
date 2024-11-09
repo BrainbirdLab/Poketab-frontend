@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import { replyTarget, TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj, messageDatabase, MessageObj} from "$lib/messageTypes";
+    import { TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj, MessageObj, messageDatabase, replyTarget} from "$lib/messageStore.svelte";
     import {chatRoomStore, myId} from "$lib/store.svelte";
     import { slide, fly, fade, scale } from "svelte/transition";
     import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
@@ -23,7 +23,7 @@
 
     function closeReplyToast(){
         userClosed = true;
-        showReplyToast.set(false);
+        showReplyToast.value = false;
     }
 
     onMount(() => {
@@ -31,13 +31,13 @@
     });
 
     onDestroy(() => {
-        replyTarget.set(null);
+        replyTarget.value = null;
     })
 
-    let message = $derived(messageDatabase.getMessageByIndex(messageDatabase.getIndex($replyTarget?.id || "")) as MessageObj);
-    let sender = $derived($replyTarget ? (message.sender === myId.value ? 'self' : $chatRoomStore.userList[message.sender]?.avatar || 'Zombie') : 'Zombie');
+    let message = $derived($messageDatabase[messageDatabase.getIndex(replyTarget.value?.id || "")] as MessageObj);
+    let sender = $derived(replyTarget.value ? (message.sender === myId.value ? 'self' : chatRoomStore.value.userList[message.sender]?.avatar || 'Zombie') : 'Zombie');
     $effect(() => {
-        if (!message || message.type == 'deleted' || !$chatRoomStore.userList[message.sender]){
+        if (!message || message.type == 'deleted' || !chatRoomStore.value.userList[message.sender]){
             closeReplyToast();
         }
     });

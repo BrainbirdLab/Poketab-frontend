@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { replyTarget, eventTriggerMessageId, TextMessageObj, AudioMessageObj, MessageObj } from "$lib/messageTypes";
+    import { TextMessageObj, AudioMessageObj, MessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageStore.svelte";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./voiceRecorder.svelte";
     import { fly } from "svelte/transition";
@@ -33,7 +33,7 @@
 
             message = new AudioMessageObj();
 
-            const name = `${$chatRoomStore.userList[myId.value].avatar}'s voice message`;
+            const name = `${chatRoomStore.value.userList[myId.value].avatar}'s voice message`;
 
             if (message instanceof AudioMessageObj){
                 message.url = recordedAudioUrl;
@@ -77,11 +77,11 @@
             }
         }
 
-        if ($replyTarget){
-            message.replyTo = $replyTarget.id;
-            eventTriggerMessageId.set("");
-            replyTarget.set(null);
-            showReplyToast.set(false);
+        if (replyTarget.value){
+            message.replyTo = replyTarget.value.id;
+            eventTriggerMessageId.value = "";
+            replyTarget.value = null;
+            showReplyToast.value = false;
         }
 
         await sendMessage(message, file);
@@ -98,7 +98,7 @@
     let isTypingTimeout: number | NodeJS.Timeout;
 
     function sendTypingStatus(){
-        socket.emit('typing', myId.value, $chatRoomStore.Key, 'start');
+        socket.emit('typing', myId.value, chatRoomStore.value.Key, 'start');
 
         if (isTypingTimeout) {
             clearTimeout(isTypingTimeout)
@@ -110,7 +110,7 @@
     }
 
     function endTypingStatus(){
-        socket.emit('typing', myId.value, $chatRoomStore.Key, 'end');
+        socket.emit('typing', myId.value, chatRoomStore.value.Key, 'end');
     }
 
     const inputHandler = (e: Event) => {
@@ -152,7 +152,7 @@
 
     let inputbox = $state() as HTMLDivElement;
 
-    const unsub = showReplyToast.subscribe(val => {
+    const unsub = showReplyToast.onChange(val => {
         if (val) {
             inputbox.focus();
         }
@@ -229,7 +229,7 @@
         }} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">
-            {#if $showReplyToast && $replyTarget && $replyTarget.id}
+            {#if showReplyToast.value && replyTarget.value && replyTarget.value.id}
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { StickerMessageObj } from "$lib/messageTypes";
+    import type { StickerMessageObj } from "$lib/messageStore.svelte";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FileMessageObj, ImageMessageObj, MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messageTypes";
+    import { FileMessageObj, ImageMessageObj, MessageObj, StickerMessageObj, TextMessageObj, messageDatabase } from "$lib/messageStore.svelte";
     import { chatRoomStore, myId } from "$lib/store.svelte";
     import { getTextData } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
 
@@ -11,12 +11,10 @@
 
     let { replyTo, senderId, classList }: Props = $props();
 
-    let index = $derived(messageDatabase.getIndex(replyTo));
+    let replyMessage = $derived(messageDatabase.getMessage(replyTo) as MessageObj);
 
-    let replyMessage = $derived($messageDatabase[index] as MessageObj);
-
-    let title = $derived(replyTo ? (`${senderId === myId.value ? "You" : $chatRoomStore.userList[senderId]?.avatar || 'A Zombie'} replied to ${replyMessage?.sender === senderId ? "self" : $chatRoomStore.userList[replyMessage?.sender]?.avatar || 'a Zombie'}`) 
-                : (senderId === myId.value ? 'You' : $chatRoomStore.userList[senderId]?.avatar || 'A Zombie'));
+    let title = $derived(replyTo ? (`${senderId === myId.value ? "You" : chatRoomStore.value.userList[senderId]?.avatar || 'A Zombie'} replied to ${replyMessage?.sender === senderId ? "self" : chatRoomStore.value.userList[replyMessage?.sender]?.avatar || 'a Zombie'}`) 
+                : (senderId === myId.value ? 'You' : chatRoomStore.value.userList[senderId]?.avatar || 'A Zombie'));
 
 </script>
 

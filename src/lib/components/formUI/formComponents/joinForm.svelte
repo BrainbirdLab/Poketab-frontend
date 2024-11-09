@@ -12,7 +12,7 @@
         joinKey,
     } from "$lib/store.svelte";
 
-    import type { User } from "$lib/types";
+    import type { chatRoomStoreType, User } from "$lib/types";
 
     import { onDestroy, onMount } from "svelte";
     import AppLogo from "./appLogo.svelte";
@@ -129,12 +129,14 @@
                     return;
                 }
 
-                chatRoomStore.update((room) => {
-                    room.Key = joinKey.value;
-                    room.userList = res.users;
-                    room.maxUsers = res.maxUsers;
-                    return room;
-                });
+                const newVal: chatRoomStoreType = {
+                    Key: joinKey.value,
+                    userList: res.users,
+                    maxUsers: res.maxUsers,
+                    admin: "",
+                };
+
+                chatRoomStore.value = newVal;
 
                 showUserInputForm.value = true;
                 formActionButtonDisabled.value = false;

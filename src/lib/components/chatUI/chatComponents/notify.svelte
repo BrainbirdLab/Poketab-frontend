@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import { TextMessageObj, StickerMessageObj, notice, FileMessageObj, MessageObj } from "$lib/messageTypes";
+    import { TextMessageObj, StickerMessageObj, FileMessageObj, MessageObj, notice } from "$lib/messageStore.svelte";
     import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer, messageScrolledPx } from "$lib/store.svelte";
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
@@ -10,7 +10,7 @@
 
     $effect(() => {
         if (messageScrolledPx.value < 200){
-            notice.set(null);
+            notice.value = null;
         }
     });
 
@@ -54,10 +54,10 @@
 
                 Notification.requestPermission().then((permission) => {
                     if (permission === "granted") {
-                        notification = new Notification(get(chatRoomStore).userList[value.sender].avatar, {
+                        notification = new Notification(chatRoomStore.value.userList[value.sender].avatar, {
                             body: msg,
                             data: value.id,
-                            icon: `/images/avatars/${get(chatRoomStore).userList[value.sender].avatar}(custom).webp`,
+                            icon: `/images/avatars/${chatRoomStore.value.userList[value.sender].avatar}(custom).webp`,
                             tag: value.sender
                         });
 
@@ -72,7 +72,7 @@
         } 
     }
 
-    const unsub = notice.subscribe((value) => {
+    const unsub = notice.onChange((value) => {
 
         if (value && showScrollPopUp.value){
             playMessageSound('notification');
@@ -114,15 +114,15 @@
     <button class="popup box-shadow back-blur" tabindex="-1" transition:fly={{y: 20, duration: 200}} onclick={()=>{
         messageContainer.value.scrollTo({top: messageContainer.value.scrollHeight, behavior: "smooth"});
     }}>
-    {#if $notice && messageScrolledPx.value > 200}
+    {#if notice.value && messageScrolledPx.value > 200}
         <div class="content">
-            <img src="/images/avatars/{$chatRoomStore.userList[$notice.sender].avatar}(custom).webp" alt="avatar"/>
-            {#if $notice instanceof TextMessageObj}
-                {$notice.message}
-            {:else if $notice instanceof StickerMessageObj}
+            <img src="/images/avatars/{chatRoomStore.value.userList[notice.value.sender].avatar}(custom).webp" alt="avatar"/>
+            {#if notice.value instanceof TextMessageObj}
+                {notice.value.message}
+            {:else if notice.value instanceof StickerMessageObj}
                 Sticker
-            {:else if $notice instanceof FileMessageObj}
-                {toSentenceCase($notice.baseType)}
+            {:else if notice.value instanceof FileMessageObj}
+                {toSentenceCase(notice.value.baseType)}
             {/if}
         </div>
     {:else}

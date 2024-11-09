@@ -1,5 +1,4 @@
-import { MessageObj, messageDatabase, lastMessageId, FileMessageObj } from "$lib/messageTypes";
-import { get, writable } from "svelte/store";
+import { MessageObj, FileMessageObj, lastMessageId, messageDatabase } from "$lib/messageStore.svelte";
 import { chatRoomStore, DEVMODE, myId, outgoingXHRs } from "$lib/store.svelte";
 import { socket } from "$lib/connection/socketClient";
 import { badWords } from "./censoredWords";
@@ -7,8 +6,9 @@ import { generateId, playMessageSound } from "$lib/utils";
 import { encryptMessage, encryptSymmetricKey, makeSymmetricKey  } from "$lib/e2e/encryption";
 import { getLinkMetadata } from "$lib/linkmetaParser";
 import { PUBLIC_API_SERVER_URL } from "$env/static/public";
+import { ref } from "$lib/ref.svelte";
 
-export const showReplyToast = writable(false);
+export const showReplyToast = ref(false);
 
 export function getFormattedDate(time: number) {
 	const currentTime = Date.now();
@@ -68,10 +68,10 @@ export async function sendMessage(message: MessageObj, file?: File){
 	messageDatabase.add(message);
 
 	// if only one user in the chat room, or DEVMODE is on, return
-	if (Object.keys(get(chatRoomStore).userList).length < 2 || DEVMODE.value){
+	if (Object.keys(chatRoomStore.value.userList).length < 2 || DEVMODE.value){
 		messageDatabase.markDelevered(message, message.id);
 		if (file) {
-			(message as FileMessageObj).loaded = 100;
+			(messageDatabase.getMessage(message.id) as FileMessageObj).loaded = 100;
 		}
 		getLinkMetadata(message);
 		return;
@@ -79,7 +79,7 @@ export async function sendMessage(message: MessageObj, file?: File){
 
 	const smKeys: {[key: string]: ArrayBuffer} = {};
 
-	for (const [key, value] of Object.entries(get(chatRoomStore).userList)) {
+	for (const [key, value] of Object.entries(chatRoomStore.value.userList)) {
 		if (key != myId.value) {
 			if (!value.publicKey){
 				continue;
@@ -95,7 +95,7 @@ export async function sendMessage(message: MessageObj, file?: File){
 	//encrypt the message
 	const encryptedMessage = await encryptMessage(buffer, rawSmKey);
 	
-    socket.emit('newMessage', encryptedMessage, get(chatRoomStore).Key, smKeys, (messageId: string) => {
+    socket.emit('newMessage', encryptedMessage, chatRoomStore.value.Key, smKeys, (messageId: string) => {
 		
 		messageDatabase.markDelevered(message, messageId);
 		getLinkMetadata(message);
@@ -108,13 +108,8 @@ export async function sendMessage(message: MessageObj, file?: File){
 		
 		if (file){
 
-			if (Object.keys(get(chatRoomStore).userList).length < 2 ){
-				messageDatabase.update(messages => {
-					
-					(message as FileMessageObj).loaded = 100;
-	
-					return messages;
-				});
+			if (Object.keys(chatRoomStore.value.userList).length < 2 ){
+				(message as FileMessageObj).loaded = 100;
 				return;
 			}
 
@@ -133,12 +128,9 @@ export async function sendMessage(message: MessageObj, file?: File){
 				formData.append('file', encryptedFile);
 				const xhr = new XMLHttpRequest();
 	
-				outgoingXHRs.update(xhrs => {
-					xhrs.set(message.id, xhr);
-					return xhrs;
-				});
+				outgoingXHRs.value.set(message.id, xhr);
 	
-				xhr.open('POST', `${PUBLIC_API_SERVER_URL}/api/files/upload/${get(chatRoomStore).Key}/${myId.value}/${message.id}`);
+				xhr.open('POST', `${PUBLIC_API_SERVER_URL}/api/files/upload/${chatRoomStore.value.Key}/${myId.value}/${message.id}`);
 	
 				//progress event
 				xhr.upload.onprogress = (e) => {
@@ -153,7 +145,7 @@ export async function sendMessage(message: MessageObj, file?: File){
 		}
 		
 		if (document.hasFocus()){
-			socket.emit('seen', myId.value, get(chatRoomStore).Key, get(lastMessageId));
+			socket.emit('seen', myId.value, chatRoomStore.value.Key, lastMessageId.value);
 		}
 
     });
@@ -163,7 +155,7 @@ export async function sendMessage(message: MessageObj, file?: File){
 function updateProgress(percent: number, message: FileMessageObj) {
 	//update message
 	messageDatabase.update((messages) => {
-		message.loaded = Math.round(percent);	
+		(messageDatabase.getMessage(message.id) as FileMessageObj).loaded = Math.round(percent);
 		return messages;
 	});
 }

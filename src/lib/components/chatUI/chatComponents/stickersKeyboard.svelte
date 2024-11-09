@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { myId } from "$lib/store.svelte";
-    import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
+    import { eventTriggerMessageId, replyTarget, StickerMessageObj } from "$lib/messageStore.svelte";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { selectedStickerGroup, setToLocalStorage } from "$lib/settings.svelte";
     import { generateId } from "$lib/utils";
@@ -87,11 +87,11 @@
                 messageObj.baseType = 'sticker';
 
 
-                if ($replyTarget){
-                    messageObj.replyTo = $replyTarget.id;
-                    eventTriggerMessageId.set("");
-                    replyTarget.set(null);
-                    showReplyToast.set(false);
+                if (replyTarget.value){
+                    messageObj.replyTo = replyTarget.value.id;
+                    eventTriggerMessageId.value = "";
+                    replyTarget.value = null;
+                    showReplyToast.value = false;
                 }
 
                 await sendMessage(messageObj);
@@ -146,23 +146,21 @@
     }
 
     function moveHeads(direction: 'left' | 'right'){
-        //shift to next head
-        selectedStickerGroup.onChange(value => {
-            const index = Stickers.findIndex(sticker => sticker.name == value);
-            if (direction == 'left'){
-                if (index == 0){
-                    return Stickers[Stickers.length - 1].name;
-                } else {
-                    return Stickers[index - 1].name;
-                }
+
+        const index = Stickers.findIndex(sticker => sticker.name == selectedStickerGroup.value);
+        if (direction == 'left'){
+            if (index == 0){
+                selectedStickerGroup.value =  Stickers[Stickers.length - 1].name;
             } else {
-                if (index == Stickers.length - 1){
-                    return Stickers[0].name;
-                } else {
-                    return Stickers[index + 1].name;
-                }
+                selectedStickerGroup.value =  Stickers[index - 1].name;
             }
-        });
+        } else {
+            if (index == Stickers.length - 1){
+                selectedStickerGroup.value =  Stickers[0].name;
+            } else {
+                selectedStickerGroup.value =  Stickers[index + 1].name;
+            }
+        }
     }
 
 </script>

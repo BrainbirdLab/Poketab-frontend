@@ -4,11 +4,11 @@
     import Messages from "$lib/components/chatUI/chatComponents/messages.svelte";
     import { onMount } from "svelte";
     import { chatRoomStore, currentPage, DEVMODE, formActionButtonDisabled, joinedChat, myId, splashMessage } from "$lib/store.svelte";
-    import { messageDatabase, TextMessageObj } from "$lib/messageTypes";
+    import { messageDatabase, TextMessageObj } from "$lib/messageStore.svelte";
     import { makeKeyPair } from "$lib/e2e/encryption";
 
-    $chatRoomStore.Key = "00-000-00";
-    $chatRoomStore.maxUsers = 2;
+    chatRoomStore.value.Key = "00-000-00";
+    chatRoomStore.value.maxUsers = 2;
     /*$chatRoomStore.userList = {
         "uid-1": {
             uid: "uid-1",
@@ -51,10 +51,10 @@
 
     
     let mounted = $state(false);
-    joinedChat.set(true);
-    currentPage.set("chat");
-    splashMessage.set("");
-    formActionButtonDisabled.set(false);
+    joinedChat.value = true;
+    currentPage.value = "chat";
+    splashMessage.value = "";
+    formActionButtonDisabled.value = false;
 
     function insertRecieveMsg(uid: string) {
         const msg = crypto.randomUUID();
@@ -70,13 +70,13 @@
     
     onMount( async () => {
 
-        $DEVMODE = true;
+        DEVMODE.value = true;
 
-        $myId = "uid-0";
+        myId.value = "uid-0";
         const myPair = await makeKeyPair();
     
 
-        $chatRoomStore.userList['uid-0'] = {
+        chatRoomStore.value.userList['uid-0'] = {
             avatar: 'Pikachu',
             uid: 'uid-0',
             publicKey: myPair.publicKey,
@@ -85,13 +85,13 @@
         const key1 = await makeKeyPair();
         const key2 = await makeKeyPair();
 
-        $chatRoomStore.userList['uid-1'] = {
+        chatRoomStore.value.userList['uid-1'] = {
             avatar: 'Charmander',
             uid: 'uid-1',
             publicKey: key1.publicKey,
         }
 
-        $chatRoomStore.userList['uid-2'] = {
+        chatRoomStore.value.userList['uid-2'] = {
             avatar: 'Eevee',
             uid: 'uid-2',
             publicKey: key2.publicKey,
@@ -117,11 +117,7 @@
 
 {#if mounted}
 <div class="content">
-    <ChatInterface>
-        {#snippet messages()}
-                        <Messages />
-                    {/snippet}
-    </ChatInterface>
+    <ChatInterface />
 </div>
 {/if}
 

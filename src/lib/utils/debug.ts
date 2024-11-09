@@ -1,5 +1,5 @@
 import { playMessageSound } from "$lib/utils";
-import { ServerMessageObj, messageDatabase } from "../messageTypes";
+import { ServerMessageObj, messageDatabase } from "../messageStore.svelte";
 
 let start = 0;
 

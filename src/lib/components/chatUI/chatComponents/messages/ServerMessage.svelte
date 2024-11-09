@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ServerMessageObj } from "$lib/messageTypes";
+    import type { ServerMessageObj } from "$lib/messageStore.svelte";
     interface Props {
         message: ServerMessageObj;
     }

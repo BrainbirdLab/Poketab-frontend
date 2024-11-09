@@ -1,7 +1,6 @@
-import { writable, get, type Writable } from "svelte/store";
 import { type ErrorLog, type chatRoomStoreType } from "$lib/types";
-import { messageDatabase } from "$lib/messageTypes";
 import { ref } from "$lib/ref.svelte";
+import { messageDatabase } from "./messageStore.svelte";
 
 export const showUserInputForm = ref(true);
 export const formNotification = ref('');
@@ -22,18 +21,14 @@ export const messageScrolledPx = ref<number>(0);
 
 export const deviceType = ref<'desktop' | 'mobile'>('desktop');
 
-export const outgoingXHRs: Writable<
-    Map<string, XMLHttpRequest>
-> = writable(new Map());
+export const outgoingXHRs = ref<Map<string, XMLHttpRequest>>(new Map());
 
-export const incommingXHRs: Writable<
-    Map<string, XMLHttpRequest>
-> = writable(new Map());
+export const incommingXHRs = ref<Map<string, XMLHttpRequest>>(new Map());
 
-export const reactArray: Writable<{
+export const reactArray= ref<{
     reacts: readonly string[],
     last: string,
-}> = writable({
+}>({
     reacts: ['💙', '😆', '😠', '😢', '😮', '🙂'],
     last: '🌻'
 });
@@ -41,7 +36,7 @@ export const reactArray: Writable<{
 export const myId = ref('');
 export const myPrivateKey = ref<CryptoKey>();
 
-export const chatRoomStore: Writable<chatRoomStoreType> = writable({
+export const chatRoomStore = ref<chatRoomStoreType>({
     Key: '',
     admin: '',
     userList: {},
@@ -56,7 +51,7 @@ export const DEVMODE = ref(false);
 
 export function isTaken(avatar: string){
 
-    const obj = get(chatRoomStore).userList;
+    const obj = chatRoomStore.value.userList;
 
     for (const key in obj) {
         if (obj[key].avatar === avatar) {
@@ -74,10 +69,10 @@ export function resetChatRoomStore(msg: string) {
     myId.value = '';
     joinedChat.value = false;
     messageDatabase.reset();
-    chatRoomStore.set({
+    chatRoomStore.value = {
         Key: '',
         admin: '',
         userList: {},
         maxUsers: 0,
-    });
+    };
 }

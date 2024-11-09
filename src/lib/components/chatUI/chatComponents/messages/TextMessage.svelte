@@ -1,7 +1,7 @@
 <script lang="ts">
     import { once } from 'svelte/legacy';
 
-    import type { TextMessageObj } from "$lib/messageTypes";
+    import type { TextMessageObj } from "$lib/messageStore.svelte";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";

@@ -45,15 +45,15 @@
         MessageObj,
         ServerMessageObj,
         StickerMessageObj,
-        messageDatabase,
-        eventTriggerMessageId,
-        replyTarget,
         LocationMessageObj,
         TextMessageObj,
         FileMessageObj,
         AudioMessageObj,
         ImageMessageObj,
-    } from "$lib/messageTypes";
+        eventTriggerMessageId,
+        messageDatabase,
+        replyTarget,
+    } from "$lib/messageStore.svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer } from "$lib/store.svelte";
     import { showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
@@ -92,7 +92,7 @@
                 return;
             }
 
-            eventTriggerMessageId.set(messageObj.id);
+            eventTriggerMessageId.value = messageObj.id;
             addState('', { showMessageOptions: true });
         }
     }
@@ -130,7 +130,7 @@
             const messageObj = messageDatabase.getMessage(message.id) as MessageObj;
 
             if (target.classList.contains('reactsContainer')){
-                eventTriggerMessageId.set(messageObj.id);
+                eventTriggerMessageId.value = messageObj.id;
                 addState('', { showReactsOnMessage: true })
                 return;
             }
@@ -159,9 +159,9 @@
 
                         messageObj.audio.ontimeupdate = () => {
 
-                            messageDatabase.update((messages) => {
-                                return messages;
-                            });
+                            //messageDatabase.value.update((messages) => {
+                            //    return messages;
+                            //});
                         }
 
                         messageObj.audio.onended = () => {
@@ -169,9 +169,9 @@
                             messageObj.audio.onended = null;
                             messageObj.audio.ontimeupdate = null;
                             currentPlayingAudioMessage = null;
-                            messageDatabase.update((messages) => {
-                                return messages;
-                            });
+                            //messageDatabase.value.update((messages) => {
+                            //    return messages;
+                            //});
                         }
 
                     } else if (!messageObj.audio.paused) {
@@ -382,9 +382,9 @@
                     
                     if (replyTrigger) {
 
-                        replyTarget.set(messageObj);
+                        replyTarget.value = messageObj;
 
-                        showReplyToast.set(true);
+                        showReplyToast.value = true;
 
                         replyTrigger = false;
                         replyIcon.dataset.replyTrigger = "false";
@@ -419,7 +419,7 @@
             await navigator.share({
                 title: "Poketab Messenger",
                 text: "Join chat!",
-                url: `${location.origin}/chat/${$chatRoomStore.Key}`,
+                url: `${location.origin}/chat/${chatRoomStore.value.Key}`,
             });
         } catch (err) {
             showToastMessage(`${err}`);
@@ -449,12 +449,17 @@
 
         //observer.observe(messagesHTML);
 
-        messageDatabase.subscribe(updateUI);
-
         return () => {
             observer.disconnect();
         }
     });
+
+    $effect(() => {
+        if ($messageDatabase) {
+            updateUI();
+        }
+    });
+
     // Capture the latest scroll position before making adjustments
     let currentScrollTop = 0;
 

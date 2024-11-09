@@ -16,7 +16,7 @@
 
     $effect.pre(() => {
         if (showId == uid) {
-            const publicKey = $chatRoomStore.userList[uid].publicKey;
+            const publicKey = chatRoomStore.value.userList[uid].publicKey;
             if (publicKey) {
                 // convert it to 2 digit hex string separated by 1 space. like d2 4b a9
                 exportPublicKey(publicKey).then((exportedKey) => {

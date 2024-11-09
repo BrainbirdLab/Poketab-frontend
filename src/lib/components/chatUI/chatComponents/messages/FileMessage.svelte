@@ -3,7 +3,7 @@
     import {
         ImageMessageObj,
         type FileMessageObj,
-    } from "$lib/messageTypes";
+    } from "$lib/messageStore.svelte";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
@@ -46,7 +46,7 @@
                                         {#if file.loadScheme == "upload"}
                                             <i class="fa-solid fa-arrow-up"
                                             ></i>
-                                            {file.sender === $myId
+                                            {file.sender === myId.value
                                                 ? `${file.loaded}%`
                                                 : "Sending"}
                                         {:else if file.loadScheme == "download"}

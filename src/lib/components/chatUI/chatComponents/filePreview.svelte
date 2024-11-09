@@ -1,6 +1,6 @@
 <script lang="ts">
     import { getSize } from "./messages/messageUtils";
-    import { selectedFiles } from "$lib/messageTypes";
+    import { selectedFiles } from "$lib/messageStore.svelte";
     import { fly } from "svelte/transition";
     import { flip } from "svelte/animate";
     import { getIcon } from "$lib/utils";
@@ -39,7 +39,7 @@
 </script>
 
 <div class="selectedFiles">
-    {#each $selectedFiles as file, i (file.name)}
+    {#each selectedFiles.value as file, i (file.name)}
         <div
             animate:flip={{duration: 600}}
             in:fly={{y: 10, delay: 50 * (i + 1)}}
@@ -77,7 +77,7 @@
         >Cancel <i class="fa-solid fa-trash default"></i></button
     >
     <div class="items-count">
-        {$selectedFiles.length} {$selectedFiles.length < 2 ? "item" : "items"} selected
+        {selectedFiles.value.length} {selectedFiles.value.length < 2 ? "item" : "items"} selected
     </div>
     <button 
         transition:fly={{x: 10, delay: 100}}

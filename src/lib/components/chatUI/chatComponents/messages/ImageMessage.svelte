@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ImageMessageObj } from "$lib/messageTypes";
+    import type { ImageMessageObj } from "$lib/messageStore.svelte";
     import { myId } from "$lib/store.svelte";
 
     interface Props {

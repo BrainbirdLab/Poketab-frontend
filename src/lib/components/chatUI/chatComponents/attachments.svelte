@@ -3,7 +3,7 @@
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { socket } from "$lib/connection/socketClient";
     import { chatRoomStore, myId } from "$lib/store.svelte";
-    import { AudioMessageObj, FileMessageObj, ImageMessageObj, selectedFiles } from "$lib/messageTypes";
+    import { AudioMessageObj, FileMessageObj, ImageMessageObj, selectedFiles } from "$lib/messageStore.svelte";
     import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
@@ -40,7 +40,7 @@
         navigator.geolocation.getCurrentPosition((position) => {
             clearTimeout(timeout);
             const {latitude, longitude} = position.coords;
-            socket.emit('location', {latitude, longitude}, $chatRoomStore.Key, myId.value);
+            socket.emit('location', {latitude, longitude}, chatRoomStore.value.Key, myId.value);
         }, (error) => {
             clearTimeout(timeout);
             showToastMessage('Unable to get location.');
@@ -77,7 +77,7 @@
                         showFilePicker = true;
                         await tick();
                         filePicker.onchange = (e) => {
-                            if ($selectedFiles.length > 10){
+                            if (selectedFiles.value.length > 10){
                                 showToastMessage('You can only send 10 files at a time.');
                                 clearInput();
                                 return;
@@ -139,7 +139,7 @@
     function sendFiles() {
 
         //copy files to variable
-        const files = [...$selectedFiles];
+        const files = [...selectedFiles.value];
 
         //clear input
         clearInput();
@@ -298,14 +298,14 @@
 
 
 
-{#if $selectedFiles && $selectedFiles.length > 0}
+{#if selectedFiles.value && selectedFiles.value.length > 0}
 <div class="filePreviewContainer" use:handleClick in:fade={{duration: 100}} out:fade={{duration: 200}}>
     <FilePreview bind:sendAsType={sendAsType} bind:urlObjects={urlObjects}/>
 </div>
 {/if}
 
 {#if showFilePicker}
-    <input multiple bind:files={$selectedFiles} type="file" bind:this={filePicker} accept="{acceptedTypes}"/>
+    <input multiple bind:files={selectedFiles.value} type="file" bind:this={filePicker} accept="{acceptedTypes}"/>
 {/if}
 
 {#if $page.state.showAttachmentPickerPanel === true}

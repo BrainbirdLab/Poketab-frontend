@@ -20,7 +20,6 @@
     import { onDestroy, onMount } from "svelte";
 
     //scripts
-    import { eventTriggerMessageId, lastMessageId } from "$lib/messageTypes";
     import { chatRoomStore, myId } from "$lib/store.svelte";
     import { socket } from "$lib/connection/socketClient";
     import { page } from "$app/stores";
@@ -30,6 +29,7 @@
     import DropBox from "./chatComponents/dropBox.svelte";
     import Messages from "./chatComponents/messages.svelte";
     import type { LightBoxTargettype } from "$lib/types";
+    import { lastMessageId, eventTriggerMessageId } from "$lib/messageStore.svelte";
 
     let showFilePicker = $state(false);
     let sendAsType: 'file' | 'image' | 'audio' = $state('file');
@@ -102,11 +102,11 @@
         document.onkeydown = keyBindingHandler;
 
         window.onfocus = () => {
-            if (!$lastMessageId) {
+            if (!lastMessageId.value) {
                 return;
             }
 
-            socket.emit("seen", myId.value, $chatRoomStore.Key, $lastMessageId);
+            socket.emit("seen", myId.value, chatRoomStore.value.Key, lastMessageId.value);
         };
 
         infoMessage("You joined the chat 😸", "join");
@@ -146,7 +146,7 @@
     <StickersKeyboardModal />
 {/if}
 
-{#if $eventTriggerMessageId}
+{#if eventTriggerMessageId.value}
     {#if $page.state.showMessageOptions}
         <MessageOptionsModal />
     {/if}

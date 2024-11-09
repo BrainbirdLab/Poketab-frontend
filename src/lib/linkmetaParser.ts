@@ -1,5 +1,5 @@
 import type { linkRes } from "./types";
-import { messageDatabase, type TextMessageObj, type MessageObj } from "./messageTypes";
+import { messageDatabase, type TextMessageObj, type MessageObj } from "./messageStore.svelte";
 import { linkPreviewOn } from "$lib/settings.svelte";
 
 export async function getLinkMetadata(msgObj: MessageObj) {
@@ -51,10 +51,7 @@ export async function getLinkMetadata(msgObj: MessageObj) {
             return;
         }
 
-        messageDatabase.update((messages) => {
-            (messageDatabase.getMessage(messageId) as TextMessageObj).linkPreviewData = linkData;
-            return messages;
-        });
+        (messageDatabase.getMessage(messageId) as TextMessageObj).linkPreviewData = linkData;
 
     } catch (err) {
         console.error(err);
