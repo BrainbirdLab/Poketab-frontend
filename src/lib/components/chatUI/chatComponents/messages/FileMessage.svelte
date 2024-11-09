@@ -93,10 +93,6 @@
         gap: 5px;
         position: relative;
 
-        &:not(:has(img)) {
-            padding: 5px 10px 10px 5px;
-        }
-
         .icon {
             font-size: 25px;
             color: var(--transparent-white-color);
@@ -122,6 +118,10 @@
                 width: 100%;
             }
         }
+    }
+
+    :global(.data:not(:has(img))) {
+        padding: 5px 10px 10px 5px;
     }
 
     .fileMeta {
