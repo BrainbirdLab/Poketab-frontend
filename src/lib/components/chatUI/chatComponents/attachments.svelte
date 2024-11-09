@@ -203,9 +203,7 @@
             });
         });
 
-        Promise.allSettled(promisses).then((res) => {
-            console.log(res);
-        }).catch((err) => {
+        Promise.allSettled(promisses).catch((err) => {
             console.log(err);
             showToastMessage('Unable to send files.');
         });

@@ -81,7 +81,6 @@ socket.on('connect', () => {
 export const retryCount = ref(1);
 
 formNotification.onChange((value) => {
-    console.log('formNotification changed to ' + formNotification.value);
     if (value.includes('offline')) {
         retryCount.value = 1;
         reconnectButtonEnabled.value = false;
@@ -94,7 +93,6 @@ formNotification.onChange((value) => {
 
 
 socket.on('disconnect', (_: string) => {
-    console.log(_);
     retryCount.value = 1;
     if (currentPage.value == 'chat') { // on the forms page
         resetChatRoomStore('Disconnected from server 🙃');

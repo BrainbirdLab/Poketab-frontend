@@ -165,8 +165,6 @@
                     selectedavatar = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.value = false;
-
-                    console.log("%cChat created", "color: green");
                 },
             );
         } else {
@@ -229,8 +227,6 @@
                     selectedavatar = "";
                     selectedMaxUser = 2;
                     formActionButtonDisabled.value = false;
-
-                    console.log("%cChat joined", "color: green");
                 },
             );
         }
