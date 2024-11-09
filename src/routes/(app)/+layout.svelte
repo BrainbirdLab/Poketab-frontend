@@ -6,7 +6,7 @@
     import NavigationIndicator from "$lib/components/NavigationIndicator.svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { deviceType } from "$lib/store.svelte";
-    import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
+    import { loadChatSettings } from "$lib/settings.svelte";
     interface Props {
         children?: import('svelte').Snippet;
     }

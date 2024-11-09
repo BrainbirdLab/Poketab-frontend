@@ -1,43 +1,3 @@
-<script module lang="ts">
-
-    let notification: Notification;
-
-    export function showNotification(value: MessageObj | null){
-        if (!document.hasFocus()){
-            //show a notification
-            if (value){
-
-                let msg = '';
-
-                if (value instanceof TextMessageObj){
-                    msg = value.message;
-                } else if (value instanceof StickerMessageObj){
-                    msg = 'Sticker';
-                } else if (value instanceof FileMessageObj){
-                    msg = toSentenceCase(value.baseType);
-                }
-
-                Notification.requestPermission().then((permission) => {
-                    if (permission === "granted") {
-                        notification = new Notification(get(chatRoomStore).userList[value.sender].avatar, {
-                            body: msg,
-                            data: value.id,
-                            icon: `/images/avatars/${get(chatRoomStore).userList[value.sender].avatar}(custom).webp`,
-                            tag: value.sender
-                        });
-
-                        notification.onclick = () => {
-                            window.focus();
-                            notification.close();
-                            focusMessage(value.id);
-                        }
-                    }
-                });
-            }
-        } 
-    }
-</script>
-
 <script lang="ts">
 
     import { TextMessageObj, StickerMessageObj, notice, FileMessageObj, MessageObj } from "$lib/messageTypes";
@@ -75,12 +35,48 @@
         document.onvisibilitychange = null;
     });
 
+    let notification: Notification;
+
+    function showNotification(value: MessageObj | null){
+        if (!document.hasFocus()){
+            //show a notification
+            if (value){
+
+                let msg = '';
+
+                if (value instanceof TextMessageObj){
+                    msg = value.message;
+                } else if (value instanceof StickerMessageObj){
+                    msg = 'Sticker';
+                } else if (value instanceof FileMessageObj){
+                    msg = toSentenceCase(value.baseType);
+                }
+
+                Notification.requestPermission().then((permission) => {
+                    if (permission === "granted") {
+                        notification = new Notification(get(chatRoomStore).userList[value.sender].avatar, {
+                            body: msg,
+                            data: value.id,
+                            icon: `/images/avatars/${get(chatRoomStore).userList[value.sender].avatar}(custom).webp`,
+                            tag: value.sender
+                        });
+
+                        notification.onclick = () => {
+                            window.focus();
+                            notification.close();
+                            focusMessage(value.id);
+                        }
+                    }
+                });
+            }
+        } 
+    }
+
     const unsub = notice.subscribe((value) => {
 
         if (value && showScrollPopUp.value){
             playMessageSound('notification');
         }
-
         showNotification(value);
     });
 

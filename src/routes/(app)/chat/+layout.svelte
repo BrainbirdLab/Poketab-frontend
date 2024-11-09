@@ -8,12 +8,12 @@
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { resetChatRoomStore, formNotification, formActionButtonDisabled } from "$lib/store.svelte";
     import { themes } from "$lib/themesTypes";
-    import { currentTheme } from "$lib/themeStore.svelte";
+    import { currentTheme } from "$lib/settings.svelte";
     import type { Unsubscriber } from "svelte/store";
 
     let { data, children } = $props();
 
-    currentTheme.set(data.theme); //Set the current theme
+    currentTheme.value = data.theme; //Set the current theme
 
     let mounted = $state(false);
 
@@ -25,7 +25,7 @@
             handleOffline();
         }
 
-        unsubscriber = currentTheme.subscribe((val) => {
+        unsubscriber = currentTheme.onChange((val) => {
             const elem = document.getElementById('theme-css');
             if (!elem) {
                 return;

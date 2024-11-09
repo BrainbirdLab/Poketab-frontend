@@ -1,114 +1,7 @@
-<script module lang="ts">
-    import { get } from "svelte/store";
-
-    export const sendMethod: Writable<SEND_METHOD> = writable(SEND_METHOD.ENTER);
-    export const buttonSoundEnabled = writable(true);
-    export const messageSoundEnabled = writable(true);
-    export const quickEmojiEnabled = writable(true);
-    export const quickEmoji = writable('');
-    export const linkPreviewOn = writable(true);
-    export const DEFAULT_STICKER_GROUP = "catteftel";
-    export const selectedStickerGroup = writable(DEFAULT_STICKER_GROUP);
-
-    type Settings = {
-        buttonSoundEnabled: boolean;
-        messageSoundEnabled: boolean;
-        quickEmojiEnabled: boolean;
-        quickEmoji: string;
-        selectedStickersGroup: string;
-        currentTheme: string;
-        sendMethod: SEND_METHOD;
-        linkPreviewOn: boolean;
-    };
-
-    const defaultSettings = {
-        buttonSoundEnabled: true,
-        messageSoundEnabled: true,
-        quickEmojiEnabled: true,
-        linkPreviewOn: true,
-        sendMethod:
-            deviceType.value == "mobile"
-                ? SEND_METHOD.CTRL_ENTER
-                : SEND_METHOD.ENTER,
-    };
-
-    function setChatSettings(parsedSettings: Partial<Settings>) {
-        buttonSoundEnabled.set(
-            parsedSettings.buttonSoundEnabled ??
-                defaultSettings.buttonSoundEnabled,
-        );
-        messageSoundEnabled.set(
-            parsedSettings.messageSoundEnabled ??
-                defaultSettings.messageSoundEnabled,
-        );
-        quickEmojiEnabled.set(
-            parsedSettings.quickEmojiEnabled ??
-                defaultSettings.quickEmojiEnabled,
-        );
-        quickEmoji.set(
-            parsedSettings.quickEmoji ?? themes[DEFAULT_THEME].quickEmoji,
-        );
-        selectedStickerGroup.set(
-            parsedSettings.selectedStickersGroup ?? DEFAULT_STICKER_GROUP,
-        );
-        currentTheme.set(parsedSettings.currentTheme ?? DEFAULT_THEME);
-        sendMethod.set(parsedSettings.sendMethod ?? defaultSettings.sendMethod);
-        linkPreviewOn.set(
-            parsedSettings.linkPreviewOn ?? defaultSettings.linkPreviewOn,
-        );
-    }
-
-    export function setToLocalStorage(updatedSettings: Partial<Settings>) {
-        const currentSettingsStr = localStorage.getItem("settings") || "{}";
-        const currentSettings: Settings = JSON.parse(currentSettingsStr);
-
-        const newSettings: Settings = {
-            ...currentSettings,
-            ...updatedSettings,
-        };
-
-        localStorage.setItem("settings", JSON.stringify(newSettings));
-    }
-
-    export function loadChatSettings() {
-        const settingsStr = localStorage.getItem("settings") || "{}";
-        try {
-            const parsedSettings: Partial<Settings> = JSON.parse(settingsStr);
-
-            if (
-                typeof parsedSettings.buttonSoundEnabled != "boolean" ||
-                typeof parsedSettings.messageSoundEnabled != "boolean" ||
-                typeof parsedSettings.quickEmojiEnabled != "boolean" ||
-                typeof parsedSettings.sendMethod != "string" ||
-                typeof parsedSettings.linkPreviewOn != "boolean"
-            ) {
-                throw new Error("Invalid settings");
-            } else {
-                if (
-                    parsedSettings.sendMethod != SEND_METHOD.ENTER &&
-                    parsedSettings.sendMethod != SEND_METHOD.CTRL_ENTER
-                ) {
-                    throw new Error("Invalid settings");
-                } else {
-                    setChatSettings(parsedSettings);
-                }
-            }
-        } catch (error) {
-            // Store the default settings
-            localStorage.setItem("settings", JSON.stringify(defaultSettings));
-            console.log("Default settings stored");
-            // Update the settings to the default settings
-            setChatSettings({ ...defaultSettings });
-        }
-    }
-</script>
-
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { type Writable, writable } from "svelte/store";
     import {
         chatRoomStore,
-        deviceType,
         myId,
         splashMessage,
     } from "$lib/store.svelte";
@@ -121,8 +14,7 @@
     import { addState, clearModals } from "../stateManager.svelte";
     import { onDestroy, onMount } from "svelte";
     import type { Unsubscriber } from "svelte/store";
-    import { DEFAULT_THEME, themes } from "$lib/themesTypes";
-    import { currentTheme } from "$lib/themeStore.svelte";
+    import { loadChatSettings, setToLocalStorage, buttonSoundEnabled, messageSoundEnabled, linkPreviewOn, quickEmojiEnabled, quickEmoji, sendMethod } from "$lib/settings.svelte";
 
     let showQuickEmojiDrawer = $state(false);
 
@@ -143,22 +35,22 @@
                         break;
                     case "buttonSound":
                         setToLocalStorage({
-                            buttonSoundEnabled: !$buttonSoundEnabled,
+                            buttonSoundEnabled: !buttonSoundEnabled.value,
                         });
                         break;
                     case "messageSound":
                         setToLocalStorage({
-                            messageSoundEnabled: !$messageSoundEnabled,
+                            messageSoundEnabled: !messageSoundEnabled.value,
                         });
                         break;
                     case "linkPreview":
                         setToLocalStorage({
-                            linkPreviewOn: !$linkPreviewOn,
+                            linkPreviewOn: !linkPreviewOn.value,
                         });
                         break;
                     case "quickEmoji":
                         setToLocalStorage({
-                            quickEmojiEnabled: !$quickEmojiEnabled,
+                            quickEmojiEnabled: !quickEmojiEnabled.value,
                         });
                         break;
                     case "ctrl+enter":
@@ -219,7 +111,7 @@
     let quickEmojiSub: Unsubscriber;
 
     onMount(() => {
-        quickEmojiSub = quickEmoji.subscribe((value) => {
+        quickEmojiSub = quickEmoji.onChange((value) => {
             setToLocalStorage({ quickEmoji: value });
         });
     });
@@ -272,7 +164,7 @@
                     <input
                         type="checkbox"
                         id="buttonSound"
-                        bind:checked={$buttonSoundEnabled}
+                        bind:checked={buttonSoundEnabled.value}
                     />
                     <label for="buttonSound">
                         <div class="textContainer">
@@ -289,7 +181,7 @@
                     <input
                         type="checkbox"
                         id="messageSound"
-                        bind:checked={$messageSoundEnabled}
+                        bind:checked={messageSoundEnabled.value}
                     />
                     <label for="messageSound">
                         <div class="textContainer">
@@ -311,7 +203,7 @@
                     <input
                         type="checkbox"
                         id="linkPreview"
-                        bind:checked={$linkPreviewOn}
+                        bind:checked={linkPreviewOn.value}
                     />
                     <label for="linkPreview">
                         <div class="textContainer">
@@ -331,7 +223,7 @@
                 </div>
                 <div class="field-checkers play-sound hoverShadow">
                     <input
-                        bind:group={$sendMethod}
+                        bind:group={sendMethod.value}
                         type="radio"
                         name="sendMethod"
                         id="ctrl+enter"
@@ -348,7 +240,7 @@
 
                 <div class="field-checkers play-sound hoverShadow">
                     <input
-                        bind:group={$sendMethod}
+                        bind:group={sendMethod.value}
                         type="radio"
                         name="sendMethod"
                         id="enter"
@@ -373,7 +265,7 @@
                 </div>
                 <div class="field-checkers play-sound hoverShadow">
                     <input
-                        bind:checked={$quickEmojiEnabled}
+                        bind:checked={quickEmojiEnabled.value}
                         type="checkbox"
                         id="quickEmoji"
                     />
@@ -410,7 +302,7 @@
                                 class="hyper"
                                 id="chooseQuickEmojiButton"
                             >
-                                {$quickEmoji}
+                                {quickEmoji.value}
                             </button>
                         {/if}
                     </div>
@@ -418,7 +310,7 @@
                 {#if showQuickEmojiDrawer}
                     <EmojiPicker
                         height="10rem"
-                        bind:selectedEmoji={$quickEmoji}
+                        bind:selectedEmoji={quickEmoji.value}
                         onClose={() => {
                             showQuickEmojiDrawer = false;
                         }}

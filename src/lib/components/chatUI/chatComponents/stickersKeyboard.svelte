@@ -3,7 +3,7 @@
     import { myId } from "$lib/store.svelte";
     import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { selectedStickerGroup, setToLocalStorage } from "./quickSettingsModal.svelte";
+    import { selectedStickerGroup, setToLocalStorage } from "$lib/settings.svelte";
     import { generateId } from "$lib/utils";
 
     const Stickers = [
@@ -32,11 +32,11 @@
 
     function stickersHandler(node: HTMLElement){
 
-        if (!$selectedStickerGroup){
-            selectedStickerGroup.set(Stickers[0].name);
+        if (!selectedStickerGroup.value){
+            selectedStickerGroup.value = Stickers[0].name;
         }
 
-        const unsub = selectedStickerGroup.subscribe(value => {
+        const unsub = selectedStickerGroup.onChange(value => {
 
             const elem = document.getElementById(value);
 
@@ -44,7 +44,6 @@
                 return;
             }
 
-            
             elem.scrollIntoView({
                 block: "center",
                 inline: "center",
@@ -66,13 +65,13 @@
             if (target.closest('.stickersHeader')){
                 const groupName = target.dataset.group;
                 if (groupName){
-                    selectedStickerGroup.set(groupName);
+                    selectedStickerGroup.value = groupName;
                 }
                 return;
             }
 
             if (target.closest('.stickerItem') && target.dataset.serial && target.closest('.stickerBoard')){
-                const group = $selectedStickerGroup;
+                const group = selectedStickerGroup.value;
                 const serial = target.dataset.serial;
 
                 const src = `/stickers/${group}/animated/${serial}.webp`;
@@ -125,7 +124,7 @@
                 if (entry.isIntersecting){
                     const groupName = entry.target.id;
                     if (groupName){
-                        selectedStickerGroup.set(groupName);
+                        selectedStickerGroup.value = groupName;
                     }
                 }
             });
@@ -148,7 +147,7 @@
 
     function moveHeads(direction: 'left' | 'right'){
         //shift to next head
-        selectedStickerGroup.update(value => {
+        selectedStickerGroup.onChange(value => {
             const index = Stickers.findIndex(sticker => sticker.name == value);
             if (direction == 'left'){
                 if (index == 0){
@@ -174,7 +173,7 @@
             <button aria-label="left" onclick={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="stickersHeader" id="stickersHeader" bind:this={stickersHeader}>
                 {#each Stickers as sticker}
-                    <img height="35px" width="35px" loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedStickerGroup == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}" />
+                    <img height="35px" width="35px" loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={selectedStickerGroup.value == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}" />
                 {/each}
             </div>
             <button aria-label="right" onclick={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right"></i></button>

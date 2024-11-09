@@ -1,11 +1,11 @@
 
 <script lang="ts">
     import {chatRoomStore, joinError, joinKey, showUserInputForm} from "$lib/store.svelte";
-    import {currentTheme} from "$lib/themeStore.svelte";
+    import {currentTheme} from "$lib/settings.svelte";
 
     let { data } = $props();
 
-    currentTheme.set(data.themename);
+    currentTheme.value = data.themename;
     
     if (!data.success){
         joinKey.value = data.key;

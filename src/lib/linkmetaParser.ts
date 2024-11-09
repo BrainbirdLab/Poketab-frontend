@@ -1,13 +1,12 @@
 import type { linkRes } from "./types";
 import { messageDatabase, type TextMessageObj, type MessageObj } from "./messageTypes";
-import { linkPreviewOn } from "./components/chatUI/chatComponents/quickSettingsModal.svelte";
-import { get } from "svelte/store";
+import { linkPreviewOn } from "$lib/settings.svelte";
 
 export async function getLinkMetadata(msgObj: MessageObj) {
 
     try{
 
-        if (!get(linkPreviewOn)) {
+        if (!linkPreviewOn.value) {
             return;
         }
 

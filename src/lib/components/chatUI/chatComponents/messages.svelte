@@ -63,7 +63,7 @@
     import hljs from "highlight.js";
     import { addState } from "../stateManager.svelte";
     import type { LightBoxTargettype } from "$lib/types";
-    import { selectedStickerGroup } from "./quickSettingsModal.svelte";
+    import { selectedStickerGroup } from "$lib/settings.svelte";
 
     interface Props {
         lightBoxTarget: LightBoxTargettype | null;
@@ -208,7 +208,7 @@
 
                 const stickerGroup = (messageObj as StickerMessageObj).groupName;
                 //selectedSticker.set(stickerGroup);
-                selectedStickerGroup.set(stickerGroup);
+                selectedStickerGroup.value = stickerGroup;
                 //showStickersPanel.set(true);
                 //pushState('/stickers/'+stickerGroup, { showStickersPanel: true });
                 addState("stickers", { showStickersPanel: true });
@@ -447,7 +447,9 @@
             currentScrollTop = messageContainer.value.scrollTop;
         });
 
-        observer.observe(messagesHTML);
+        //observer.observe(messagesHTML);
+
+        messageDatabase.subscribe(updateUI);
 
         return () => {
             observer.disconnect();
@@ -462,41 +464,34 @@
         let newPosition = currentScrollTop + value;
         messageContainer.value.scrollTop = newPosition; // Rounds to 10 decimal places
     }
-
-
-    $effect.pre(() => {
-        if (!messageContainer.value){
-            return;
-        }
-        messageContainer.value.style.height = 'auto';
-    })
-
-    $effect(() => {
-        if (!messageContainer.value){
-            return;
-        }
-        console.log('updating UI');
-        //await tick();
-        messageContainer.value.style.height = `${messageContainer.value.offsetHeight}px`;
-    })
     
     export async function updateUI(){
-        
+
+        if (!messageContainer.value){
+            return;
+        }
+
+        messageContainer.value.style.height = 'auto';
+        lastScrollPosition = messageContainer.value.scrollTop;
+
+        await tick();
+
+        //await tick();
+        messageContainer.value.style.height = `${messageContainer.value.offsetHeight}px`;
         scrolledToBottomPx = messagesHTML.getBoundingClientRect().height - messageContainer.value.scrollTop - messageContainer.value.getBoundingClientRect().height;
 
         heightChanged = messagesHTML.getBoundingClientRect().height - lastHeight;
-        scrollChanged = lastScrollPosition - messageContainer.value.scrollTop;
+        scrollChanged = messageContainer.value.scrollTop - lastScrollPosition;
 
-        console.log('height changed', heightChanged, 'scroll changed', scrollChanged, 'scrolledToBottomPx', scrolledToBottomPx);
+        await tick();
+
         if (Math.abs(heightChanged) < 16){
             if (heightChanged > 0) { //height increase, means the messages under has gone down by around 16px so we need to scroll up that much.
                 scrollBy(heightChanged);
-                console.log('scrolling up');
             }
             
             else if (heightChanged < 0 && (scrolledToBottomPx > 0 && scrollChanged == 0)){ //height decrease, means the messages under has gone up by around 16px so we need to scroll down that much.
                 scrollBy(heightChanged);
-                console.log('scrolling down');
             }
             
         } else if (heightChanged > 16 && !showScrollPopUp.value){
@@ -521,7 +516,7 @@
                     }
                 }
             }
-            
+
             messageContainer.value.scrollTo({
                 top: messagesHTML.getBoundingClientRect().height,  // Scroll to the bottom based on scrollHeight
                 behavior: "smooth"
@@ -532,9 +527,6 @@
         }
         
         lastHeight = messagesHTML.getBoundingClientRect().height;
-        lastScrollPosition = messageContainer.value.scrollTop;
-
-        console.log('lastScrollPosition: ', lastScrollPosition)
 
         //last message
         const lastMessage = messagesHTML.lastElementChild as HTMLElement;
@@ -550,13 +542,6 @@
                 hljs.highlightElement(block as HTMLElement);
             });
         }
-
-        const lastMessageObj = messageDatabase.getMessage(lastMessage.id) as MessageObj;
-
-        if (!lastMessageObj) {
-            return;
-        }
-
     }
 
 </script>

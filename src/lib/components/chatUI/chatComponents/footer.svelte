@@ -7,7 +7,7 @@
     import { socket } from "$lib/connection/socketClient";
 
     import { myId, chatRoomStore, messageContainer, messageScrolledPx } from "$lib/store.svelte";
-    import { quickEmoji, quickEmojiEnabled, sendMethod } from "./quickSettingsModal.svelte";
+    import { quickEmoji, quickEmojiEnabled, sendMethod } from "$lib/settings.svelte";
     import { SEND_METHOD } from "$lib/types";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";
@@ -59,7 +59,7 @@
             newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
     
             if (Emoji){
-                newMessage = $quickEmojiEnabled ? $quickEmoji : '';
+                newMessage = quickEmojiEnabled.value ? quickEmoji.value : '';
                 message.type = 'emoji';
                 message.baseType = 'text';
             } else if (isEmoji(newMessage)) {
@@ -141,10 +141,10 @@
 
     function keyDownHandler(e: KeyboardEvent){
 
-        if ($sendMethod == SEND_METHOD.ENTER && e.key === 'Enter' && !e.shiftKey) {
+        if (sendMethod.value == SEND_METHOD.ENTER && e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             insertMessage();
-        } else if ($sendMethod == SEND_METHOD.CTRL_ENTER && e.key === 'Enter' && e.ctrlKey) {
+        } else if (sendMethod.value == SEND_METHOD.CTRL_ENTER && e.key === 'Enter' && e.ctrlKey) {
             e.preventDefault();
             insertMessage();
         }
@@ -233,13 +233,13 @@
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">
-                <div style:opacity={recorderIsActive ? 0 : 1} onpaste={updateTextareaHeight} role="textbox" oninput={inputHandler} onkeydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
+                <div style:opacity={recorderIsActive ? 0 : 1} onpaste={updateTextareaHeight} role="textbox" oninput={inputHandler} onkeydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{sendMethod.value == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
                 <Recorder bind:this={recorder} bind:recordedAudioUrl={recordedAudioUrl} bind:recorderIsActive={recorderIsActive}/>
             </div>
         </div>
         <!-- Send Button-->
-        {#if $quickEmojiEnabled && newMessage.trim().length === 0 && !recordedAudioUrl}
-            <button id="send" onclick={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
+        {#if quickEmojiEnabled.value && newMessage.trim().length === 0 && !recordedAudioUrl}
+            <button id="send" onclick={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {quickEmoji.value}" tabindex="-1" data-role="send">{quickEmoji.value}</button>
         {:else}
             <button aria-label="send" id="send" onclick={() => {insertMessage()}} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
         {/if}

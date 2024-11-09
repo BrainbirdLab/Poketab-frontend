@@ -1,25 +1,7 @@
 import { writable, get, type Writable } from "svelte/store";
 import { type ErrorLog, type chatRoomStoreType } from "$lib/types";
 import { messageDatabase } from "$lib/messageTypes";
-
-function ref<T>(init?: T) {
-    let value = $state(init) as T;
-    return {
-        set value(newVal: T) {
-            value = newVal;
-        },
-        get value() {
-            return value;
-        },
-        onChange(cb: (newValue: T) => void) {
-            return $effect.root(() => {
-                $effect(() => {
-                    cb(value);
-                });
-            });
-        }
-    }
-}
+import { ref } from "$lib/ref.svelte";
 
 export const showUserInputForm = ref(true);
 export const formNotification = ref('');
