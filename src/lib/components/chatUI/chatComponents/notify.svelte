@@ -5,7 +5,6 @@
     import { onDestroy, onMount } from "svelte";
     import { fly } from "svelte/transition";
     import { playMessageSound, toSentenceCase } from "$lib/utils";
-    import { get } from "svelte/store";
     import { focusMessage } from "./messages.svelte";
 
     $effect(() => {

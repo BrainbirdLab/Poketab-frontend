@@ -1,7 +1,6 @@
 
 <script lang="ts">
     
-
     function notify() {
         console.log(Notification.permission);
         Notification.requestPermission().then((permission) => {

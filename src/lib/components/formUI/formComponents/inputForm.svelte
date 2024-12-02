@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
 
     import "./forms.scss";
     import { avList } from "$lib/utils/validation";

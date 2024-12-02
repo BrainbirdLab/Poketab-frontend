@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { once } from 'svelte/legacy';
 
     import type { TextMessageObj } from "$lib/messageStore.svelte";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
@@ -13,6 +12,16 @@
     }
 
     let { message }: Props = $props();
+
+    function once(fn: () => void) {
+        let called = false;
+        return function () {
+            if (!called) {
+                called = true;
+                fn();
+            }
+        };
+    }
 
 </script>
 
