@@ -111,14 +111,14 @@
         justify-content: center;
         img{
             object-fit: contain;
-            background: none;
+            background: #252628;
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
             min-width: 300px;
             display: block;
-            color: var(--shadow-color);
+            color: var(--text-color);
         }
     }
 
