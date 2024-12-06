@@ -233,7 +233,6 @@ function MakeMessageDB() {
         },
 
         get length(){
-            //return messageDatabaseArray.length;
             return get(messageDatabaseArray).length;
         },
     }

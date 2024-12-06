@@ -52,7 +52,7 @@ export async function getLinkMetadata(msgObj: MessageObj) {
         }
 
         messageDatabase.update((messages) => {
-            (messageDatabase.getMessage(messageId) as TextMessageObj).linkPreviewData = linkData;
+            (messages[messageDatabase.getIndex(messageId)] as TextMessageObj).linkPreviewData = linkData;
             return messages;
         });
 
