@@ -37,11 +37,20 @@
                 <div class="linkMetadata">
                     {#if message.linkPreviewData.image}
                     <div class="linkMetadata__image">
-                        <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" onload={once(()=> {
-                            if (messageScrolledPx.value < 20) {
-                                messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-                            }
-                        })}/>
+                        <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" 
+                        
+                            onload={once(()=> {
+                                if (messageScrolledPx.value < 20) {
+                                    messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+                                }
+                            })}
+
+                            onerror={() => {
+                                if (message.linkPreviewData) {
+                                    message.linkPreviewData.image = "";
+                                }
+                            }}
+                        />
                     </div>
                     {/if}
                     <div class="linkMetadata__details">
