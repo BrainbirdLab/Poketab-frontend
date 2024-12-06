@@ -51,7 +51,10 @@ export async function getLinkMetadata(msgObj: MessageObj) {
             return;
         }
 
-        (messageDatabase.getMessage(messageId) as TextMessageObj).linkPreviewData = linkData;
+        messageDatabase.update((messages) => {
+            (messageDatabase.getMessage(messageId) as TextMessageObj).linkPreviewData = linkData;
+            return messages;
+        });
 
     } catch (err) {
         console.error(err);
