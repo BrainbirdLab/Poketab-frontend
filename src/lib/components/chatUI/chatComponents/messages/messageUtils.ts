@@ -91,9 +91,9 @@ export async function sendMessage(message: MessageObj, file?: File){
 
 	//convert msg object to ArrayBuffer
 	const buffer = new TextEncoder().encode(JSON.stringify(message));
-
+	const arrayBuffer = buffer.buffer as ArrayBuffer;
 	//encrypt the message
-	const encryptedMessage = await encryptMessage(buffer, rawSmKey);
+	const encryptedMessage = await encryptMessage(arrayBuffer, rawSmKey);
 	
     socket.emit('newMessage', encryptedMessage, chatRoomStore.value.Key, smKeys, (messageId: string) => {
 		
@@ -425,7 +425,19 @@ export function emojiParser(text: string){
 		':yay:': '🥳',
 		':yolo:': '🤪',
 		':yikes:': '😱',
-		':sweat:': '😅'
+		':sweat:': '😅',
+		':love:': '😍',
+		':angry:': '😡',
+		':heart:': '❤️',
+		':fire:': '🔥',
+		':cool:': '😎',
+		':cry:': '😢',
+		':sad:': '😞',
+		':happy:': '😊',
+		':wow:': '😲',
+		':shock:': '😲',
+		':sigh:': '😔',
+		':sob:': '😭',
 	};
 
 	//find if the message contains the emoji

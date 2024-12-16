@@ -168,6 +168,11 @@ function MakeMessageDB() {
 
         add(message: MessageObjType) {
             messageDatabaseArray.update(msgs => {
+                //if message id already exists, ignore the duplicate message
+                if (messageIndexMap.has(message.id)) {
+                    console.log('%cDuplicate message ignored', 'color: orange');
+                    return msgs;
+                }
                 msgs.push(message);
                 messageIndexMap.set(message.id, msgs.length - 1);
                 if (message instanceof MessageObj){
@@ -254,40 +259,56 @@ function makeClasslist(message: MessageObj){
     }
 
     if (messageDatabase.length > 0) {
-        
-        const index = messageDatabase.getIndex(message.id);
-
-        let lastMessageObj = messageDatabase.getMessageByIndex(index - 1);
-
-        if (lastMessageObj instanceof MessageObj){
-
-            if (message.replyTo){
-                classListString += ' start newGroup';
-            } else {
-                if (message.baseType == 'sticker'){
-                    classListString += ' start';
-                }
-        
-                if (message.baseType != lastMessageObj.baseType || lastMessageObj.sender !== message.sender){
-                    classListString += ' start newGroup';
-                } else if (lastMessageObj.baseType === message.baseType){
-                    //two messages of same kind
-                    if ( (message.baseType === 'text' || message.baseType === 'file' || message.baseType === 'image' || message.baseType === 'audio') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
-                        lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
-                    } else {
-                        classListString += ' start';
-                    }
-                }
-            }
-        } else {
-            classListString += ' start newGroup';
-        }
+        classListString += writeForMoreMessage(message);
     } else {
         classListString += ' start newGroup';
     }
 
     if (((chatRoomStore.value.maxUsers > 2 && !classListString.includes('self')) || message.replyTo) && classListString.includes('newGroup')){
         classListString += ' title';
+    }
+
+    return classListString;
+}
+
+function writeForMoreMessage(message: MessageObj){
+
+    let classListString = '';
+
+    const index = messageDatabase.getIndex(message.id);
+
+    let lastMessageObj = messageDatabase.getMessageByIndex(index - 1);
+
+    if (lastMessageObj instanceof MessageObj){
+        if (message.replyTo){
+            classListString += ' start newGroup';
+        } else {
+            classListString += handleNonReplyMessage(message, lastMessageObj);
+        }
+    } else {
+        classListString += ' start newGroup';
+    }
+
+    return classListString;
+}
+
+function handleNonReplyMessage(message: MessageObj, lastMessageObj: MessageObj){
+
+    let classListString = '';
+
+    if (message.baseType == 'sticker'){
+        classListString += ' start';
+    }
+
+    if (message.baseType != lastMessageObj.baseType || lastMessageObj.sender !== message.sender){
+        classListString += ' start newGroup';
+    } else if (lastMessageObj.baseType === message.baseType){
+        //two messages of same kind
+        if ( (message.baseType === 'text' || message.baseType === 'file' || message.baseType === 'image' || message.baseType === 'audio') &&  message.type !== 'emoji' && lastMessageObj.type !== 'emoji'){
+            lastMessageObj.classList = lastMessageObj.classList.replace('end', '');
+        } else {
+            classListString += ' start';
+        }
     }
 
     return classListString;

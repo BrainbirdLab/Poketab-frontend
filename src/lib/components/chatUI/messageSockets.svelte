@@ -341,11 +341,13 @@
 
         chatRoomStore.value.userList[uid].lastSeenMessage = messageId;
 
-        const message = messageDatabase.getMessage(messageId) as MessageObj;
-
         messageDatabase.update((messages) => {
-            if (message && message instanceof MessageObj) {
-                message.seenBy.add(uid);
+            // if (message && message instanceof MessageObj) {
+            //     message.seenBy.add(uid);
+            // }
+            const index = messageDatabase.getIndex(messageId);
+            if (index != -1 && messages[index] instanceof MessageObj) {
+                messages[index].seenBy.add(uid);
             }
             return messages;
         });

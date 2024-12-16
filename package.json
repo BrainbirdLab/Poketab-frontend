@@ -1,7 +1,7 @@
 {
 	"schema": "https://schemastore.org/package",
 	"name": "poketab-frontend",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"private": true,
 	"engines": {
 		"pnpm": ">=8"
@@ -19,6 +19,7 @@
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.5.27",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
+		"@types/jest": "^29.5.14",
 		"highlight.js": "^11.9.0",
 		"sass": "^1.69.5",
 		"socket.io-client": "^4.7.2",

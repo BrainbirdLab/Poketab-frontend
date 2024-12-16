@@ -105,7 +105,6 @@
             if (!lastMessageId.value) {
                 return;
             }
-
             socket.emit("seen", myId.value, chatRoomStore.value.Key, lastMessageId.value);
         };
 
