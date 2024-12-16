@@ -1,5 +1,4 @@
 import { cubicOut } from "svelte/easing";
-import { get } from "svelte/store";
 import { showToastMessage } from "@itsfuad/domtoastmessage";
 import { buttonSoundEnabled, messageSoundEnabled } from "$lib/settings.svelte";
 import { browser } from "$app/environment";
