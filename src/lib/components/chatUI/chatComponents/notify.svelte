@@ -1,8 +1,42 @@
-<script context="module" lang="ts">
+<script lang="ts">
+
+    import { TextMessageObj, StickerMessageObj, FileMessageObj, MessageObj, notice } from "$lib/messageStore.svelte";
+    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer, messageScrolledPx } from "$lib/store.svelte";
+    import { onDestroy, onMount } from "svelte";
+    import { fly } from "svelte/transition";
+    import { playMessageSound, toSentenceCase } from "$lib/utils";
+    import { focusMessage } from "./messages.svelte";
+
+    $effect(() => {
+        if (messageScrolledPx.value < 200){
+            notice.value = null;
+        }
+    });
+
+    onMount(()=> {
+
+        //ask for notification permission
+        Notification.requestPermission();
+        
+        messageScrolledPx.value = messageContainer.value.scrollHeight - messageContainer.value.scrollTop - messageContainer.value.clientHeight;
+
+        listenScroll.value = true;
+
+        document.onvisibilitychange = () => {
+            if (document.visibilityState === 'visible'){
+                notification?.close();
+            }
+        }
+    })
+
+    onDestroy(() => {
+        messageContainer.value.onscroll = null;
+        document.onvisibilitychange = null;
+    });
 
     let notification: Notification;
 
-    export function showNotification(value: MessageObj | null){
+    function showNotification(value: MessageObj | null){
         if (!document.hasFocus()){
             //show a notification
             if (value){
@@ -19,10 +53,10 @@
 
                 Notification.requestPermission().then((permission) => {
                     if (permission === "granted") {
-                        notification = new Notification(get(chatRoomStore).userList[value.sender].avatar, {
+                        notification = new Notification(chatRoomStore.value.userList[value.sender].avatar, {
                             body: msg,
                             data: value.id,
-                            icon: `/images/avatars/${get(chatRoomStore).userList[value.sender].avatar}(custom).webp`,
+                            icon: `/images/avatars/${chatRoomStore.value.userList[value.sender].avatar}(custom).webp`,
                             tag: value.sender
                         });
 
@@ -36,96 +70,58 @@
             }
         } 
     }
-</script>
 
-<script lang="ts">
-    import { TextMessageObj, StickerMessageObj, notice, FileMessageObj, MessageObj } from "$lib/messageTypes";
-    import { chatRoomStore, listenScroll, showScrollPopUp, messageContainer, messageScrolledPx } from "$lib/store";
-    import { onDestroy, onMount } from "svelte";
-    import { fly } from "svelte/transition";
-    import { playMessageSound, toSentenceCase } from "$lib/utils";
-    import { get } from "svelte/store";
-    import { focusMessage } from "./messages.svelte";
+    const unsub = notice.onChange((value) => {
 
-    $: {
-        if ($messageScrolledPx < 200){
-            notice.set(null);
-        }
-    }
-
-    onMount(()=> {
-
-        //ask for notification permission
-        Notification.requestPermission();
-        
-        messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
-
-        listenScroll.set(true);
-
-        document.onvisibilitychange = () => {
-            if (document.visibilityState === 'visible'){
-                notification?.close();
-            }
-        }
-    })
-
-    onDestroy(() => {
-        $messageContainer.onscroll = null;
-        document.onvisibilitychange = null;
-    });
-
-    const unsub = notice.subscribe((value) => {
-
-        if (value && $showScrollPopUp){
+        if (value && showScrollPopUp.value){
             playMessageSound('notification');
         }
-
         showNotification(value);
     });
 
-    listenScroll.subscribe((value) => {
-
-        if (!$messageContainer){
+    const unsubScroll = listenScroll.onChange((value) => {
+        if (!messageContainer.value){
             return;
         }
 
         if (value){
-            $messageContainer.onscroll = scrollHandler;
+            messageContainer.value.onscroll = scrollHandler;
         } else {
-            $messageContainer.onscroll = null;
-            messageScrolledPx.set(0);
+            messageContainer.value.onscroll = null;
+            messageScrolledPx.value = 0;
         }
     });
 
     function scrollHandler(){
         //if scrolled up more than 200px
-        messageScrolledPx.set($messageContainer.scrollHeight - $messageContainer.scrollTop - $messageContainer.clientHeight);
-        if ( $messageScrolledPx > 200) {
-            showScrollPopUp.set(true);
+        messageScrolledPx.value = messageContainer.value.scrollHeight - messageContainer.value.scrollTop - messageContainer.value.clientHeight;
+        if ( messageScrolledPx.value > 200) {
+            showScrollPopUp.value = true;
         } else {
-            showScrollPopUp.set(false);
+            showScrollPopUp.value = false;
         }
     }
 
     onDestroy(() => {
         unsub();
+        unsubScroll();
     });
 
 </script>
 
-{#if $showScrollPopUp}
-    <button class="popup box-shadow back-blur" tabindex="-1" transition:fly={{y: 20, duration: 200}} on:click={()=>{
-        $messageContainer.scrollTo({top: $messageContainer.scrollHeight, behavior: "smooth"});
+{#if showScrollPopUp.value}
+    <button class="popup box-shadow back-blur" tabindex="-1" transition:fly={{y: 20, duration: 200}} onclick={()=>{
+        messageContainer.value.scrollTo({top: messageContainer.value.scrollHeight, behavior: "smooth"});
     }}>
-    {#if $notice && $messageScrolledPx > 200}
+    {#if notice.value && messageScrolledPx.value > 200}
         <div class="content">
-            <img src="/images/avatars/{$chatRoomStore.userList[$notice.sender].avatar}(custom).webp" alt="avatar"/>
-            {#if $notice instanceof TextMessageObj}
-                {$notice.message}
-            {:else if $notice instanceof StickerMessageObj}
+            <img src="/images/avatars/{chatRoomStore.value.userList[notice.value.sender].avatar}(custom).webp" alt="avatar"/>
+            {#if notice.value instanceof TextMessageObj}
+                {notice.value.message}
+            {:else if notice.value instanceof StickerMessageObj}
                 Sticker
-            {:else if $notice instanceof FileMessageObj}
-                {toSentenceCase($notice.baseType)}
+            {:else if notice.value instanceof FileMessageObj}
+                {toSentenceCase(notice.value.baseType)}
             {/if}
         </div>
     {:else}

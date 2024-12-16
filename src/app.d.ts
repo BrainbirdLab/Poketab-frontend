@@ -16,11 +16,7 @@ declare global {
 			showReactsOnMessage?: boolean;
 			showMessageOptions?: boolean;
 			showPublicKeysOf?: string;
-			viewImage?: {
-				src: string,
-				id: string,
-				name: string,
-			}
+			showLightBox?: boolean;
 		}
 	}
 	const __VERSION__: string;

@@ -1,11 +1,15 @@
 <script lang="ts">
-    import type { StickerMessageObj } from "$lib/messageTypes";
+    import type { StickerMessageObj } from "$lib/messageStore.svelte";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
 
-    export let message: StickerMessageObj
+    interface Props {
+        message: StickerMessageObj;
+    }
+
+    let { message }: Props = $props();
 
 </script>
 

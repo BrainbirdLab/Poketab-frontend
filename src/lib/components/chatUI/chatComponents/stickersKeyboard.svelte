@@ -1,17 +1,10 @@
-<script context="module" lang="ts">
-    import { writable } from "svelte/store";
-    export const DEFAULT_STICKER_GROUP = "catteftel";
-    export const selectedStickerGroup = writable(DEFAULT_STICKER_GROUP);
-</script>
-
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { myId } from "$lib/store";
-    import { StickerMessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageTypes";
+    import { myId } from "$lib/store.svelte";
+    import { eventTriggerMessageId, replyTarget, StickerMessageObj } from "$lib/messageStore.svelte";
     import { sendMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { setToLocalStorage } from "./quickSettingsModal.svelte";
+    import { selectedStickerGroup, setToLocalStorage } from "$lib/settings.svelte";
     import { generateId } from "$lib/utils";
-
 
     const Stickers = [
         { name: "catteftel", count: "24", icon: "14" },
@@ -35,15 +28,15 @@
         { name: "text", count: "24", icon: "4" },
     ];
 
-    let stickersHeader: HTMLElement;
+    let stickersHeader = $state() as HTMLElement;
 
     function stickersHandler(node: HTMLElement){
 
-        if (!$selectedStickerGroup){
-            selectedStickerGroup.set(Stickers[0].name);
+        if (!selectedStickerGroup.value){
+            selectedStickerGroup.value = Stickers[0].name;
         }
 
-        const unsub = selectedStickerGroup.subscribe(value => {
+        const unsub = selectedStickerGroup.onChange(value => {
 
             const elem = document.getElementById(value);
 
@@ -51,7 +44,6 @@
                 return;
             }
 
-            
             elem.scrollIntoView({
                 block: "center",
                 inline: "center",
@@ -73,13 +65,13 @@
             if (target.closest('.stickersHeader')){
                 const groupName = target.dataset.group;
                 if (groupName){
-                    selectedStickerGroup.set(groupName);
+                    selectedStickerGroup.value = groupName;
                 }
                 return;
             }
 
             if (target.closest('.stickerItem') && target.dataset.serial && target.closest('.stickerBoard')){
-                const group = $selectedStickerGroup;
+                const group = selectedStickerGroup.value;
                 const serial = target.dataset.serial;
 
                 const src = `/stickers/${group}/animated/${serial}.webp`;
@@ -89,17 +81,17 @@
                 messageObj.src = src;
                 messageObj.groupName = group;
                 messageObj.number = Number(serial);
-                messageObj.sender = $myId;
+                messageObj.sender = myId.value;
                 messageObj.id = tempId;
                 messageObj.type = 'sticker';
                 messageObj.baseType = 'sticker';
 
 
-                if ($replyTarget){
-                    messageObj.replyTo = $replyTarget.id;
-                    eventTriggerMessageId.set("");
-                    replyTarget.set(null);
-                    showReplyToast.set(false);
+                if (replyTarget.value){
+                    messageObj.replyTo = replyTarget.value.id;
+                    eventTriggerMessageId.value = "";
+                    replyTarget.value = null;
+                    showReplyToast.value = false;
                 }
 
                 await sendMessage(messageObj);
@@ -132,7 +124,7 @@
                 if (entry.isIntersecting){
                     const groupName = entry.target.id;
                     if (groupName){
-                        selectedStickerGroup.set(groupName);
+                        selectedStickerGroup.value = groupName;
                     }
                 }
             });
@@ -154,23 +146,21 @@
     }
 
     function moveHeads(direction: 'left' | 'right'){
-        //shift to next head
-        selectedStickerGroup.update(value => {
-            const index = Stickers.findIndex(sticker => sticker.name == value);
-            if (direction == 'left'){
-                if (index == 0){
-                    return Stickers[Stickers.length - 1].name;
-                } else {
-                    return Stickers[index - 1].name;
-                }
+
+        const index = Stickers.findIndex(sticker => sticker.name == selectedStickerGroup.value);
+        if (direction == 'left'){
+            if (index == 0){
+                selectedStickerGroup.value =  Stickers[Stickers.length - 1].name;
             } else {
-                if (index == Stickers.length - 1){
-                    return Stickers[0].name;
-                } else {
-                    return Stickers[index + 1].name;
-                }
+                selectedStickerGroup.value =  Stickers[index - 1].name;
             }
-        });
+        } else {
+            if (index == Stickers.length - 1){
+                selectedStickerGroup.value =  Stickers[0].name;
+            } else {
+                selectedStickerGroup.value =  Stickers[index + 1].name;
+            }
+        }
     }
 
 </script>
@@ -178,13 +168,13 @@
 <div class="stickerKeyboardContainer" transition:fly|global={{y: 40, duration: 100}} use:stickersHandler>
     <div class="stickerKeyboard back-blur">
         <div class="headers">
-            <button on:click={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left" /></button>
+            <button aria-label="left" onclick={() => { moveHeads('left'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="stickersHeader" id="stickersHeader" bind:this={stickersHeader}>
                 {#each Stickers as sticker}
-                    <img height="35px" width="35px" loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={$selectedStickerGroup == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}" />
+                    <img height="35px" width="35px" loading="lazy" class="hoverShadow" data-group="{sticker.name}" class:selected={selectedStickerGroup.value == sticker.name} src="/stickers/{sticker.name}/animated/{sticker.icon}.webp" alt="{sticker.name}" />
                 {/each}
             </div>
-            <button on:click={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right" /></button>
+            <button aria-label="right" onclick={() => { moveHeads('right'); }} class="navBtn hoverShadow"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
         <div class="stickersBody" id="stickersBody" use:stickersBodyHandler>
             {#each Stickers as sticker}

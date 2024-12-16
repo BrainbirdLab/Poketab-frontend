@@ -1,13 +1,17 @@
 <script lang="ts">
-
     import "$lib/styles/global.scss";
 
     import { onMount } from "svelte";
     import { playClickSound } from "$lib/utils";
     import NavigationIndicator from "$lib/components/NavigationIndicator.svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
-    import { deviceType } from "$lib/store";
-    import { loadChatSettings } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
+    import { deviceType } from "$lib/store.svelte";
+    import { loadChatSettings } from "$lib/settings.svelte";
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
 
     async function detectSWUpdate(){
         if (!("serviceWorker" in navigator)) return;
@@ -32,7 +36,7 @@
     function detectDeviceType() {
         //detect if mobile or desktop
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        deviceType.set(isMobile ? "mobile" : "desktop");
+        deviceType.value = isMobile ? "mobile" : "desktop";
     }
 
 
@@ -72,12 +76,12 @@
 
 </script>
 
-<svelte:body on:contextmenu|preventDefault on:click={handleClick} />
+<svelte:body oncontextmenu={e => e.preventDefault()} onclick={handleClick} />
 
 <NavigationIndicator />
 
 <div class="maincontainer">
-    <slot />
+    {@render children?.()}
 </div>
 
 <style lang="scss">

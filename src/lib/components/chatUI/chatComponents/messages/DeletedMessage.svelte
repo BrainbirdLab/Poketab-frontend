@@ -1,10 +1,14 @@
 <script lang="ts">
-    import type { TextMessageObj } from "$lib/messageTypes";
+    import type { TextMessageObj } from "$lib/messageStore.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
 
-    export let message: TextMessageObj;
+    interface Props {
+        message: TextMessageObj;
+    }
+
+    let { message }: Props = $props();
 
 </script>
 

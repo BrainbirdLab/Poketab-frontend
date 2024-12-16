@@ -1,6 +1,10 @@
 <script lang="ts">
-    import type { ServerMessageObj } from "$lib/messageTypes";
-    export let message: ServerMessageObj;
+    import type { ServerMessageObj } from "$lib/messageStore.svelte";
+    interface Props {
+        message: ServerMessageObj;
+    }
+
+    let { message }: Props = $props();
 </script>
 
 

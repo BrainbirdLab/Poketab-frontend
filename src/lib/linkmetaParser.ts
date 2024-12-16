@@ -1,14 +1,12 @@
 import type { linkRes } from "./types";
-import { messageDatabase, type TextMessageObj, type MessageObj } from "./messageTypes";
-import { linkPreviewOn } from "./components/chatUI/chatComponents/quickSettingsModal.svelte";
-import { get } from "svelte/store";
-import { API_URL } from "./socket";
+import { messageDatabase, type TextMessageObj, type MessageObj } from "./messageStore.svelte";
+import { linkPreviewOn } from "$lib/settings.svelte";
 
 export async function getLinkMetadata(msgObj: MessageObj) {
 
     try{
 
-        if (!get(linkPreviewOn)) {
+        if (!linkPreviewOn.value) {
             return;
         }
 
@@ -54,7 +52,7 @@ export async function getLinkMetadata(msgObj: MessageObj) {
         }
 
         messageDatabase.update((messages) => {
-            (messageDatabase.getMessage(messageId) as TextMessageObj).linkPreviewData = linkData;
+            (messages[messageDatabase.getIndex(messageId)] as TextMessageObj).linkPreviewData = linkData;
             return messages;
         });
 

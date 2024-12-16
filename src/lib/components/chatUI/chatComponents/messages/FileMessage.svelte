@@ -3,16 +3,19 @@
     import {
         ImageMessageObj,
         type FileMessageObj,
-    } from "$lib/messageTypes";
+    } from "$lib/messageStore.svelte";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
     import { getIcon } from "$lib/utils";
-    import { myId } from "$lib/store";
-    import ImageMessage from "./ImageMessage.svelte";
+    import { myId } from "$lib/store.svelte";
 
-    export let file: FileMessageObj;
+    interface Props {
+        file: FileMessageObj;
+    }
+
+    let { file }: Props = $props();
 </script>
 
 <li class="message msg-item {file.classList}" id={file.id}>
@@ -42,7 +45,7 @@
                                         {#if file.loadScheme == "upload"}
                                             <i class="fa-solid fa-arrow-up"
                                             ></i>
-                                            {file.sender === $myId
+                                            {file.sender === myId.value
                                                 ? `${file.loaded}%`
                                                 : "Sending"}
                                         {:else if file.loadScheme == "download"}
@@ -59,7 +62,49 @@
                             </div>
                         </div>
                     {:else}
-                        <ImageMessage file={file} />
+                    <img
+                        class="image"
+                        src={file.url}
+                        alt={file.name}
+                        height={file.height}
+                        width={file.width}
+                        style={file.sender === myId.value
+                            ? ""
+                            : file.loaded < 100
+                            ? "filter: blur(10px); transform: scale(1.1); transition: 500ms ease-in-out;"
+                            : ""}
+                        />
+                        {#if file.loaded < 100}
+                        <div
+                            class="imageProgressCircle"
+                            style="stroke-dasharray: {(file.loaded * 251.2) / 100}, 251.2;"
+                        >
+                            <svg viewBox="0 0 100 100">
+                                {#if file.loaded > 0}
+                                    <circle cx="50" cy="50" r="45" fill="transparent" />
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-width="3"
+                                        stroke="#fff"
+                                        fill="none"
+                                        d="M50 10
+                                a 40 40 0 0 1 0 80
+                                a 40 40 0 0 1 0 -80"
+                                    >
+                                    </path>
+                                {/if}
+                            </svg>
+                            <div class="progress">
+                                {#if file.loadScheme == "upload"}
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                    {file.sender === myId.value ? `${file.loaded}%` : "Sending"}
+                                {:else if file.loadScheme == "download"}
+                                    <i class="fa-solid fa-arrow-down"></i>
+                                    {file.loaded}%
+                                {/if}
+                            </div>
+                        </div>
+                        {/if}
                     {/if}
                 </div>
             </div>
@@ -69,6 +114,45 @@
 </li>
 
 <style lang="scss">
+
+    .image {
+        max-width: 100%;
+        min-height: 100px;
+        min-width: 100px;
+        height: auto;
+        //width: auto;
+        max-height: 55vh;
+        object-fit: contain;
+    }
+
+    .imageProgressCircle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        transform: translate(-50%, -50%);
+        color: white;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 12;
+
+        svg {
+            width: 65px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .progress {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffffb5;
+            font-size: 0.8rem;
+        }
+    }
 
     .progress {
         white-space: break-spaces;
@@ -88,10 +172,6 @@
         justify-content: center;
         gap: 5px;
         position: relative;
-
-        &:not(:has(img)) {
-            padding: 5px 10px 10px 5px;
-        }
 
         .icon {
             font-size: 25px;
@@ -118,7 +198,11 @@
                 width: 100%;
             }
         }
+        &:not(:has(img)) {
+            padding: 5px 10px 10px 5px;
+        }
     }
+
 
     .fileMeta {
         display: flex;

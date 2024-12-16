@@ -1,15 +1,19 @@
 <script lang="ts">
     import { bufferToHexCode } from "$lib/e2e/encryption";
-    import { FileMessageObj, ImageMessageObj, type MessageObj } from "$lib/messageTypes";
+    import { FileMessageObj, type MessageObj } from "$lib/messageStore.svelte";
     import { onDestroy, onMount } from "svelte";
     import { getFormattedDate } from "./messages/messageUtils";
-    import { chatRoomStore } from "$lib/store";
+    import { chatRoomStore } from "$lib/store.svelte";
     import { slide } from "svelte/transition";
 
-    export let message: MessageObj;
+    interface Props {
+        message: MessageObj;
+    }
 
-    let smKeyStr: string;
-    let msgTime: string;
+    let { message }: Props = $props();
+
+    let smKeyStr = $state('');
+    let msgTime = $state('');
     let timeStampInterval: number | NodeJS.Timeout;
 
     onMount(async () => {
@@ -48,13 +52,13 @@
             </div>
             <div class="content flex">
                 <img
-                    src="/images/avatars/{$chatRoomStore.userList[message.sender]
+                    src="/images/avatars/{chatRoomStore.value.userList[message.sender]
                         .avatar}(custom).webp"
                     height="20"
                     width="20"
-                    alt="{$chatRoomStore.userList[message.sender].avatar}"
+                    alt="{chatRoomStore.value.userList[message.sender].avatar}"
                 />
-                {$chatRoomStore.userList[message.sender].avatar}
+                {chatRoomStore.value.userList[message.sender].avatar}
             </div>
         </div>
         <div class="sub-content">

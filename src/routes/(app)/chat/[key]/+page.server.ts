@@ -1,8 +1,8 @@
 import { error, type NumericRange } from '@sveltejs/kit';
 import { io } from 'socket.io-client';
-import type { socketResponse } from "$lib/socket";
+import type { socketResponse } from "$lib/connection/socketResponseType";
 import { PUBLIC_API_SERVER_URL } from "$env/static/public"
-import { DEFAULT_THEME, themes } from "$lib/themes";
+import { DEFAULT_THEME, themes } from "$lib/themesTypes";
 
 type fetchResponse = socketResponse & {
   key: string,

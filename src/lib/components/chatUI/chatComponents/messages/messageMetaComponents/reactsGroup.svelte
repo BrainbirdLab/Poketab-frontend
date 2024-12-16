@@ -2,10 +2,14 @@
     import ReactIcon from "./reactIcon.svelte";
     import { flip } from "svelte/animate";
 
-    export let reactedBy: Map<string, string> = new Map();
+    interface Props {
+        reactedBy?: Map<string, string>;
+    }
+
+    let { reactedBy = new Map() }: Props = $props();
 
     //use reactive declaration to group reacts by react and uid
-    $: reacts = Array.from(reactedBy).reduce((acc, [uid, react]) => {
+    let reacts = $derived(Array.from(reactedBy).reduce((acc, [uid, react]) => {
         if (acc.has(react)) {
             const uids = acc.get(react) as string[];
             acc.delete(react);
@@ -14,7 +18,7 @@
             acc.set(react, [uid]);
         }
         return acc;
-    }, new Map<string, string[]>());
+    }, new Map<string, string[]>()));
 
 </script>
 

@@ -1,8 +1,13 @@
 <script lang="ts">
     import { onMount } from 'svelte';
   
+    
+  interface Props {
     // Props
-    export let color: string = 'rgba(0, 200, 0, 1)'; // Default color
+    color?: string;
+  }
+
+  let { color = 'rgba(0, 200, 0, 1)' }: Props = $props();
   
     // Increased spacing and reduced the number of rows and columns
     const gridRows = 50;
@@ -10,7 +15,7 @@
     const boxSize = 15;
     const spacing = 20;
   
-    let canvas: HTMLCanvasElement;
+    let canvas = $state() as HTMLCanvasElement;
   
     onMount(() => {
       const ctx = canvas.getContext('2d');
@@ -71,7 +76,7 @@
     }
   </script>
   
-  <canvas bind:this={canvas} width={gridCols * (boxSize + spacing)} height={gridRows * (boxSize + spacing)} />
+  <canvas bind:this={canvas} width={gridCols * (boxSize + spacing)} height={gridRows * (boxSize + spacing)}></canvas>
   
   <style>
     canvas {

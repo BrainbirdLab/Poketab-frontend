@@ -1,15 +1,19 @@
 <script lang="ts">
-    import { chatRoomStore } from "$lib/store";
-    export let seenBy: Set<string>;
-    export let id: string;
+    import { chatRoomStore } from "$lib/store.svelte";
+    interface Props {
+        seenBy: Set<string>;
+        id: string;
+    }
+
+    let { seenBy, id }: Props = $props();
 </script>
 
 {#if seenBy.size > 0}
 {#key seenBy}
 <div class="seenBy">
     {#each seenBy as uid}
-        {#if $chatRoomStore.userList[uid]?.lastSeenMessage == id}
-            <img alt="seen" data-uid="{uid}" src="/images/avatars/{$chatRoomStore.userList[uid].avatar}(custom)-mini.webp" />
+        {#if chatRoomStore.value.userList[uid].lastSeenMessage == id}
+            <img alt="seen" data-uid="{uid}" src="/images/avatars/{chatRoomStore.value.userList[uid].avatar}(custom)-mini.webp" />
         {/if}
     {/each}
     <!-- if more than 3 seen, show +n more -->

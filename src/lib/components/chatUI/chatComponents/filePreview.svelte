@@ -1,14 +1,16 @@
 <script lang="ts">
     import { getSize } from "./messages/messageUtils";
-    import { selectedFiles } from "$lib/messageTypes";
+    import { selectedFiles } from "$lib/messageStore.svelte";
     import { fly } from "svelte/transition";
     import { flip } from "svelte/animate";
     import { getIcon } from "$lib/utils";
 
+    interface Props {
+        sendAsType: 'file' | 'image' | 'audio';
+        urlObjects: Map<string, string>;
+    }
 
-    export let sendAs: 'file' | 'image' | 'audio';
-    
-    export let urlObjects: Map<string, string>;
+    let { sendAsType = $bindable(), urlObjects = $bindable() }: Props = $props();
 
     function createURLObject(file: File) {
         const url = URL.createObjectURL(file);
@@ -20,12 +22,12 @@
            return 'Should be < 10 Mb';
         }
 
-        if (sendAs == 'audio') {
+        if (sendAsType == 'audio') {
             const supportedAudioFormats = ['audio/mp3', 'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/x-m4a'];
             if (!supportedAudioFormats.includes(file.type)) {
                 return 'Cannot send as audio';
             }
-        } else if (sendAs == 'image') {
+        } else if (sendAsType == 'image') {
             const supportedImageFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!supportedImageFormats.includes(file.type)) {
                 return 'Cannot send as image';
@@ -37,7 +39,8 @@
 </script>
 
 <div class="selectedFiles">
-    {#each $selectedFiles as file, i (file.name)}
+    {#if selectedFiles.value}
+    {#each selectedFiles.value as file, i (file.name)}
         <div
             animate:flip={{duration: 600}}
             in:fly={{y: 10, delay: 50 * (i + 1)}}
@@ -45,7 +48,7 @@
             class="file_preview back-blur"
             data-id={i}
         >
-            {#if sendAs === 'image'}
+            {#if sendAsType === 'image'}
                 <img src={createURLObject(file)} alt="preview" />
             {:else}
             <i class="icon fa-solid {getIcon(file.type)}"></i>
@@ -66,6 +69,7 @@
             </div>
         </div>
     {/each}
+    {/if}
 </div>
 <div class="filePreviewOptions back-blur box-shadow" transition:fly={{y: 10}}>
     <button
@@ -75,7 +79,7 @@
         >Cancel <i class="fa-solid fa-trash default"></i></button
     >
     <div class="items-count">
-        {$selectedFiles.length} {$selectedFiles.length < 2 ? "item" : "items"} selected
+        {selectedFiles.value?.length} {selectedFiles.value?.length || 0 < 2 ? "item" : "items"} selected
     </div>
     <button 
         transition:fly={{x: 10, delay: 100}}

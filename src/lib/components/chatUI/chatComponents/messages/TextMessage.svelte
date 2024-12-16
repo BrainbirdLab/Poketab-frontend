@@ -1,12 +1,27 @@
 <script lang="ts">
-    import type { TextMessageObj } from "$lib/messageTypes";
+
+    import type { TextMessageObj } from "$lib/messageStore.svelte";
     import Reacts from "./messageMetaComponents/reactsGroup.svelte";
     import MessageTop from "./messageMetaComponents/messageTop.svelte";
     import SeenBy from "./messageMetaComponents/seenBy.svelte";
     import MessageMeta from "./messageMetaComponents/dpAndSentIcon.svelte";
-    import { messageContainer, messageScrolledPx } from "$lib/store";
+    import { messageContainer, messageScrolledPx } from "$lib/store.svelte";
 
-    export let message: TextMessageObj;
+    interface Props {
+        message: TextMessageObj;
+    }
+
+    let { message }: Props = $props();
+
+    function once(fn: () => void) {
+        let called = false;
+        return function () {
+            if (!called) {
+                called = true;
+                fn();
+            }
+        };
+    }
 
 </script>
 
@@ -21,23 +36,25 @@
                 {#if message.linkPreviewData}
                 <div class="linkMetadata">
                     {#if message.linkPreviewData.image}
-                    <div class="linkMetadata__image">
-                        <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" on:load|once={()=> {
-                            if ($messageScrolledPx < 20) {
-                                $messageContainer.scrollTop = $messageContainer.scrollHeight;
-                            }
-                        }}/>
+                    <div class="linkMetadataImage">
+                        <img src={message.linkPreviewData.image} alt="{message.linkPreviewData.title}" 
+                            onload={once(()=> {
+                                if (messageScrolledPx.value < 20) {
+                                    messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+                                }
+                            })}
+                        />
                     </div>
                     {/if}
-                    <div class="linkMetadata__details">
+                    <div class="linkMetadataDetails">
                         {#if message.linkPreviewData.title}
-                        <div class="linkMetadata__title">{@html message.linkPreviewData.title}</div>
+                        <div class="linkMetadataTitle">{@html message.linkPreviewData.title}</div>
                         {/if}
                         {#if message.linkPreviewData.description}
-                        <div class="linkMetadata__description">{@html message.linkPreviewData.description}</div>
+                        <div class="linkMetadataDescription">{@html message.linkPreviewData.description}</div>
                         {/if}
                         {#if message.linkPreviewData.url}
-                        <div class="linkMetadata__url">{message.linkPreviewData.url}</div>
+                        <div class="linkMetadataUrl">{message.linkPreviewData.url}</div>
                         {/if}
                     </div>
                 </div>
@@ -55,31 +72,31 @@
         border-bottom-left-radius: inherit;
         border-bottom-right-radius: inherit;
         text-decoration: none;
-        .linkMetadata__details{
+        .linkMetadataDetails{
             border-left: 2px solid var(--message-color);
             border-right: 2px solid var(--message-color);
             border-bottom: 2px solid var(--message-color);
         }
     }
 
-    .linkMetadata__url{
+    .linkMetadataUrl{
         color: var(--message-color);
         font-size: 0.7rem;
     }
 
-    .linkMetadata__title{
+    .linkMetadataTitle{
         font-size: 0.7rem;
         text-align: left;
         word-break: break-all;
     }
 
-    .linkMetadata__description{
+    .linkMetadataDescription{
         color: var(--transparent-white-color);
         font-size: 0.6rem;
         text-align: left;
     }
 
-    .linkMetadata__details{
+    .linkMetadataDetails{
         height: min-content;
         width: 100%;
         background: #252628;
@@ -93,7 +110,7 @@
         border-bottom-right-radius: inherit;
     }
 
-    .linkMetadata__image{
+    .linkMetadataImage{
         height: min-content;
         padding: 0;
         max-height: 200px;
@@ -105,14 +122,14 @@
         justify-content: center;
         img{
             object-fit: contain;
-            background: none;
+            background: #252628;
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
             min-width: 300px;
             display: block;
-            color: var(--shadow-color);
+            color: var(--text-color);
         }
     }
 

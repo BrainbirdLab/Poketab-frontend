@@ -1,17 +1,12 @@
 <script lang="ts">
     import {fly} from "svelte/transition";
-    import {formActionButtonDisabled, formNotification} from "$lib/store";
-    import { socket } from "$lib/socket";
+    import {formActionButtonDisabled, formNotification} from "$lib/store.svelte";
+    import { socket } from "$lib/connection/socketClient";
     import { onDestroy } from "svelte";
 
-    let connected = '';
+    let connected = $state('');
 
-    onDestroy(() => {
-        unsub();
-    });
-
-    const unsub = formNotification.subscribe(value => {
-
+    const unsub = formNotification.onChange((value) => {
         if (value.includes('offline')){
             //make the background red
             connected = '';
@@ -20,16 +15,16 @@
             if (socket.disconnected){
                 socket.connect();
                 setTimeout(() => {
-                    if ($formNotification.toLocaleLowerCase().includes('connected')){
+                    if (value.toLocaleLowerCase().includes('connected')){
                         return;
                     }
-                    formNotification.set('Connecting to server...');
+                    formNotification.value = 'Connecting to server...';
                 }, 1000);
             } else{
                 setTimeout(() => {
-                    formNotification.set('');
+                    formNotification.value = '';
                 }, 1000);
-                formActionButtonDisabled.set(false);
+                formActionButtonDisabled.value = false;
             }
         } else if (value == 'Connected to server') {
             //make the background green
@@ -37,13 +32,17 @@
         } else {
             connected = '';
         }
-    });
+    })
+
+    onDestroy(() => {
+        unsub();
+    })
 
 </script>
 
-{#if $formNotification != ''}
+{#if formNotification.value != ''}
 <div class="notification {connected}" transition:fly={{y: -10}}>
-    {$formNotification} 
+    {formNotification.value} 
 </div>
 {/if}
 

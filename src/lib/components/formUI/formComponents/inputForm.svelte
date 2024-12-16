@@ -1,4 +1,5 @@
 <script lang="ts">
+
     import "./forms.scss";
     import { avList } from "$lib/utils/validation";
     import { fly, scale } from "svelte/transition";
@@ -7,8 +8,7 @@
     import {
         socket,
         reConnectSocket,
-        type socketResponse,
-    } from "$lib/socket";
+    } from "$lib/connection/socketClient";
     import {
         formActionButtonDisabled,
         reconnectButtonEnabled,
@@ -21,22 +21,23 @@
         formNotification,
         splashMessage,
         myPrivateKey,
-    } from "$lib/store";
+    } from "$lib/store.svelte";
     import AppLogo from "./appLogo.svelte";
-    import type { User } from "$lib/types";
+    import type { chatRoomStoreType, User } from "$lib/types";
     import { bufferToString, exportPublicKey, importPublicKey, makeKeyPair, stringToBuffer } from "$lib/e2e/encryption";
     import Quantum from "$lib/components/icons/quantum.svelte";
     import DotStream from "$lib/components/icons/dotStream.svelte";
+    import type { socketResponse } from '$lib/connection/socketResponseType';
 
-    let selectedavatar = "";
-    let selectedMaxUser = 2;
+    let selectedavatar = $state("");
+    let selectedMaxUser = $state(2);
 
-    let avatarErr = "";
-    let maxUserErr = "";
+    let avatarErr = $state("");
+    let maxUserErr = $state("");
 
-    let errAnimation = "";
+    let errAnimation = $state("");
 
-    $: {
+    $effect(() => {
         if (avatarErr || maxUserErr) {
             errAnimation = "shake";
             setTimeout(() => {
@@ -45,32 +46,33 @@
         } else {
             errAnimation = "";
         }
-    }
+    });
 
-    let titleText = $chatRoomStore.Key ? "Join chat" : "Create chat";
+    let titleText = chatRoomStore.value.Key ? "Join chat" : "Create chat";
 
     const actionCreateKey = "Creating encryption keys";
     const actionConnectKey = "Establishing connection";
     const actionEncryptChat = "Encrypting chat";
 
-    let actionButtonText = titleText;
+    let actionButtonText = $state(titleText);
 
-    let mounted = false;
+    let mounted = $state(false);
 
-    if ($chatRoomStore.Key) {
+    socket.on("disconnect", () => {
+        actionButtonText = titleText;
+    });
+
+    if (chatRoomStore.value.Key) {
         socket.emit(
             "fetchKeyData",
-            $chatRoomStore.Key,
+            chatRoomStore.value.Key,
             false,
             (res: socketResponse) => {
                 if (!res.success) {
-                    showUserInputForm.set(false);
+                    showUserInputForm.value = false;
                 } else {
-                    chatRoomStore.update((room) => {
-                        room.userList = res.users;
-                        return room;
-                    });
-                    showUserInputForm.set(true);
+                    chatRoomStore.value.userList = res.users;
+                    showUserInputForm.value = true;
                 }
             },
         );
@@ -97,7 +99,7 @@
         }
 
         if (
-            (!$chatRoomStore.Key && selectedMaxUser < 2) ||
+            (!chatRoomStore.value.Key && selectedMaxUser < 2) ||
             selectedMaxUser > 10
         ) {
             maxUserErr = "Max users must be between 2 and 10";
@@ -110,7 +112,7 @@
         }
 
         //initChatActionDisabled = true;
-        formActionButtonDisabled.set(true);
+        formActionButtonDisabled.value = true;
         actionButtonText = actionCreateKey;
 
         //make my private-public key pair
@@ -119,7 +121,7 @@
 
         actionButtonText = actionConnectKey;
         
-        if (!$chatRoomStore.Key) {
+        if (!chatRoomStore.value.Key) {
             socket.emit(
                 "createChat",
                 selectedavatar,
@@ -135,38 +137,40 @@
                 }) => {
                     if (!res.success) {
                         console.log("Error: " + res.message);
-                        formNotification.set("Error: " + res.message);
-                        formActionButtonDisabled.set(false);
+                        formNotification.value = "Error: " + res.message;
+                        formActionButtonDisabled.value = false;
                         return;
                     }
 
                     actionButtonText = actionEncryptChat;
 
                     res.user.publicKey = pair.publicKey;
-                    myPrivateKey.set(pair.privateKey);
-                    chatRoomStore.update((room) => {
-                        room.Key = res.key;
-                        room.admin = res.userId;
-                        room.maxUsers = selectedMaxUser;
-                        room.userList = {[res.userId]: res.user};
-                        return room;
-                    });
+                    myPrivateKey.value = pair.privateKey;
 
-                    myId.set(res.userId);
+                    const newVal: chatRoomStoreType = {
+                        Key: res.key,
+                        admin: res.userId,
+                        maxUsers: selectedMaxUser,
+                        userList: {[res.userId]: res.user},
+                    }
 
-                    joinedChat.set(true);
-                    currentPage.set("chat");
-                    splashMessage.set("");
+                    chatRoomStore.value = newVal;
+
+                    myId.value = res.userId;
+
+                    joinedChat.value = true;
+                    currentPage.value = "chat";
+                    splashMessage.value = "";
                     selectedavatar = "";
                     selectedMaxUser = 2;
-                    formActionButtonDisabled.set(false);
+                    formActionButtonDisabled.value = false;
                 },
             );
         } else {
             socket.connect();
             socket.emit(
                 "joinChat",
-                $chatRoomStore.Key,
+                chatRoomStore.value.Key,
                 selectedavatar,
                 bufferToString(publicKey),
                 async (res: {
@@ -183,20 +187,24 @@
                 }) => {
                     if (!res.success) {
                         console.log("Error: " + res.message);
-                        formNotification.set("Error: " + res.message);
-                        formActionButtonDisabled.set(false);
-                        showUserInputForm.set(false);
+                        formNotification.value = "Error: " + res.message;
+                        formActionButtonDisabled.value = false;
+                        showUserInputForm.value = false;
                         return;
                     }
 
                     actionButtonText = actionEncryptChat;
 
-                    chatRoomStore.update((room) => {
-                        room.admin = res.admin;
-                        room.maxUsers = res.maxUsers;
-                        return room;
-                    });
-                    myPrivateKey.set(pair.privateKey);
+                    const newVal: chatRoomStoreType = {
+                        Key: chatRoomStore.value.Key,
+                        admin: res.admin,
+                        maxUsers: res.maxUsers,
+                        userList: {},
+                    }
+
+                    chatRoomStore.value = newVal;
+
+                    myPrivateKey.value = pair.privateKey;
 
                     Object.entries(res.users).forEach(async ([uid, user]) => {
 
@@ -206,28 +214,25 @@
                             uid: user.uid,
                             publicKey: pubKey,
                         };
-                        chatRoomStore.update((room) => {
-                            room.userList[uid] = u;
-                            return room;
-                        });
+                        chatRoomStore.value.userList[uid] = u;
                     });
 
 
-                    myId.set(res.userId);
+                    myId.value = res.userId;
 
-                    joinedChat.set(true);
-                    currentPage.set("chat");
-                    splashMessage.set("");
+                    joinedChat.value = true;
+                    currentPage.value = "chat";
+                    splashMessage.value = "";
                     selectedavatar = "";
                     selectedMaxUser = 2;
-                    formActionButtonDisabled.set(false);
+                    formActionButtonDisabled.value = false;
                 },
             );
         }
     }
 
     function redirect() {
-        showUserInputForm.set(false);
+        showUserInputForm.value = false;
     }
 </script>
 
@@ -239,7 +244,7 @@
     <div class="formWrapper">
         <div class="form box-shadow back-blur" in:fly={{ y: 30 }}>
             <div class="formtitle">
-                <AppLogo title={ !$chatRoomStore.Key ? {text: 'Create chat', icon: "fa-solid fa-meteor"} : {text: 'Join chat', icon: "fa-solid fa-handshake"}}/>
+                <AppLogo title={ !chatRoomStore.value.Key ? {text: 'Create chat', icon: "fa-solid fa-meteor"} : {text: 'Join chat', icon: "fa-solid fa-handshake"}}/>
             </div>
             <div class="formfield">
                 <label for="avatar" class:error={avatarErr} class:selected={selectedavatar}>
@@ -253,7 +258,7 @@
                 <div id="avatar" class="avatarsContainer">
                     <div class="avatars">
                         {#each avList as avatar, i}
-                            {#if $chatRoomStore.Key && isTaken(avatar)}
+                            {#if chatRoomStore.value.Key && isTaken(avatar)}
                                 <div
                                     class="avatar inuse"
                                     in:fly|global={{ x: 10, delay: i * 30 }}
@@ -276,12 +281,12 @@
                                     <input
                                         type="radio"
                                         class="avatarInput"
-                                        on:input={() => (avatarErr = "")}
+                                        oninput={() => (avatarErr = "")}
                                         bind:group={selectedavatar}
                                         name="avatar"
                                         value={avatar}
                                         id={avatar}
-                                        disabled={$formActionButtonDisabled ||
+                                        disabled={formActionButtonDisabled.value ||
                                         !socket.connected}
                                     />
                                     <label
@@ -301,7 +306,7 @@
                 </div>
             </div>
 
-            {#if !$chatRoomStore.Key}
+            {#if !chatRoomStore.value.Key}
                 <div class="formfield range">
                     <label for="maxUsers"
                         >Create chat for ({selectedMaxUser}) users</label
@@ -313,7 +318,7 @@
                         </div>
                     {/if}
                     <input
-                        disabled={$formActionButtonDisabled ||
+                        disabled={formActionButtonDisabled.value ||
                             !socket.connected}
                         type="range"
                         bind:value={selectedMaxUser}
@@ -326,20 +331,20 @@
             {/if}
 
             <div class="formfield">
-                {#if $reconnectButtonEnabled}
+                {#if reconnectButtonEnabled.value}
                     <button
                         class="button-animate hover play-sound recon"
-                        on:click={() => {reConnectSocket()}}>Reconnect</button
+                        onclick={() => {reConnectSocket()}}>Reconnect</button
                     >
                 {:else}
                     <button
                         class="button-animate hover play-sound"
-                        disabled={$formActionButtonDisabled ||
+                        disabled={formActionButtonDisabled.value ||
                             !socket.connected}
-                        on:click={requestForChat}
+                        onclick={requestForChat}
                     >
                         {actionButtonText} 
-                        {#if $formActionButtonDisabled}
+                        {#if formActionButtonDisabled.value}
                             {#if actionButtonText == actionConnectKey}
                             <DotStream/>
                             {:else if actionButtonText != titleText}
@@ -355,7 +360,7 @@
                 <button
                     id="redirect"
                     class="noSelect button-animate hover play-sound"
-                    on:click={redirect}>Join a chat?</button
+                    onclick={redirect}>Join a chat?</button
                 >
             </div>
         </div>

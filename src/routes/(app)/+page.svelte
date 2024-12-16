@@ -13,7 +13,7 @@
 
     const version = __VERSION__;
 
-    let mounted = false;
+    let mounted = $state(false);
 
     onMount(() => {
         mounted = true;
@@ -208,7 +208,7 @@
                             style="width: 150px; height: 150px; border-radius: 5px;"
                         />
                         <div>Or, use this address</div>
-                        <button class="btc" on:click={handleCopy}
+                        <button class="btc" onclick={handleCopy}
                             >0x736Cc7836fF2A6988Ae0f25678Ce7640B71E7f04 <i class="fa-regular fa-copy"></i></button
                         >
                     </div>

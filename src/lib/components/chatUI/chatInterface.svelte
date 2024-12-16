@@ -16,19 +16,25 @@
 
     import { addState, resetModals } from "./stateManager.svelte";
 
-    import MessageSockets from "./messageSockets.svelte";
-
     //svelte methods
     import { onDestroy, onMount } from "svelte";
 
     //scripts
-    import { eventTriggerMessageId, lastMessageId } from "$lib/messageTypes";
-    import { chatRoomStore, myId, messageContainer } from "$lib/store";
-    import { socket } from "$lib/socket";
+    import { chatRoomStore, myId } from "$lib/store.svelte";
+    import { socket } from "$lib/connection/socketClient";
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import Lightbox from "./chatComponents/lightbox.svelte";
     import { infoMessage } from "$lib/utils/debug";
+    import DropBox from "./chatComponents/dropBox.svelte";
+    import Messages from "./chatComponents/messages.svelte";
+    import type { LightBoxTargettype } from "$lib/types";
+    import { lastMessageId, eventTriggerMessageId } from "$lib/messageStore.svelte";
+
+    let showFilePicker = $state(false);
+    let sendAsType: "file" | "image" | "audio" = $state("file");
+
+    let lightboxTarget: LightBoxTargettype | null = $state(null);
 
     let isOffline = false;
 
@@ -86,7 +92,7 @@
         }
     };
 
-    let ready = false;
+    let ready = $state(false);
 
     onMount(() => {
 
@@ -96,11 +102,10 @@
         document.onkeydown = keyBindingHandler;
 
         window.onfocus = () => {
-            if (!$lastMessageId) {
+            if (!lastMessageId.value) {
                 return;
             }
-
-            socket.emit("seen", $myId, $chatRoomStore.Key, $lastMessageId);
+            socket.emit("seen", myId.value, chatRoomStore.value.Key, lastMessageId.value);
         };
 
         infoMessage("You joined the chat 😸", "join");
@@ -123,10 +128,11 @@
     <title>Poketab - Chat</title>
 </svelte:head>
 
-<AttachmentsModal />
+<DropBox bind:sendAsType={sendAsType} bind:showFilePicker={showFilePicker}/>
+<AttachmentsModal bind:sendAsType={sendAsType} bind:showFilePicker={showFilePicker}/>
 
-{#if $page.state.viewImage != null}
-    <Lightbox />
+{#if $page.state.showLightBox}
+    <Lightbox target={lightboxTarget}/>
 {/if}
 
 {#if $page.state.showQuickSettingsPanel === true}
@@ -139,10 +145,7 @@
     <StickersKeyboardModal />
 {/if}
 
-
-<MessageSockets />
-
-{#if $eventTriggerMessageId}
+{#if eventTriggerMessageId.value}
     {#if $page.state.showMessageOptions}
         <MessageOptionsModal />
     {/if}
@@ -153,14 +156,13 @@
 
 <div class="chatBox" class:offl={isOffline}>
     <NavBar bind:encrypted={ready}/>
-    <div class="middleLayer" on:touchmove|stopPropagation={(e) => {
+    <div class="middleLayer" ontouchmove={(e) => {
+        e.stopPropagation();
         if (e.target == e.currentTarget) {
             e.preventDefault();
         }
     }}>
-        <div class="messageContainer" bind:this={$messageContainer} >
-            <slot name="messages" />
-        </div>
+        <Messages bind:lightBoxTarget={lightboxTarget}/>
         <Footer />
     </div>
 </div>
@@ -176,13 +178,6 @@
         flex-direction: column;
         justify-content: flex-end;
         gap: 20px;
-
-        .messageContainer{
-            height: auto;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            scrollbar-width: none;
-        }
     }
 
     .chatBox {

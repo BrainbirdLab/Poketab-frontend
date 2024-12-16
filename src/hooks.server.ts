@@ -1,4 +1,4 @@
-import { DEFAULT_THEME, themes } from "$lib/themes";
+import { DEFAULT_THEME, themes } from "$lib/themesTypes";
 
 import type { Handle } from "@sveltejs/kit";
 

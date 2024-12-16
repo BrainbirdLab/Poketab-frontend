@@ -1,4 +1,4 @@
-import { DEFAULT_THEME, themes } from "$lib/themes";
+import { DEFAULT_THEME, themes } from "$lib/themesTypes";
 
 
 export async function load({cookies}) {

@@ -1,34 +1,41 @@
 <script lang="ts">
+
     import { page } from "$app/stores";
-    import { chatRoomStore } from "$lib/store";
-    import { fade, fly, scale } from "svelte/transition";
+    import { chatRoomStore } from "$lib/store.svelte";
+    import { fade, scale } from "svelte/transition";
     import { addState } from "../stateManager.svelte";
     import { onMount } from "svelte";
-    import { writable } from "svelte/store";
-    import { startScrambleAnimation, stopScrambleAnimation } from "$lib/scrambler";
+    import { startScrambleAnimation, stopScrambleAnimation } from "$lib/scrambler.svelte";
+    import { ref } from '$lib/ref.svelte';
 
-    export let encrypted = false;
+    interface Props {
+        encrypted?: boolean;
+    }
+
+    let { encrypted = $bindable(false) }: Props = $props();
 
     const textToScrambleInitial = "Encrypting this chat";
     const textToScrambleFinal = "End-to-end encrypted";
-    const scrambledText = writable(textToScrambleInitial);
+    const scrambledText = ref(textToScrambleInitial);
 
     onMount(() => {
         startScrambleAnimation(textToScrambleInitial, scrambledText);
     });
 
-    $: if (encrypted) {
-        stopScrambleAnimation();
-        scrambledText.set(textToScrambleFinal);
-    }
+    $effect(() => {
+        if (encrypted) {
+            stopScrambleAnimation();
+            scrambledText.value = textToScrambleFinal;
+        }
+    });
 </script>
 
 <div class="navbar" transition:scale={{ start: 1.3 }}>
     <div class="currentlyActive">
         <div class="users">
             <i class="fa-solid fa-user"></i> Active: {Object.keys(
-                $chatRoomStore.userList,
-            ).length}/{$chatRoomStore.maxUsers}
+                chatRoomStore.value.userList,
+            ).length}/{chatRoomStore.value.maxUsers}
         </div>
         <div class="enc">
             {#if encrypted}
@@ -36,16 +43,17 @@
             {:else}
                 <i class="fa-solid fa-lock-open"></i>
             {/if}
-            {$scrambledText}
+            {scrambledText.value}
         </div>
     </div>
     <div class="optionPanel">
         {#if !$page.state.showQuickSettingsPanel}
             <button
+                aria-label="Customize chat"
                 transition:fade={{ duration: 100 }}
                 class="button-animate hover roundedBtn play-sound hoverShadow"
                 title="Customize chat"
-                on:click={() => {
+                onclick={() => {
                     addState("quickSettings", { showQuickSettingsPanel: true });
                 }}
             >

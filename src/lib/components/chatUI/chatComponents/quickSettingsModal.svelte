@@ -1,131 +1,22 @@
-<script context="module" lang="ts">
-    import { get } from "svelte/store";
-
-    export const sendMethod: Writable<SEND_METHOD> = writable(SEND_METHOD.ENTER);
-    export const buttonSoundEnabled = writable(true);
-    export const messageSoundEnabled = writable(true);
-    export const quickEmojiEnabled = writable(true);
-    export const quickEmoji = writable('');
-    export const linkPreviewOn = writable(true);
-
-    type Settings = {
-        buttonSoundEnabled: boolean;
-        messageSoundEnabled: boolean;
-        quickEmojiEnabled: boolean;
-        quickEmoji: string;
-        selectedStickersGroup: string;
-        currentTheme: string;
-        sendMethod: SEND_METHOD;
-        linkPreviewOn: boolean;
-    };
-
-    const defaultSettings = {
-        buttonSoundEnabled: true,
-        messageSoundEnabled: true,
-        quickEmojiEnabled: true,
-        linkPreviewOn: true,
-        sendMethod:
-            get(deviceType) == "mobile"
-                ? SEND_METHOD.CTRL_ENTER
-                : SEND_METHOD.ENTER,
-    };
-
-    function setChatSettings(parsedSettings: Partial<Settings>) {
-        buttonSoundEnabled.set(
-            parsedSettings.buttonSoundEnabled ??
-                defaultSettings.buttonSoundEnabled,
-        );
-        messageSoundEnabled.set(
-            parsedSettings.messageSoundEnabled ??
-                defaultSettings.messageSoundEnabled,
-        );
-        quickEmojiEnabled.set(
-            parsedSettings.quickEmojiEnabled ??
-                defaultSettings.quickEmojiEnabled,
-        );
-        quickEmoji.set(
-            parsedSettings.quickEmoji ?? themes[DEFAULT_THEME].quickEmoji,
-        );
-        selectedStickerGroup.set(
-            parsedSettings.selectedStickersGroup ?? DEFAULT_STICKER_GROUP,
-        );
-        currentTheme.set(parsedSettings.currentTheme ?? DEFAULT_THEME);
-        sendMethod.set(parsedSettings.sendMethod ?? defaultSettings.sendMethod);
-        linkPreviewOn.set(
-            parsedSettings.linkPreviewOn ?? defaultSettings.linkPreviewOn,
-        );
-    }
-
-    export function setToLocalStorage(updatedSettings: Partial<Settings>) {
-        const currentSettingsStr = localStorage.getItem("settings") || "{}";
-        const currentSettings: Settings = JSON.parse(currentSettingsStr);
-
-        const newSettings: Settings = {
-            ...currentSettings,
-            ...updatedSettings,
-        };
-
-        localStorage.setItem("settings", JSON.stringify(newSettings));
-    }
-
-    export function loadChatSettings() {
-        const settingsStr = localStorage.getItem("settings") || "{}";
-        try {
-            const parsedSettings: Partial<Settings> = JSON.parse(settingsStr);
-
-            if (
-                typeof parsedSettings.buttonSoundEnabled != "boolean" ||
-                typeof parsedSettings.messageSoundEnabled != "boolean" ||
-                typeof parsedSettings.quickEmojiEnabled != "boolean" ||
-                typeof parsedSettings.sendMethod != "string" ||
-                typeof parsedSettings.linkPreviewOn != "boolean"
-            ) {
-                throw new Error("Invalid settings");
-            } else {
-                if (
-                    parsedSettings.sendMethod != SEND_METHOD.ENTER &&
-                    parsedSettings.sendMethod != SEND_METHOD.CTRL_ENTER
-                ) {
-                    throw new Error("Invalid settings");
-                } else {
-                    setChatSettings(parsedSettings);
-                }
-            }
-        } catch (error) {
-            // Store the default settings
-            localStorage.setItem("settings", JSON.stringify(defaultSettings));
-            console.log("Default settings stored");
-            // Update the settings to the default settings
-            setChatSettings({ ...defaultSettings });
-        }
-    }
-</script>
-
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { type Writable, writable } from "svelte/store";
     import {
         chatRoomStore,
-        deviceType,
         myId,
         splashMessage,
-    } from "$lib/store";
+    } from "$lib/store.svelte";
     import { SEND_METHOD } from "$lib/types";
     import EmojiPicker from "./emojiPicker.svelte";
     import { spin } from "$lib/utils";
-    import { socket } from "$lib/socket";
+    import { socket } from "$lib/connection/socketClient";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import UsersPanel from "./usersPanel.svelte";
     import { addState, clearModals } from "../stateManager.svelte";
     import { onDestroy, onMount } from "svelte";
     import type { Unsubscriber } from "svelte/store";
-    import { DEFAULT_THEME, currentTheme, themes } from "$lib/themes";
-    import {
-        DEFAULT_STICKER_GROUP,
-        selectedStickerGroup,
-    } from "./stickersKeyboard.svelte";
+    import { loadChatSettings, setToLocalStorage, buttonSoundEnabled, messageSoundEnabled, linkPreviewOn, quickEmojiEnabled, quickEmoji, sendMethod } from "$lib/settings.svelte";
 
-    let showQuickEmojiDrawer = false;
+    let showQuickEmojiDrawer = $state(false);
 
     const version = __VERSION__;
 
@@ -144,22 +35,22 @@
                         break;
                     case "buttonSound":
                         setToLocalStorage({
-                            buttonSoundEnabled: !$buttonSoundEnabled,
+                            buttonSoundEnabled: !buttonSoundEnabled.value,
                         });
                         break;
                     case "messageSound":
                         setToLocalStorage({
-                            messageSoundEnabled: !$messageSoundEnabled,
+                            messageSoundEnabled: !messageSoundEnabled.value,
                         });
                         break;
                     case "linkPreview":
                         setToLocalStorage({
-                            linkPreviewOn: !$linkPreviewOn,
+                            linkPreviewOn: !linkPreviewOn.value,
                         });
                         break;
                     case "quickEmoji":
                         setToLocalStorage({
-                            quickEmojiEnabled: !$quickEmojiEnabled,
+                            quickEmojiEnabled: !quickEmojiEnabled.value,
                         });
                         break;
                     case "ctrl+enter":
@@ -191,22 +82,19 @@
     }
 
     function leaveChat(destroy: boolean = false) {
-        splashMessage.set(
-            (destroy ? "Destroying chat... " : "Leaving chat... ") +
-                '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px" />',
-        );
+        splashMessage.value = destroy ? "Destroying chat... " : "Leaving chat... " + '<img src="/images/run-pikachu.gif" alt="exit" height="30px" width="30px" />';
         clearModals();
         socket.emit("leaveChat", destroy);
     }
 
-    $: KEY = $chatRoomStore.Key;
+    let KEY = $derived(chatRoomStore.value.Key);
 
-    let copyKeyIcon = "fa-regular fa-clone";
+    let copyKeyIcon = $state("fa-regular fa-clone");
     let copyTimeout: number | NodeJS.Timeout | null = null;
 
     function copyKey() {
         navigator.clipboard
-            .writeText($chatRoomStore.Key)
+            .writeText(chatRoomStore.value.Key)
             .then(() => {
                 showToastMessage("Copied to clipboard!");
                 copyKeyIcon = "fa-solid fa-check";
@@ -223,7 +111,7 @@
     let quickEmojiSub: Unsubscriber;
 
     onMount(() => {
-        quickEmojiSub = quickEmoji.subscribe((value) => {
+        quickEmojiSub = quickEmoji.onChange((value) => {
             setToLocalStorage({ quickEmoji: value });
         });
     });
@@ -241,20 +129,21 @@
     >
         <div class="top">
             <button
+                aria-label="Back"
                 id="back"
                 class="back button-animate clickable hover roundedBtn"
             >
-                <i class="fa-solid fa-chevron-left" />
+                <i class="fa-solid fa-chevron-left"></i>
             </button>
             <div class="v-title">v{version}</div>
         </div>
 
         <div class="subsectionsContainer">
-            {#if $chatRoomStore.userList && Object.keys($chatRoomStore.userList).length > 0}
+            {#if chatRoomStore.value.userList && Object.keys(chatRoomStore.value.userList).length > 0}
                 <div class="subsection">
                     <div class="subtitle">
-                        {Object.keys($chatRoomStore.userList).length } People{Object.keys($chatRoomStore.userList).length > 1 ? "'s" : ""} on
-                        <button id="keyname" class="play-sound clickable" on:click={copyKey}
+                        {Object.keys(chatRoomStore.value.userList).length } People{Object.keys(chatRoomStore.value.userList).length > 1 ? "'s" : ""} on
+                        <button id="keyname" class="play-sound clickable" onclick={copyKey}
                         >{KEY}<i class={copyKeyIcon}></i></button
                         >
                     </div>
@@ -268,14 +157,14 @@
 
             <div class="subsection">
                 <div class="subtitle">
-                    Sounds & Notifications <i class="fa-solid fa-volume-high" />
+                    Sounds & Notifications <i class="fa-solid fa-volume-high"></i>
                 </div>
                 <!-- Enable/disable button sounds -->
                 <div class="field-checkers play-sound hoverShadow">
                     <input
                         type="checkbox"
                         id="buttonSound"
-                        bind:checked={$buttonSoundEnabled}
+                        bind:checked={buttonSoundEnabled.value}
                     />
                     <label for="buttonSound">
                         <div class="textContainer">
@@ -284,7 +173,7 @@
                                 Buttons and UI elements sound
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
                 <!-- Enable/disable message sounds -->
@@ -292,7 +181,7 @@
                     <input
                         type="checkbox"
                         id="messageSound"
-                        bind:checked={$messageSoundEnabled}
+                        bind:checked={messageSoundEnabled.value}
                     />
                     <label for="messageSound">
                         <div class="textContainer">
@@ -301,20 +190,20 @@
                                 Message action sound (send, recieve, reacts)
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
             </div>
 
             <div class="subsection">
                 <div class="subtitle">
-                    Link Preview <i class="fa-solid fa-link" />
+                    Link Preview <i class="fa-solid fa-link"></i>
                 </div>
                 <div class="field-checkers play-sound hoverShadow">
                     <input
                         type="checkbox"
                         id="linkPreview"
-                        bind:checked={$linkPreviewOn}
+                        bind:checked={linkPreviewOn.value}
                     />
                     <label for="linkPreview">
                         <div class="textContainer">
@@ -323,18 +212,18 @@
                                 Show link preview for shared links
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
             </div>
 
             <div class="subsection">
                 <div class="subtitle">
-                    Keyboard <i class="fa-regular fa-keyboard" />
+                    Keyboard <i class="fa-regular fa-keyboard"></i>
                 </div>
                 <div class="field-checkers play-sound hoverShadow">
                     <input
-                        bind:group={$sendMethod}
+                        bind:group={sendMethod.value}
                         type="radio"
                         name="sendMethod"
                         id="ctrl+enter"
@@ -345,13 +234,13 @@
                             Use Ctrl+Enter to send
                             <div class="moreInfo">Enter to add newlines</div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
 
                 <div class="field-checkers play-sound hoverShadow">
                     <input
-                        bind:group={$sendMethod}
+                        bind:group={sendMethod.value}
                         type="radio"
                         name="sendMethod"
                         id="enter"
@@ -364,7 +253,7 @@
                                 Shift+Enter to add newlines
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
             </div>
@@ -376,7 +265,7 @@
                 </div>
                 <div class="field-checkers play-sound hoverShadow">
                     <input
-                        bind:checked={$quickEmojiEnabled}
+                        bind:checked={quickEmojiEnabled.value}
                         type="checkbox"
                         id="quickEmoji"
                     />
@@ -387,7 +276,7 @@
                                 Use send button to send a quick emoji
                             </div>
                         </div>
-                        <span class="toggleButton" />
+                        <span class="toggleButton"></span>
                     </label>
                 </div>
                 <div
@@ -413,7 +302,7 @@
                                 class="hyper"
                                 id="chooseQuickEmojiButton"
                             >
-                                {$quickEmoji}
+                                {quickEmoji.value}
                             </button>
                         {/if}
                     </div>
@@ -421,7 +310,7 @@
                 {#if showQuickEmojiDrawer}
                     <EmojiPicker
                         height="10rem"
-                        bind:selectedEmoji={$quickEmoji}
+                        bind:selectedEmoji={quickEmoji.value}
                         onClose={() => {
                             showQuickEmojiDrawer = false;
                         }}
@@ -436,7 +325,7 @@
                         Change theme
                         <div class="moreInfo">Change the look of the chat</div>
                     </div>
-                    <i class="fa-solid fa-brush" />
+                    <i class="fa-solid fa-brush"></i>
                 </div>
             </div>
 
@@ -445,24 +334,24 @@
                     Danger zone <i class="fa-solid fa-skull"></i>
                 </div>
                 <ul class="moreInfo">
-                    {#if $chatRoomStore.admin == $myId}
+                    {#if chatRoomStore.value.admin == myId.value}
                         <li>Destroy chat will end the chat session for all</li>
                     {/if}
                     <li>Leave chat will end the chat session for you</li>
                 </ul>
                 <div class="btn-grp">
-                    {#if $chatRoomStore.admin == $myId}
+                    {#if chatRoomStore.value.admin == myId.value}
                         <button
-                            on:click={() => leaveChat(true)}
+                            onclick={() => leaveChat(true)}
                             id="destroy"
                             class="button hover button-animate play-sound capsule"
                             title="Leave and end chat"
                         >
-                            Destroy chat <i class="fa-solid fa-trash" />
+                            Destroy chat <i class="fa-solid fa-trash"></i>
                         </button>
                     {/if}
                     <button
-                        on:click={() => leaveChat(false)}
+                        onclick={() => leaveChat(false)}
                         id="logoutButton"
                         class="button hover button-animate play-sound capsule"
                         ><i class="fa-solid fa-arrow-right-from-bracket"

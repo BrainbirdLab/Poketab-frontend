@@ -1,4 +1,4 @@
-import { themes, DEFAULT_THEME } from "$lib/themes";
+import { themes, DEFAULT_THEME } from "$lib/themesTypes";
 
 //1 year
 const maxAge = 60 * 60 * 24 * 365;

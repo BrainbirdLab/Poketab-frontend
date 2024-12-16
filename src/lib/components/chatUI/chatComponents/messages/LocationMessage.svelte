@@ -1,15 +1,19 @@
 <script lang="ts">
-    import type { LocationMessageObj } from "$lib/messageTypes";
-    import { chatRoomStore } from "$lib/store";
+    import type { LocationMessageObj } from "$lib/messageStore.svelte";
+    import { chatRoomStore } from "$lib/store.svelte";
 
-    export let location: LocationMessageObj;
+    interface Props {
+        location: LocationMessageObj;
+    }
+
+    let { location }: Props = $props();
 
 </script>
 
 <a class="mapContainer" id={location.id} href={`https://maps.google.com/maps?q=${location.lat},${location.lon}`} target="_blank">
     <div class="title">
         <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
-        <div class="text">{$chatRoomStore.userList[location.uid]?.avatar}'s Location</div>
+        <div class="text">{chatRoomStore.value.userList[location.uid]?.avatar}'s Location</div>
     </div>
 </a>
 

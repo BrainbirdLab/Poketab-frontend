@@ -1,21 +1,21 @@
 <script lang="ts">
     import "$lib/styles/atom.css";
-    import { formNotification, formActionButtonDisabled } from "$lib/store";
     import { onMount, onDestroy } from "svelte";
-    import { socket } from "$lib/socket";
+    import { socket } from "$lib/connection/socketClient";
     import SplashScreen from "$lib/components/splashScreen.svelte";
     import {goto} from "$app/navigation";
     import { page } from "$app/stores";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
-    import { resetChatRoomStore } from "$lib/store";
-    import { currentTheme, themes } from "$lib/themes";
+    import { resetChatRoomStore, formNotification, formActionButtonDisabled } from "$lib/store.svelte";
+    import { themes } from "$lib/themesTypes";
+    import { currentTheme } from "$lib/settings.svelte";
     import type { Unsubscriber } from "svelte/store";
 
-    export let data; // Get data from load function aka +layout.server.ts
+    let { data, children } = $props();
 
-    currentTheme.set(data.theme); //Set the current theme
+    currentTheme.value = data.theme; //Set the current theme
 
-    let mounted = false;
+    let mounted = $state(false);
 
     let unsubscriber: Unsubscriber;
 
@@ -25,7 +25,7 @@
             handleOffline();
         }
 
-        unsubscriber = currentTheme.subscribe((val) => {
+        unsubscriber = currentTheme.onChange((val) => {
             const elem = document.getElementById('theme-css');
             if (!elem) {
                 return;
@@ -76,8 +76,8 @@
          * The Disconnection event listener will set the formNotification to "Disconnected from server"
          * But we want to show "You are offline" instead
         */
-        formNotification.set("You are offline"); // So, we set it here
-        formActionButtonDisabled.set(true); //disable the form action button
+        formNotification.value = "You are offline"; // So, we set it here
+        formActionButtonDisabled.value = true; //disable the form action button
         //disconnect the socket connection
         socket.disconnect();
     }
@@ -86,18 +86,18 @@
 
 <svelte:window 
 
-    on:offline={handleOffline}
+    onoffline={handleOffline}
 
-    on:online={() => {
+    ononline={() => {
         console.log("Online");
-        formNotification.set("Back to online"); //Set the formNotification to "Back to online"
+        formNotification.value = "Back to online"; //Set the formNotification to "Back to online"
         socket.connect(); //Reconnect the socket connection
     }}
 />
 
 {#if mounted}    
 <div class="chat-content">
-    <slot />
+    {@render children?.()}
 </div>
 {/if}
 

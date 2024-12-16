@@ -4,18 +4,18 @@
     import { fly } from "svelte/transition";
     import ReactiveLogo from "$lib/components/reactiveLogo.svelte";
 
-	export let data;
+	let { data } = $props();
 
-    let loaded = false;
-    let submitting = false;
-    let errlog = false;
-    let logText = "";
-    let passKeyLabel = "Admin passkey";
-    let messageLabel = "Message";
-	let timeLabel = "Restart after (Sec)";
-    let passKey: HTMLInputElement;
-    let message: HTMLInputElement;
-    let time: HTMLInputElement;
+    let loaded = $state(false);
+    let submitting = $state(false);
+    let errlog = $state(false);
+    let logText = $state("");
+    let passKeyLabel = $state("Admin passkey");
+    let messageLabel = $state("Message");
+	let timeLabel = $state("Restart after (Sec)");
+    let passKey: HTMLInputElement = $state();
+    let message: HTMLInputElement = $state();
+    let time: HTMLInputElement = $state();
 
     function handleForm() {
         
@@ -93,18 +93,18 @@
 		</div>
 		{#if !submitting}
 		<div class="formfield" in:fly|global={{y: 10, delay: 250}}>
-			<input on:input={()=> {passKeyLabel = 'Admin passkey'}}  placeholder="Passkey" type="password" bind:this={passKey} id="userid" name="passKey" />
+			<input oninput={()=> {passKeyLabel = 'Admin passkey'}}  placeholder="Passkey" type="password" bind:this={passKey} id="userid" name="passKey" />
 			<label for="passKey">{@html passKeyLabel}</label>
 		</div>
 		<div class="formfield" in:fly|global={{y: 10, delay: 300}}>
-			<input on:input={() => {messageLabel = 'Message'}} placeholder="Message..." type="text" bind:this={message} id="message" name="message" />
+			<input oninput={() => {messageLabel = 'Message'}} placeholder="Message..." type="text" bind:this={message} id="message" name="message" />
 			<label for="message">{@html messageLabel}</label>
 		</div>
         <div class="formfield" in:fly|global={{y: 10, delay: 300}}>
-			<input on:input={() => {timeLabel = 'Restart after (Sec)'}} placeholder="10" type="number" bind:this={time} id="time" name="time" />
+			<input oninput={() => {timeLabel = 'Restart after (Sec)'}} placeholder="10" type="number" bind:this={time} id="time" name="time" />
 			<label for="time">{@html timeLabel}</label>
 		</div>
-		<button on:click={handleForm} in:fly|global={{y: 10, delay: 350}}>Post <i class="fa-solid fa-message"></i></button>
+		<button onclick={handleForm} in:fly|global={{y: 10, delay: 350}}>Post <i class="fa-solid fa-message"></i></button>
 		{/if}
 		{#if logText}
 		<div class="log" class:submitting={submitting} class:error={errlog}>

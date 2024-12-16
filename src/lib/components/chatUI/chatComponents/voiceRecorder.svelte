@@ -1,24 +1,21 @@
-<script context="module" lang="ts">
-    
-    import { type Writable, writable } from 'svelte/store';
-
-    export const recordedAudioUrl: Writable<string> = writable('');
-    export const recorderIsActive: Writable<boolean> = writable(false);
-</script>
-
 <script lang="ts">
-    import { showToastMessage } from "@itsfuad/domtoastmessage";
-
-    import { playMessageSound } from "$lib/utils";
     import Mirage from "$lib/components/icons/mirage.svelte";
+    import { showToastMessage } from "@itsfuad/domtoastmessage";
+    import { playMessageSound } from "$lib/utils";
 
+    interface Props {
+        recorderIsActive: boolean;
+        recordedAudioUrl: string;
+    }
+
+    let { recorderIsActive = $bindable(), recordedAudioUrl = $bindable() }: Props = $props();
     
-    let recordingState = false;
-    let playState = false;
+    let recordingState = $state(false);
+    let playState = $state(false);
 
-    let micIcon = 'fa-microphone';
+    let micIcon = $state('fa-microphone');
 
-    let time = '00:00';
+    let time = $state('00:00');
 
     let timer: number | NodeJS.Timeout | null = null;
 
@@ -115,7 +112,7 @@
         navigator.mediaDevices.getUserMedia({audio: true})
         .then(mediaStream => {
                 playMessageSound('startRecording');
-                recorderIsActive.set(true);
+                recorderIsActive = true;
                 recordingState = true;
                 playState = false;
                 micIcon = 'fa-stop';
@@ -133,8 +130,8 @@
 
                     const audioBlob = new Blob(audioChunks, {type: 'audio/mp3'});
 
-                    recordedAudioUrl.set(URL.createObjectURL(audioBlob));
-                    recordedAudio = new Audio($recordedAudioUrl);
+                    recordedAudioUrl = URL.createObjectURL(audioBlob);
+                    recordedAudio = new Audio(recordedAudioUrl);
 
                     audioRecorder.ondataavailable = null;
                 };
@@ -166,7 +163,7 @@
     function recordButtonHandler(){
         // this plays role to show the recorder, start recording, stop recording, play and pause the recorded audio
         // if the recorder is not active, it will be activated
-        if (!$recorderIsActive){
+        if (!recorderIsActive){
             startRecording();
         } else {
             if (playState){
@@ -193,7 +190,7 @@
         if (recordedAudio){
 
             if (revoke){
-                URL.revokeObjectURL($recordedAudioUrl);
+                URL.revokeObjectURL(recordedAudioUrl);
             }
 
             recordedAudio.pause();
@@ -202,14 +199,14 @@
             recordedAudio = null;
         }
         
-        recordedAudioUrl.set('');
+        recordedAudioUrl = '';
         time = '00:00';
         elapsedTime = 0;
         audioDuration = 0;
         if (timer){
             clearInterval(timer);
         }
-        recorderIsActive.set(false);
+        recorderIsActive = false;
         micIcon = 'fa-microphone';
         playState = false;
         if (document){
@@ -220,18 +217,18 @@
 </script>
 
 <!-- Microphone -->
-<div class="voiceRecorder" class:active={$recorderIsActive} data-a="{$recorderIsActive}" id="recorderOverlay" data-recordingstate="{recordingState}">
+<div class="voiceRecorder" class:active={recorderIsActive} data-a="{recorderIsActive}" id="recorderOverlay" data-recordingstate="{recordingState}">
     <div class="container">
-        <button class="recordBtn button-animate roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" on:click={recordButtonHandler}>
+        <button aria-label="record" class="recordBtn button-animate roundedBtn hover hoverShadow" id="recordVoiceButton" data-playstate="{playState}" title="Record voice [Alt+r]" onclick={recordButtonHandler}>
             <i class="fa-solid {micIcon}" id="micIcon"></i>
         </button>
         <div class="recording">
             {#if recordingState}
-            <Mirage />
+                <Mirage />
             {/if}
             <span id="recordingTime" class="recordingTime">{time}</span>
         </div>
-        <button class="cancelBtn button-animate play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" on:click={() => {closeRecorder(true)}}>
+        <button aria-label="cancel" class="cancelBtn button-animate play-sound roundedBtn hover hoverShadow" id="cancelVoiceRecordButton" onclick={() => {closeRecorder(true)}}>
             <i class="fa-solid fa-xmark"></i>
         </button>
         <div id="audiovisualizer"></div>
@@ -299,11 +296,6 @@
             pointer-events: none;
             transition: 200ms ease-in-out;
             opacity: 0;
-            .recordingText {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
             .recordingTime {
                 font-size: 0.8rem;
                 position: absolute;

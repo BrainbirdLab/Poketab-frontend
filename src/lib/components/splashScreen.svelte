@@ -1,27 +1,27 @@
 <script>
-    import { currentPage, splashButtonText, splashMessage } from "$lib/store";
+    import { currentPage, splashButtonText, splashMessage } from "$lib/store.svelte";
     import { onMount } from "svelte";
     import { fly } from "svelte/transition";
 
-    let mounted = false;
+    let mounted = $state(false);
 
     onMount(() => {
         mounted = true;
     });
 
     function closeSplashScreen() {
-        splashMessage.set('');
-        splashButtonText.set('');
-        currentPage.set('form');
+        splashMessage.value = '';
+        splashButtonText.value = '';
+        currentPage.value = 'form';
     }
 
 </script>
 
-{#if mounted && $splashMessage}
-    <div class="container" class:bg={!$splashButtonText} out:fly={{x: 20}}>
-        <div class="text">{@html $splashMessage}</div>
-        {#if $splashButtonText}
-            <button class="button-animate hover play-sound" on:click={closeSplashScreen}>{$splashButtonText}</button>
+{#if mounted && splashMessage.value}
+    <div class="container" class:bg={!splashButtonText.value} out:fly={{x: 20}}>
+        <div class="text">{@html splashMessage.value}</div>
+        {#if splashButtonText.value}
+            <button class="button-animate hover play-sound" onclick={closeSplashScreen}>{splashButtonText.value}</button>
         {/if}
     </div>
 {/if}

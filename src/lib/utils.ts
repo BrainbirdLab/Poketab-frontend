@@ -1,7 +1,7 @@
 import { cubicOut } from "svelte/easing";
 import { get } from "svelte/store";
 import { showToastMessage } from "@itsfuad/domtoastmessage";
-import { buttonSoundEnabled, messageSoundEnabled } from "$lib/components/chatUI/chatComponents/quickSettingsModal.svelte";
+import { buttonSoundEnabled, messageSoundEnabled } from "$lib/settings.svelte";
 import { browser } from "$app/environment";
 
 
@@ -142,7 +142,7 @@ if (browser){
 export async function playClickSound(){
 
     
-    if (!get(buttonSoundEnabled)){
+    if (!buttonSoundEnabled.value){
         return;
     }
         
@@ -156,7 +156,7 @@ type MessageSoundType = 'incoming' | 'outgoing' | 'sticker' | 'location' | 'typi
 export async function playMessageSound(type: MessageSoundType){
 
 
-    if (!get(messageSoundEnabled)){
+    if (!messageSoundEnabled.value){
         return;
     }
 

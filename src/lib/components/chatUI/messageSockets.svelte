@@ -4,30 +4,33 @@
         TextMessageObj,
         StickerMessageObj,
         LocationMessageObj,
-        messageDatabase,
-        lastMessageId,
-        notice,
         ServerMessageObj,
         FileMessageObj,
         ImageMessageObj,
         AudioMessageObj,
-    } from "$lib/messageTypes";
+        lastMessageId,
+        messageDatabase,
+        notice,
+    } from "$lib/messageStore.svelte";
     import {
         chatRoomStore,
-        userTypingString,
         myId,
         reactArray,
         incommingXHRs,
         outgoingXHRs,
         myPrivateKey,
-    } from "$lib/store";
+    } from "$lib/store.svelte";
     import { filterBadWords } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { socket, API_URL } from "$lib/socket";
+    import { socket } from "$lib/connection/socketClient";
     import { emojis, playMessageSound } from "$lib/utils";
     import { onDestroy } from "svelte";
     import { decryptMessage, decryptSymmetricKey, importPublicKey, stringToBuffer } from "$lib/e2e/encryption";
     import { infoMessage } from "$lib/utils/debug";
-    import { getLinkMetadata } from "$lib/linkmeta";
+    import { getLinkMetadata } from "$lib/linkmetaParser";
+    import { PUBLIC_API_SERVER_URL } from "$env/static/public";
+    import TypingIndicator from "./chatComponents/typingIndicator.svelte";
+
+    let userTypingString = $state("");
 
     socket.on("newMessage", async (encryptedMessage: ArrayBuffer, smKey: ArrayBuffer, messageId: string) => {
         if (!encryptedMessage || !smKey || !messageId) {
@@ -36,7 +39,7 @@
         }
 
         //decrypt the symmetric key
-        const dSmKey = await decryptSymmetricKey(smKey, $myPrivateKey);
+        const dSmKey = await decryptSymmetricKey(smKey, myPrivateKey.value);
         //decrypt the message
         const decrypteBuffer = await decryptMessage(encryptedMessage, dSmKey);
         //convert the buffer to MessageObj
@@ -85,8 +88,8 @@
         message.sent = true;
         message.id = messageId;
         messageDatabase.add(message);
-        lastMessageId.set(messageId);
-        notice.set(message);
+        lastMessageId.value = messageId;
+        notice.value = message;
         getLinkMetadata(message);
 
         //audios
@@ -99,11 +102,11 @@
 
     socket.on("fileDownload", (messageId: string, sender: string) => {
 
-        if (!$chatRoomStore.userList[sender]) {
+        if (!chatRoomStore.value.userList[sender]) {
             return;
         }
 
-        if ($myId === sender) {
+        if (myId.value === sender) {
             return;
         }
 
@@ -112,16 +115,13 @@
 
         const xhr = new XMLHttpRequest();
 
-        incommingXHRs.update((xhrs) => {
-            xhrs.set(messageId, xhr);
-            return xhrs;
-        });
+        incommingXHRs.value.set(messageId, xhr);
 
         xhr.responseType = "blob";
 
         xhr.open(
             "GET",
-            `${API_URL}/api/files/download/${$chatRoomStore.Key}/${$myId}/${messageId}`,
+            `${PUBLIC_API_SERVER_URL}/api/files/download/${chatRoomStore.value.Key}/${myId.value}/${messageId}`,
             true,
         );
 
@@ -156,7 +156,6 @@
                     }
                     message.loadScheme = "download";
                     message.loaded = 100;
-
                     return messages;
                 });
             }
@@ -167,11 +166,9 @@
             if (e.lengthComputable) {
                 const percent = (e.loaded / e.total) * 100;
                 //update message
-
                 messageDatabase.update((messages) => {
                     message.loadScheme = "download";
                     message.loaded = Math.round(percent);
-
                     return messages;
                 });
             }
@@ -185,7 +182,7 @@
 
             if (
                 !messageDatabase.has(messageId) ||
-                !$chatRoomStore.userList[uid]
+                !chatRoomStore.value.userList[uid]
             ) {
                 return;
             }
@@ -200,17 +197,15 @@
                 const sent = message.sent;
                 const id = message.id;
 
-                if ($incommingXHRs.has(id) || $outgoingXHRs.has(id)) {
-                    $incommingXHRs.get(id)?.abort();
-                    $incommingXHRs.delete(id);
+                if (incommingXHRs.value.has(id) || outgoingXHRs.value.has(id)) {
+                    incommingXHRs.value.get(id)?.abort();
+                    incommingXHRs.value.delete(id);
 
-                    $outgoingXHRs.get(id)?.abort();
-                    $outgoingXHRs.delete(id);
-
+                    outgoingXHRs.value.get(id)?.abort();
+                    outgoingXHRs.value.delete(id);
                 }
 
                 messageDatabase.update((messages) => {
-                    //change the message to "This message was deleted"
                     message = new TextMessageObj();
                     message.message = "This message was deleted";
                     message.id = "";
@@ -219,9 +214,7 @@
                     message.sender = sender;
                     message.sent = sent;
                     message.classList = classList.replace("title", "");
-
                     messages[messageDatabase.getIndex(id)] = message;
-
                     return messages;
                 });
             }
@@ -237,7 +230,7 @@
             id: string,
             uid: string,
         ) => {
-            if (!$chatRoomStore.userList[uid]) {
+            if (!chatRoomStore.value.userList[uid]) {
                 return;
             }
 
@@ -276,8 +269,8 @@
         if (
             !uid ||
             !messageId ||
-            !$chatRoomStore ||
-            !$chatRoomStore.userList[uid] ||
+            !chatRoomStore.value ||
+            !chatRoomStore.value.userList[uid] ||
             !messageDatabase.has(messageId)
         ) {
             return;
@@ -292,16 +285,13 @@
                     message.reactedBy.delete(uid);
                 } else {
                     //if its my own react
-                    if ($myId == uid) {
+                    if (myId.value == uid) {
                         if (
-                            !$reactArray.reacts.includes(react) &&
+                            !reactArray.value.reacts.includes(react) &&
                             emojis.includes(react)
                         ) {
                             // update reactArray
-                            reactArray.update((val) => {
-                                val.last = react;
-                                return val;
-                            });
+                            reactArray.value.last = react;
                             localStorage.setItem("lastReact", react);
                         }
                     }
@@ -319,28 +309,22 @@
     socket.on("newUser", (user: { avatar: string, uid: string, publicKey: string }) => {
         //import the public key
         importPublicKey(stringToBuffer(user.publicKey)).then((key) => {
-            chatRoomStore.update((chatRoom) => {
-                chatRoom.userList[user.uid] = {
+            chatRoomStore.value.userList[user.uid] = {
                     avatar: user.avatar,
                     uid: user.uid,
                     publicKey: key,
                     lastSeenMessage: "",
                 };
-                return chatRoom;
-            });
             infoMessage(`${user.avatar} joined the chat 🥳`, 'join');
         });
     });
 
     socket.on('userLeft', (uid: string) => {
-        if (!$chatRoomStore.userList[uid]) {
+        if (!chatRoomStore.value.userList[uid]) {
             return;
         }
-        const avatar = $chatRoomStore.userList[uid].avatar;
-        chatRoomStore.update((chatRoom) => {
-            delete chatRoom.userList[uid];
-            return chatRoom;
-        });
+        const avatar = chatRoomStore.value.userList[uid].avatar;
+        delete chatRoomStore.value.userList[uid];
         infoMessage(`${avatar} left the chat 🥺`, 'leave');
     });
 
@@ -348,25 +332,23 @@
         if (
             !uid ||
             !messageId ||
-            !$chatRoomStore ||
-            !$chatRoomStore.userList[uid] ||
+            !chatRoomStore.value ||
+            !chatRoomStore.value.userList[uid] ||
             !messageDatabase.has(messageId)
         ) {
             return;
         }
 
-        chatRoomStore.update((chatRoom) => {
-            chatRoom.userList[uid].lastSeenMessage = messageId;
-            return chatRoom;
-        });
-
-        const message = messageDatabase.getMessage(messageId) as MessageObj;
+        chatRoomStore.value.userList[uid].lastSeenMessage = messageId;
 
         messageDatabase.update((messages) => {
-            if (message && message instanceof MessageObj) {
-                message.seenBy.add(uid);
+            // if (message && message instanceof MessageObj) {
+            //     message.seenBy.add(uid);
+            // }
+            const index = messageDatabase.getIndex(messageId);
+            if (index != -1 && messages[index] instanceof MessageObj) {
+                messages[index].seenBy.add(uid);
             }
-
             return messages;
         });
     });
@@ -395,56 +377,52 @@
 
             switch (userTypingSet.size) {
                 case 1:
-                    userTypingString.set(
+                    userTypingString = 
                         `${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
-                        } is typing`,
-                    );
+                        } is typing`;
                     break;
                 case 2:
-                    userTypingString.set(
+                    userTypingString = 
                         `${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
                         } and ${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
-                        } are typing`,
-                    );
+                        } are typing`;
                     break;
                 case 3:
-                    userTypingString.set(
+                    userTypingString = 
                         `${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
                         }, ${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
-                        } and 1 other are typing`,
-                    );
+                        } and 1 other are typing`;
                     break;
                 default:
-                    userTypingString.set(
+                    userTypingString = 
                         `${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-1) as string
                             ]?.avatar
                         }, ${
-                            $chatRoomStore.userList[
+                            chatRoomStore.value.userList[
                                 userIdArray.at(-2) as string
                             ]?.avatar
-                        } and ${userTypingSet.size - 2} others are typing`,
-                    );
+                        } and ${userTypingSet.size - 2} others are typing`;
                     break;
             }
         } else {
-            userTypingString.set("");
+            userTypingString = "";
         }
     });
 
@@ -459,3 +437,5 @@
         socket.off("typing");
     });
 </script>
+
+<TypingIndicator bind:typingString={userTypingString}/>

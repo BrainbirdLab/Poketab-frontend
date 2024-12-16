@@ -3,7 +3,9 @@
     import { onMount } from "svelte";
     import { fly } from "svelte/transition";
 
-    let ready = false;
+    let { children } = $props();
+
+    let ready = $state(false);
     onMount(() => {
         ready = true;
     })
@@ -15,7 +17,7 @@
         <a class="name" href="/">Poketab Messenger</a>
     </div>
     <div class="content" in:fly={{y: 20}}>
-        <slot></slot>
+        {@render children?.()}
     </div>
 </div>
 {/if}

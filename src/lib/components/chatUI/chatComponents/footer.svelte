@@ -1,23 +1,26 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { replyTarget, eventTriggerMessageId, TextMessageObj, AudioMessageObj, MessageObj } from "$lib/messageTypes";
+    import { TextMessageObj, AudioMessageObj, MessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageStore.svelte";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import Recorder, { recorderIsActive, recordedAudioUrl } from "./voiceRecorder.svelte";
+    import Recorder from "./voiceRecorder.svelte";
     import { fly } from "svelte/transition";
-    import { socket } from "$lib/socket";
+    import { socket } from "$lib/connection/socketClient";
 
-    import { myId, chatRoomStore, messageContainer, messageScrolledPx } from "$lib/store";
-    import { quickEmoji, quickEmojiEnabled, sendMethod } from "./quickSettingsModal.svelte";
+    import { myId, chatRoomStore, messageContainer, messageScrolledPx } from "$lib/store.svelte";
+    import { quickEmoji, quickEmojiEnabled, sendMethod } from "$lib/settings.svelte";
     import { SEND_METHOD } from "$lib/types";
     import { onDestroy, onMount } from "svelte";
     import MessageReplyToast from "./messageReplyToast.svelte";
     import ScrollDownPopup from "./notify.svelte";
-    import TypingIndicator from "./typingIndicator.svelte";
     import { addState } from "../stateManager.svelte";
+    import MessageSockets from "../messageSockets.svelte";
 
-    let newMessage = '';
+    let newMessage = $state('');
 
-    let recorder: Recorder;
+    let recorder = $state() as ReturnType<typeof Recorder>;
+
+    let recordedAudioUrl = $state('');
+    let recorderIsActive = $state(false);
 
     const codeParser = new TextParser();
     
@@ -26,14 +29,14 @@
         let message: MessageObj;
         let file: File | undefined;
 
-        if ($recordedAudioUrl.length !== 0){
+        if (recordedAudioUrl.length !== 0){
 
             message = new AudioMessageObj();
 
-            const name = `${$chatRoomStore.userList[$myId].avatar}'s voice message`;
+            const name = `${chatRoomStore.value.userList[myId.value].avatar}'s voice message`;
 
             if (message instanceof AudioMessageObj){
-                message.url = $recordedAudioUrl;
+                message.url = recordedAudioUrl;
                 message.audio.src = message.url;
                 message.type = 'audio/mpeg';
                 message.duration = recorder.getDuration();
@@ -56,7 +59,7 @@
             newMessage = escapeXSS(filterBadWords(emojiParser(newMessage)));
     
             if (Emoji){
-                newMessage = $quickEmojiEnabled ? $quickEmoji : '';
+                newMessage = quickEmojiEnabled.value ? quickEmoji.value : '';
                 message.type = 'emoji';
                 message.baseType = 'text';
             } else if (isEmoji(newMessage)) {
@@ -74,11 +77,11 @@
             }
         }
 
-        if ($replyTarget){
-            message.replyTo = $replyTarget.id;
-            eventTriggerMessageId.set("");
-            replyTarget.set(null);
-            showReplyToast.set(false);
+        if (replyTarget.value){
+            message.replyTo = replyTarget.value.id;
+            eventTriggerMessageId.value = "";
+            replyTarget.value = null;
+            showReplyToast.value = false;
         }
 
         await sendMessage(message, file);
@@ -95,7 +98,7 @@
     let isTypingTimeout: number | NodeJS.Timeout;
 
     function sendTypingStatus(){
-        socket.emit('typing', $myId, $chatRoomStore.Key, 'start');
+        socket.emit('typing', myId.value, chatRoomStore.value.Key, 'start');
 
         if (isTypingTimeout) {
             clearTimeout(isTypingTimeout)
@@ -107,14 +110,11 @@
     }
 
     function endTypingStatus(){
-        socket.emit('typing', $myId, $chatRoomStore.Key, 'end');
+        socket.emit('typing', myId.value, chatRoomStore.value.Key, 'end');
     }
 
     const inputHandler = (e: Event) => {
-
         updateTextareaHeight();
-        
-        //userTypingString.set('You are typing');
         sendTypingStatus();
     };
 
@@ -141,24 +141,24 @@
 
     function keyDownHandler(e: KeyboardEvent){
 
-        if ($sendMethod == SEND_METHOD.ENTER && e.key === 'Enter' && !e.shiftKey) {
+        if (sendMethod.value == SEND_METHOD.ENTER && e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             insertMessage();
-        } else if ($sendMethod == SEND_METHOD.CTRL_ENTER && e.key === 'Enter' && e.ctrlKey) {
+        } else if (sendMethod.value == SEND_METHOD.CTRL_ENTER && e.key === 'Enter' && e.ctrlKey) {
             e.preventDefault();
             insertMessage();
         }
     }
 
-    let inputbox: HTMLDivElement;
+    let inputbox = $state() as HTMLDivElement;
 
-    const unsub = showReplyToast.subscribe(val => {
+    const unsub = showReplyToast.onChange(val => {
         if (val) {
             inputbox.focus();
         }
     });
 
-    let footer: HTMLDivElement;
+    let footer = $state() as HTMLDivElement;
     let observer: ResizeObserver;
 
     let lastHeight = 0;
@@ -183,14 +183,14 @@
                 //skip if entry height is decreasing
                 if (entry.contentRect.height < lastHeight){
                     lastHeight = entry.contentRect.height;
-                    $messageContainer.style.height = $messageContainer.scrollHeight + 'px';
+                    messageContainer.value.style.height = messageContainer.value.scrollHeight + 'px';
                     return;
                 }
 
                 lastHeight = entry.contentRect.height;
 
-                if ($messageScrolledPx < 200){
-                    $messageContainer.scrollTo({top: $messageContainer.scrollHeight});
+                if (messageScrolledPx.value < 200){
+                    messageContainer.value.scrollTo({top: messageContainer.value.scrollHeight});
                 }
             }
         });
@@ -210,42 +210,38 @@
         window.removeEventListener('resize', keyboardActivationWatcher);
     });
 
-    $: inputOff = $page.state.showStickersPanel || $page.state.showAttachmentPickerPanel;
+    let inputOff = $derived($page.state.showStickersPanel || $page.state.showAttachmentPickerPanel);
 
 </script>
 
-<div class="footer" transition:fly={{y: 30}} bind:this={footer} on:touchmove|preventDefault>
+<div class="footer" transition:fly={{y: 30}} bind:this={footer} ontouchmove={(e) => {e.preventDefault(), e.stopPropagation()}}>
 
     <ScrollDownPopup/>
-    
-    <TypingIndicator />
+    <MessageSockets />
 
     <div class="chatInput" class:hide={inputOff == true}>
-        <button on:click={() => {
-                //showStickersPanel.set(true)
-                //pushState('/stickers/'+$selectedSticker, { showStickersPanel: true })
+        <button aria-label="add stickers" onclick={() => {
                 addState("stickers", { showStickersPanel: true });
             }}
             class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
-        
-        <button on:click={() => {
+        <button aria-label="add attachments" onclick={() => {
             addState("attachments", { showAttachmentPickerPanel: true });
         }} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">
-            {#if $showReplyToast && $replyTarget && $replyTarget.id}
+            {#if showReplyToast.value && replyTarget.value && replyTarget.value.id}
                 <MessageReplyToast />
             {/if}
             <div class="textbox-wrapper">
-                <div style:opacity={$recorderIsActive ? 0 : 1} on:paste={updateTextareaHeight} role="textbox" on:input={inputHandler} on:keydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{$sendMethod == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
-                <Recorder bind:this={recorder}/>
+                <div style:opacity={recorderIsActive ? 0 : 1} onpaste={updateTextareaHeight} role="textbox" oninput={inputHandler} onkeydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{sendMethod.value == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
+                <Recorder bind:this={recorder} bind:recordedAudioUrl={recordedAudioUrl} bind:recorderIsActive={recorderIsActive}/>
             </div>
         </div>
         <!-- Send Button-->
-        {#if $quickEmojiEnabled && newMessage.trim().length === 0 && !$recordedAudioUrl}
-            <button id="send" on:click={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {$quickEmoji}" tabindex="-1" data-role="send">{$quickEmoji}</button>
+        {#if quickEmojiEnabled.value && newMessage.trim().length === 0 && !recordedAudioUrl}
+            <button id="send" onclick={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {quickEmoji.value}" tabindex="-1" data-role="send">{quickEmoji.value}</button>
         {:else}
-            <button id="send" on:click={() => {insertMessage()}} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
+            <button aria-label="send" id="send" onclick={() => {insertMessage()}} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
         {/if}
     </div>
 </div>

@@ -1,7 +1,6 @@
 
 <script lang="ts">
     
-
     function notify() {
         console.log(Notification.permission);
         Notification.requestPermission().then((permission) => {
@@ -21,7 +20,7 @@
     }
 </script>
 
-<button on:click={notify}>Click</button>
+<button onclick={notify}>Click</button>
 
 <style lang="scss">
     button {

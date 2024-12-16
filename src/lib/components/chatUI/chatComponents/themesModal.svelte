@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { currentTheme, themes } from "$lib/themes";
+    import { themes } from "$lib/themesTypes";
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { page } from "$app/stores";
-    import { setToLocalStorage } from "./quickSettingsModal.svelte";
-    import { quickEmoji } from "./quickSettingsModal.svelte";
+    import { setToLocalStorage, currentTheme, quickEmoji } from "$lib/settings.svelte";
     import Modal from "./modal.svelte";
 
     function validateTheme(
@@ -19,11 +18,11 @@
                 if (response.ok) {
                     showToastMessage(`${theme} theme applied`);
                     //edit css variables
-                    currentTheme.set(theme);
+                    currentTheme.value = theme;
                     setToLocalStorage({
                         currentTheme: theme,
                     });
-                    quickEmoji.set(themes[theme].quickEmoji);
+                    quickEmoji.value = themes[theme].quickEmoji;
                     setToLocalStorage({
                         quickEmoji: themes[theme].quickEmoji,
                     });
@@ -80,7 +79,7 @@
         >
             <img
                 class="themeIcon"
-                class:selected={$currentTheme == themename}
+                class:selected={currentTheme.value == themename}
                 src="/images/backgrounds/{themename}_icon.webp"
                 alt="{themename} Thumbnail"
             /><span>{themename}</span>
