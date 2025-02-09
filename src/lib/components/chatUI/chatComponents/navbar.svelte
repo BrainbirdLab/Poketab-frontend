@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import { chatRoomStore } from "$lib/store.svelte";
     import { fade, scale } from "svelte/transition";
     import { addState } from "../stateManager.svelte";
@@ -47,7 +47,7 @@
         </div>
     </div>
     <div class="optionPanel">
-        {#if !$page.state.showQuickSettingsPanel}
+        {#if !page.state.showQuickSettingsPanel}
             <button
                 aria-label="Customize chat"
                 transition:fade={{ duration: 100 }}

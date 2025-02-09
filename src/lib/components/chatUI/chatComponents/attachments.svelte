@@ -7,7 +7,7 @@
     import { tick } from "svelte";
     import FilePreview from "./filePreview.svelte";
     import { sendMessage } from "./messages/messageUtils";
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
 
     interface Props {
         showFilePicker: boolean;
@@ -307,7 +307,7 @@
     <input multiple bind:files={selectedFiles.value} type="file" bind:this={filePicker} accept="{acceptedTypes}"/>
 {/if}
 
-{#if $page.state.showAttachmentPickerPanel === true}
+{#if page.state.showAttachmentPickerPanel === true}
 <div class="wrapper" use:attachmentsClickHandler transition:fly={{y: 30, duration: 150}}>
     {#if ready}
     <div class="attachmentContainer back-blur box-shadow">

@@ -22,7 +22,7 @@
     //scripts
     import { chatRoomStore, myId } from "$lib/store.svelte";
     import { socket } from "$lib/connection/socketClient";
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import Lightbox from "./chatComponents/lightbox.svelte";
     import { infoMessage } from "$lib/utils/debug";
@@ -43,7 +43,7 @@
 
     function exitChat(e?: Event) {
 
-        const isDefault = Object.values($page.state).some(
+        const isDefault = Object.values(page.state).some(
             (value) => value === true,
         );
 
@@ -131,25 +131,25 @@
 <DropBox bind:sendAsType={sendAsType} bind:showFilePicker={showFilePicker}/>
 <AttachmentsModal bind:sendAsType={sendAsType} bind:showFilePicker={showFilePicker}/>
 
-{#if $page.state.showLightBox}
+{#if page.state.showLightBox}
     <Lightbox target={lightboxTarget}/>
 {/if}
 
-{#if $page.state.showQuickSettingsPanel === true}
+{#if page.state.showQuickSettingsPanel === true}
     <QuickSettingsModal />
 {/if}
 
 <ThemesModal />
 
-{#if $page.state.showStickersPanel === true}
+{#if page.state.showStickersPanel === true}
     <StickersKeyboardModal />
 {/if}
 
 {#if eventTriggerMessageId.value}
-    {#if $page.state.showMessageOptions}
+    {#if page.state.showMessageOptions}
         <MessageOptionsModal />
     {/if}
-    {#if $page.state.showReactsOnMessage}
+    {#if page.state.showReactsOnMessage}
         <ReactsOnMessage />
     {/if}
 {/if}

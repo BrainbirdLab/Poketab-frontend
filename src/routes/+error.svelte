@@ -1,5 +1,5 @@
 <script>
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import "$lib/styles/global.scss";
 </script>
 
@@ -13,10 +13,10 @@
 <div class="container">
     <div class="text">
         <h1>
-            {$page.status}
+            {page.status}
         </h1>
         <h3>
-            {$page.error?.message}
+            {page.error?.message}
         </h3>
     </div>
     <a href="/" class="button-animate play-sound">

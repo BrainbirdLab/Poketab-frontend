@@ -3,7 +3,7 @@
     import { eventTriggerMessageId, type MessageObj, messageDatabase } from "$lib/messageStore.svelte";
     import { fly } from "svelte/transition";
     import Modal from "./modal.svelte";
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import { onDestroy } from "svelte";
 
     let message = $derived($messageDatabase[messageDatabase.getIndex(eventTriggerMessageId.value)] as MessageObj);
@@ -28,7 +28,7 @@
 
 </script>
 
-<Modal show={$page.state.showReactsOnMessage}>
+<Modal show={page.state.showReactsOnMessage}>
     <div class="reactsOnMessage box-shadow back-blur" transition:fly|global={{y: 40, duration: 100}}>
         <div class="title">Reacts on {chatRoomStore.value.userList[message?.sender || '']?.avatar || "Zombie"}'s message</div>
         <div class="users">

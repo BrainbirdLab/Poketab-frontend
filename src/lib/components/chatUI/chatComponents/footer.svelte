@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import { TextMessageObj, AudioMessageObj, MessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageStore.svelte";
     import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./voiceRecorder.svelte";
@@ -210,7 +210,7 @@
         window.removeEventListener('resize', keyboardActivationWatcher);
     });
 
-    let inputOff = $derived($page.state.showStickersPanel || $page.state.showAttachmentPickerPanel);
+    let inputOff = $derived(page.state.showStickersPanel || page.state.showAttachmentPickerPanel);
 
 </script>
 

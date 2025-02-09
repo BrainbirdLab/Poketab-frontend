@@ -10,7 +10,7 @@
     import { onMount } from "svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { clearModals } from "../stateManager.svelte";
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import MessageInfo from "./messageInfo.svelte";
 
     let reactIsExpanded = $state(false);
@@ -158,7 +158,7 @@
         {/if}
         <div class="primary">
             {#each reactArray.value.reacts as react}
-                <div class:shown={$page.state.showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
+                <div class:shown={page.state.showMessageOptions} class="reactContainer roundedBtn" class:selected={reactedEmoji == react}>
                     <div class="emoji" data-emoji="{react}">{react}</div>
                 </div>
             {/each}

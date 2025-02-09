@@ -3,7 +3,7 @@
     import { toSentenceCase } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import { setToLocalStorage, currentTheme, quickEmoji } from "$lib/settings.svelte";
     import Modal from "./modal.svelte";
 
@@ -65,7 +65,7 @@
 </script>
 
 
-<Modal show={$page.state.showThemesPanel}>
+<Modal show={page.state.showThemesPanel}>
     <ul
     class="themeList box-shadow back-blur"
     transition:fly={{ y: 20, duration: 100 }}

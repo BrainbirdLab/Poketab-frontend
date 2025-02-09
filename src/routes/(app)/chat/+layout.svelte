@@ -4,7 +4,7 @@
     import { socket } from "$lib/connection/socketClient";
     import SplashScreen from "$lib/components/splashScreen.svelte";
     import {goto} from "$app/navigation";
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { resetChatRoomStore, formNotification, formActionButtonDisabled } from "$lib/store.svelte";
     import { themes } from "$lib/themesTypes";
@@ -40,7 +40,7 @@
             themeAccent.setAttribute('content', themes[val].accentColor);
         });
 
-        if ($page.route.id !== '/chat'){
+        if (page.route.id !== '/chat'){
             goto('/chat');
         }
 
