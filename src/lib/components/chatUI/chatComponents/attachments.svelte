@@ -10,10 +10,9 @@
     import { page } from "$app/state";
 
     interface Props {
-        showFilePicker: boolean;
         sendAsType: "file" | "image" | "audio";
     }
-    let { showFilePicker = $bindable(), sendAsType = $bindable() }: Props = $props();
+    let { sendAsType = $bindable() }: Props = $props();
 
     let locationBtn = $state() as HTMLButtonElement;
     let fileBtn = $state() as HTMLButtonElement;
@@ -74,7 +73,6 @@
     
                 if (target === node || target === fileBtn || target === imageBtn || target === audioBtn || target === locationBtn){
                     if (target !== node){
-                        showFilePicker = true;
                         await tick();
                         filePicker.onchange = (e) => {
                             if (selectedFiles.value && selectedFiles.value.length > 10){
@@ -109,8 +107,6 @@
             filePicker.files = new DataTransfer().files;
             filePicker.dispatchEvent(new Event('change'));
         }
-
-        showFilePicker = false;
     }
 
     function deleteItem(id: number) {

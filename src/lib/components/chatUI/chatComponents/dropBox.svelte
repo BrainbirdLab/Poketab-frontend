@@ -4,11 +4,10 @@
     import { fade } from "svelte/transition";
 
     interface Props {
-        showFilePicker: boolean;
         sendAsType: "file" | "image" | "audio";
     }
 
-    let { showFilePicker = $bindable(), sendAsType = $bindable() }: Props = $props();
+    let { sendAsType = $bindable() }: Props = $props();
 
     let isFileDragging = $state(false);
     let isFileOnDropTarget = $state(false);
@@ -58,7 +57,6 @@
         }
 
         if (e.dataTransfer.files.length > 0) {
-            showFilePicker = true;
             const files = e.dataTransfer.files;
             if (Array.from(files).every(file => file.type.startsWith('image/'))) {
                 sendAsType = 'image';

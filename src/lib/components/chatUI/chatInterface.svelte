@@ -31,7 +31,6 @@
     import type { LightBoxTargettype } from "$lib/types";
     import { lastMessageId, eventTriggerMessageId } from "$lib/messageStore.svelte";
 
-    let showFilePicker = $state(false);
     let sendAsType: "file" | "image" | "audio" = $state("file");
 
     let lightboxTarget: LightBoxTargettype | null = $state(null);
@@ -128,8 +127,8 @@
     <title>Poketab - Chat</title>
 </svelte:head>
 
-<DropBox bind:sendAsType={sendAsType} bind:showFilePicker={showFilePicker}/>
-<AttachmentsModal bind:sendAsType={sendAsType} bind:showFilePicker={showFilePicker}/>
+<DropBox bind:sendAsType={sendAsType}/>
+<AttachmentsModal bind:sendAsType={sendAsType}/>
 
 {#if page.state.showLightBox}
     <Lightbox target={lightboxTarget}/>
