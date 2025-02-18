@@ -204,7 +204,7 @@
                         <div>Buy Me a Coffee</div>
                         <img
                             src="/images/bmc_qr.png"
-                            alt="Bitcoin QR Code"
+                            alt="Buy me a coffee"
                             style="width: 150px; height: 150px; border-radius: 13px; border: 2px solid;"
                         />
                         <a href="buymeacoffee.com/itsfuad" class="button button-animate pay">
@@ -335,24 +335,6 @@
 
     .short-width {
         max-width: 500px;
-    }
-
-    .btc {
-        background: var(--glass-color);
-        color: white;
-        padding: 2px 5px;
-        border-radius: 5px;
-        cursor: pointer;
-        word-break: break-all;
-        text-align: justify;
-        font-family: monospace;
-        font-size: 0.7rem;
-        i {
-            font-size: inherit;
-        }
-        &:hover {
-            filter: brightness(0.9);
-        }
     }
 
     .footer {
