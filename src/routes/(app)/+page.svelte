@@ -201,16 +201,16 @@
                 <div class="wrapp flex row wrap a-c j-c">
                     <img src="/images/team-rocket.png" alt="team rocket">
                     <div class="support-options flex col a-c j-c gap">
-                        <div>Donate with Bitcoin:</div>
+                        <div>Buy Me a Coffee</div>
                         <img
-                            src="/images/support_pay.png"
+                            src="/images/bmc_qr.png"
                             alt="Bitcoin QR Code"
-                            style="width: 150px; height: 150px; border-radius: 5px;"
+                            style="width: 150px; height: 150px; border-radius: 13px; border: 2px solid;"
                         />
-                        <div>Or, use this address</div>
-                        <button class="btc" onclick={handleCopy}
-                            >0x736Cc7836fF2A6988Ae0f25678Ce7640B71E7f04 <i class="fa-regular fa-copy"></i></button
-                        >
+                        <a href="buymeacoffee.com/itsfuad" class="button button-animate pay">
+                            Buy me a coffee
+                            <i class="fa-solid fa-coffee"></i>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -240,6 +240,11 @@
         --highlight: #0d90d2;
         --line-col: #badcfc21;
         --trace-col: #03a9f4;
+    }
+
+    .pay {
+        background: var(--highlight);
+        border-radius: 24px !important;
     }
 
     .files {
