@@ -38,7 +38,7 @@
 
     //svelte methods
     import { fade } from "svelte/transition";
-    import { spring } from "svelte/motion";
+    import { Spring, spring } from "svelte/motion";
 
     //scripts
     import {
@@ -98,6 +98,23 @@
     }
 
     const swipeIconDistance = 40;
+
+    const springValue = new Spring(0, { stiffness: 0.5, damping: 0.4 });
+    let springTarget: string | null = null;
+
+    $effect(() => {
+        console.log("Spring value: ", springValue.current);
+        if (springTarget) {
+            const message = document.getElementById(springTarget) as HTMLElement;
+            if (message) {
+                message.style.transform = `translateX(${springValue.current}px)`;
+            }
+        }
+
+        if (springValue.current == 0) {
+            springTarget = null;
+        }
+    });
 
     function handleMessages(node: HTMLElement) {
         //on horizontal scroll on a single message, move the message to swipe reply
@@ -318,6 +335,9 @@
                             }
                             xDiff = xDiff < 0 ? 0 : xDiff;
                             message.style.transform = `translateX(${-xDiff}px)`;
+                            springValue.target = -xDiff;
+                            springValue.damping = 1;
+                            springTarget = message.id;
                         } else {
                             replyIcon.style.transform = `translateX(-${swipeIconDistance}px)`;
                             if (xDiff <= -swipeIconDistance) {
@@ -330,6 +350,9 @@
                             }
                             xDiff = xDiff > 0 ? 0 : xDiff;
                             message.style.transform = `translateX(${-xDiff}px)`;
+                            springValue.target = -xDiff;
+                            springValue.damping = 1;
+                            springTarget = message.id;
                         }
                     }
                 }
@@ -341,6 +364,7 @@
         let unsub: () => void;
 
         const endHandler = (evt: TouchEvent) => {
+
             try {
 
                 touchEnded = true;
@@ -373,12 +397,8 @@
                         
                     replyIcon.dataset.swipeStart = "false";
                     
-                    //use spring animation to translate back to 0
-                    const x = spring(xDiff, { stiffness: 0.3, damping: 0.8 });
-                    unsub = x.subscribe((value) => {
-                        message.style.transform = `translateX(${value}px)`;
-                    });
-                    x.set(0);
+                    springValue.damping = 0.6;
+                    springValue.target = 0;
                     
                     if (replyTrigger) {
 
@@ -405,7 +425,7 @@
                 node.ontouchend = null;
                 node.ontouchcancel = null;
                 node.onclick = null;
-                if (unsub) unsub();
+                //if (unsub) unsub();
             },
         };
     }
@@ -552,7 +572,6 @@
 </script>
 <div class="messageContainer" bind:this={messageContainer.value}>
     <ul class="messages" use:handleMessages oncontextmenu={handleRightClick} id="messages" bind:this={messagesHTML} ontouchmove={(e) => {     
-            e.preventDefault();
             if (e.target == e.currentTarget){
                 e.preventDefault();
             }
