@@ -100,6 +100,36 @@
         }
     });
 
+    socket.on("editMessage", (editedMessage: ArrayBuffer, smKey: ArrayBuffer) => {
+        // The message is only of type TextMessageObj
+        if (!editedMessage || !smKey) {
+            console.log("Invalid message");
+            return;
+        }
+
+        //decrypt the message and just update the message. nothing else
+        decryptSymmetricKey(smKey, myPrivateKey.value).then(async (dSmKey) => {
+            const decrypteBuffer = await decryptMessage(editedMessage, dSmKey);
+            const message = JSON.parse(new TextDecoder().decode(decrypteBuffer)) as TextMessageObj;
+
+            if (!messageDatabase.has(message.id)) {
+                console.log("Message not found");
+                return;
+            }
+            message.smKey = dSmKey;
+            //update the message
+            messageDatabase.update((messages) => {
+                const index = messages.findIndex((m) => m.id === message.id);
+                if (index !== -1) {
+                    (messages[index] as TextMessageObj).message = filterBadWords(message.message);
+                    (messages[index] as TextMessageObj).smKey = dSmKey;
+                    (messages[index] as TextMessageObj).edited = true;
+                }
+                return messages;
+            });
+        });
+    });
+
     socket.on("fileDownload", (messageId: string, sender: string) => {
 
         if (!chatRoomStore.value.userList[sender]) {
@@ -342,9 +372,6 @@
         chatRoomStore.value.userList[uid].lastSeenMessage = messageId;
 
         messageDatabase.update((messages) => {
-            // if (message && message instanceof MessageObj) {
-            //     message.seenBy.add(uid);
-            // }
             const index = messageDatabase.getIndex(messageId);
             if (index != -1 && messages[index] instanceof MessageObj) {
                 messages[index].seenBy.add(uid);

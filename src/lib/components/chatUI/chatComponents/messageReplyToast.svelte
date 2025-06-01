@@ -1,12 +1,18 @@
 <script lang="ts">
 
-    import { TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj, MessageObj, messageDatabase, replyTarget} from "$lib/messageStore.svelte";
+    import { TextMessageObj, StickerMessageObj, FileMessageObj, ImageMessageObj, MessageObj, messageDatabase, replyTarget } from "$lib/messageStore.svelte";
     import {chatRoomStore, myId} from "$lib/store.svelte";
     import { slide, fly, fade, scale } from "svelte/transition";
-    import { getTextData, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { getTextData, showReplyToast, editMessage } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import { bounceOut } from "svelte/easing";
     import { onDestroy, onMount } from "svelte";
     import { getIcon } from "$lib/utils";
+
+    interface Props {
+        purpose: 'reply' | 'edit';
+    }
+
+    let { purpose }: Props = $props();
 
     let userClosed = false;
 
@@ -24,6 +30,7 @@
     function closeReplyToast(){
         userClosed = true;
         showReplyToast.value = false;
+        editMessage.value = false;
     }
 
     onMount(() => {
@@ -35,34 +42,42 @@
     })
 
     let message = $derived($messageDatabase[messageDatabase.getIndex(replyTarget.value?.id || "")] as MessageObj);
-    let sender = $derived(replyTarget.value ? (message.sender === myId.value ? 'self' : chatRoomStore.value.userList[message.sender]?.avatar || 'Zombie') : 'Zombie');
     $effect(() => {
-        if (!message || message.type == 'deleted' || !chatRoomStore.value.userList[message.sender]){
+        if ( purpose == "reply" && (!message || message.type == 'deleted' || !chatRoomStore.value.userList[message.sender])){
             closeReplyToast();
         }
     });
 </script>
-<div class="replybox" in:slide={{duration: 150}} out:closeAnimation={{duration: 500, easing: bounceOut}}>
+<div class="messageTargetBox" in:slide={{duration: 150}} out:closeAnimation={{duration: 500, easing: bounceOut}}>
     
     <div class="wrapper">
         <div class="content">
             <div class="top">
                 <div class="title" out:fade|global={{duration: 200}} in:fly|global={{y: 20, delay: 100, duration: 200}}>
-                    <i class="fa-solid fa-reply"></i>
-                    Repliying to {sender}
+                    {#if purpose === 'edit'}
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        Editing message
+                    {:else}
+                        <i class="fa-solid fa-reply"></i>
+                        Repliying to {replyTarget.value ? (message.sender === myId.value ? 'self' : chatRoomStore.value.userList[message.sender]?.avatar || 'Zombie') : 'Zombie'}
+                    {/if}
                 </div>
                 <button aria-label="close" out:scale|global={{duration: 50}} in:scale|global={{delay: 150, duration: 200}} class="close" onclick={closeReplyToast}><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="replyData" out:fade|global={{duration: 200}} in:fly|global={{x: 10, delay: 150, duration: 300}}>
-                {#if message instanceof TextMessageObj}
+            <div class="messageDataToApply" out:fade|global={{duration: 200}} in:fly|global={{x: 10, delay: 150, duration: 300}}>
+                {#if purpose == "edit" && message instanceof TextMessageObj}
                     {getTextData(message.message)}
-                {:else if message instanceof ImageMessageObj}
-                    <img class="image" src="{message.url}" alt="{message.name}" />
-                {:else if message instanceof FileMessageObj}
-                    <i class="icon fa-solid {getIcon(message.type)}"></i> 
-                    {getTextData(message.name)}
-                {:else if message instanceof StickerMessageObj}
-                    <img class="sticker" src="{message.src}" alt="sticker reply" />
+                {:else}
+                    {#if message instanceof TextMessageObj}
+                        {getTextData(message.message)}
+                    {:else if message instanceof ImageMessageObj}
+                        <img class="image" src="{message.url}" alt="{message.name}" />
+                    {:else if message instanceof FileMessageObj}
+                        <i class="icon fa-solid {getIcon(message.type)}"></i> 
+                        {getTextData(message.name)}
+                    {:else if message instanceof StickerMessageObj}
+                        <img class="sticker" src="{message.src}" alt="sticker reply" />
+                    {/if}
                 {/if}
             </div>
         </div>
@@ -70,7 +85,7 @@
     
 </div>
 <style lang="scss">
-    .replybox{
+    .messageTargetBox{
         display: flex;
         flex-direction: row;
         align-items: flex-start;
@@ -135,7 +150,7 @@
             }
 
 
-            .replyData{
+            .messageDataToApply{
                 overflow: hidden;
                 width: 100%;
                 white-space: pre;

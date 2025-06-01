@@ -83,6 +83,8 @@ export class TextMessageObj extends MessageObj {
     baseType: 'text';
     
     linkPreviewData?: linkPreviewType | null;
+
+    edited: boolean;
     
     constructor() {
         super();
@@ -90,6 +92,7 @@ export class TextMessageObj extends MessageObj {
         this.baseType = 'text';
         this.message = '';
         this.linkPreviewData = null;
+        this.edited = false;
     }
 }
 
@@ -247,6 +250,7 @@ export const lastMessageId = ref('');
 export const messageDatabase = MakeMessageDB();
 export const eventTriggerMessageId = ref<string> ("");
 export const replyTarget = ref<MessageObj | null> (null);
+export const editMessageTarget = ref<TextMessageObj | null> (null);
 export const selectedFiles = ref<FileList>();
 export const notice = ref<MessageObj | null>(null);
 

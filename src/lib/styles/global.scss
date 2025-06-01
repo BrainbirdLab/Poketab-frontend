@@ -100,7 +100,7 @@ i[class^=fa-] {
     transition: transform 200ms;
 }
 
-.fa-paper-plane, .fa-paperclip, .fa-face-laugh-wink {
+.fa-paper-plane, .fa-paperclip, .fa-face-laugh-wink, .sendIcon {
     font-size: 1.5rem !important;
     padding: 5px;
     color: var(--secondary-dark);
@@ -115,7 +115,7 @@ i[class^=fa-] {
     color: var(--secondary-dark) !important;
 }
 
-.fa-link, .fa-clone, .fa-location-dot, .fa-reply, .fa-download, .fa-arrow-down, .fa-gear {
+.fa-link, .fa-clone, .fa-location-dot, .fa-reply, .fa-pen-to-square, .fa-download, .fa-arrow-down, .fa-gear {
     color: var(--secondary-dark);
 }
 

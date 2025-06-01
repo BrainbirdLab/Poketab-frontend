@@ -29,7 +29,7 @@
     import DropBox from "./chatComponents/dropBox.svelte";
     import Messages from "./chatComponents/messages.svelte";
     import type { LightBoxTargettype } from "$lib/types";
-    import { lastMessageId, eventTriggerMessageId } from "$lib/messageStore.svelte";
+    import { lastMessageId, eventTriggerMessageId, messageDatabase, TextMessageObj, editMessageTarget } from "$lib/messageStore.svelte";
 
     let sendAsType: "file" | "image" | "audio" = $state("file");
 
@@ -146,7 +146,7 @@
 
 {#if eventTriggerMessageId.value}
     {#if page.state.showMessageOptions}
-        <MessageOptionsModal />
+        <MessageOptionsModal/>
     {/if}
     {#if page.state.showReactsOnMessage}
         <ReactsOnMessage />
@@ -162,7 +162,7 @@
         }
     }}>
         <Messages bind:lightBoxTarget={lightboxTarget}/>
-        <Footer />
+        <Footer/>
     </div>
 </div>
 

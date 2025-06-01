@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import { TextMessageObj, AudioMessageObj, MessageObj, eventTriggerMessageId, replyTarget } from "$lib/messageStore.svelte";
-    import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, TextParser, escapeXSS } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
+    import { TextMessageObj, AudioMessageObj, MessageObj, eventTriggerMessageId, replyTarget, editMessageTarget } from "$lib/messageStore.svelte";
+    import { sendMessage, isEmoji, emojiParser, filterBadWords, showReplyToast, editMessage, TextParser, escapeXSS, sendEditedMessage } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
     import Recorder from "./voiceRecorder.svelte";
     import { fly } from "svelte/transition";
     import { socket } from "$lib/connection/socketClient";
@@ -97,16 +97,25 @@
 
     let isTypingTimeout: number | NodeJS.Timeout;
 
+    let lastTypingStatusSent = $state(0);
+
     function sendTypingStatus(){
+
+        if (Date.now() - lastTypingStatusSent < 1500) {
+            return; // Prevent sending typing status too frequently
+        }
+
         socket.emit('typing', myId.value, chatRoomStore.value.Key, 'start');
 
+        lastTypingStatusSent = Date.now();
+
         if (isTypingTimeout) {
-            clearTimeout(isTypingTimeout)
+            clearTimeout(isTypingTimeout);
         };
 
         isTypingTimeout = setTimeout(() => {
             endTypingStatus();
-        }, 10000);
+        }, 1500);
     }
 
     function endTypingStatus(){
@@ -143,16 +152,22 @@
 
         if (sendMethod.value == SEND_METHOD.ENTER && e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            insertMessage();
+            editMessage.value ? editMessageApply() : insertMessage();
         } else if (sendMethod.value == SEND_METHOD.CTRL_ENTER && e.key === 'Enter' && e.ctrlKey) {
             e.preventDefault();
-            insertMessage();
+            editMessage.value ? editMessageApply() : insertMessage();
         }
     }
 
     let inputbox = $state() as HTMLDivElement;
 
     const unsub = showReplyToast.onChange(val => {
+        if (val) {
+            inputbox.focus();
+        }
+    });
+
+    const unsub2 = editMessage.onChange(val => {
         if (val) {
             inputbox.focus();
         }
@@ -206,9 +221,45 @@
 
     onDestroy(() => {
         unsub();
+        unsub2();
         observer.disconnect();
         window.removeEventListener('resize', keyboardActivationWatcher);
     });
+
+    $effect(() => {
+        if (editMessage.value ) {
+            newMessage = editMessageTarget.value?.message || '';
+
+            //set the cursor to the end of the input box
+            setTimeout(() => {
+                inputbox.focus();
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(inputbox);
+                range.collapse(false);
+                sel?.removeAllRanges();
+                sel?.addRange(range);
+            }, 0);
+        }
+    });
+
+    function editMessageApply() {
+
+        if (!editMessageTarget.value || !editMessageTarget.value.id) {
+            return;
+        }
+
+        //copy the message to a new object to avoid mutating the original message
+        const message = new TextMessageObj();
+        message.message = escapeXSS(filterBadWords(emojiParser(newMessage)));
+        message.id = editMessageTarget.value.id;
+
+        sendEditedMessage(message);
+        
+        editMessage.value = false;
+        editMessageTarget.value = null;
+        newMessage = '';
+    }
 
     let inputOff = $derived(page.state.showStickersPanel || page.state.showAttachmentPickerPanel);
 
@@ -220,17 +271,19 @@
     <MessageSockets />
 
     <div class="chatInput" class:hide={inputOff == true}>
-        <button aria-label="add stickers" onclick={() => {
+        <button aria-label="add stickers" disabled={editMessage.value} onclick={() => {
                 addState("stickers", { showStickersPanel: true });
             }}
             class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Choose stickers [Alt+i]"><i class="fa-solid fa-face-laugh-wink"></i></button>
-        <button aria-label="add attachments" onclick={() => {
+        <button aria-label="add attachments" disabled={editMessage.value} onclick={() => {
             addState("attachments", { showAttachmentPickerPanel: true });
         }} class="button-animate play-sound inputBtn roundedBtn hover hoverShadow" title="Send attachment [Alt+a]"><i class="fa-solid fa-paperclip"></i></button>
         <!-- Text input -->
         <div class="inputField">
             {#if showReplyToast.value && replyTarget.value && replyTarget.value.id}
-                <MessageReplyToast />
+                <MessageReplyToast purpose={"reply"}/>
+            {:else if editMessage.value && editMessageTarget.value && editMessageTarget.value.id}
+                <MessageReplyToast purpose={"edit"}/>
             {/if}
             <div class="textbox-wrapper">
                 <div style:opacity={recorderIsActive ? 0 : 1} onpaste={updateTextareaHeight} role="textbox" oninput={inputHandler} onkeydown={keyDownHandler} bind:this={inputbox} id="textbox" bind:innerText={newMessage} contenteditable="true" class="select" data-placeholder="Message..." tabindex="0" enterkeyhint="{sendMethod.value == SEND_METHOD.ENTER ? "send" : "enter"}"></div>
@@ -238,10 +291,21 @@
             </div>
         </div>
         <!-- Send Button-->
-        {#if quickEmojiEnabled.value && newMessage.trim().length === 0 && !recordedAudioUrl}
-            <button id="send" onclick={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {quickEmoji.value}" tabindex="-1" data-role="send">{quickEmoji.value}</button>
+        {#if editMessage.value}
+            <!-- Edit mode -->
+            <button aria-label="edit" id="send" onclick={editMessageApply} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to edit message" tabindex="-1" data-role="send">
+                {#if newMessage.trim() == '' || newMessage == editMessageTarget.value?.message}
+                    <i class="fa-regular fa-circle-check sendIcon"></i>
+                {:else}
+                    <i class="fa-solid fa-circle-check sendIcon"></i>
+                {/if}
+            </button>
         {:else}
-            <button aria-label="send" id="send" onclick={() => {insertMessage()}} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
+            {#if quickEmojiEnabled.value && newMessage.trim().length === 0 && !recordedAudioUrl}
+                <button id="send" onclick={() => {insertMessage(true)}} class="quickEmoji inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send {quickEmoji.value}" tabindex="-1" data-role="send">{quickEmoji.value}</button>
+            {:else}
+                <button aria-label="send" id="send" onclick={() => {insertMessage()}} class="inputBtn button-animate roundedBtn hover hoverShadow" title="Enter to send message" tabindex="-1" data-role="send"><i class="fa-solid fa-paper-plane sendIcon"></i></button>
+            {/if}
         {/if}
     </div>
 </div>

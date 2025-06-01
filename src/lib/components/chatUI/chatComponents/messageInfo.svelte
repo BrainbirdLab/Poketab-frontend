@@ -1,6 +1,6 @@
 <script lang="ts">
     import { bufferToHexCode } from "$lib/e2e/encryption";
-    import { FileMessageObj, type MessageObj } from "$lib/messageStore.svelte";
+    import { FileMessageObj, ImageMessageObj, TextMessageObj, type MessageObj } from "$lib/messageStore.svelte";
     import { onDestroy, onMount } from "svelte";
     import { getFormattedDate } from "./messages/messageUtils";
     import { chatRoomStore } from "$lib/store.svelte";
@@ -72,6 +72,22 @@
                 <div class="sub-title">File name</div>
                 <div class="content">
                     {message.name}
+                </div>
+            </div>
+        {/if}
+        {#if message instanceof TextMessageObj }
+            <div class="sub-container">
+                <div class="sub-title">Is Edited</div>
+                <div class="content monospace user-select">
+                    {message.edited ? 'Yes' : 'No'}
+                </div>
+            </div>
+        {/if}
+        {#if message instanceof FileMessageObj || message instanceof ImageMessageObj}
+            <div class="sub-container">
+                <div class="sub-title">File size</div>
+                <div class="content">
+                    {message.size} bytes
                 </div>
             </div>
         {/if}

@@ -1,4 +1,4 @@
-import { MessageObj, FileMessageObj, lastMessageId, messageDatabase } from "$lib/messageStore.svelte";
+import { MessageObj, FileMessageObj, lastMessageId, messageDatabase, TextMessageObj } from "$lib/messageStore.svelte";
 import { chatRoomStore, DEVMODE, myId, outgoingXHRs } from "$lib/store.svelte";
 import { socket } from "$lib/connection/socketClient";
 import { badWords } from "./censoredWords";
@@ -9,6 +9,7 @@ import { PUBLIC_API_SERVER_URL } from "$env/static/public";
 import { ref } from "$lib/ref.svelte";
 
 export const showReplyToast = ref(false);
+export const editMessage = ref(false);
 
 export function getFormattedDate(time: number) {
 	const currentTime = Date.now();
@@ -58,6 +59,55 @@ export function remainingTime(totalTime: number, elapsedTime: number) {
 	}
 }
 
+export async function sendEditedMessage(message: TextMessageObj) {
+	if (!message.id || !message.message || message.message.trim() === '') {
+		return;
+	}
+
+	//convert msg object to ArrayBuffer
+	const buffer = new TextEncoder().encode(JSON.stringify(message));
+	const arrayBuffer = buffer.buffer as ArrayBuffer;
+
+	const rawSmKey = await makeSymmetricKey();
+	message.smKey = rawSmKey;
+
+	messageDatabase.update((messages) => {
+		const index = messageDatabase.getIndex(message.id);
+		console.log(message);
+		if (index !== -1) {
+			(messages[index] as TextMessageObj).message = message.message;
+			(messages[index] as TextMessageObj).smKey = message.smKey;
+			(messages[index] as TextMessageObj).type = isEmoji(message.message) ? 'emoji' : 'text';
+			(messages[index] as TextMessageObj).edited = true;
+		}
+		return messages;
+	});
+
+	// if only one user in the chat room, or DEVMODE is on, return
+	if (Object.keys(chatRoomStore.value.userList).length < 2 || DEVMODE.value){
+		getLinkMetadata(message);
+		return;
+	}
+
+	const smKeys: {[key: string]: ArrayBuffer} = {};
+
+	for (const [key, value] of Object.entries(chatRoomStore.value.userList)) {
+		if (key != myId.value) {
+			if (!value.publicKey){
+				continue;
+			}
+			const enSmKey = await encryptSymmetricKey(rawSmKey, value.publicKey);
+			smKeys[key] = enSmKey;
+		}
+	}
+
+	//encrypt the message
+	const encryptedMessage = await encryptMessage(arrayBuffer, rawSmKey);
+	socket.emit('editMessage', encryptedMessage, chatRoomStore.value.Key, smKeys, () => {
+		getLinkMetadata(message);
+	});
+}
+
 export async function sendMessage(message: MessageObj, file?: File){
 
 	const rawSmKey = await makeSymmetricKey();
@@ -65,6 +115,7 @@ export async function sendMessage(message: MessageObj, file?: File){
 	message.sender = myId.value;
 	message.id = generateId(16);
 	message.smKey = rawSmKey;
+
 	messageDatabase.add(message);
 
 	// if only one user in the chat room, or DEVMODE is on, return
@@ -348,6 +399,7 @@ function formatCode(inputCode: string, spacesPerIndent = 2) {
     return formattedCode.trim();
 }
 
+// Trim leading and trailing whitespaces from the formatted code and return a shortened version if it exceeds 1000 characters
 export function getTextData(message: string){
 	const elem = document.createElement('div');
 	elem.innerHTML = message;
