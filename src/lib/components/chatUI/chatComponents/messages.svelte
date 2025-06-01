@@ -103,7 +103,6 @@
     let springTarget: string | null = null;
 
     $effect(() => {
-        console.log("Spring value: ", springValue.current);
         if (springTarget) {
             const message = document.getElementById(springTarget) as HTMLElement;
             if (message) {
@@ -569,9 +568,49 @@
         }
     }
 
+    const longPressThreshold = 250;
+    let longPressTimeout: NodeJS.Timeout | null = null;
+
+    function detectPressAndHold(e: TouchEvent) {
+        //detect if the user is pressing and holding on a message for threashold
+        const target = e.target as HTMLElement;
+        if (target.tagName == "CODE"){
+            return;
+        }
+
+        if (target.closest(".msg")) {
+            const message = target.closest(".message") as HTMLElement;
+            if (!message) {
+                return;
+            }
+            if (!messageDatabase.has(message.id)) {
+                return;
+            }
+
+            const messageObj = messageDatabase.getMessage(message.id) as MessageObj;
+
+            if (messageObj?.baseType == 'deleted'){
+                return;
+            }
+
+            longPressTimeout = setTimeout(() => {
+                eventTriggerMessageId.value = messageObj.id;
+                addState('', { showMessageOptions: true });
+            }, longPressThreshold);
+        }
+    }
+
+    function clearLongPressTimeout(e: TouchEvent) {
+        e.preventDefault();
+        if (longPressTimeout) {
+            clearTimeout(longPressTimeout);
+            longPressTimeout = null;
+        }
+    }
+
 </script>
 <div class="messageContainer" bind:this={messageContainer.value}>
-    <ul class="messages" use:handleMessages oncontextmenu={handleRightClick} id="messages" bind:this={messagesHTML} ontouchmove={(e) => {     
+    <ul class="messages" use:handleMessages oncontextmenu={(e) => {e.preventDefault(); handleRightClick(e);}} ontouchstart={detectPressAndHold} ontouchend={clearLongPressTimeout} ontouchcancel={clearLongPressTimeout} id="messages" bind:this={messagesHTML} ontouchmove={(e) => {     
             if (e.target == e.currentTarget){
                 e.preventDefault();
             }
