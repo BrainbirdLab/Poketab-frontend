@@ -46,12 +46,14 @@
             arr.push('Reply');
             //if the sender is me, add delete option
             if (sender == myId.value){
-                arr.push('Edit');
+                if (messageKind == 'text') {
+                    arr.push('Edit');
+                }
                 arr.push('Delete');
             }
         }
 
-        if (messageKind == 'text'){
+        if (messageKind == 'text') {
             arr.push('Copy');
         }
 
