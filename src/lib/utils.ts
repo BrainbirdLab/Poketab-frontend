@@ -2,6 +2,7 @@ import { cubicOut } from "svelte/easing";
 import { showToastMessage } from "@itsfuad/domtoastmessage";
 import { buttonSoundEnabled, messageSoundEnabled } from "$lib/settings.svelte";
 import { browser } from "$app/environment";
+import type { MessageObj, TextMessageObj } from "./messageStore.svelte";
 
 
 export function generateId(length: number) {
@@ -100,6 +101,16 @@ export async function copyText(text: string){
         console.error('Async: Could not copy text: ', err);
         showToastMessage('Could not copy to clipboard');
     }
+}
+
+export function getPlainText(message: MessageObj | null): string {
+    if (!message) {
+        return '';
+    }
+    //make html element to put data
+    const elem = document.createElement('div');
+    elem.innerHTML = (message as TextMessageObj).message;
+    return elem.innerText;
 }
 
 let clickSound: HTMLAudioElement;

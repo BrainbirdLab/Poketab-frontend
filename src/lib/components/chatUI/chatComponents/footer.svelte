@@ -14,6 +14,7 @@
     import ScrollDownPopup from "./notify.svelte";
     import { addState } from "../stateManager.svelte";
     import MessageSockets from "../messageSockets.svelte";
+    import { getPlainText } from "$lib/utils";
 
     let newMessage = $state('');
 
@@ -228,7 +229,7 @@
 
     $effect(() => {
         if (editMessage.value ) {
-            newMessage = editMessageTarget.value?.message || '';
+            newMessage = getPlainText(editMessageTarget.value);
 
             //set the cursor to the end of the input box
             setTimeout(() => {

@@ -5,7 +5,7 @@
     import { MessageObj, TextMessageObj, FileMessageObj, AudioMessageObj, eventTriggerMessageId, messageDatabase, replyTarget, editMessageTarget } from "$lib/messageStore.svelte";
     import { chatRoomStore, myId, reactArray } from "$lib/store.svelte";
     import { editMessage, showReplyToast } from "$lib/components/chatUI/chatComponents/messages/messageUtils";
-    import { copyText, emojis, playMessageSound } from "$lib/utils";
+    import { copyText, emojis, getPlainText, playMessageSound } from "$lib/utils";
     import { onMount } from "svelte";
     import { showToastMessage } from "@itsfuad/domtoastmessage";
     import { clearModals } from "../stateManager.svelte";
@@ -60,6 +60,8 @@
         return arr;
     }
 
+
+
     function clickHandler(node: HTMLElement){
         node.onclick = (e: MouseEvent) => {
             if (e.target == node){
@@ -87,12 +89,9 @@
 
                     if (!(message)) return;
 
-                    //make html element to put data
-                    const elem = document.createElement('div');
-                    elem.innerHTML = (message as TextMessageObj).message;
-                    const text = elem.innerText;
+                    
                     //copy the text
-                    copyText(text);
+                    copyText(getPlainText(message));
 
                 } else if (e.target.classList.contains('Download')) {
 
@@ -125,7 +124,7 @@
                     if (editMessageTarget.value) {
                         editMessageTarget.value = null;
                         editMessage.value = false;
-                    } 
+                    }
 
                     //set the message to edit
                     editMessageTarget.value = message;

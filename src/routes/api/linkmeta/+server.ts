@@ -22,12 +22,8 @@ export async function POST({ request }) {
 }
 
 function decodeURIComponentSafe(uri: string) {
-    try {
-        // if has &amp; replace it with &
-        return uri.replace(/&amp;/g, '&');
-    } catch (_) {
-        return uri;
-    }
+    // if has &amp; replace it with &
+    return uri.replace(/&amp;/g, '&');
 }
 
 async function parseMetadata(url: string): Promise<linkRes> {
@@ -53,17 +49,27 @@ async function parseMetadata(url: string): Promise<linkRes> {
         const descriptionMatch = RegExp(descriptionRegex).exec(html);
         const imageMatch = RegExp(imageRegex).exec(html);
 
+        console.log('Fetched HTML:', html);
+        console.log('Title match:', titleMatch);
+        console.log('Description match:', descriptionMatch);
+        console.log('Image match:', imageMatch);
+
         const title = titleMatch ? titleMatch[1] : '';
         const description = descriptionMatch ? descriptionMatch[1] : '';
-        let image = imageMatch ? imageMatch[1] : '';
-
-        image = new URL(image, url).href;
+        let image = imageMatch ? new URL(imageMatch[1], url).href : '';
 
         if (image) {
             image = decodeURIComponentSafe(image);
         }
 
         const urlWithoutPath = `${urlObject.protocol}//${urlObject.host}`;
+
+        console.log('Parsed metadata:', {
+            title,
+            description,
+            image,
+            url: urlWithoutPath,
+        });
 
         return {
             success: true,
